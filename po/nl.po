@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-10-28 20:17+0200\n"
+"POT-Creation-Date: 2004-10-30 22:52+0200\n"
 "PO-Revision-Date: 03/04/04 13:02\n"
 "Last-Translator: Sander Devrieze <s.devrieze@pandora.be>\n"
 "Language-Team: Nederlands\n"
@@ -45,7 +45,7 @@ msgstr "Ongeldige 'aan': %s"
 msgid "You are not allowed to browse users"
 msgstr "Het is u niet toegestaan om gebruikers te browsen"
 
-#: src/browse.c:64 src/browse.c:115 src/disco.c:96
+#: src/browse.c:64 src/browse.c:115 src/disco.c:96 src/disco.c:119
 msgid "Online users"
 msgstr "Online gebruikers"
 
@@ -53,7 +53,7 @@ msgstr "Online gebruikers"
 msgid "Browse request for unknown resource"
 msgstr "Browse-verzoek voor onbekende bron"
 
-#: src/disco.c:87 src/disco.c:119
+#: src/disco.c:87 src/disco.c:123 src/disco.c:160 src/disco.c:178
 msgid "Disco request for unknown node"
 msgstr "Disco-verzoek voor onbekende node"
 
