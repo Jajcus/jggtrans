@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.13 2002/02/02 19:49:54 jajcus Exp $ */
+/* $Id: main.c,v 1.14 2002/02/03 16:24:06 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -21,8 +21,11 @@
 #include <unistd.h>
 #include <signal.h>
 #include <sys/wait.h>
+#include <sys/types.h>
 #include <limits.h>
 #include <errno.h>
+#include <pwd.h>
+#include <grp.h>
 #include "ggtrans.h"
 #include "jabber.h"
 #include "sessions.h"
@@ -128,6 +131,10 @@ gboolean signal_source_dispatch(gpointer  source_data,
 	psignal(signal_received,"signal received");
 	g_warning("Signal received: %s",g_strsignal(signal_received));
 	if (the_end) g_main_quit(main_loop);
+	if (signal_received==SIGUSR1){
+		g_message("Active sessions:");
+		sessions_print_all(1);
+	}
 	signal_received=0;
 	return TRUE;
 }
@@ -271,6 +278,8 @@ char *p;
 	printf("\t-f      Run in foreground. Debug/error messages will be sent to stderr\n");
 	printf("\t-d<n>   Log level (0(default) - normal, >0 more, <0 less)\n");
 	printf("\t-D<n>   libgg debug level (enables also -f)\n");
+	printf("\t-u <user>   libgg debug level (enables also -f)\n");
+	printf("\t-g <group>   libgg debug level (enables also -f)\n");
 	printf("\n");
 }
 
@@ -283,11 +292,23 @@ char *log_filename=NULL;
 char *str;
 char *config_file;
 int log_facility=-1;
+uid_t uid,euid,newgid;
+struct passwd *pwd;
+struct group *grp;
+char *user,*group;
 FILE *f;
+
+	uid=getuid();
+	euid=geteuid();
+	if (euid==0 && uid!=euid){
+		fprintf(stderr,"Refusing to work setuid-root!\n");
+		exit(1);
+	}
+	newgid=0; user=NULL; group=NULL;
 
 	opterr=0;
 
-	while ((c = getopt (argc, argv, "hfd:D:")) != -1){
+	while ((c = getopt (argc, argv, "hfd:D:u:g:")) != -1){
 		switch(c){
 			case 'h':
 				usage(argv[0]);
@@ -302,6 +323,14 @@ FILE *f;
 				gg_debug_level=atoi(optarg);
 				fg=TRUE;
 				break;
+			case 'u':
+				if (uid!=0) g_error("Cannot change user.");
+				user=optarg;
+				break;	
+			case 'g':
+				if (uid!=0) g_error("Cannot change group.");
+				group=optarg;
+				break;	
 			case '?':
 				if (isprint(optopt))
 					fprintf(stderr,"Unknown command-line option: -%c.\n",optopt);
@@ -320,6 +349,22 @@ FILE *f;
 		usage(argv[0]);
 		return 1;
 	}
+
+	if (group){
+		grp=getgrnam(group);
+		if (!grp) g_error("Couldn't find group %s",group);
+		newgid=grp->gr_gid;
+	}
+	if (user){
+		pwd=getpwnam(user);
+		if (!pwd) g_error("Couldn't find user %s",user);
+		if (newgid<=0) newgid=pwd->pw_gid;
+		if (setgid(newgid)) g_error("Couldn't change group: %s",g_strerror(errno));
+		if (initgroups(user,newgid)) g_error("Couldn't init groups: %s",g_strerror(errno));
+		if (setuid(pwd->pw_uid)) g_error("Couldn't change user: %s",g_strerror(errno));
+	}
+	else if (uid==0) g_error("Refusing to run with uid=0");
+	
 	if (optind==argc-1) config_file=argv[optind];
 	else config_file=g_strdup_printf("%s/%s",SYSCONFDIR,"ggtrans.xml");
 
@@ -415,6 +460,7 @@ FILE *f;
 	signal(SIGHUP,signal_handler);		
 	signal(SIGINT,signal_handler);		
 	signal(SIGTERM,signal_handler);		
+	signal(SIGUSR1,signal_handler);		
 	signal(SIGCHLD,sigchld_handler);		
 
 	g_main_run(main_loop);
