@@ -1,7 +1,7 @@
 
 SUBDIRS = libxode src po
 
-.PHONY: cosmetics
+.PHONY: cosmetics ChangeLog
 
 EXTRA_DIST = config.rpath mkinstalldirs jggtrans.xml jggtrans.xml.Pl \
 	TODO BUGS README.Pl INSTALL.Pl \
@@ -11,8 +11,13 @@ EXTRA_DIST = config.rpath mkinstalldirs jggtrans.xml jggtrans.xml.Pl \
 	m4/nls.m4 m4/po.m4 m4/printf-posix.m4 m4/progtest.m4 m4/signed.m4 m4/size_max.m4 \
 	m4/stdint_h.m4 m4/uintmax_t.m4 m4/ulonglong.m4 m4/wchar_t.m4 m4/wint_t.m4 m4/xsize.m4
 
-ChangeLog:
-	TZ=UTC svn log -v --xml | aux/svn2log.py -p '/(branches/[^/]+|trunk)' -x ChangeLog -u aux/users
+ChangeLog: 
+	test -f .svn/entries && make cl-stamp || :
+	
+cl-stamp: .svn/entries
+	TZ=UTC svn log -v --xml \
+		| aux/svn2log.py -p '/(branches/[^/]+|trunk)' -x ChangeLog -u aux/users
+	touch cl-stamp
 
 cosmetics:
 	./aux/cosmetics.sh
