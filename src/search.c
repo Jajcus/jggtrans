@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <libgg.h>
 #include "search.h"
 #include "requests.h"
@@ -162,6 +161,3 @@ int vcard_error(Request *r){
 	jabber_iq_send_error(r->stream,r->from,r->id,"vCard error");
 	return 0;
 }
-
-
-

@@ -34,7 +34,8 @@ ggtrans_HEADERS= \
 	message.h \
 	requests.h \
 	search.h \
-	encoding.h
+	encoding.h \
+	debug.h
 
 all: jggtrans
 

@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <assert.h>
 #include <libxode.h>
 #include "fds.h"
 #include "requests.h"
@@ -15,7 +14,7 @@ Request *r;
 int t;
 
 	r=(Request *)h->extra;
-	assert(r!=NULL);
+	g_assert(r!=NULL);
 	switch(r->type){
 		case RT_SEARCH:
 			t=gg_search_watch_fd(r->gghttp);
@@ -32,7 +31,7 @@ int t;
 			remove_request(r);
 			return 0;
 		default:
-			fprintf(stderr,"Unknow gg_http session type: %i\n",r->gghttp->type);
+			g_warning("Unknow gg_http session type: %i",r->gghttp->type);
 			gg_http_watch_fd(r->gghttp);
 			break;
 	}		
@@ -46,7 +45,7 @@ Request * add_request(RequestType type,const char *from,const char *id,xmlnode q
 Request *r;
 FdHandler *h;
 	
-	assert(gghttp!=NULL);
+	g_assert(gghttp!=NULL);
 	r=(Request *)g_malloc(sizeof(Request));
 	memset(r,0,sizeof(*r));
 	r->type=type;

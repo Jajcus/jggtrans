@@ -1,5 +1,3 @@
-#include <stdio.h>
-#include <assert.h>
 #include <string.h>
 #include <dirent.h>
 #include <sys/stat.h>
@@ -8,6 +6,7 @@
 #include "users.h"
 #include "jid.h"
 #include "presence.h"
+#include "debug.h"
 #include <glib.h>
 
 GHashTable *users_jid=NULL;
@@ -19,17 +18,11 @@ int r;
 
 	node=xmlnode_get_tag(config,"spool");
 	if (node) spool_dir=xmlnode_get_data(node);
-	if (!spool_dir){
-		fprintf(stderr,"No <spool/> defined in config file\n");
-		return -1;
-	}
+	if (!node || !spool_dir)
+		g_error("No <spool/> defined in config file");
 
 	r=chdir(spool_dir);
-	if (r){
-		fprintf(stderr,"Couldn't enter %s\n",spool_dir);
-		perror("chdir");
-		return -1;
-	}
+	if (r) g_error("Couldn't enter %s: %s",spool_dir,g_strerror(errno));
 	
 	users_jid=g_hash_table_new(g_str_hash,g_str_equal);
 	if (!users_jid) return -1;
@@ -60,19 +53,18 @@ char *njid;
 int r;	
 xmlnode xml,tag,userlist;
 
-	assert(u!=NULL);
+	g_assert(u!=NULL);
 	str=strchr(u->jid,'/');
-	assert(str==NULL);
+	g_assert(str==NULL);
 
-	fprintf(stderr,"\nSaving user '%s'\n",u->jid);
+	g_message("Saving user '%s'",u->jid);
 	njid=jid_normalized(u->jid);
 	fn=g_strdup_printf("%s.new",njid);
 	f=fopen(fn,"w");
 	if (!f){
-		fprintf(stderr,"Couldn't open '%s'\n",fn);
+		g_warning("Couldn't open '%s': %s",fn,g_strerror(errno));
 		g_free(fn);
 		g_free(njid);
-		perror("fopen");
 		return -1;
 	}
 	xml=xmlnode_new_tag("user");
@@ -102,8 +94,7 @@ xmlnode xml,tag,userlist;
 	str=xmlnode2str(xml);
 	r=fputs(str,f);
 	if (r<0){
-		fprintf(stderr,"Couldn't save '%s'\n",u->jid);
-		perror("fputs");
+		g_warning("Couldn't save '%s': %s",u->jid,g_strerror(errno));
 		fclose(f);
 		unlink(fn);
 		xmlnode_free(xml);
@@ -114,8 +105,7 @@ xmlnode xml,tag,userlist;
 	fclose(f);
 	r=unlink(njid);
 	if (r && errno!=ENOENT){
-		fprintf(stderr,"Couldn't unlink '%s'\n",u->jid);
-		perror("unlink");
+		g_warning("Couldn't unlink '%s': %s",u->jid,g_strerror(errno));
 		xmlnode_free(xml);
 		g_free(fn);
 		g_free(njid);
@@ -124,8 +114,7 @@ xmlnode xml,tag,userlist;
 	
 	r=rename(fn,njid);
 	if (r){
-		fprintf(stderr,"Couldn't rename '%s' to '%s'\n",fn,u->jid);
-		perror("rename");
+		g_warning("Couldn't rename '%s' to '%s': %s",fn,u->jid,g_strerror(errno));
 		xmlnode_free(xml);
 		g_free(fn);
 		g_free(njid);
@@ -147,13 +136,12 @@ GList *contacts;
 char *p;
 
 	uin=ujid=name=password=email=NULL;
-	fprintf(stderr,"\nLoading user '%s'\n",jid);
+	g_message("Loading user '%s'",jid);
 	fn=jid_normalized(jid);
 	errno=0;
 	xml=xmlnode_file(fn);
 	if (!xml){
-		fprintf(stderr,"Couldn't read or parse '%s'\n",fn);
-		if (errno) perror("xmlnode_file");
+		g_warning("Couldn't read or parse '%s': %s",fn,errno?g_strerror(errno):"XML parse error");
 		g_free(fn);
 		return NULL;
 	}
@@ -161,19 +149,19 @@ char *p;
 	tag=xmlnode_get_tag(xml,"jid");
 	if (tag) ujid=xmlnode_get_data(tag);
 	if (!ujid){
-		fprintf(stderr,"Couldn't find JID in users file\n");
+		g_warning("Couldn't find JID in %s's file",jid);
 		return NULL;
 	}
 	tag=xmlnode_get_tag(xml,"uin");
 	if (tag) uin=xmlnode_get_data(tag);
 	if (!uin){
-		fprintf(stderr,"Couldn't find UIN in users file\n");
+		g_warning("Couldn't find UIN in %s's file",jid);
 		return NULL;
 	}
 	tag=xmlnode_get_tag(xml,"password");
 	if (tag) password=xmlnode_get_data(tag);
 	if (!password){
-		fprintf(stderr,"Couldn't find password in users file\n");
+		g_warning("Couldn't find password in %s's file",jid);
 		return NULL;
 	}
 	tag=xmlnode_get_tag(xml,"email");
@@ -205,7 +193,7 @@ char *p;
 	u->password=g_strdup(password);
 	u->contacts=contacts;
 	xmlnode_free(xml);
-	assert(users_jid!=NULL);
+	g_assert(users_jid!=NULL);
 	njid=jid_normalized(u->jid);
 	g_hash_table_insert(users_jid,(gpointer)njid,(gpointer)u);
 	u->confirmed=1;
@@ -219,7 +207,7 @@ char *str,*p;
 	str=g_strdup(jid);
 	p=strchr(str,'/');
 	if (p) *p=0;
-	assert(users_jid!=NULL);
+	g_assert(users_jid!=NULL);
 	u=(User *)g_hash_table_lookup(users_jid,(gpointer)str);
 	g_free(str);
 	if (u) return u;
@@ -228,7 +216,7 @@ char *str,*p;
 
 static int user_destroy(User *u){
 
-	fprintf(stderr,"\nRemoving user '%s'\n",u->jid);
+	g_message("Removing user '%s'",u->jid);
 	if (u->jid) g_free(u->jid);
 	if (u->password) g_free(u->password);
 	g_free(u);
@@ -255,17 +243,17 @@ User *user_create(const char *jid,uin_t uin,const char * password){
 User *u;
 char *p,*njid;
 
-	fprintf(stderr,"\nCreating user '%s'\n",jid);
+	g_message("Creating user '%s'",jid);
 	if (uin<1){
-		fprintf(stderr,"Bad UIN\n");
+		g_warning("Bad UIN");
 		return NULL;
 	}
 	if (!password){
-		fprintf(stderr,"Password not given\n");
+		g_warning("Password not given");
 		return NULL;
 	}
 	if (!jid){
-		fprintf(stderr,"JID not given\n");
+		g_warning("JID not given");
 		return NULL;
 	}
 
@@ -277,7 +265,7 @@ char *p,*njid;
 	if (p) *p=0;
 	u->password=g_strdup(password);
 	u->confirmed=0;
-	assert(users_jid!=NULL);
+	g_assert(users_jid!=NULL);
 	njid=jid_normalized(u->jid);
 	g_hash_table_insert(users_jid,(gpointer)njid,(gpointer)u);
 	return u;
@@ -287,7 +275,7 @@ int user_subscribe(User *u,uin_t uin){
 Contact *c;	
 GList *it;
 
-	assert(u!=NULL);
+	g_assert(u!=NULL);
 	for(it=g_list_first(u->contacts);it;it=it->next){
 		c=(Contact *)it->data;
 		if (c->uin==uin) return -1;
@@ -323,7 +311,7 @@ int user_set_contact_status(User *u,int status,unsigned int uin){
 GList *it;
 Contact *c;
 
-	assert(u!=NULL);
+	g_assert(u!=NULL);
 	for(it=u->contacts;it;it=it->next){
 		c=(Contact *)it->data;
 		if (c->uin==uin){
@@ -346,15 +334,13 @@ int r;
 	if (!s) return -1;
 	dir=opendir(".");
 	if (!dir){
-		fprintf(stderr,"Couldn't open '%s' directory\n",spool_dir);
-		perror("opendir");
+		g_warning("Couldn't open '%s' directory: %s",spool_dir,g_strerror(errno));
 		return -1;
 	}
 	while((de=readdir(dir))){
 		r=stat(de->d_name,&st);
 		if (r){
-			fprintf(stderr,"Couldn't stat '%s'\n",de->d_name);
-			perror("stat");
+			g_warning("Couldn't stat '%s': %s",de->d_name,g_strerror(errno));
 			continue;
 		}
 		if (S_ISREG(st.st_mode)) presence_send_probe(s,de->d_name);

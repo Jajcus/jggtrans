@@ -4,6 +4,7 @@
 #include "jid.h"
 #include "users.h"
 #include "sessions.h"
+#include "debug.h"
 #include <glib.h>
 
 int presence_send_probe(struct stream_s *stream,const char *to){
@@ -114,7 +115,7 @@ Session *s;
 
 	s=session_get_by_jid(from,available?stream:NULL);
 	if (!s){
-		fprintf(stderr,"No such session\n");
+		debug("presence: No such session: %s",from);
 		presence_send(stream,NULL,from,0,NULL,"Not logged in");
 		return -1;
 	}
@@ -128,27 +129,27 @@ int r;
 	
 	u=user_get_by_jid(from);
 	if (jid_is_me(to)){
-		fprintf(stderr,"\nIts me :-)\n");
+		debug("Presence subscribe request sent to me");
 		if (!u) presence_send_unsubscribed(stream,to,from);
 		else presence_send_subscribed(stream,to,from);
 		return 0;
 	}
 	if (!u)	{
-		fprintf(stderr,"\nPresence subscription from unknown user\n");
+		g_warning("Presence subscription from unknown user (%s)",from);
 		return -1;
 	}
 	if (!jid_has_uin(to) || !jid_is_my(to)){
-		fprintf(stderr,"\nBad 'to'\n");
+		g_warning("Bad 'to': %s",to);
 		return -1;
 	}
 	s=session_get_by_jid(from,stream);
 	if (!s){
-		fprintf(stderr,"\nCouldn't find or open session for '%s'\n",from);
+		g_warning("Couldn't find or open session for '%s'",from);
 		return -1;
 	}
-	fprintf(stderr,"\nSubscribing...\n");
+	debug("Subscribing %s to %s...",from,to);
 	r=session_subscribe(s,jid_get_uin(to));
-	fprintf(stderr,"\nSubscribed...\n");
+	debug("Subscribed.");
 	if (!r) presence_send_subscribed(stream,to,from);
 	else presence_send_subscribed(stream,to,from);
 	
@@ -188,12 +189,12 @@ char *show,*status;
 	if (!type) type="available";
 	
 	if (!from || !to){
-		fprintf(stderr,"\nBad <presence/>\n");
+		g_warning("Bad <presence/>: %s",xmlnode2str(tag));
 		return -1;
 	}
 
 	if (!jid_is_my(to)){
-		fprintf(stderr,"\nWrong 'to' in <presence/>\n");
+		g_warning("Wrong 'to' in %s",xmlnode2str(tag));
 		return -1;
 	}
 	
@@ -208,7 +209,7 @@ char *show,*status;
 	else if (!g_strcasecmp(type,"unsubscribed"))
 		return presence_unsubscribed(stream,from,to);
 	
-	fprintf(stderr,"\nUnsupported <presence/> type\n");
+	g_warning("Unsupported type in %s",xmlnode2str(tag));
 	return -1;
 }
 

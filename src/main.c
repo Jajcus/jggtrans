@@ -42,13 +42,14 @@ void signal_handler(int sig){
 	signal_received=sig;
 }
 
+
 xmlnode config;
 
 int main(int argc,char *argv[]){
 
 	config=xmlnode_file("/etc/jabber/ggtrans.xml");
 	if (!config){
-		fprintf(stderr,"Couldn't load config!\n");
+		g_error("Couldn't load config!");
 		return 1;
 	}
 
@@ -69,6 +70,7 @@ int main(int argc,char *argv[]){
 		fd_watch(10);
 		if (signal_received){
 			psignal(signal_received,"signal received");
+			g_warning("Signal received: %s",g_strsignal(signal_received));
 			if (the_end) break;
 			signal_received=0;
 		}

@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <iconv.h>
 #include <errno.h>
 #include <assert.h>
@@ -16,17 +15,11 @@ static int buf_len;
 int encoding_init(){
 
 	to_utf8_c=iconv_open("utf-8",ENCODING);
-	if (to_utf8_c==(iconv_t)-1){
-		fprintf(stderr,"Couldn't open 'to Unicode' converter\n");
-		perror("iconv_open");
-		return -1;
-	}
+	if (to_utf8_c==(iconv_t)-1)
+		g_error("Couldn't open 'to Unicode' converter (%s)",g_strerror(errno));
 	from_utf8_c=iconv_open(ENCODING,"utf-8");
-	if (from_utf8_c==(iconv_t)-1){
-		fprintf(stderr,"Couldn't open 'from Unicode' converter\n");
-		perror("iconv_open");
-		return -1;
-	}
+	if (from_utf8_c==(iconv_t)-1)
+		g_error("Couldn't open 'from Unicode' converter (%s)",g_strerror(errno));
 	buf_len=16;
 	buf=(char *)g_malloc(buf_len);
 	return 0;

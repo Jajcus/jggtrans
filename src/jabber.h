@@ -2,6 +2,7 @@
 #define jabber_h
 
 #include "stream.h"
+#include <glib.h>
 	
 int jabber_init();
 int jabber_done();

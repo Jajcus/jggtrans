@@ -76,7 +76,7 @@ int except;
 		}
 		else h->write_ready=0;
 		if (FD_ISSET(h->fd,&ex)){
-			fprintf(stderr,"Exception on fd=%i\n",h->fd);
+			g_warning("Exception on fd=%i",h->fd);
 			except=1;
 		}	
 		else except=0;

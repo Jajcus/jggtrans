@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include "sessions.h"
 #include "iq.h"
 #include "fds.h"
@@ -7,8 +6,8 @@
 #include "users.h"
 #include "jid.h"
 #include "message.h"
+#include "debug.h"
 #include <libgg.h>
-#include <assert.h>
 
 static int conn_timeout=30;
 static int ping_interval=10;
@@ -21,7 +20,7 @@ char *data;
 int port;
 xmlnode node;
 
-	/*gg_debug_level=255;*/
+	/*gdebug_level=255;*/
 
 	sessions_jid=g_hash_table_new(g_str_hash,g_str_equal);
 	if (!sessions_jid) return -1;
@@ -45,7 +44,7 @@ xmlnode node;
 	
 	if (!node || !proxy_port) return 0;
 	port=atoi(proxy_port);
-	fprintf(stderr,"Using proxy: http://%s:%i\n",proxy_ip,port);
+	g_message("Using proxy: http://%s:%i",proxy_ip,port);
 	gg_http_use_proxy=1;
 	gg_http_proxy_host=proxy_ip;
 	gg_http_proxy_port=port;
@@ -108,7 +107,7 @@ uin_t *userlist;
 int userlist_len;
 int i;
 
-	assert(s!=NULL);
+	g_assert(s!=NULL);
 	userlist_len=g_list_length(s->user->contacts);
 	userlist=(uin_t *)g_malloc(sizeof(uin_t)*(userlist_len+1));
 
@@ -118,7 +117,7 @@ int i;
 
 	userlist[i]=0;
 	
-	fprintf(stderr,"\ngg_notify(%p,%p,%i)\n",s->ggs,userlist,userlist_len);
+	debug("gg_notify(%p,%p,%i)",s->ggs,userlist,userlist_len);
 	gg_notify(s->ggs,userlist,userlist_len);
 
 	g_free(userlist);
@@ -144,7 +143,7 @@ int chat;
 	s=(Session *)h->extra;
 	event=gg_watch_fd(s->ggs);
 	if (!event){
-		fprintf(stderr,"\nConnection broken\n");
+		g_warning("Connection broken. Session of %s",s->jid);
 		if (s->req_id){
 			jabber_iq_send_error(s->s,s->jid,s->req_id,"Server connection broken");
 		}
@@ -157,14 +156,14 @@ int chat;
 	}
 	switch(event->type){
 		case GG_EVENT_CONN_FAILED:
-			fprintf(stderr,"\nLogin failed\n");
+			g_warning("Login failed for %s",s->jid);
 			if (s->req_id)
 				jabber_iq_send_error(s->s,s->jid,s->req_id,"Login failed");
 			else presence_send(s->s,NULL,s->user->jid,0,NULL,"Login failed");
 			session_remove(s);
 			return -1;
 		case GG_EVENT_CONN_SUCCESS:
-			fprintf(stderr,"\nLogin succeed\n");
+			g_warning("Login succeed for %s",s->jid);
 			if (s->req_id)
 				jabber_iq_send_result(s->s,s->jid,s->req_id,NULL);
 			presence_send_subscribe(s->s,NULL,s->user->jid);
@@ -200,8 +199,18 @@ int chat;
 			message_send(s->s,jid,s->user->jid,chat,event->event.msg.message);
 			g_free(jid);
 			break;
+		case GG_EVENT_PONG:
+			s->last_pong=time(NULL);
+			debug("Pong! ping time: %lus",(unsigned long)s->last_pong-s->last_ping);
+			break;
+		case GG_EVENT_ACK:
+			debug("GG_EVENT_ACK");
+			break;
+		case GG_EVENT_NONE:
+			debug("GG_EVENT_NONE");
+			break;
 		default:
-			fprintf(stderr,"\nGG event: %i\n",event->type);
+			g_warning("Unknown GG event: %i",event->type);
 			break;
 	}
 
@@ -215,13 +224,13 @@ int chat;
 /* destroys Session object */
 static int session_destroy(Session *s){
 
-	fprintf(stderr,"\nDeleting session for '%s'\n",s->jid);
+	g_message("Deleting session for '%s'",s->jid);
 	if (s->connected && s->s && s->jid)
 		presence_send(s->s,NULL,s->user->jid,0,NULL,"Offline");
 	if (s->fdh) fd_unregister_handler(s->fdh);
 	if (s->ggs){
 		if (s->connected) {
-			fprintf(stderr,"\ngg_logoof(%p)\n",s->ggs);
+			debug("gg_logoof(%p)",s->ggs);
 			gg_logoff(s->ggs);
 		}
 		gg_free_session(s->ggs);
@@ -236,7 +245,7 @@ int session_remove(Session *s){
 gpointer key,value;
 char *njid;
 
-	assert(sessions_jid!=NULL);
+	g_assert(sessions_jid!=NULL);
 	njid=jid_normalized(s->jid);
 	if (g_hash_table_lookup_extended(sessions_jid,(gpointer)njid,&key,&value)){
 		g_hash_table_remove(sessions_jid,(gpointer)njid);
@@ -253,14 +262,14 @@ Session *s;
 int t;
 char *njid;
 
-	fprintf(stderr,"\nCreating session for '%s'\n",jid);
-	assert(user!=NULL);
+	g_message("Creating session for '%s'",jid);
+	g_assert(user!=NULL);
 	s=(Session *)g_malloc(sizeof(Session));
-	assert(s!=NULL);
+	g_assert(s!=NULL);
 	memset(s,0,sizeof(Session));
 	s->user=user;
 	s->jid=g_strdup(jid);
-	s->req_id=g_strdup(req_id);
+	if (req_id) s->req_id=g_strdup(req_id);
 	s->query=xmlnode_dup(query);
 	s->ggs=gg_login(user->uin,user->password,1);
 	if (!s->ggs) {
@@ -277,8 +286,9 @@ char *njid;
 	s->s=stream;
 	t=fd_register_handler(s->fdh);
 	s->last_ping=time(NULL);
-	assert(t==0);
-	assert(sessions_jid!=NULL);
+	s->last_pong=time(NULL)-1;
+	g_assert(t==0);
+	g_assert(sessions_jid!=NULL);
 	njid=jid_normalized(s->jid);
 	g_hash_table_insert(sessions_jid,(gpointer)njid,(gpointer)s);
 	return s;	
@@ -289,32 +299,32 @@ Session *s;
 User *u;
 char *njid;
 	
-	assert(sessions_jid!=NULL);
-	fprintf(stderr,"\nLooking up session for '%s'\n",jid);
+	g_assert(sessions_jid!=NULL);
+	debug("Looking up session for '%s'",jid);
 	njid=jid_normalized(jid);
-	fprintf(stderr,"Using '%s' as key\n",njid);
+	debug("Using '%s' as key",njid);
 	s=(Session *)g_hash_table_lookup(sessions_jid,(gpointer)njid);
 	g_free(njid);
 	if (s) return s;
-	fprintf(stderr,"Not found\n");
+	debug("Session not found");
 	if (!stream) return NULL;
 	u=user_get_by_jid(jid);
 	if (!u) return NULL;
-	fprintf(stderr,"Creating new session\n");
+	debug("Creating new session");
 	return session_create(u,jid,NULL,NULL,stream);
 }
 
 int session_send_status(Session *s){
 int status;
 
-	assert(s!=NULL && s->ggs!=NULL);
+	g_assert(s!=NULL && s->ggs!=NULL);
 	if (!s->available) status=GG_STATUS_NOT_AVAIL;
 	else if (!s->show) status=GG_STATUS_AVAIL;
 	else if (!g_strcasecmp(s->show,"away")) status=GG_STATUS_BUSY;
 	else if (!g_strcasecmp(s->show,"dnd")) status=GG_STATUS_BUSY;
 	else if (!g_strcasecmp(s->show,"xa")) status=GG_STATUS_BUSY;
 	else status=GG_STATUS_AVAIL;
-	fprintf(stderr,"\nChanging gg status to %i\n",status);
+	debug("Changing gg status to %i",status);
 	gg_change_status(s->ggs,status);
 	return 0;
 }
@@ -350,13 +360,21 @@ int session_unsubscribe(Session *s,uin_t uin){
 
 static void sessions_iter_func(gpointer key,gpointer value,gpointer udata){
 Session *s;
+time_t now;
 
 	s=(Session *)value;
-	if (s->connected && s->ggs && ping_interval)
-		if (time(NULL)>s->last_ping+ping_interval){
-			gg_ping(s->ggs);
-			s->last_ping=time(NULL);
+	if (s->connected && s->ggs && ping_interval){
+		now=time(NULL);
+		if (! s->last_pong) { 
+			g_warning("PONG not (yet) received");
+			return;
 		}
+		if (now>s->last_ping+ping_interval){
+			gg_ping(s->ggs);
+			s->last_ping=now;
+			s->last_pong=0;
+		}
+	}
 }
 
 int sessions_iter(){
@@ -367,7 +385,7 @@ int sessions_iter(){
 
 int session_send_message(Session *s,uin_t uin,int chat,const char *body){
 
-	assert(s!=NULL);
+	g_assert(s!=NULL);
 	if (!s->connected || !s->ggs) return -1;
 	gg_send_message(s->ggs,chat?GG_CLASS_CHAT:GG_CLASS_MSG,uin,(char *)body);
 	return 0; /* FIXME: check for errors */

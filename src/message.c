@@ -78,12 +78,12 @@ Session *s;
 	from=xmlnode_get_attrib(tag,"from");
 	to=xmlnode_get_attrib(tag,"to");
 	if (!to || !jid_is_my(to) || !jid_has_uin(to)){
-		fprintf(stderr,"Bad 'to'\n");
+		g_warning("Bad 'to' in: %s",xmlnode2str(tag));
 		return -1;
 	}
 
 	if (!from){
-		fprintf(stderr,"Anonymous message?\n");
+		g_warning("Anonymous message? %s",xmlnode2str(tag));
 		return -1;
 	}
 	
@@ -99,14 +99,14 @@ Session *s;
 	if (!type || !g_strcasecmp(type,"normal")) chat=0;
 	else if (!g_strcasecmp(type,"chat")) chat=1;
 	else {
-		fprintf(stderr,"Unsupported message type\n");
+		g_warning("Unsupported message type");
 		message_send_error(stream,to,from,body,499); /* FIXME */
 		return -1;
 	}
 	
 	s=session_get_by_jid(from,NULL);
 	if (!s || !s->connected){
-		fprintf(stderr,"Not logged in\n");
+		g_warning("%s not logged in. While processing %s",from,xmlnode2str(tag));
 		message_send_error(stream,to,from,body,499); /* FIXME */
 		return -1;
 	}	

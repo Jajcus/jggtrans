@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <errno.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -8,10 +7,10 @@
 #include <fcntl.h>
 #include <netdb.h>
 #include <errno.h>
-#include <assert.h>
 
 #include "stream.h"
 #include "fds.h"
+#include "debug.h"
 #include <glib.h>
 
 #define MAX_WRITE_BUF 102400
@@ -58,7 +57,7 @@ FdHandler *h;
 	s->sa.sin_port=htons(port);	
 	he=gethostbyname(host);
 	if (he == NULL){
-		fprintf(stderr,"Unknown host: %s\n",host);
+		g_warning("Unknown host: %s",host);
 		g_free(s);
 		return NULL;
 	}
@@ -66,7 +65,7 @@ FdHandler *h;
 	optval=1;
 	r=setsockopt(s->fd,SOL_SOCKET,SO_REUSEADDR,&optval,sizeof(optval));
 	if (r<0){
-		perror("setsockopt(s->fd,SOL_SOCKET,SO_REUSEADDR...)");
+		g_warning("setsockopt(s->fd,SOL_SOCKET,SO_REUSEADDR...): %s",g_strerror(errno));
 		g_free(s);
 		return NULL;
 	}
@@ -74,7 +73,7 @@ FdHandler *h;
 	optval=1;
 	r=setsockopt(s->fd,SOL_SOCKET,SO_KEEPALIVE,&optval,sizeof(optval));
 	if (r<0){
-		perror("setsockopt(s->fd,SOL_SOCKET,SO_KEEPALIVE...)");
+		g_warning("setsockopt(s->fd,SOL_SOCKET,SO_KEEPALIVE...): %s",g_strerror(errno));
 		g_free(s);
 		return NULL;
 	}
@@ -99,7 +98,7 @@ FdHandler *h;
 	}
 	s->dest=g_strdup(host); /* FIXME */
 	h=(FdHandler *)g_malloc(sizeof(FdHandler));
-	assert(h!=NULL);
+	g_assert(h!=NULL);
 	memset(h,0,sizeof(*h));
 	s->h=h;
 	h->fd=s->fd;
@@ -156,7 +155,7 @@ int r;
 	if (h->read_ready){
 		if (!s->read_buf){
 			s->read_buf=(char *)g_malloc(1025);
-			assert(s->read_buf!=0);
+			g_assert(s->read_buf!=0);
 			s->read_buf_len=1024;
 		}
 		r=read(h->fd,s->read_buf,s->read_buf_len);
@@ -170,22 +169,8 @@ int r;
 			return 1;
 		}
 		s->read_buf[r]=0;
-		fprintf(stderr,"\033[0;31m%s\033[0;37m",s->read_buf);
+		debug("IN: %s",s->read_buf);
 		r=xstream_eat(s->xs,s->read_buf,r);
-		switch(r){
-			case XSTREAM_ROOT:
-				fprintf(stderr,"XSTREAM_ROOT\n");
-				break;
-			case XSTREAM_NODE:
-				fprintf(stderr,"XSTREAM_NODE\n");
-				break;
-			case XSTREAM_CLOSE:
-				fprintf(stderr,"XSTREAM_CLOSE\n");
-				break;
-			case XSTREAM_ERR:
-				fprintf(stderr,"XSTREAM_ERR\n");
-				break;
-		}	
 	}
 	if (h->write_ready){
 		if (s->write_buf && s->write_pos>=0 && s->write_len>=0){
@@ -196,14 +181,14 @@ int r;
 			}
 			if (r==-1 && errno==EINTR) return 0;
 			if (r==-1){
-				perror("read");
+				g_warning("write: %s", g_strerror(errno));
 				return 1;
 			}
 			str=(char *)g_malloc(r+1);
-			assert(str!=NULL);
+			g_assert(str!=NULL);
 			memcpy(str,s->write_buf+s->write_pos,r);
 			str[r]=0;
-			fprintf(stderr,"\033[0;32m%s\033[0;37m",str);
+			debug("OUT: %s",str);
 			s->write_pos+=r;
 			if (s->write_pos==s->write_len){
 				s->write_len=0;
@@ -218,20 +203,20 @@ int r;
 int stream_write_bytes(Stream *s,const char *buf,int l){
 
 	if (!l) return 0;
-	assert(buf!=NULL);
-	assert(l>=0);
+	g_assert(buf!=NULL);
+	g_assert(l>=0);
 	if (s->write_buf_len+l > MAX_WRITE_BUF){
 		return -2;
 	}
 	if (!s->write_buf){
 		s->write_buf=(char *)g_malloc(1024);
-		assert(s->write_buf!=NULL);
+		g_assert(s->write_buf!=NULL);
 		s->write_buf_len=1024;
 	}
 	else if (s->write_len+l > s->write_buf_len){
 		s->write_buf_len+=1024*((l+1023)/1024);
 		s->write_buf=(char *)g_realloc(s->write_buf,s->write_buf_len);
-		assert(s->write_buf!=NULL);
+		g_assert(s->write_buf!=NULL);
 	}
 	memcpy(s->write_buf+s->write_len,buf,l);
 	s->write_len+=l;
@@ -271,7 +256,7 @@ int stream_close(Stream *s){
 
 int stream_destroy(Stream *s){
 
-	assert(s!=NULL);
+	g_assert(s!=NULL);
 	if (!s->closing){
 		write(s->fd,"</stream:stream>",sizeof("</stream:stream>"));
 		s->closing=1;

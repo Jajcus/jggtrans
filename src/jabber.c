@@ -1,5 +1,3 @@
-#include <stdio.h>
-#include <assert.h>
 #include "jabber.h"
 #include "stream.h"
 #include "ggtrans.h"
@@ -23,7 +21,7 @@ char *str;
 xmlnode tag;
 	
 	if (jabber_state!=JS_NONE){
-		fprintf(stderr,"\nunexpected <stream:stream/>\n");	
+		g_warning("unexpected <stream:stream/>");	
 		return;
 	}
 
@@ -41,18 +39,18 @@ xmlnode tag;
 void jabber_handshake(Stream *s,xmlnode x){
 
 	if (jabber_state!=JS_HANDSHAKE){
-		fprintf(stderr,"\nunexpected <hanshake/>\n");	
+		g_warning("unexpected <hanshake/>");	
 		return;
 	}
 		
-	fprintf(stderr,"\nhandshake OK\n");	
+	g_message("handshake OK");
 	jabber_state=JS_CONNECTED;
 	users_probe_all();
 }
 
 void jabber_stream_error(Stream *s,xmlnode x){
 
-	fprintf(stderr,"\n Stream error: %s\n",xmlnode_get_data(x));
+	g_critical("Stream error: %s",xmlnode_get_data(x));
 	stream_close(s);
 	stop_it=1;
 }
@@ -77,7 +75,7 @@ char *name;
 		jabber_presence(s,x);
 	else if (g_strcasecmp(name,"message")==0)
 		jabber_message(s,x);
-	else fprintf(stderr,"\nUnsupported tag: '%s'\n",name);
+	else g_warning("Unsupported tag: %s",xmlnode2str(x));
 }
 
 void jabber_event_cb(int type,xmlnode x,void *arg){
@@ -105,13 +103,13 @@ char *str;
 			jabber_node(s,x);
 			break;
 		case XSTREAM_ERR:
-			fprintf(stderr,"\nStream Error\n");
+			g_warning("Stream Error");
 			if (x){
-				fprintf(stderr,"\t%s\n",xmlnode_get_data(x));
+				g_warning("    %s",xmlnode_get_data(x));
 			}
 			break;	
 		default:
-			fprintf(stderr,"\nUnknown node type\n");
+			g_critical("Unknown node type: %i",type);
 			stop_it=1;
 			stream_close(s);
 			break;
@@ -120,56 +118,47 @@ char *str;
 
 int jabber_init(){
 char *server;
+char *str;
 int port;
 xmlnode node;
 
 	node=xmlnode_get_tag(config,"service");
-	if (!node){
-		fprintf(stderr,"No <service/> found in config file\n");
-		return -1;
-	}
+	if (!node)
+		g_error("No <service/> found in config file");
+	
 	my_name=xmlnode_get_attrib(node,"jid");
-	if (!my_name){
-		fprintf(stderr,"<service/> without \"jid\" in config file\n");
-		return -1;
-	}
+	if (!my_name) 
+		g_error("<service/> without \"jid\" in config file");
 	
 	node=xmlnode_get_tag(config,"connect/ip");
-	if (!node){
-		fprintf(stderr,"Jabberd server not found in config file\n");
-		return -1;
-	}
-	server=xmlnode_get_data(node);
+	if (node) server=xmlnode_get_data(node);
+	if (!node || !server)
+		g_error("Jabberd server not found in config file");
+	
 	node=xmlnode_get_tag(config,"connect/port");
-	if (!node){
-		fprintf(stderr,"Connect port not found in config file\n");
-		return -1;
-	}
-	port=atoi(xmlnode_get_data(node));
+	if (node) str=xmlnode_get_data(node);
+	if (!node || !str) 
+		g_error("Connect port not found in config file");
+	port=atoi(str);
+	
 	node=xmlnode_get_tag(config,"connect/secret");
-	if (!node){
-		fprintf(stderr,"Connect secret not found in config file\n");
-		return -1;
-	}
-	secret=xmlnode_get_data(node);
+	if (node) secret=xmlnode_get_data(node);
+	if (!node || !secret) 
+		g_error("Connect secret not found in config file");
 	
 	node=xmlnode_get_tag(config,"instructions");
-	if (!node){
-		fprintf(stderr,"Registration instructions not found in config file\n");
-		return -1;
-	}
-	instructions=xmlnode_get_data(node);
+	if (node) instructions=xmlnode_get_data(node);
+	if (!node||!instructions) 
+		g_error("Registration instructions not found in config file");
 
 	node=xmlnode_get_tag(config,"search");
-	if (!node){
-		fprintf(stderr,"Search instructions found in config file\n");
-		return -1;
-	}
-	search_instructions=xmlnode_get_data(node);
+	if (node) search_instructions=xmlnode_get_data(node);
+	if (!node || !search_instructions)
+		g_error("Search instructions found in config file");
 
 	jabber_state=JS_NONE;
 	stream=stream_connect(server,port,1,jabber_event_cb);
-	assert(stream!=NULL);
+	g_assert(stream!=NULL);
 	return 0;
 }
 

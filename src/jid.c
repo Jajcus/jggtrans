@@ -2,8 +2,8 @@
 #include "jid.h"
 #include "jabber.h"
 #include "ctype.h"
+#include "debug.h"
 #include <glib.h>
-#include <assert.h>
 
 int jid_is_my(const char *jid){
 int i,at,slash;
@@ -19,7 +19,7 @@ int just_digits;
 		if (jid[i]=='/' && slash<0) slash=i;
 		else if (jid[i]=='@')
 			if (!just_digits){
-				fprintf(stderr,"\nNon-digits before '@' in jid\n");
+				debug("Non-digits before '@' in jid: %s",jid);
 				return 0;
 			}
 			else at=i;
@@ -27,24 +27,24 @@ int just_digits;
 	}
 
 	if (slash>=0 && slash<at){
-		fprintf(stderr,"\nslash<at (%i<%i)\n",slash,at);
+		g_warning("slash<at (%i<%i) in %s",slash,at,jid);
 		return 0;
 	}
 	
 	/* check hostname */ 
 	if (slash<0){
 		if ( g_strcasecmp(jid+at+1,my_name) ){
-			fprintf(stderr,"\nBad hostname in JID: %s\n",jid+at+1);
+			debug("Bad hostname (%s) in JID: %s",jid+at+1,jid);
 			return 0;
 		}
 	} else { 
 		if ( slash-at-1!=strlen(my_name) ) {
-			fprintf(stderr,"\nBad hostname len in JID: %i instead of %i\n",slash-at-1,strlen(my_name));
+			debug("Bad hostname len (%i) instead of %i in JID: %s",slash-at-1,strlen(my_name),jid);
 			return 0;
 		}
 
 		if ( g_strncasecmp(jid+at+1,my_name,slash-at-1) )  {
-			fprintf(stderr,"\nBad hostname in JID: %s[0:%i]\n",jid+at+1,slash-at-2);
+			debug("Bad hostname in JID: %s[%i:%i]",jid,at+1,slash-at-2);
 			return 0;
 		}
 	}
@@ -98,7 +98,7 @@ char * jid_normalized(const char *jid){
 int i,slash;
 char *r;
 
-	assert(jid!=NULL);
+	g_assert(jid!=NULL);
 	if (!jid) return 0;
 	
 	slash=-1;
@@ -107,7 +107,7 @@ char *r;
 		if (jid[i]=='/' && slash<0) slash=i;
 	}
 
-	assert(slash!=0);
+	g_assert(slash!=0);
 	
 	if (slash<0) r=g_strdup(jid);
 	else r=g_strndup(jid,slash);

@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include "jabber.h"
 #include "register.h"
 #include "iq.h"
@@ -16,13 +15,13 @@ xmlnode instr;
 
 	node=xmlnode_get_firstchild(q);
 	if (node){
-		fprintf(stderr,"\nGet for jabber:iq:register not empty!\n");
+		g_warning("Get for jabber:iq:register not empty!: %s",xmlnode2str(q));
 		jabber_iq_send_error(s,from,id,"query not empty");
 		return;
 	}		
 	iq=xmlnode_new_tag("iq");
 	xmlnode_put_attrib(iq,"type","result");
-	xmlnode_put_attrib(iq,"id",id);
+	if (id) xmlnode_put_attrib(iq,"id",id);
 	xmlnode_put_attrib(iq,"to",from);
 	xmlnode_put_attrib(iq,"from",my_name);
 	query=xmlnode_insert_tag(iq,"query");
@@ -46,14 +45,14 @@ Session *session;
 	
 	node=xmlnode_get_firstchild(q);
 	if (!node){
-		fprintf(stderr,"\nSet query for jabber:iq:register empty!\n");
+		g_warning("Set query for jabber:iq:register empty: %s",xmlnode2str(q));
 		jabber_iq_send_error(s,from,id,"query is empty");
 		return;
 	}		
 	node=xmlnode_get_tag(q,"username");
 	if (node) username=xmlnode_get_data(node);
 	if (!node || !username){
-		fprintf(stderr,"\nUsername not given!\n");
+		g_warning("Username not given: %s",xmlnode2str(q));
 		jabber_iq_send_error(s,from,id,"username not given");
 		return;
 	}		
@@ -61,19 +60,21 @@ Session *session;
 	node=xmlnode_get_tag(q,"password");
 	if (node) password=xmlnode_get_data(node);
 	if (!node || !password){
-		fprintf(stderr,"\nPassword not given!\n");
+		g_warning("Password not given: %s",xmlnode2str(q));
 		jabber_iq_send_error(s,from,id,"password not given");
 		return;
 	}		
 
 	user=user_create(from,uin,password);
 	if (!user){
+		g_warning("Couldn't create user %s",from);
 		jabber_iq_send_error(s,from,id,"Registration failed");
 		return;
 	}
 	
 	session=session_create(user,from,id,q,s);
 	if (!user){
+		g_warning("Couldn't create session for %s",from);
 		jabber_iq_send_error(s,from,id,"Registration failed");
 		return;
 	}	
