@@ -21,6 +21,8 @@ cl-stamp: .svn/entries
 
 cosmetics:
 	./aux/cosmetics.sh
-	
+
+dist-hook:
+	if grep '+svn' configure.ac ; then exit 1; else : ; fi
 
 ACLOCAL_AMFLAGS = -I m4
