@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.26 2003/01/15 15:07:44 jajcus Exp $ */
+/* $Id: main.c,v 1.27 2003/01/16 07:31:05 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -487,15 +487,9 @@ guint lh;
 	jabber_done();
 	encoding_done();
 	g_main_destroy(main_loop);
-	g_log_remove_handler(NULL,lh);
-	if (log_file!=NULL){
-		fclose(log_file);
-		log_file=NULL;
-	}
-	xmlnode_free(config);
 
 	if (do_restart && restart_timeout>=0){
-		fprintf(stderr,"Restarting in %i seconds.\n",restart_timeout);
+		g_message("Restarting in %i seconds.\n",restart_timeout);
 		if (restart_timeout>0) sleep(restart_timeout);
 		if (saved_pwd) chdir(saved_pwd);
 		execlp(argv[0],argv[0],"-R","-d",param_d,"-D",param_D,NULL);
@@ -503,7 +497,15 @@ guint lh;
 		return 1;
 	}
 
-	fprintf(stderr,"Exiting normally.\n");
+	g_message("Exiting normally.\n");
+
+	g_log_remove_handler(NULL,lh);
+	if (log_file!=NULL){
+		fclose(log_file);
+		log_file=NULL;
+	}
+	xmlnode_free(config);
+
 	return 0;
 }
 
