@@ -1,4 +1,4 @@
-/* $Id: register.c,v 1.23 2003/04/05 21:08:31 mmazur Exp $ */
+/* $Id: register.c,v 1.24 2003/04/06 10:36:15 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -31,11 +31,194 @@
 
 char *register_instructions;
 
+static struct {
+	char *lang_name;
+	char *locale;
+} locale_mapping[]={
+	{ "Polski", "pl_PL"},
+	{ "English", "C" },
+	{ NULL, NULL}
+	};
+	
+xmlnode register_change_form(User *u){
+xmlnode form,tag,field,option,value;
+int i;
+
+	form=xmlnode_new_tag("x");
+	xmlnode_put_attrib(form,"xmlns","jabber:x:data");
+	xmlnode_put_attrib(form,"type","form");
+	tag=xmlnode_insert_tag(form,"title");
+	xmlnode_insert_cdata(tag,_("Registration change form"),-1);
+	tag=xmlnode_insert_tag(form,"instruction");
+	xmlnode_insert_cdata(tag,_("You may use this form to change account"
+				" information, change personal information in the"
+				" public directory or unregister from the"
+				" transport."),-1);
+	
+	field=xmlnode_insert_tag(form,"field");
+	xmlnode_put_attrib(field,"type","list-single");
+	xmlnode_put_attrib(field,"label",_("Action"));
+	xmlnode_put_attrib(field,"var","action");
+	xmlnode_insert_tag(field,"required");
+	value=xmlnode_insert_tag(field,"value");
+	xmlnode_insert_cdata(value,"options",-1);
+	option=xmlnode_insert_tag(field,"option");
+	xmlnode_put_attrib(option,"label",_("Change account options"));
+	value=xmlnode_insert_tag(option,"value");
+	xmlnode_insert_cdata(value,"options",-1);
+	option=xmlnode_insert_tag(field,"option");
+	xmlnode_put_attrib(option,"label",_("Change account"));
+	value=xmlnode_insert_tag(option,"value");
+	xmlnode_insert_cdata(value,"account",-1);
+	option=xmlnode_insert_tag(field,"option");
+	xmlnode_put_attrib(option,"label",_("Change public directory information"));
+	value=xmlnode_insert_tag(option,"value");
+	xmlnode_insert_cdata(value,"pubdir",-1);
+	option=xmlnode_insert_tag(field,"option");
+	xmlnode_put_attrib(option,"label",_("Unregister"));
+	value=xmlnode_insert_tag(option,"value");
+	xmlnode_insert_cdata(value,"unregister",-1);
+	
+	
+	field=xmlnode_insert_tag(form,"field");
+	xmlnode_put_attrib(field,"type","fixed");
+	value=xmlnode_insert_tag(field,"value");
+	xmlnode_insert_cdata(value,_("Fill out this part only when changing account options"),-1);
+
+	field=xmlnode_insert_tag(form,"field");
+	xmlnode_put_attrib(field,"type","list-single");
+	xmlnode_put_attrib(field,"label",_("Language"));
+	xmlnode_put_attrib(field,"var","locale");
+	value=xmlnode_insert_tag(field,"value");
+	if (u->locale && u->locale[0])
+		xmlnode_insert_cdata(value,u->locale,-1);
+	else 
+		xmlnode_insert_cdata(value,"",-1);
+	for(i=0;locale_mapping[i].locale!=NULL;i++){
+		option=xmlnode_insert_tag(field,"option");
+		xmlnode_put_attrib(option,"label",locale_mapping[i].lang_name);
+		value=xmlnode_insert_tag(option,"value");
+		xmlnode_insert_cdata(value,locale_mapping[i].locale,-1);
+	}
+	
+	field=xmlnode_insert_tag(form,"field");
+	xmlnode_put_attrib(field,"type","boolean");
+	xmlnode_put_attrib(field,"label",_("Friends only"));
+	xmlnode_put_attrib(field,"var","friends_only");
+	value=xmlnode_insert_tag(field,"value");
+	if (u->friends_only)
+		xmlnode_insert_cdata(value,"1",-1);
+	else
+		xmlnode_insert_cdata(value,"0",-1);
+
+	field=xmlnode_insert_tag(form,"field");
+	xmlnode_put_attrib(field,"type","boolean");
+	xmlnode_put_attrib(field,"label",_("Invisible"));
+	xmlnode_put_attrib(field,"var","invisible");
+	value=xmlnode_insert_tag(field,"value");
+	if (u->invisible)
+		xmlnode_insert_cdata(value,"1",-1);
+	else
+		xmlnode_insert_cdata(value,"0",-1);
+
+	field=xmlnode_insert_tag(form,"field");
+	xmlnode_put_attrib(field,"type","fixed");
+	value=xmlnode_insert_tag(field,"value");
+	xmlnode_insert_cdata(value,_("Fill out this part only when changing account"),-1);
+
+	field=xmlnode_insert_tag(form,"field");
+	xmlnode_put_attrib(field,"type","fixed");
+	value=xmlnode_insert_tag(field,"value");
+	xmlnode_insert_cdata(value,_("Fill out this part only when changing public directory info"),-1);
+
+	return form;
+}
+
+int register_process_options_form(Stream *s,const char *from,const char *to,
+					const char *id,User *u,xmlnode form){
+xmlnode field,value;
+char *locale=NULL,*invisible=NULL,*friends_only=NULL;
+
+	field=xmlnode_get_tag(form,"field?var=locale");
+	if (field!=NULL) {
+		value=xmlnode_get_tag(field,"value");
+		if (value!=NULL) locale=xmlnode_get_data(value);
+	}
+	field=xmlnode_get_tag(form,"field?var=invisible");
+	if (field!=NULL) {
+		value=xmlnode_get_tag(field,"value");
+		if (value!=NULL) invisible=xmlnode_get_data(value);
+	}
+	field=xmlnode_get_tag(form,"field?var=friends_only");
+	if (field!=NULL) {
+		value=xmlnode_get_tag(field,"value");
+		if (value!=NULL) friends_only=xmlnode_get_data(value);
+	}
+
+	if (u->locale!=NULL) g_free(u->locale);
+	u->locale=g_strdup(locale);
+	if (invisible && (!strcmp(invisible,"1")||!strcmp(invisible,"yes"))) 
+		u->invisible=1;
+	else
+		u->invisible=0;
+	if (friends_only && (!strcmp(friends_only,"1")||!strcmp(friends_only,"yes"))) 
+		u->friends_only=1;
+	else
+		u->friends_only=0;
+	user_save(u);
+	
+	jabber_iq_send_result(s,from,to,id,NULL);
+	return 0;
+}
+
+int register_process_change_form(Stream *s,const char *from,const char *to,
+					const char *id,User *u,xmlnode form){
+xmlnode field,value;
+char *action;
+
+	field=xmlnode_get_tag(form,"field?var=action");
+	if (field==NULL) {
+		jabber_iq_send_error(s,from,to,id,406,_("No action field present"));
+		return -1;
+	}
+	value=xmlnode_get_tag(field,"value");
+	if (field==NULL) {
+		jabber_iq_send_error(s,from,to,id,406,_("No action value defined"));
+		return -1;
+	}
+
+	action=xmlnode_get_data(value);
+	if (action==NULL) {
+		jabber_iq_send_error(s,from,to,id,406,_("No action value defined"));
+		return -1;
+	}
+	else if (!strcmp(action,"options")){
+		register_process_options_form(s,from,to,id,u,form);
+	}
+	else if (!strcmp(action,"account")){
+		jabber_iq_send_error(s,from,to,id,501,_("Not implemented (yet)"));
+		return -1;
+	}
+	else if (!strcmp(action,"pubdir")){
+		jabber_iq_send_error(s,from,to,id,501,_("Not implemented (yet)"));
+		return -1;
+	}
+	else if (!strcmp(action,"unregister")){
+		unregister(s,from,to,id,0);
+	}
+	else{
+		jabber_iq_send_error(s,from,to,id,406,_("Bad action given"));
+		return -1;
+	}
+	return 0;
+}
+
 void jabber_iq_get_register(Stream *s,const char *from,const char *to,const char *id,xmlnode q){
 xmlnode node;
 xmlnode iq;
 xmlnode query;
 xmlnode instr;
+User *u;
 
 	node=xmlnode_get_firstchild(q);
 	if (node){
@@ -69,6 +252,12 @@ xmlnode instr;
 
 	instr=xmlnode_insert_tag(query,"instructions");
 	xmlnode_insert_cdata(instr,register_instructions,-1);
+
+	u=user_get_by_jid(from);
+	if (u!=NULL){
+		xmlnode_insert_tag_node(query,register_change_form(u));
+	}
+	
 	stream_write(s,iq);
 	xmlnode_free(iq);
 }
@@ -114,18 +303,40 @@ char *jid;
 
 void jabber_iq_set_register(Stream *s,const char *from,const char *to,const char *id,xmlnode q){
 xmlnode node;
-char *username,*password,*first,*last,*nick,*city,*sex,*born;
+char *username,*password,*first,*last,*nick,*city,*sex,*born,*ftype;
 uin_t uin;
 User *user;
 Session *session=NULL;
 gg_pubdir50_t change;
 Request *r;
-username=password=first=last=nick=city=sex=born=NULL;
+
+	username=password=first=last=nick=city=sex=born=NULL;
+
+	user=user_get_by_jid(from);
 
 	node=xmlnode_get_firstchild(q);
 	if (!node){
 		debug("Set query for jabber:iq:register empty: %s",xmlnode2str(q));
 		unregister(s,from,to,id,0);
+		return;
+	}
+
+	node=xmlnode_get_tag(q,"x?xmlns=jabber:x:data");
+	if (node) {
+		ftype=xmlnode_get_attrib(node,"type");
+		if (ftype==NULL) {
+			jabber_iq_send_error(s,from,to,id,406,_("Form returned with no type defined"));
+		}
+		else if (!strcmp(ftype,"submit")){ 
+			if (user!=NULL) 
+				register_process_change_form(s,from,to,id,user,node);
+			else 
+				jabber_iq_send_error(s,from,to,id,501,_("Not implemented (yet)"));
+		}
+		else if (!strcmp(ftype,"cancel")){ 
+			jabber_iq_send_error(s,from,to,id,406,_("Cancelled"));
+		}
+		else jabber_iq_send_error(s,from,to,id,406,_("Bad form type"));
 		return;
 	}
 
@@ -143,8 +354,6 @@ username=password=first=last=nick=city=sex=born=NULL;
 
 	node=xmlnode_get_tag(q,"password");
 	if (node) password=xmlnode_get_data(node);
-
-	user=user_get_by_jid(from);
 
 	if (!user && (!uin || !password)){
 		g_warning("User '%s' doesn't exist and not enough info to add him",from);
@@ -169,24 +378,19 @@ username=password=first=last=nick=city=sex=born=NULL;
 		}
 	}
 
-	change=gg_pubdir50_new(GG_PUBDIR50_WRITE);
-
 	node=xmlnode_get_tag(q,"first");
 	if (node){
 		first=from_utf8(xmlnode_get_data(node));
-		gg_pubdir50_add(change, GG_PUBDIR50_FIRSTNAME, (const char *)first);
 	}
 
 	node=xmlnode_get_tag(q,"last");
 	if (node){
 		last=from_utf8(xmlnode_get_data(node));
-		gg_pubdir50_add(change, GG_PUBDIR50_LASTNAME, (const char *)last);
 	}
 
 	node=xmlnode_get_tag(q,"nick");
 	if (node){
 		nick=from_utf8(xmlnode_get_data(node));
-		gg_pubdir50_add(change, GG_PUBDIR50_NICKNAME, (const char *)nick);
 	}
 
 //	node=xmlnode_get_tag(q,"email");
@@ -196,25 +400,16 @@ username=password=first=last=nick=city=sex=born=NULL;
 	node=xmlnode_get_tag(q,"city");
 	if (node){
 		city=from_utf8(xmlnode_get_data(node));
-		gg_pubdir50_add(change, GG_PUBDIR50_CITY, (const char *)city);
 	}
 
 	node=xmlnode_get_tag(q,"gender");
 	if (node){
 		sex=xmlnode_get_data(node);
-		if (sex[0]=='k' || sex[0]=='f' || sex[0]=='K' || sex[0]=='F')
-			gg_pubdir50_add(change, GG_PUBDIR50_GENDER,
-					GG_PUBDIR50_GENDER_FEMALE);
-		else if (sex!=NULL && sex[0]!='\000')
-			gg_pubdir50_add(change, GG_PUBDIR50_GENDER,
-					GG_PUBDIR50_GENDER_MALE);
 	}
 
 	node=xmlnode_get_tag(q,"born");
 	if (node){
 		born=xmlnode_get_data(node);
-		gg_pubdir50_add(change, GG_PUBDIR50_BIRTHYEAR,
-			(const char *)born);
 	}
 
 	if (!first && !last && !nick && !city && !born && !sex){
@@ -246,6 +441,19 @@ username=password=first=last=nick=city=sex=born=NULL;
 	}
 	if (!password) password=user->password;
 	if (!uin) uin=user->uin;
+
+	change=gg_pubdir50_new(GG_PUBDIR50_WRITE);
+	if (first) gg_pubdir50_add(change, GG_PUBDIR50_FIRSTNAME, (const char *)first);
+	if (last) gg_pubdir50_add(change, GG_PUBDIR50_LASTNAME, (const char *)last);
+	if (nick) gg_pubdir50_add(change, GG_PUBDIR50_NICKNAME, (const char *)nick);
+	if (city) gg_pubdir50_add(change, GG_PUBDIR50_CITY, (const char *)city);
+	if (sex[0]=='k' || sex[0]=='f' || sex[0]=='K' || sex[0]=='F')
+		gg_pubdir50_add(change, GG_PUBDIR50_GENDER,
+				GG_PUBDIR50_GENDER_FEMALE);
+	else if (sex!=NULL && sex[0]!='\000')
+		gg_pubdir50_add(change, GG_PUBDIR50_GENDER,
+				GG_PUBDIR50_GENDER_MALE);
+	if (born) gg_pubdir50_add(change, GG_PUBDIR50_BIRTHYEAR, (const char *)born);
 
 	r=add_request(RT_CHANGE,from,to,id,q,(void*)change,s);
 	if (!r){
