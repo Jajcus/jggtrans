@@ -1,4 +1,4 @@
-/* $Id: presence.c,v 1.39 2003/05/09 10:33:50 jajcus Exp $ */
+/* $Id: presence.c,v 1.40 2003/05/13 16:18:16 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -203,9 +203,7 @@ int presence(struct stream_s *stream,const char *from,const char *to,
 		int available,const char *show,const char *status,int priority){
 Session *s;
 int r;
-char *jid;
 const char *resource;
-Resource *res;
 User *u;
 
 	s=session_get_by_jid(from,available?stream:NULL,1);
@@ -216,14 +214,8 @@ User *u;
 		if (u==NULL) presence_send_unsubscribed(stream,to,from);
 		return -1;
 	}
-	jid=g_strdup(s->user->jid); /* session may be removed in the next step */
 	resource=jid_get_resource(from);
 	r=session_set_status(s,resource,available,show,from_utf8(status),priority);
-	if (!r && s->connected){
-		res=session_get_cur_resource(s);
-		if (res) presence_send(stream,NULL,jid,res->available,res->show,res->status,0);
-	}
-	g_free(jid);
 	return 0;
 }
 
