@@ -6,3 +6,4 @@ Makefile.in
 jggtrans
 .gdbinit
 jggtrans.valgrind
+encodingtest
