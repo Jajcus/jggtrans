@@ -14,7 +14,10 @@ To build GaduGadu transport you need:
 
 	- libidn >= 0.3.0 (http://www.gnu.org/software/libidn/)
 		Tested with libidn-0.4.1
-	
+
+	- expat >= 1.95.1 (http://expat.sourceforge.net/)
+		Tested with expat-1.95.6-5
+
 	- pkgconfig (http://www.freedesktop.org/software/pkgconfig/)
 
 Building.

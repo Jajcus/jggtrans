@@ -12,6 +12,7 @@ AC_PROG_INSTALL
 AC_STDC_HEADERS
 AC_C_BIGENDIAN
 
+AM_PATH_EXPAT
 AC_CHECK_FUNC(snprintf,AC_DEFINE(HAVE_SNPRINTF,1,[Define if snprintf function is available]))
 
 AC_CHECK_LIB(nsl, gethostent)
