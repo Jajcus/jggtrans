@@ -1,4 +1,4 @@
-/* $Id: users.c,v 1.32 2003/04/11 19:01:47 mmazur Exp $ */
+/* $Id: users.c,v 1.33 2003/04/13 11:19:47 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -82,7 +82,7 @@ xmlnode xml,tag,ctag,userlist;
 	str=strchr(u->jid,'/');
 	g_assert(str==NULL);
 
-	if (!u->confirmed) {
+	if (!u->confirmed){
 		g_message(N_("Not saving user '%s' - account not confirmed."),u->jid);
 		return -1;
 	}

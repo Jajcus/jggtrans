@@ -1,4 +1,4 @@
-/* $Id: requests.h,v 1.14 2003/04/11 13:25:13 jajcus Exp $ */
+/* $Id: requests.h,v 1.15 2003/04/13 11:19:47 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -47,7 +47,7 @@ typedef struct request_s{
 	struct gg_http* gghttp;
 	gg_pubdir50_t ggchange;
 	void *data;
-	
+
 	GIOChannel *ioch;
 	guint io_watch;
 

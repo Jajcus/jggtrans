@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.29 2003/04/13 10:59:57 jajcus Exp $ */
+/* $Id: search.c,v 1.30 2003/04/13 11:19:47 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -45,23 +45,23 @@ xmlnode form,field;
 	form=form_new(_("GG public directory search"),
 			_("Enter your search filter"));
 
-	form_add_field(form,"text-single","uin",_("GG number"),NULL,0);	
-	form_add_field(form,"text-single","firstname",_("First name"),NULL,0);	
-	form_add_field(form,"text-single","lastname",_("Last name"),NULL,0);	
-	form_add_field(form,"text-single","birthyear",_("Birth year"),NULL,0);	
-	form_add_field(form,"text-single","city",_("City"),NULL,0);	
+	form_add_field(form,"text-single","uin",_("GG number"),NULL,0);
+	form_add_field(form,"text-single","firstname",_("First name"),NULL,0);
+	form_add_field(form,"text-single","lastname",_("Last name"),NULL,0);
+	form_add_field(form,"text-single","birthyear",_("Birth year"),NULL,0);
+	form_add_field(form,"text-single","city",_("City"),NULL,0);
 	field=form_add_field(form,"list-single","gender",_("Sex"),"",1);
 	form_add_option(field,_("Any"),"");
 	form_add_option(field,_("Female"),GG_PUBDIR50_GENDER_FEMALE);
 	form_add_option(field,_("Male"),GG_PUBDIR50_GENDER_MALE);
-	form_add_field(form,"boolean","active",_("Active only"),"0",1);	
-	form_add_field(form,"text-single","familyname",_("Family name"),NULL,0);	
-	form_add_field(form,"text-single","familycity",_("Family city"),NULL,0);	
-	form_add_field(form,"text-single","maxgroups",_("Max. result groups"),"1",1);	
+	form_add_field(form,"boolean","active",_("Active only"),"0",1);
+	form_add_field(form,"text-single","familyname",_("Family name"),NULL,0);
+	form_add_field(form,"text-single","familycity",_("Family city"),NULL,0);
+	form_add_field(form,"text-single","maxgroups",_("Max. result groups"),"1",1);
 	return form;
 }
 
-#define GG_SEARCH_FRIENDS_MASK  0x0080
+#define GG_SEARCH_FRIENDS_MASK	0x0080
 
 int search_byform_done(struct request_s *r, gg_pubdir50_t results){
 int maxgroups,i,next;
@@ -74,7 +74,7 @@ const char *val;
 	xmlnode_put_attrib(q,"xmlns","jabber:iq:search");
 	form=form_new_result(_("GG public directory search results"));
 
-	form_add_result_field(form,"jid",_("JID"),"jid-single");	
+	form_add_result_field(form,"jid",_("JID"),"jid-single");
 	form_add_result_field(form,"status",_("Status"),"text-single");
 	form_add_result_field(form,"firstname",_("First name"),"text-single");
 	form_add_result_field(form,"lastname",_("Last name"),"text-single");
@@ -92,7 +92,7 @@ const char *val;
 		form_add_result_value(item,"jid",jid);
 		g_free(jid);
 		val=gg_pubdir50_get(results, i, GG_PUBDIR50_STATUS);
-		switch((val)?(atoi(val) & ~GG_SEARCH_FRIENDS_MASK):-1) {
+		switch((val)?(atoi(val) & ~GG_SEARCH_FRIENDS_MASK):-1){
 			case GG_STATUS_AVAIL:
 				form_add_result_value(item,"status",_("Available"));
 				break;
@@ -141,7 +141,7 @@ int i;
 const char *uin, *first_name, *last_name, *nickname, *born, *city, *gender, *active;
 
 	n=xmlnode_get_tag(r->query,"x?xmlns=jabber:x:data");
-	if (n) {
+	if (n){
 		return search_byform_done(r,results);
 	}
 	q=xmlnode_new_tag("query");
@@ -220,7 +220,7 @@ Session *sess;
 #define FIELD_TO_PUBDIR(fieldname,symbol) \
 	val=NULL; \
 	field=xmlnode_get_tag(form,"field?var=" fieldname); \
-	if (field!=NULL) { \
+	if (field!=NULL){ \
 		value=xmlnode_get_tag(field,"value"); \
 		if (value!=NULL) val=xmlnode_get_data(value); \
 	} \
@@ -251,17 +251,17 @@ Request *r;
 	FIELD_TO_PUBDIR("city",GG_PUBDIR50_CITY);
 
 	field=xmlnode_get_tag(form,"field?var=gender");
-	if (field!=NULL) {
+	if (field!=NULL){
 		value=xmlnode_get_tag(field,"value");
 		if (value!=NULL) val=xmlnode_get_data(value);
 	}
-	if (val!=NULL && val[0] && ( !strcmp(val,GG_PUBDIR50_GENDER_FEMALE) 
+	if (val!=NULL && val[0] && ( !strcmp(val,GG_PUBDIR50_GENDER_FEMALE)
 					|| !strcmp(val,GG_PUBDIR50_GENDER_FEMALE)) )
 		gg_pubdir50_add(search, GG_PUBDIR50_GENDER, val);
 
 	val=NULL;
 	field=xmlnode_get_tag(form,"field?var=active");
-	if (field!=NULL) {
+	if (field!=NULL){
 		value=xmlnode_get_tag(field,"value");
 		if (value!=NULL) val=xmlnode_get_data(value);
 	}
@@ -279,18 +279,18 @@ Request *r;
 	if (maxgroups<1){
 		val=NULL;
 		field=xmlnode_get_tag(form,"field?var=maxgroups");
-		if (field!=NULL) {
+		if (field!=NULL){
 			value=xmlnode_get_tag(field,"value");
 			if (value!=NULL) val=xmlnode_get_data(value);
 		}
 		if (val!=NULL){
-			maxgroups=atoi(val); 
+			maxgroups=atoi(val);
 			if (maxgroups<1) maxgroups=1;
 		}
 		else
 			maxgroups=1;
 	}
-	
+
 	r=add_request(RT_SEARCH,from,to,id,q,search,s);
 	r->data=GINT_TO_POINTER(maxgroups);
 	gg_pubdir50_free(search);
@@ -303,7 +303,7 @@ Session *sess;
 char *data;
 
 	n=xmlnode_get_tag(q,"x?xmlns=jabber:x:data");
-	if (n) {
+	if (n){
 		return jabber_iq_set_search_byform(s,from,to,id,q,0,0);
 	}
 	sess=session_get_by_jid(from,NULL);

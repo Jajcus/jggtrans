@@ -1,4 +1,4 @@
-/* $Id: iq.c,v 1.39 2003/04/09 13:33:23 jajcus Exp $ */
+/* $Id: iq.c,v 1.40 2003/04/13 11:19:47 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -156,7 +156,7 @@ struct utsname un;
 	rel=g_strdup(un.release);
 	p=strchr(rel,'.');
 	if (p) p=strchr(p+1,'.');
-	if (p && p[1]) {
+	if (p && p[1]){
 		p[1]='x';
 		p[2]='\000';
 	}

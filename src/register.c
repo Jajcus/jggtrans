@@ -1,4 +1,4 @@
-/* $Id: register.c,v 1.33 2003/04/13 10:55:32 jajcus Exp $ */
+/* $Id: register.c,v 1.34 2003/04/13 11:19:47 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -58,7 +58,7 @@ int i;
 	field=form_add_field(form,"list-single","locale",_("Language"),default_user_locale,0);
 	for(i=0;locale_mapping[i].locale!=NULL;i++)
 		form_add_option(field,locale_mapping[i].lang_name,locale_mapping[i].locale);
-	
+
 	form_add_field(form,"boolean","friends_only",_("Friends only"),"1",1);
 	form_add_field(form,"boolean","invisible",_("Invisible"),"1",1);
 
@@ -75,14 +75,14 @@ int i;
 			" information, change personal information"
 			" in the public directory or unregister from"
 			" the transport."));
-	
+
 	field=form_add_field(form,"list-single","action",_("Action"),"options",1);
 	form_add_option(field,_("Change account options"),"options");
 	form_add_option(field,_("Change password"),"passwd");
 	form_add_option(field,_("Change public directory information"),"pubdir");
 	form_add_option(field,_("Unregister"),"unregister");
-	
-	
+
+
 	form_add_fixed(form,_("Fill out this part only when changing account options:"));
 	field=form_add_field(form,"list-single","locale",_("Language"),
 			(u->locale&&u->locale[0])?u->locale:"",0);
@@ -111,7 +111,7 @@ int i;
 	form_add_option(field,"male",GG_PUBDIR50_GENDER_MALE);
 	form_add_field(form,"text-single","familyname",_("Family name"),NULL,0);
 	form_add_field(form,"text-single","familycity",_("Family city"),NULL,0);
-	
+
 	return form;
 }
 
@@ -121,33 +121,33 @@ xmlnode field,value;
 char *locale=NULL,*invisible=NULL,*friends_only=NULL;
 
 	field=xmlnode_get_tag(form,"field?var=locale");
-	if (field!=NULL) {
+	if (field!=NULL){
 		value=xmlnode_get_tag(field,"value");
 		if (value!=NULL) locale=xmlnode_get_data(value);
 	}
 	field=xmlnode_get_tag(form,"field?var=invisible");
-	if (field!=NULL) {
+	if (field!=NULL){
 		value=xmlnode_get_tag(field,"value");
 		if (value!=NULL) invisible=xmlnode_get_data(value);
 	}
 	field=xmlnode_get_tag(form,"field?var=friends_only");
-	if (field!=NULL) {
+	if (field!=NULL){
 		value=xmlnode_get_tag(field,"value");
 		if (value!=NULL) friends_only=xmlnode_get_data(value);
 	}
 
 	if (u->locale!=NULL) g_free(u->locale);
 	u->locale=g_strdup(locale);
-	if (invisible && (!strcmp(invisible,"1")||!strcmp(invisible,"yes"))) 
+	if (invisible && (!strcmp(invisible,"1")||!strcmp(invisible,"yes")))
 		u->invisible=1;
 	else
 		u->invisible=0;
-	if (friends_only && (!strcmp(friends_only,"1")||!strcmp(friends_only,"yes"))) 
+	if (friends_only && (!strcmp(friends_only,"1")||!strcmp(friends_only,"yes")))
 		u->friends_only=1;
 	else
 		u->friends_only=0;
 	user_save(u);
-	
+
 	return 0;
 }
 
@@ -159,7 +159,7 @@ struct gg_http *gghttp;
 Request *r;
 
 	field=xmlnode_get_tag(form,"field?var=newpassword");
-	if (field!=NULL) {
+	if (field!=NULL){
 		value=xmlnode_get_tag(field,"value");
 		if (value!=NULL) newpasswd=xmlnode_get_data(value);
 	}
@@ -168,7 +168,7 @@ Request *r;
 		return -1;
 	}
 	field=xmlnode_get_tag(form,"field?var=newpassword2");
-	if (field!=NULL) {
+	if (field!=NULL){
 		value=xmlnode_get_tag(field,"value");
 		if (value!=NULL) newpasswd2=xmlnode_get_data(value);
 	}
@@ -181,22 +181,22 @@ Request *r;
 		return -1;
 	}
 	field=xmlnode_get_tag(form,"field?var=question");
-	if (field!=NULL) {
+	if (field!=NULL){
 		value=xmlnode_get_tag(field,"value");
 		if (value!=NULL) question=xmlnode_get_data(value);
 	}
 	if (question==NULL) question="";
-	else if (strchr(question,'~')) {
+	else if (strchr(question,'~')){
 		jabber_iq_send_error(s,from,to,id,406,_("Question contains illegal characters."));
 		return -1;
 	}
 	field=xmlnode_get_tag(form,"field?var=answer");
-	if (field!=NULL) {
+	if (field!=NULL){
 		value=xmlnode_get_tag(field,"value");
 		if (value!=NULL) answer=xmlnode_get_data(value);
 	}
 	if (answer==NULL) answer="";
-	else if (strchr(answer,'~')) {
+	else if (strchr(answer,'~')){
 		jabber_iq_send_error(s,from,to,id,406,_("Answer contains illegal characters."));
 		return -1;
 	}
@@ -216,7 +216,7 @@ Request *r;
 #define FIELD_TO_PUBDIR(fieldname,symbol) \
 	val=0; \
 	field=xmlnode_get_tag(form,"field?var=" fieldname); \
-	if (field!=NULL) { \
+	if (field!=NULL){ \
 		value=xmlnode_get_tag(field,"value"); \
 		if (value!=NULL) val=xmlnode_get_data(value); \
 	} \
@@ -232,10 +232,10 @@ Session *session=NULL;
 gg_pubdir50_t change;
 
 	session=session_get_by_jid(from,s);
-	if (session==NULL) {
+	if (session==NULL){
 		jabber_iq_send_error(s,from,to,id,500,_("Not logged in?"));
 	}
-	
+
 	change=gg_pubdir50_new(GG_PUBDIR50_WRITE);
 
 	FIELD_TO_PUBDIR("firstname",GG_PUBDIR50_FIRSTNAME);
@@ -244,21 +244,21 @@ gg_pubdir50_t change;
 	FIELD_TO_PUBDIR("city",GG_PUBDIR50_CITY);
 
 	field=xmlnode_get_tag(form,"field?var=gender");
-	if (field!=NULL) {
+	if (field!=NULL){
 		value=xmlnode_get_tag(field,"value");
 		if (value!=NULL) val=xmlnode_get_data(value);
 	}
-	if (val!=NULL && val[0] && ( !strcmp(val,GG_PUBDIR50_GENDER_FEMALE) 
+	if (val!=NULL && val[0] && ( !strcmp(val,GG_PUBDIR50_GENDER_FEMALE)
 					|| !strcmp(val,GG_PUBDIR50_GENDER_FEMALE)) )
 		gg_pubdir50_add(change, GG_PUBDIR50_GENDER, val);
 
 	val=NULL;
 	field=xmlnode_get_tag(form,"field?var=birthyear");
-	if (field!=NULL) {
+	if (field!=NULL){
 		value=xmlnode_get_tag(field,"value");
 		if (value!=NULL) val=xmlnode_get_data(value);
 	}
-	if (val!=NULL && val[0]) {
+	if (val!=NULL && val[0]){
 		val=g_strdup_printf("%i",atoi(val));
 		gg_pubdir50_add(change, GG_PUBDIR50_BIRTHYEAR, val);
 		g_free(val);
@@ -283,18 +283,18 @@ xmlnode field,value;
 char *action;
 
 	field=xmlnode_get_tag(form,"field?var=action");
-	if (field==NULL) {
+	if (field==NULL){
 		jabber_iq_send_error(s,from,to,id,406,_("No action field present"));
 		return -1;
 	}
 	value=xmlnode_get_tag(field,"value");
-	if (field==NULL) {
+	if (field==NULL){
 		jabber_iq_send_error(s,from,to,id,406,_("No action value defined"));
 		return -1;
 	}
 
 	action=xmlnode_get_data(value);
-	if (action==NULL) {
+	if (action==NULL){
 		jabber_iq_send_error(s,from,to,id,406,_("No action value defined"));
 		return -1;
 	}
@@ -333,42 +333,42 @@ User *user;
 Session *session;
 
 	field=xmlnode_get_tag(form,"field?var=uin");
-	if (field==NULL) {
+	if (field==NULL){
 		jabber_iq_send_error(s,from,to,id,406,_("No uin field present"));
 		return -1;
 	}
 	value=xmlnode_get_tag(field,"value");
-	if (field==NULL) {
+	if (field==NULL){
 		jabber_iq_send_error(s,from,to,id,406,_("No uin value defined"));
 		return -1;
 	}
 	tmp=xmlnode_get_data(value);
-	if (tmp==NULL) {
+	if (tmp==NULL){
 		jabber_iq_send_error(s,from,to,id,406,_("No uin value defined"));
 		return -1;
 	}
 	uin=(unsigned)atol(tmp);
-	if (uin<=0) {
+	if (uin<=0){
 		jabber_iq_send_error(s,from,to,id,406,_("Bad uin value defined"));
 		return -1;
 	}
-	
+
 	field=xmlnode_get_tag(form,"field?var=password");
-	if (field==NULL) {
+	if (field==NULL){
 		jabber_iq_send_error(s,from,to,id,406,_("No password field present"));
 		return -1;
 	}
 	value=xmlnode_get_tag(field,"value");
-	if (field==NULL) {
+	if (field==NULL){
 		jabber_iq_send_error(s,from,to,id,406,_("No password value defined"));
 		return -1;
 	}
 	password=xmlnode_get_data(value);
-	if (password==NULL) {
+	if (password==NULL){
 		jabber_iq_send_error(s,from,to,id,406,_("No password value defined"));
 		return -1;
 	}
-	
+
 	user=user_create(from,uin,password);
 	if (!user){
 		g_warning(N_("Couldn't create user %s"),from);
@@ -403,7 +403,7 @@ User *u;
 		jabber_iq_send_error(r->stream,r->from,r->to,r->id,500,_("Couldn't find the user."));
 		return -1;
 	}
-	
+
 	g_message(N_("Password changed for user '%s'"),r->from);
 	if (r->data){
 		g_free(u->password);
@@ -459,7 +459,7 @@ User *u;
 		xmlnode_insert_tag_node(query,register_form(u));
 	else
 		xmlnode_insert_tag_node(query,register_change_form(u));
-	
+
 	stream_write(s,iq);
 	xmlnode_free(iq);
 }
@@ -525,18 +525,18 @@ Request *r;
 	}
 
 	node=xmlnode_get_tag(q,"x?xmlns=jabber:x:data");
-	if (node) {
+	if (node){
 		ftype=xmlnode_get_attrib(node,"type");
-		if (ftype==NULL) {
+		if (ftype==NULL){
 			jabber_iq_send_error(s,from,to,id,406,_("Form returned with no type defined"));
 		}
-		else if (!strcmp(ftype,"submit")){ 
-			if (user!=NULL) 
+		else if (!strcmp(ftype,"submit")){
+			if (user!=NULL)
 				register_process_change_form(s,from,to,id,user,node,q);
-			else 
+			else
 				register_process_form(s,from,to,id,node,q);
 		}
-		else if (!strcmp(ftype,"cancel")){ 
+		else if (!strcmp(ftype,"cancel")){
 			jabber_iq_send_error(s,from,to,id,406,_("Cancelled"));
 		}
 		else jabber_iq_send_error(s,from,to,id,406,_("Bad form type"));

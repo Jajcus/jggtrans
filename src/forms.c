@@ -1,4 +1,4 @@
-/* $Id: forms.c,v 1.3 2003/04/13 10:59:57 jajcus Exp $ */
+/* $Id: forms.c,v 1.4 2003/04/13 11:19:46 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -25,7 +25,7 @@
  */
 xmlnode form_new(const char *title,const char *instructions){
 xmlnode form,tag;
-	
+
 	form=xmlnode_new_tag("x");
 	xmlnode_put_attrib(form,"xmlns","jabber:x:data");
 	xmlnode_put_attrib(form,"type","form");
@@ -42,7 +42,7 @@ xmlnode form,tag;
  */
 xmlnode form_new_result(const char *title){
 xmlnode form,tag;
-	
+
 	form=xmlnode_new_tag("x");
 	xmlnode_put_attrib(form,"xmlns","jabber:x:data");
 	xmlnode_put_attrib(form,"type","result");
@@ -65,10 +65,10 @@ xmlnode field,value;
 	xmlnode_put_attrib(field,"var",var);
 	if (required) xmlnode_insert_tag(field,"required");
 	xmlnode_put_attrib(field,"label",label);
-	if (val) {
+	if (val){
 		value=xmlnode_insert_tag(field,"value");
-		xmlnode_insert_cdata(value,val,-1); 
-	}	
+		xmlnode_insert_cdata(value,val,-1);
+	}
 	return field;
 }
 
@@ -82,7 +82,7 @@ xmlnode option,value;
 	option=xmlnode_insert_tag(field,"option");
 	xmlnode_put_attrib(option,"label",label);
 	value=xmlnode_insert_tag(option,"value");
-	xmlnode_insert_cdata(value,val,-1); 
+	xmlnode_insert_cdata(value,val,-1);
 	return option;
 }
 
@@ -97,7 +97,7 @@ xmlnode field,value;
 	field=xmlnode_insert_tag(form,"field");
 	xmlnode_put_attrib(field,"type","fixed");
 	value=xmlnode_insert_tag(field,"value");
-	xmlnode_insert_cdata(value,val,-1); 
+	xmlnode_insert_cdata(value,val,-1);
 	return field;
 }
 
@@ -109,7 +109,7 @@ xmlnode form_add_result_field(xmlnode form,const char *var,const char *label,con
 xmlnode rep,field;
 
 	rep=xmlnode_get_tag(form,"reported");
-	if (rep==NULL) {
+	if (rep==NULL){
 		rep=xmlnode_insert_tag(form,"reported");
 	}
 	field=xmlnode_insert_tag(rep,"field");
@@ -141,7 +141,7 @@ xmlnode field,value;
 	field=xmlnode_insert_tag(item,"field");
 	xmlnode_put_attrib(field,"var",var);
 	value=xmlnode_insert_tag(field,"value");
-	if (val!=NULL) 
+	if (val!=NULL)
 		xmlnode_insert_cdata(value,val,-1);
 	return field;
 }

@@ -1,4 +1,4 @@
-/* $Id: requests.c,v 1.28 2003/04/11 13:25:13 jajcus Exp $ */
+/* $Id: requests.c,v 1.29 2003/04/13 11:19:47 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -85,13 +85,13 @@ Request *r;
 	}
 	g_hash_table_remove(lookups, &hash);
 
-	if (r->type!=RT_CHANGE) {
+	if (r->type!=RT_CHANGE){
 		if (r->from!=NULL && r->to!=NULL && r->id!=NULL)
 			jabber_iq_send_error(r->stream,r->from,r->to,r->id,
 				500,_("Got public directory change result for unknown request type."));
 		return;
 	}
-	if (r->from!=NULL && r->to!=NULL && r->id!=NULL && r->query!=NULL) {
+	if (r->from!=NULL && r->to!=NULL && r->id!=NULL && r->query!=NULL){
 		debug("Query defined in request - sending result.");
 		jabber_iq_send_result(r->stream,r->from,r->to,r->id,NULL);
 	}
@@ -225,7 +225,7 @@ int remove_request(Request *r){
 	if (r->from) g_free(r->from);
 	if (r->id) g_free(r->id);
 	if (r->query) xmlnode_free(r->query);
-	if (r->gghttp) {
+	if (r->gghttp){
 		if (r->gghttp->destroy)
 			r->gghttp->destroy(r->gghttp);
 		else

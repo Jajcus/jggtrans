@@ -6,7 +6,7 @@
  * returns the node created added
  */
 xmlnode form_new(const char *title,const char *instructions);
-	
+
 /*
  * adds a field to a jabber:x:data form
  * returns the field added
