@@ -1,4 +1,4 @@
-/* $Id: message.c,v 1.10 2002/02/26 08:58:24 jajcus Exp $ */
+/* $Id: message.c,v 1.11 2002/12/06 15:03:05 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -17,8 +17,8 @@
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdio.h>
 #include "ggtrans.h"
+#include <stdio.h>
 #include "presence.h"
 #include "jabber.h"
 #include "jid.h"
@@ -79,7 +79,25 @@ char *s;
 	xmlnode_free(msg);
 	return 0;
 }
+		
+int message_to_me(struct stream_s *stream,const char *from,
+		const char *to,const char *body,xmlnode tag){
 
+	if (body!=NULL){
+		if (strstr(body,"get roster")){
+			message_send(stream,to,from,1,"Receiving roster...");
+			return 0;
+		}
+		else if (strstr(body,"put roster")){
+			message_send(stream,to,from,1,"Sending roster...");
+			return 0;
+		}
+	}
+	message_send(stream,to,from,1,"Available commands:");
+	message_send(stream,to,from,1,"  get roster");
+	message_send(stream,to,from,1,"  put roster");
+	return 0;
+}
 
 int jabber_message(struct stream_s *stream,xmlnode tag){
 char *type;
@@ -115,16 +133,14 @@ Session *s;
 
 	from=xmlnode_get_attrib(tag,"from");
 	to=xmlnode_get_attrib(tag,"to");
-	if (!to || !jid_is_my(to) || !jid_has_uin(to)){
+	if (!to || !jid_is_my(to)){
 		g_warning("Bad 'to' in: %s",xmlnode2str(tag));
 		message_send_error(stream,to,from,body,400,"Bad Request"); 
 		return -1;
 	}
 	
 	if (!jid_has_uin(to)){
-		g_warning("Bad 'to' in: %s",xmlnode2str(tag));
-		message_send_error(stream,to,from,body,404,"Not Found"); 
-		return -1;
+		return message_to_me(stream,from,to,body,tag);
 	}
 
 	if (!from){
