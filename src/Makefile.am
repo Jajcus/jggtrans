@@ -11,6 +11,10 @@ jggtrans_SOURCES= \
 	enc_win2uni.h \
 	encoding.c \
 	encoding.h \
+	forms.c \
+	forms.h \
+	gg_versions.c \
+	gg_versions.h \
 	ggtrans.h \
 	iq.c \
 	iq.h \
@@ -36,9 +40,7 @@ jggtrans_SOURCES= \
 	stream.c \
 	stream.h \
 	users.c \
-	users.h \
-	gg_versions.c \
-	gg_versions.h
+	users.h 
 
 check_PROGRAMS = encodingtest
 encodingtest_SOURCES = \
