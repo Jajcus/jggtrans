@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: jabber-gg-transport 1.4.1\n"
-"POT-Creation-Date: 2003-04-21 11:11+0200\n"
+"POT-Creation-Date: 2003-04-21 13:09+0200\n"
 "PO-Revision-Date: 2003-04-16 12:45+0200\n"
 "Last-Translator: Tomasz Sterna <tomek@smoczy.net>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -288,7 +288,9 @@ msgstr "Wydaje mi się, że jestem demonem."
 msgid ""
 "\n"
 "Jabber GaduGadu Transport %s\n"
-msgstr "\nJabber GaduGadu Transport %s\n"
+msgstr ""
+"\n"
+"Jabber GaduGadu Transport %s\n"
 
 #: src/main.c:295
 #, c-format
@@ -299,7 +301,9 @@ msgstr "\tUżycie: %s [OPCJE]... [<plik konfiguracyjny>]\n"
 msgid ""
 "\n"
 "Options:\n"
-msgstr "\nOpcje:\n"
+msgstr ""
+"\n"
+"Opcje:\n"
 
 #: src/main.c:297
 msgid "\t-h\t      This message\n"
