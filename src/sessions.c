@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.32 2002/12/10 07:40:03 jajcus Exp $ */
+/* $Id: sessions.c,v 1.33 2003/01/12 15:08:59 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -408,7 +408,7 @@ Resource *r=NULL;
 	if (s->ioch) g_io_channel_close(s->ioch);
 	if (s->ggs){
 		if (s->connected) {
-			debug("gg_logoof(%p)",s->ggs);
+			debug("gg_logoff(%p)",s->ggs);
 			gg_logoff(s->ggs);
 		}
 		gg_free_session(s->ggs);
