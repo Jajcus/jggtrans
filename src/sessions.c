@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.84 2003/06/27 14:58:24 jajcus Exp $ */
+/* $Id: sessions.c,v 1.85 2003/06/27 17:30:51 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -32,8 +32,8 @@
 #include "conf.h"
 #include "status.h"
 #include "requests.h"
-#include "debug.h"
 #include "encoding.h"
+#include "debug.h"
 
 
 static int conn_timeout=30;

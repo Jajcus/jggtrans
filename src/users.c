@@ -1,4 +1,4 @@
-/* $Id: users.c,v 1.39 2003/06/27 14:06:51 jajcus Exp $ */
+/* $Id: users.c,v 1.40 2003/06/27 17:30:51 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -27,8 +27,8 @@
 #include "users.h"
 #include "jid.h"
 #include "presence.h"
-#include "debug.h"
 #include "conf.h"
+#include "debug.h"
 
 GHashTable *users_jid=NULL;
 static char *spool_dir;

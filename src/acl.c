@@ -1,4 +1,4 @@
-/* $Id: acl.c,v 1.4 2003/04/22 08:44:29 jajcus Exp $ */
+/* $Id: acl.c,v 1.5 2003/06/27 17:30:51 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -20,8 +20,8 @@
 #include "ggtrans.h"
 #include "conf.h"
 #include "jid.h"
-#include "debug.h"
 #include <fnmatch.h>
+#include "debug.h"
 
 struct acl_s {
 	int allow;

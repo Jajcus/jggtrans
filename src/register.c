@@ -1,4 +1,4 @@
-/* $Id: register.c,v 1.45 2003/06/27 14:45:45 jajcus Exp $ */
+/* $Id: register.c,v 1.46 2003/06/27 17:30:51 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -25,11 +25,11 @@
 #include "sessions.h"
 #include "presence.h"
 #include "users.h"
-#include "debug.h"
 #include "requests.h"
 #include "encoding.h"
 #include "forms.h"
 #include "jid.h"
+#include "debug.h"
 
 char *register_instructions;
 

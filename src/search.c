@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.36 2003/05/09 10:02:55 jajcus Exp $ */
+/* $Id: search.c,v 1.37 2003/06/27 17:30:51 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -26,12 +26,12 @@
 #include "iq.h"
 #include "jid.h"
 #include "encoding.h"
-#include "debug.h"
 #include "gg_versions.h"
 #include "forms.h"
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include "debug.h"
 
 
 const char *search_instructions;

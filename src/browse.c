@@ -1,4 +1,4 @@
-/* $Id: browse.c,v 1.16 2003/05/27 09:07:40 jajcus Exp $ */
+/* $Id: browse.c,v 1.17 2003/06/27 17:30:51 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -21,10 +21,10 @@
 #include "jabber.h"
 #include "iq.h"
 #include "browse.h"
-#include "debug.h"
 #include "conf.h"
 #include "jid.h"
 #include "sessions.h"
+#include "debug.h"
 
 void browse_session(gpointer key,gpointer value,gpointer data){
 const char *jid=(char *)key;

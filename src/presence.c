@@ -1,4 +1,4 @@
-/* $Id: presence.c,v 1.46 2003/06/27 14:42:25 jajcus Exp $ */
+/* $Id: presence.c,v 1.47 2003/06/27 17:30:51 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -24,12 +24,12 @@
 #include "jid.h"
 #include "users.h"
 #include "sessions.h"
-#include "debug.h"
 #include "register.h"
 #include "status.h"
 #include "encoding.h"
 #include "acl.h"
 #include <time.h>
+#include "debug.h"
 
 int presence_send_error(struct stream_s *stream,const char *from,const char *to,
 				int code,const char *string){
