@@ -9,7 +9,7 @@
 #include "register.h"
 #include <time.h>
 
-int presence_send_error(struct stream_s *stream,const char *to,const char *from,
+int presence_send_error(struct stream_s *stream,const char *from,const char *to,
 				int code,const char *string){
 xmlnode pres;
 xmlnode error;
@@ -251,8 +251,8 @@ GTime timestamp;
 
 	s=session_get_by_jid(from,NULL);
 	if (jid_is_me(to)){
-		if (s) presence_send(stream,NULL,from,s->available,s->show,s->status,0);
-		else presence_send(stream,NULL,from,0,NULL,"Not logged in",0);
+		if (s) presence_send(stream,to,from,s->available,s->show,s->status,0);
+		else presence_send(stream,to,from,0,NULL,"Not logged in",0);
 		return 0;
 	}
 	
@@ -279,7 +279,10 @@ GTime timestamp;
 			timestamp=c->last_update;
 		}
 	}
-	if (!status) presence_send_error(stream,to,from,404,"Not Found");
+	if (!status){
+		presence_send_error(stream,to,from,404,"Not Found");
+		return -1;
+	}
 	
 	switch(status){
 		case GG_STATUS_NOT_AVAIL:
@@ -300,7 +303,7 @@ GTime timestamp;
 		default:
 			available=1;
 			show=NULL;
-			stat="Available";
+			stat="Unknown";
 			break;
 	}
 
@@ -366,11 +369,13 @@ char *show,*status;
 	if (!type) type="available";
 	
 	if (!from || !to){
+		presence_send_error(stream,to,from,406,"Not Acceptable");
 		g_warning("Bad <presence/>: %s",xmlnode2str(tag));
 		return -1;
 	}
 
 	if (!jid_is_my(to)){
+		presence_send_error(stream,to,from,406,"Not Acceptable");
 		g_warning("Wrong 'to' in %s",xmlnode2str(tag));
 		return -1;
 	}
