@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.35 2003/04/04 17:59:32 jajcus Exp $ */
+/* $Id: main.c,v 1.36 2003/04/05 10:24:50 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -223,12 +223,12 @@ char *lc_ctype,*lc_messages;
 
 	lc_ctype=setlocale(LC_CTYPE,NULL);
 	lc_messages=setlocale(LC_MESSAGES,NULL);
-	
+
 	log_level&=G_LOG_LEVEL_MASK;
 	if (foreground) log_handler_file(stderr,log_domain,log_level,message);
 	if (log_file) log_handler_file(log_file,log_domain,log_level,message);
 	if (use_syslog) log_handler_syslog(log_domain,log_level,message);
-	
+
 	setlocale(LC_CTYPE,lc_ctype);
 	setlocale(LC_MESSAGES,lc_ctype);
 }
@@ -283,10 +283,10 @@ char *p;
 	printf(_("\nOptions:\n"));
 	printf(_("\t-h	      This message\n"));
 	printf(_("\t-f	      Run in foreground. Debug/error messages will be sent to stderr\n"));
-	printf(_("\t-d <n>      Log level (0(default) - normal, >0 more, <0 less)\n"));
-	printf(_("\t-D <n>      libgg debug level (enables also -f)\n"));
-	printf(_("\t-u <user>   Switch to uid of <user> on startup\n"));
-	printf(_("\t-g <group>  Switch to gid of <group> on startup\n"));
+	printf(_("\t-d <n>	Log level (0(default) - normal, >0 more, <0 less)\n"));
+	printf(_("\t-D <n>	libgg debug level (enables also -f)\n"));
+	printf(_("\t-u <user>	Switch to uid of <user> on startup\n"));
+	printf(_("\t-g <group>	Switch to gid of <group> on startup\n"));
 	printf(_("\n"));
 }
 
@@ -322,7 +322,7 @@ guint lh;
 	setlocale(LC_MESSAGES,"");
 	setlocale(LC_CTYPE,"");
 	textdomain(PACKAGE);
-	
+
 	saved_pwd=getcwd(saved_pwd_b,1024);
 	opterr=0;
 	while ((c = getopt (argc, argv, "Rhfd:D:u:g:")) != -1){

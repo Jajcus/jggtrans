@@ -1,5 +1,5 @@
 #!/bin/sh
 
-find . '(' -name "*.c" -o -name "*.h" ')' -a '(' '!' -path './libxode/*' ')' \
+find . '(' -name "*.c" -o -name "*.h" ')' -a '(' '!' -path './libxode/*' -a '!' -path './intl/*' ')' \
 	| xargs -n1 vim -u NONE -s cosmetics.vim 
-reset
+stty sane
