@@ -248,12 +248,10 @@ char *p;
 	printf("\n");
 	printf("\tUsage: %s [OPTIONS]... [<config file>]\n",name);
 	printf("\nOptions:\n");
-	printf("\t-h  This message\n");
-	printf("\t-f  Run in foreground. Debug/error messages will be sent to stderr\n");
-#ifdef DEBUG
-	printf("\t-d  Enable debugging messages\n");
-#endif
-	printf("\t-D  Enable libgg debugging messages (enables also -f)\n");
+	printf("\t-h      This message\n");
+	printf("\t-f      Run in foreground. Debug/error messages will be sent to stderr\n");
+	printf("\t-d<n>   Log level (0(default) - normal, >0 more, <0 less)\n");
+	printf("\t-D<n>   libgg debug level (enables also -f)\n");
 	printf("\n");
 }
 
