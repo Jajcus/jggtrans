@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.55 2004/03/17 20:05:07 jajcus Exp $ */
+/* $Id: main.c,v 1.56 2004/03/17 22:40:02 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -266,7 +266,7 @@ char *lc_ctype,*lc_messages,*td_codeset,*ret;
 void log_handler(const gchar *log_domain, GLogLevelFlags log_level,
 			const gchar *message, gpointer user_data){
 
-#ifdef ENABLE_NLS	
+#ifdef ENABLE_NLS
 char *lc_ctype,*lc_messages,*td_codeset;
 
 	td_codeset=g_strdup(bind_textdomain_codeset(PACKAGE,NULL));
@@ -285,7 +285,7 @@ char *lc_ctype,*lc_messages,*td_codeset;
 	if (log_file) log_handler_file(log_file,log_domain,log_level,message);
 	if (use_syslog) log_handler_syslog(log_domain,log_level,message);
 
-#ifdef ENABLE_NLS	
+#ifdef ENABLE_NLS
 	setlocale(LC_CTYPE,lc_ctype);
 	setlocale(LC_MESSAGES,lc_messages);
 	bind_textdomain_codeset(PACKAGE,td_codeset);
@@ -596,7 +596,7 @@ int i;
 
 	/* process pending events - write anything not written yet */
 	if (g_main_pending())
-		for(i=0;i<100;i++) { 
+		for(i=0;i<100;i++){
 			/* FIXME: iteration limit should not be needed, but some event
 			 * is constantly pending when Jabber stream is not connected */
 			debug("flushing events...");

@@ -1,4 +1,4 @@
-/* $Id: stream.c,v 1.22 2004/03/17 22:28:33 jajcus Exp $ */
+/* $Id: stream.c,v 1.23 2004/03/17 22:40:02 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -273,7 +273,7 @@ time_t stream_flush_timeout;
 	g_assert(l>=0);
 	if (s->write_len+l > MAX_WRITE_BUF){
 		stream_flush_timeout=time(NULL)+WRITE_BUF_FLUSH_TIMEOUT;
-		if (s->write_len) {
+		if (s->write_len){
 			debug("Flushing stream write buffer, as it is full (%i characters, %i to be added)",s->write_len,l);
 			/* block to flush the buffer */
 			while(time(NULL)<stream_flush_timeout){
@@ -282,7 +282,7 @@ time_t stream_flush_timeout;
 				if (s->write_len==0) break;
 			}
 		}
-		if (!s->write_len && l>MAX_WRITE_BUF) {
+		if (!s->write_len && l>MAX_WRITE_BUF){
 			int pos=0;
 			int written,err;
 			char *str;

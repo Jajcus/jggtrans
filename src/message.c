@@ -1,4 +1,4 @@
-/* $Id: message.c,v 1.43 2004/03/16 19:30:25 mmazur Exp $ */
+/* $Id: message.c,v 1.44 2004/03/17 22:40:02 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -162,15 +162,14 @@ void message_get_roster(struct stream_s *stream,const char *from, const char *to
 Session *s;
 
 	s=session_get_by_jid(from,stream,0);
-	if(!s || !s->ggs)
-	{
+	if(!s || !s->ggs){
 		message_send(stream,to,from,1,_("Log in first..."),0);
 		return;
 	}
 
 	message_send(stream,to,from,1,_("Receiving roster..."),0);
 
-	gg_userlist_request(s->ggs, GG_USERLIST_GET, NULL);	
+	gg_userlist_request(s->ggs, GG_USERLIST_GET, NULL);
 }
 
 void get_roster_done(Session *s,struct gg_event *e){
@@ -182,14 +181,13 @@ xmlnode msg;
 xmlnode n;
 int i;
 
-	if(!e->event.userlist.reply)
-	{
+	if(!e->event.userlist.reply){
 		message_send(s->s,NULL,s->user->jid,1,_("Roster empty."),0);
 		return;
 	}
 
 	message_send(s->s,NULL,s->user->jid,1,_("Roster received."),0);
-	
+
 	msg=xmlnode_new_tag("message");
 	jid=jid_my_registered();
 	xmlnode_put_attrib(msg,"from",jid);
