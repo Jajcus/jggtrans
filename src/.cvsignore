@@ -8,3 +8,5 @@ jggtrans
 jggtrans.valgrind
 encodingtest
 *.swp
+*.diff
+*.patch
