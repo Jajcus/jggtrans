@@ -1,4 +1,4 @@
-/* $Id: presence.c,v 1.20 2002/12/09 09:55:52 jajcus Exp $ */
+/* $Id: presence.c,v 1.21 2003/01/13 17:45:01 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -330,7 +330,7 @@ GTime timestamp;
 
 	available=status_gg_to_jabber(status,&show,&stat);	
 
-	presence_send(s->s,to,u->jid,available,show,stat,timestamp);
+	presence_send(stream,to,u->jid,available,show,stat,timestamp);
 	if (s) session_send_notify(s);
 	return 0;
 }
