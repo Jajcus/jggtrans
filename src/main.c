@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.56 2004/03/17 22:40:02 jajcus Exp $ */
+/* $Id: main.c,v 1.57 2004/04/13 17:44:07 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -48,7 +48,7 @@
 #endif
 
 GMainLoop *main_loop;
-
+static GSource *signal_source;
 static int signal_received=FALSE;
 static gboolean the_end=FALSE;
 gboolean do_restart=FALSE;
@@ -132,26 +132,22 @@ void signal_handler(int sig){
 	signal_received=sig;
 }
 
-gboolean signal_source_prepare(gpointer  source_data,
-				GTimeVal *current_time,
-				gint	 *timeout,
-				gpointer  user_data){
+gboolean signal_source_prepare(GSource *source,
+				gint	 *timeout){
 
 	*timeout=1000;
 	if (signal_received) return TRUE;
 	return FALSE;
 }
 
-gboolean signal_source_check(gpointer  source_data,
-				GTimeVal *current_time,
-				gpointer  user_data){
+gboolean signal_source_check(GSource *source){
 
 	if (signal_received) return TRUE;
 	return FALSE;
 }
 
-gboolean signal_source_dispatch(gpointer  source_data,
-			GTimeVal *current_time,
+gboolean signal_source_dispatch(GSource *source,
+			GSourceFunc callback,
 			gpointer  user_data){
 
 	psignal(signal_received,"signal received");
@@ -165,14 +161,16 @@ gboolean signal_source_dispatch(gpointer  source_data,
 	return TRUE;
 }
 
-void signal_source_destroy(gpointer user_data){
+void signal_source_finalize(GSource *source){
 }
 
 static GSourceFuncs signal_source_funcs={
 		signal_source_prepare,
 		signal_source_check,
 		signal_source_dispatch,
-		signal_source_destroy
+		signal_source_finalize,
+		NULL,
+		NULL
 		};
 
 void log_handler_file(FILE *f,const gchar *log_domain, GLogLevelFlags log_level,
@@ -577,7 +575,9 @@ int i;
 
 	if (jabber_connect()) return 1;
 
-	g_source_add(G_PRIORITY_HIGH,0,&signal_source_funcs,NULL,NULL,NULL);
+	signal_source=g_source_new(&signal_source_funcs,sizeof(GSource));
+	g_source_attach(signal_source,g_main_loop_get_context(main_loop));
+
 	signal(SIGPIPE,signal_handler);
 	signal(SIGHUP,signal_handler);
 	signal(SIGINT,signal_handler);
@@ -594,11 +594,10 @@ int i;
 	users_done();
 	requests_done();
 
+	signal_received=0;
 	/* process pending events - write anything not written yet */
 	if (g_main_pending())
 		for(i=0;i<100;i++){
-			/* FIXME: iteration limit should not be needed, but some event
-			 * is constantly pending when Jabber stream is not connected */
 			debug("flushing events...");
 			if (!g_main_iteration(1)) break;
 		}
@@ -606,6 +605,8 @@ int i;
 	jabber_done();
 	encoding_done();
 	acl_done();
+
+	g_source_destroy(signal_source);
 	g_main_destroy(main_loop);
 
 	if (do_restart && restart_timeout>=0){

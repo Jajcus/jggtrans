@@ -1,4 +1,4 @@
-/* $Id: disco.c,v 1.12 2004/01/26 08:11:32 jajcus Exp $ */
+/* $Id: disco.c,v 1.13 2004/04/13 17:44:07 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -46,7 +46,12 @@ static void disco_online_users(Stream *s,const char *from,const char * to, const
 xmlnode result;
 char *jid;
 
-	jid=jid_normalized(from);
+	jid=jid_normalized(from,0);
+	if (jid==NULL){
+		debug(N_("Bad 'from' address"));
+		return;
+	}
+
 	if (g_list_find_custom(admins,jid,(GCompareFunc)strcmp)==NULL){
 		g_free(jid);
 		jabber_iq_send_error(s,from,to,id,405,_("You are not allowed to browse users"));
@@ -69,6 +74,12 @@ xmlnode result;
 xmlnode n;
 char *jid,*node;
 
+	jid=jid_normalized(from,0);
+	if (jid==NULL){
+		debug(N_("Bad 'from' address"));
+		return;
+	}
+
 	node=xmlnode_get_attrib(q,"node");
 	if (node && node[0]){
 		if (!strcmp(node,"online_users"))
@@ -78,7 +89,6 @@ char *jid,*node;
 	}
 	result=xmlnode_new_tag("query");
 	xmlnode_put_attrib(result,"xmlns","http://jabber.org/protocol/disco#items");
-	jid=jid_normalized(from);
 	if (g_list_find_custom(admins,jid,(GCompareFunc)strcmp)!=NULL){
 		n=xmlnode_insert_tag(result,"item");
 		xmlnode_put_attrib(n,"jid",my_name);

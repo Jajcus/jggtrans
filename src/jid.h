@@ -1,4 +1,4 @@
-/* $Id: jid.h,v 1.5 2003/05/09 10:32:59 jajcus Exp $ */
+/* $Id: jid.h,v 1.6 2004/04/13 17:44:07 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -28,8 +28,8 @@ const char *jid_get_resource(const char *jid);
 
 /* Functions below return strings which must be freed */
 
-/* returns uncapitalized user@host part of given jid */
-char * jid_normalized(const char *jid);
+/* returns normalized (all parts stringpreped) jid. Bare jid (no resource) is returned if full=0 */
+char * jid_normalized(const char *jid,int full);
 char * jid_my_registered();
 char * jid_build(long unsigned int uin);
 char * jid_build_full(long unsigned int uin);

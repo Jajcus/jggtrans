@@ -1,4 +1,4 @@
-/* $Id: browse.c,v 1.17 2003/06/27 17:30:51 jajcus Exp $ */
+/* $Id: browse.c,v 1.18 2004/04/13 17:44:07 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -46,7 +46,11 @@ void browse_admin(Stream *s,const char *from,const char * to, const char *id,xml
 xmlnode result;
 char *jid;
 
-	jid=jid_normalized(from);
+	jid=jid_normalized(from,0);
+	if (jid==NULL){
+		debug(L_("Bad 'from' address"));
+		return;
+	}
 	if (g_list_find_custom(admins,jid,(GCompareFunc)strcmp)==NULL){
 		g_free(jid);
 		jabber_iq_send_error(s,from,to,id,405,_("You are not allowed to browse users"));
@@ -71,6 +75,11 @@ xmlnode n;
 char *str,*jid,*resource;
 int i;
 
+	jid=jid_normalized(from,0);
+	if (jid==NULL){
+		debug(L_("Bad 'from' address"));
+		return;
+	}
 	resource=strchr(to,'/');
 	if (resource){
 		resource++;
@@ -99,7 +108,6 @@ int i;
 		n=xmlnode_insert_tag(result,"ns");
 		xmlnode_insert_cdata(n,server_iq_ns[i].ns,-1);
 	}
-	jid=jid_normalized(from);
 	if (g_list_find_custom(admins,jid,(GCompareFunc)strcmp)){
 		n=xmlnode_insert_tag(result,"item");
 		str=g_strdup_printf("%s/admin",my_name);

@@ -1,4 +1,4 @@
-/* $Id: jabber.c,v 1.23 2003/04/22 08:44:29 jajcus Exp $ */
+/* $Id: jabber.c,v 1.24 2004/04/13 17:44:07 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -26,6 +26,7 @@
 #include "users.h"
 #include "conf.h"
 
+GSource * jabber_source=NULL;
 Stream *stream=NULL;
 char *stream_id=NULL;
 const char *secret;
@@ -143,26 +144,22 @@ char *data;
 	}
 }
 
-gboolean jabber_source_prepare(gpointer  source_data,
-				GTimeVal *current_time,
-				gint	 *timeout,
-				gpointer  user_data){
+gboolean jabber_source_prepare(GSource *source,
+				gint	 *timeout){
 
 	*timeout=1000;
 	if (stop_it || stream==NULL) return TRUE;
 	return FALSE;
 }
 
-gboolean jabber_source_check(gpointer  source_data,
-				GTimeVal *current_time,
-				gpointer  user_data){
+gboolean jabber_source_check(GSource *source){
 
 	if (stop_it || stream==NULL) return TRUE;
 	return FALSE;
 }
 
-gboolean jabber_source_dispatch(gpointer  source_data,
-			GTimeVal *current_time,
+gboolean jabber_source_dispatch(GSource *source,
+			GSourceFunc callback,
 			gpointer  user_data){
 
 	if (stop_it && stream){
@@ -178,14 +175,16 @@ gboolean jabber_source_dispatch(gpointer  source_data,
 	return TRUE;
 }
 
-void jabber_source_destroy(gpointer user_data){
+void jabber_source_finalize(GSource *source){
 }
 
 static GSourceFuncs jabber_source_funcs={
 		jabber_source_prepare,
 		jabber_source_check,
 		jabber_source_dispatch,
-		jabber_source_destroy
+		jabber_source_finalize,
+		NULL,
+		NULL
 		};
 
 void jabber_stream_destroyed(struct stream_s *s){
@@ -198,6 +197,9 @@ int jabber_done(){
 	if (stream){
 		stream_destroy(stream);
 		stream=NULL;
+	}
+	if (jabber_source){
+		g_source_destroy(jabber_source);
 	}
 	g_free(register_instructions);
 	g_free(search_instructions);
@@ -256,9 +258,11 @@ xmlnode node;
 }
 
 int jabber_connect(){
+
 	stream=stream_connect(server,port,1,jabber_event_cb);
 	g_assert(stream!=NULL);
-	g_source_add(G_PRIORITY_DEFAULT,0,&jabber_source_funcs,NULL,NULL,NULL);
+	jabber_source=g_source_new(&jabber_source_funcs,sizeof(GSource));
+	g_source_attach(jabber_source,g_main_loop_get_context(main_loop));
 	return 0;
 }
 

@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.102 2004/03/16 19:30:25 mmazur Exp $ */
+/* $Id: sessions.c,v 1.103 2004/04/13 17:44:07 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -602,7 +602,8 @@ char *njid;
 
 	if (s==NULL) return 1;
 	g_assert(sessions_jid!=NULL);
-	njid=jid_normalized(s->jid);
+	njid=jid_normalized(s->jid,0);
+	g_assert(njid!=NULL);
 	if (g_hash_table_lookup_extended(sessions_jid,(gpointer)njid,&key,&value)){
 		g_hash_table_remove(sessions_jid,(gpointer)njid);
 		g_free(key);
@@ -697,6 +698,12 @@ Session *s;
 char *njid;
 
 	g_message(L_("Creating session for '%s'"),jid);
+	njid=jid_normalized(jid,0);
+	if (njid==NULL){
+		g_message(L_("Bad JID: '%s'"),jid);
+		return NULL;
+	}
+
 	g_assert(user!=NULL);
 	s=g_new0(Session,1);
 	s->user=user;
@@ -711,7 +718,6 @@ char *njid;
 	s->s=stream;
 
 	g_assert(sessions_jid!=NULL);
-	njid=jid_normalized(s->jid);
 	g_hash_table_insert(sessions_jid,(gpointer)njid,(gpointer)s);
 	return s;
 }
@@ -723,7 +729,12 @@ char *njid;
 
 	g_assert(sessions_jid!=NULL);
 	debug(L_("Looking up session for '%s'"),jid);
-	njid=jid_normalized(jid);
+	njid=jid_normalized(jid,0);
+	if (njid==NULL){
+		g_message(L_("Bad JID: '%s'"),jid);
+		return NULL;
+	}
+
 	debug(L_("Using '%s' as key"),njid);
 	s=(Session *)g_hash_table_lookup(sessions_jid,(gpointer)njid);
 	g_free(njid);
@@ -924,7 +935,7 @@ char *njid;
 
 	space=g_strnfill(indent*2,' ');
 	space1=g_strnfill((indent+1)*2,' ');
-	njid=jid_normalized(s->jid);
+	njid=jid_normalized(s->jid,0);
 	g_message(L_("%sSession: %p"),space,s);
 	g_message("%sJID: %s",space,s->jid);
 	g_message(L_("%sUser:"),space);
@@ -934,7 +945,7 @@ char *njid;
 	for(it=g_list_first(s->resources);it;it=it->next){
 		r=(Resource *)it->data;
 		g_message(L_("%sResource: %p%s"),space1,r,(r==cr)?N_(" (current)"):"");
-		if (r->name) g_message("%sJID: %s/%s",space1,njid,r->name);
+		if (njid && r->name) g_message("%sJID: %s/%s",space1,njid,r->name);
 		else g_message("%sJID: %s",space1,s->jid);
 		g_message(L_("%sPriority: %i"),space1,r->priority);
 		g_message(L_("%sAvailable: %i"),space1,r->available);

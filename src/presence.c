@@ -1,4 +1,4 @@
-/* $Id: presence.c,v 1.52 2004/03/17 20:02:24 jajcus Exp $ */
+/* $Id: presence.c,v 1.53 2004/04/13 17:44:07 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -191,8 +191,10 @@ xmlnode n;
 	if (timestamp){
 		struct tm *t;
 		char str[21];
+		time_t ts;
 
-		t=localtime((time_t *)&timestamp);
+		t=localtime(&ts);
+		timestamp=ts;
 		strftime(str,20,"%Y%m%dT%T",t);
 		n=xmlnode_insert_tag(pres,"x");
 		xmlnode_put_attrib(n,"xmlns","jabber:x:delay");

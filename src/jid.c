@@ -1,4 +1,4 @@
-/* $Id: jid.c,v 1.13 2003/05/19 11:48:35 jajcus Exp $ */
+/* $Id: jid.c,v 1.14 2004/04/13 17:44:07 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -19,6 +19,8 @@
 
 #include "ggtrans.h"
 #include <stdio.h>
+#include <stringprep.h>
+#include <idna.h>
 #include "jid.h"
 #include "jabber.h"
 #include "ctype.h"
@@ -27,6 +29,8 @@
 int jid_is_my(const char *jid){
 int i,at,slash;
 int just_digits;
+int ret;
+char *inbuf,*outbuf;
 
 	if (!jid) return 0;
 
@@ -50,44 +54,72 @@ int just_digits;
 		return 0;
 	}
 
-	/* check hostname */
-	if (slash<0){
-		if ( g_strcasecmp(jid+at+1,my_name) ){
-			debug(L_("Bad hostname (%s) in JID: %s"),jid+at+1,jid);
-			return 0;
-		}
-	} else{
-		if ( slash-at-1!=strlen(my_name) ){
-			debug(L_("Bad hostname len (%i) instead of %i in JID: %s"),slash-at-1,strlen(my_name),jid);
-			return 0;
-		}
+	if ((slash<0 && strlen(jid+at+1)>1023) || slash-at-1>1023){
+		g_warning(N_("JID domain too long"));
+		return 0;
+	}
 
-		if ( g_strncasecmp(jid+at+1,my_name,slash-at-1) ){
-			debug(L_("Bad hostname in JID: %s[%i:%i]"),jid,at+1,slash-at-2);
-			return 0;
+	if (slash<0)
+		inbuf=g_strdup(jid+at+1);
+	else
+		inbuf=g_strndup(jid+at+1,slash-at-1);
+
+	ret=idna_to_unicode_8z8z(inbuf,&outbuf,IDNA_ALLOW_UNASSIGNED);
+
+	if (ret!=IDNA_SUCCESS){
+		g_warning(N_("JID domain doesn't pass ToUnicode"));
+		ret=0;
+	}
+	else{
+		ret=!strcmp(outbuf,my_name);
+		if (!ret){
+			debug(L_("Bad hostname (%s) in JID: %s"),outbuf,jid);
 		}
 	}
 
-	return 1;
+	g_free(inbuf);
+	g_free(outbuf);
+
+	return ret;
 }
 
 int jid_is_me(const char *jid){
 int i,slash;
+int ret;
+char *inbuf,*outbuf;
 
 	if (!jid) return 0;
 
 	slash=-1;
-
 	for(i=0;jid[i];i++){
 		if (jid[i]=='/' && slash<0) slash=i;
 		else if (jid[i]=='@') return 0;
 	}
 
-	if (slash<0){
-		if ( g_strcasecmp(jid,my_name) ) return 0;
-	} else if ( slash!=strlen(my_name) || g_strncasecmp(jid,my_name,slash) ) return 0;
+	if ((slash<0 && strlen(jid)>1023) || slash>1023){
+		g_warning(N_("JID domain too long"));
+		return 0;
+	}
 
-	return 1;
+	if (slash<0)
+		inbuf=g_strdup(jid);
+	else
+		inbuf=g_strndup(jid,slash);
+
+	ret=idna_to_unicode_8z8z(inbuf,&outbuf,IDNA_ALLOW_UNASSIGNED);
+
+	if (ret!=IDNA_SUCCESS){
+		g_warning(N_("JID domain doesn't pass ToUnicode"));
+		ret=0;
+	}
+	else{
+		ret=!strcmp(outbuf,my_name);
+	}
+
+	g_free(inbuf);
+	g_free(outbuf);
+
+	return ret;
 }
 
 
@@ -125,25 +157,100 @@ char * jid_build_full(long unsigned int uin){
 	return g_strdup_printf("%lu@%s/GG",uin,my_name);
 }
 
-char * jid_normalized(const char *jid){
-int i,slash;
-char *r;
+char * jid_normalized(const char *jid,int full){
+int i,at,slash,ret;
+char node[1024],domain[1024],resource[1024];
+char *domainbuf;
 
-	g_assert(jid!=NULL);
-	if (!jid) return 0;
+	if (!jid) return NULL;
 
 	slash=-1;
+	at=-1;
 	/* split into parts */
 	for(i=0;jid[i];i++){
+		if (jid[i]=='@' && at<0) at=i;
 		if (jid[i]=='/' && slash<0) slash=i;
 	}
 
-	g_assert(slash!=0);
+	if (slash>=0 && slash<at){
+		g_warning(N_("slash<at (%i<%i) in %s"),slash,at,jid);
+		return NULL;
+	}
+	if (slash==at+1){
+		g_warning(N_("empty domain in %s"),jid);
+		return NULL;
+	}
 
-	if (slash<0) r=g_strdup(jid);
-	else r=g_strndup(jid,slash);
+	/* node */
+	if (at>0){
+		if (at>1023){
+			g_warning(N_("node too long in %s"),jid);
+			return NULL;
+		}
+		memcpy(node,jid,at);
+		node[at]='\000';
+	}
+	else node[0]='\000';
 
-	g_strdown(r);
+	/* domain */
+	if (slash>0){
+		if (slash-at>1024){
+			g_warning(N_("domain too long in %s"),jid);
+			return NULL;
+		}
+		memcpy(domain,jid+at+1,slash-at-1);
+		domain[slash-at-1]='\000';
+	}
+	else{
+		if (strlen(jid+at+1)>1023){
+			g_warning(N_("domain too long in %s"),jid);
+			return NULL;
+		}
+		strcpy(domain,jid+at+1);
+	}
 
-	return r;
+	/* resource */
+	if (slash>0){
+		if (strlen(jid+slash+1)>1023){
+			g_warning(N_("resource too long in %s"),jid);
+			return NULL;
+		}
+		strcpy(resource,jid+slash+1);
+	}
+	else resource[0]='\000';
+
+	if (node[0]){
+		ret=stringprep_xmpp_nodeprep(node,1024);
+		if (ret!=0){
+			g_warning(N_("bad node: %s"),node);
+			return NULL;
+		}
+	}
+	if (resource[0]){
+		ret=stringprep_xmpp_resourceprep(resource,1024);
+		if (ret!=0){
+			g_warning(N_("bad node: %s"),resource);
+			return NULL;
+		}
+	}
+	ret=idna_to_unicode_8z8z(domain,&domainbuf,IDNA_ALLOW_UNASSIGNED);
+	if (ret!=IDNA_SUCCESS){
+		g_warning(N_("bad domain: %s"),domain);
+		return NULL;
+	}
+	strcpy(domain,domainbuf);
+	g_free(domainbuf);
+
+	if (!full || !resource[0]){
+		if (node[0])
+			return g_strconcat(node,"@",domain,NULL);
+		else
+			return g_strdup(domain);
+	}
+	else{
+		if (node[0])
+			return g_strconcat(node,"@",domain,'/',resource,NULL);
+		else
+			return g_strconcat(domain,'/',resource,NULL);
+	}
 }

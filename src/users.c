@@ -1,4 +1,4 @@
-/* $Id: users.c,v 1.40 2003/06/27 17:30:51 jajcus Exp $ */
+/* $Id: users.c,v 1.41 2004/04/13 17:44:07 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -89,7 +89,8 @@ xmlnode xml,tag,ctag,userlist;
 	}
 
 	g_message(L_("Saving user '%s'"),u->jid);
-	njid=jid_normalized(u->jid);
+	njid=jid_normalized(u->jid,0);
+	g_assert(njid!=NULL);
 	fn=g_strdup_printf("%s.new",njid);
 	f=fopen(fn,"w");
 	if (!f){
@@ -184,7 +185,11 @@ char *data;
 
 	uin=ujid=name=password=email=NULL;
 	debug(L_("Loading user '%s'"),jid);
-	fn=jid_normalized(jid);
+	fn=jid_normalized(jid,0);
+	if (fn==NULL){
+		g_warning(L_("Bad JID: %s"),jid);
+		return NULL;
+	}
 	errno=0;
 	xml=xmlnode_file(fn);
 	if (xml==NULL){
@@ -279,7 +284,8 @@ char *data;
 	u->contacts=contacts;
 	xmlnode_free(xml);
 	g_assert(users_jid!=NULL);
-	njid=jid_normalized(u->jid);
+	njid=jid_normalized(u->jid,0);
+	g_assert(njid!=NULL);
 	g_hash_table_insert(users_jid,(gpointer)njid,(gpointer)u);
 	u->confirmed=1;
 	return u;
@@ -289,7 +295,8 @@ User *user_get_by_jid(const char *jid){
 User *u;
 char *njid;
 
-	njid=jid_normalized(jid);
+	njid=jid_normalized(jid,0);
+	if (njid==NULL) return NULL;
 	u=(User *)g_hash_table_lookup(users_jid,(gpointer)njid);
 	g_free(njid);
 	if (u) return u;
@@ -324,7 +331,8 @@ char *njid;
 
 	g_assert(users_jid!=NULL);
 
-	njid=jid_normalized(u->jid);
+	njid=jid_normalized(u->jid,0);
+	g_assert(njid!=NULL);
 	if (g_hash_table_lookup_extended(users_jid,(gpointer)njid,&key,&value)){
 		g_assert(u==value);
 		g_hash_table_remove(users_jid,(gpointer)njid);
@@ -341,7 +349,12 @@ char *p,*njid;
 
 	g_message(L_("Creating user '%s'"),jid);
 
-	njid=jid_normalized(jid);
+	njid=jid_normalized(jid,0);
+	if (njid==NULL){
+		g_warning(L_("Bad JID: '%s'"),jid);
+		return NULL;
+	}
+
 	u=(User *)g_hash_table_lookup(users_jid,(gpointer)njid);
 	if (u){
 		g_warning(L_("User '%s' already exists"),jid);
@@ -529,7 +542,8 @@ char *njid;
 
 	g_assert(u!=NULL);
 
-	njid=jid_normalized(u->jid);
+	njid=jid_normalized(u->jid,0);
+	g_assert(njid!=NULL);
 	r=user_remove(u);
 	if (r){
 		g_free(njid);

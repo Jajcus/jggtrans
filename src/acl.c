@@ -1,4 +1,4 @@
-/* $Id: acl.c,v 1.5 2003/06/27 17:30:51 jajcus Exp $ */
+/* $Id: acl.c,v 1.6 2004/04/13 17:44:07 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -80,10 +80,16 @@ char *jid;
 xmlnode x;
 int result=0;
 
+	if (from){
+		jid=jid_normalized(from,0);
+		if (jid==NULL){
+			debug(L_("Not Allowed - bad 'from'"));
+			return 0;
+		}
+	}
+	else jid=NULL;
 	x=xmlnode_new_tag("x");
 	xmlnode_insert_tag_node(x,node);
-	if (from) jid=jid_normalized(from);
-	else jid=NULL;
 	for(it=g_list_first(acl);it;it=g_list_next(it)){
 		acl_e=(struct acl_s*)it->data;
 		if (acl_e->who && jid){
