@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.31 2003/02/03 20:28:19 mmazur Exp $ */
+/* $Id: main.c,v 1.32 2003/02/04 08:06:01 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -31,6 +31,7 @@
 #include "jabber.h"
 #include "sessions.h"
 #include "encoding.h"
+#include "requests.h"
 #include "conf.h"
 #include "debug.h"
 

@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.43 2003/02/04 07:57:12 jajcus Exp $ */
+/* $Id: sessions.c,v 1.44 2003/02/04 08:06:01 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -31,6 +31,7 @@
 #include "message.h"
 #include "conf.h"
 #include "status.h"
+#include "requests.h"
 #include "debug.h"
 
 
@@ -38,9 +39,11 @@ static int conn_timeout=30;
 static int pong_timeout=30;
 static int ping_interval=10;
 static int reconnect=0;
-static int gg_port=0;
 static GList *gg_server=NULL;
 GHashTable *sessions_jid;
+
+static int session_try_login(Session *s);
+static int session_destroy(Session *s);
 
 static void session_stream_destroyed(gpointer key,gpointer value,gpointer user_data){
 Session *s=(Session *)value;
@@ -124,8 +127,6 @@ Server *server;
 	gg_proxy_port=port;
 	return 0;
 }
-
-static int session_destroy(Session *s);
 
 static gboolean sessions_hash_remove_func(gpointer key,gpointer value,gpointer udata){
 
@@ -515,7 +516,7 @@ char *njid;
 	return 0;
 }
 
-int session_try_login(Session *s){
+static int session_try_login(Session *s){
 struct gg_login_params login_params;
 GIOCondition cond;
 Server *serv;

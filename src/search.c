@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.21 2003/02/04 07:57:12 jajcus Exp $ */
+/* $Id: search.c,v 1.22 2003/02/04 08:06:01 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -38,7 +38,7 @@ int search_done(struct request_s *r, gg_pubdir50_t results){
 xmlnode q,item,n;
 char *jid,*name;
 int i;
-char *uin, *first_name, *last_name, *nickname, *born, *city, *gender, *active;
+const char *uin, *first_name, *last_name, *nickname, *born, *city, *gender, *active;
 
 	q=xmlnode_new_tag("query");
 	xmlnode_put_attrib(q,"xmlns","jabber:iq:search");
@@ -115,7 +115,6 @@ Session *sess;
 void jabber_iq_set_search(Stream *s,const char *from,const char *to,const char *id,xmlnode q){
 gg_pubdir50_t sr;
 xmlnode n;
-Request *r;
 Session *sess;
 char *data;
 
@@ -189,7 +188,6 @@ void jabber_iq_get_user_vcard(Stream *s,const char *from,const char * to,const c
 int i=0;
 char *uin;
 gg_pubdir50_t sr;
-Request *r;
 
 	q=xmlnode_dup(q);
 	sr=gg_pubdir50_new(GG_PUBDIR50_SEARCH);
@@ -213,7 +211,7 @@ char *jid,*name=NULL,*str;
 GList *it;
 Contact *c;
 User *u;
-char *uin, *first_name, *last_name, *nickname, *born, *city;
+const char *uin, *first_name, *last_name, *nickname, *born, *city;
 
 
 	if (gg_pubdir50_count(results)<1){
@@ -281,7 +279,7 @@ char *uin, *first_name, *last_name, *nickname, *born, *city;
 	if (u){
 		for(it=g_list_first(u->contacts);it;it=it->next){
 			c=(Contact *)it->data;
-			if (c->uin=atoi(uin)) break;
+			if (c->uin==atoi(uin)) break;
 		}
 		if (it==NULL) c=NULL;
 	}

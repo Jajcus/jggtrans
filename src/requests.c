@@ -1,4 +1,4 @@
-/* $Id: requests.c,v 1.18 2003/02/04 07:57:12 jajcus Exp $ */
+/* $Id: requests.c,v 1.19 2003/02/04 08:06:01 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <libxode.h>
 #include <libgadu.h>
+#include <time.h>
 #include "requests.h"
 #include "search.h"
 #include "sessions.h"
@@ -54,6 +55,8 @@ Request *r;
 			search_done(r, data->event.pubdir50);
 			remove_request(r);
 			return;
+		default:
+			break;
 	}
 
 }
