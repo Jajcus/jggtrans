@@ -6,7 +6,7 @@
     
     ...
     
-    <service type="gg" jid="gg.localhost" name="GaduGadu Transport">
+    <service type="x-gg" jid="gg.localhost" name="GaduGadu Transport">
       <ns>jabber:iq:gateway</ns>
       <ns>jabber:iq:register</ns>
       <ns>jabber:iq:search</ns>
@@ -28,7 +28,7 @@
   -->
    
   <!-- this should match <service/> in <browse/> section of jabber.xml -->
-  <service type="gg" jid="gg.localhost" name="GaduGadu Transport"/>
+  <service jid="gg.localhost"/>
 
   <!-- This connects the GG-transport process to the master process -->
   <connect id="gglinker">
