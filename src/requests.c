@@ -1,4 +1,4 @@
-/* $Id: requests.c,v 1.19.2.2 2003/04/09 07:39:44 jajcus Exp $ */
+/* $Id: requests.c,v 1.19.2.3 2003/04/09 07:45:10 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -29,9 +29,12 @@
 #include "register.h"
 
 static GList *requests=NULL;
-GHashTable *lookups=NULL;
+static GHashTable *lookups=NULL;
+static int id_counter=0;
 
 int requests_init(){
+
+	id_counter=time(NULL);
 	lookups=g_hash_table_new(g_int_hash, g_int_equal);
 	if(!lookups)
 		return 1;
@@ -132,8 +135,7 @@ struct gg_http *gghttp;
 	if(type==RT_VCARD || type==RT_SEARCH){
 		s=session_get_by_jid(from, stream);
 		if (s==NULL) return NULL;
-		
-		r->hash=time(NULL);
+		r->hash=id_counter++;
 		gg_pubdir50_seq_set((gg_pubdir50_t)data, r->hash);
 		gg_pubdir50(s->ggs, (gg_pubdir50_t)data);
 		g_hash_table_insert(lookups, &r->hash, r);
