@@ -109,6 +109,13 @@ Request *r;
 		return;
 	}
 	
+	node=xmlnode_get_tag(q,"remove");
+	if (!node){
+		debug("<remove/> in jabber:iq:register set: %s",xmlnode2str(q));
+		unregister(s,from,to,id,0);
+		return;
+	}
+	
 	node=xmlnode_get_tag(q,"username");
 	if (node) str=xmlnode_get_data(node);
 	if (!node || !str) uin=0;
