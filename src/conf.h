@@ -1,4 +1,4 @@
-/* $Id: conf.h,v 1.1 2002/02/02 19:50:26 jajcus Exp $ */
+/* $Id: conf.h,v 1.2 2003/01/15 14:12:36 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -31,6 +31,6 @@ char *config_load_string(const char *tag);
 char *config_load_formatted_string(const char *tag);
 
 /* returns number read from config file */
-int config_load_int(const char *tag);
+int config_load_int(const char *tag,int defval);
 
 #endif

@@ -1,4 +1,4 @@
-/* $Id: conf.c,v 1.4 2003/01/15 08:04:56 jajcus Exp $ */
+/* $Id: conf.c,v 1.5 2003/01/15 14:12:36 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -92,10 +92,10 @@ int i,j,sp;
 	return out;
 }
 
-int config_load_int(const char *tag){
+int config_load_int(const char *tag,int defval){
 xmlnode node;
 
 	node=xmlnode_get_tag(config,tag);
-	if (!node) return 0;
+	if (!node) return defval;
 	return atoi(g_strchug(xmlnode_get_data(node)));
 }
