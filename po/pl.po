@@ -4,9 +4,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: jabber-gg-transport 2.0.4\n"
-"POT-Creation-Date: 2003-05-27 10:30+0200\n"
-"PO-Revision-Date: 2003-05-27 10:35+0200\n"
+"Project-Id-Version: jabber-gg-transport 2.0.5\n"
+"POT-Creation-Date: 2003-05-27 11:08+0200\n"
+"PO-Revision-Date: 2003-05-27 11:10+0200\n"
 "Last-Translator: Jacek Konieczny <jajcus@pld.org.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -26,42 +26,19 @@ msgstr "Dozwolony"
 msgid "Denied"
 msgstr "Zabroniony"
 
-#: src/browse.c:54 src/disco.c:92
+#: src/browse.c:52 src/disco.c:52
 msgid "You are not allowed to browse users"
 msgstr "Nie masz zezwolenia na przeglądanie listy użytkowników"
 
-#: src/browse.c:62 src/browse.c:109 src/disco.c:126
+#: src/browse.c:60 src/browse.c:107 src/disco.c:86
 msgid "Online users"
 msgstr "Użytkownicy online"
 
-#: src/browse.c:81
+#: src/browse.c:79
 msgid "Browse request for unknown resource"
 msgstr "Żądanie przeglądania nieistniejącego zasobu"
 
-#: src/disco.c:43
-#, c-format
-msgid "%s (Connected via hub to %s:%i%s)"
-msgstr "%s (Połączony przez hub do %s:%i%s)"
-
-#: src/disco.c:50
-#, c-format
-msgid "%s (Connecting via hub%s)"
-msgstr "%s (Łączenie przez hub%s)"
-
-#: src/disco.c:56
-#, c-format
-msgid "%s (%s to %s:%u%s)"
-msgstr "%s (%s do %s:%u%s)"
-
-#: src/disco.c:58 src/disco.c:66
-msgid "Connected"
-msgstr "Połączony"
-
-#: src/disco.c:58 src/disco.c:66
-msgid "Connecting"
-msgstr "Łączenie"
-
-#: src/disco.c:116 src/disco.c:149
+#: src/disco.c:76 src/disco.c:109
 msgid "Disco request for unknown node"
 msgstr "Żądanie przeglądania nieistniejącego węzła"
 
@@ -75,7 +52,7 @@ msgid "No UIN given in 'to': %s"
 msgstr "Nie podany 'UIN' w 'do': %s"
 
 #: src/iq.c:193 src/iq.c:273 src/iq.c:278 src/iq.c:287 src/iq.c:294
-#: src/message.c:547 src/message.c:557
+#: src/message.c:550 src/message.c:560
 msgid "Bad Request"
 msgstr "Nieprawidłowe Żądanie"
 
@@ -141,7 +118,7 @@ msgstr "Błąd w otrzymanym iq: %s"
 msgid "unexpected <iq/> (not connected yet)"
 msgstr "nieoczekiwany <iq/> (brak połączenia)"
 
-#: src/iq.c:361 src/message.c:525 src/presence.c:395
+#: src/iq.c:361 src/message.c:528 src/presence.c:395
 msgid "Not allowed"
 msgstr "Nie wolno"
 
@@ -488,7 +465,7 @@ msgstr "Ustaw lokale (język)"
 msgid "Receiving roster..."
 msgstr "Pobieram roster..."
 
-#: src/message.c:177 src/message.c:194 src/message.c:201 src/message.c:541
+#: src/message.c:177 src/message.c:194 src/message.c:201 src/message.c:544
 #: src/register.c:281 src/register.c:392 src/register.c:400 src/register.c:413
 #: src/register.c:496 src/register.c:505 src/register.c:590 src/register.c:598
 msgid "Internal Server Error"
@@ -531,15 +508,15 @@ msgstr "Niewidzialność: wyłączona"
 msgid "Locale set to: %s"
 msgstr "Lokane ustawione na: %s"
 
-#: src/message.c:438 src/message.c:487
+#: src/message.c:438 src/message.c:489
 msgid "_default_"
 msgstr "_domyślne_"
 
-#: src/message.c:455
+#: src/message.c:457
 msgid "I don't know you. Register first."
 msgstr "Nie znam Cię. Zarejestruj się."
 
-#: src/message.c:476
+#: src/message.c:478
 msgid ""
 "\n"
 "Available commands and abbreviations:"
@@ -547,11 +524,11 @@ msgstr ""
 "\n"
 "Dostępne komendy (i skróty):"
 
-#: src/message.c:482
+#: src/message.c:484
 msgid " EXPERIMENTAL!"
 msgstr " EKSPERYMENTALNE!"
 
-#: src/message.c:484
+#: src/message.c:486
 #, c-format
 msgid ""
 "%s\n"
@@ -562,7 +539,7 @@ msgstr ""
 "\n"
 "Obecne ustawienia:"
 
-#: src/message.c:485
+#: src/message.c:487
 #, c-format
 msgid ""
 "%s\n"
@@ -571,15 +548,15 @@ msgstr ""
 "%s\n"
 "  Tylko dla przyjaciół: %s"
 
-#: src/message.c:485 src/message.c:486
+#: src/message.c:487 src/message.c:488
 msgid "on"
 msgstr "włączone"
 
-#: src/message.c:485 src/message.c:486
+#: src/message.c:487 src/message.c:488
 msgid "off"
 msgstr "wyłączone"
 
-#: src/message.c:486
+#: src/message.c:488
 #, c-format
 msgid ""
 "%s\n"
@@ -588,7 +565,7 @@ msgstr ""
 "%s\n"
 "  Niewidzialność: %s"
 
-#: src/message.c:487
+#: src/message.c:489
 #, c-format
 msgid ""
 "%s\n"
@@ -597,7 +574,7 @@ msgstr ""
 "%s\n"
 "  Lokale: %s"
 
-#: src/message.c:488
+#: src/message.c:490
 #, c-format
 msgid ""
 "%s\n"
@@ -608,31 +585,31 @@ msgstr ""
 "\n"
 "Zarejestrowany jako: %u"
 
-#: src/message.c:536
+#: src/message.c:539
 #, c-format
 msgid "Error message received: %s"
 msgstr "Otrzymano błąd: %s"
 
-#: src/message.c:540
+#: src/message.c:543
 msgid "Unsupported message type"
 msgstr "Nieobsługiwany typ wiadomości"
 
-#: src/message.c:546
+#: src/message.c:549
 #, c-format
 msgid "Bad 'to' in: %s"
 msgstr "Zły 'do' w: %s"
 
-#: src/message.c:556
+#: src/message.c:559
 #, c-format
 msgid "Anonymous message? %s"
 msgstr "Anonimowa wiadomość? %s"
 
-#: src/message.c:563
+#: src/message.c:566
 #, c-format
 msgid "%s not logged in. While processing %s"
 msgstr "%s nie jest zalogowany. Podczas przetwarzania %s"
 
-#: src/message.c:564 src/presence.c:212 src/search.c:212 src/search.c:258
+#: src/message.c:567 src/presence.c:212 src/search.c:212 src/search.c:258
 #: src/search.c:330
 msgid "Not logged in"
 msgstr "Nie zalogowany"
@@ -1339,6 +1316,33 @@ msgstr "%sTreść żądania: %s"
 #, c-format
 msgid "%sWaiting for ping: %i"
 msgstr "%sOczekiwanie na ping: %i"
+
+#: src/sessions.c:940
+msgid " with TLS"
+msgstr " z szyfrowaniem TLS"
+
+#: src/sessions.c:944
+#, c-format
+msgid "%s (Connected via hub to %s:%i%s)"
+msgstr "%s (Połączony przez hub do %s:%i%s)"
+
+#: src/sessions.c:951
+#, c-format
+msgid "%s (Connecting via hub%s)"
+msgstr "%s (Łączenie przez hub%s)"
+
+#: src/sessions.c:957
+#, c-format
+msgid "%s (%s to %s:%u%s)"
+msgstr "%s (%s do %s:%u%s)"
+
+#: src/sessions.c:959 src/sessions.c:967
+msgid "Connected"
+msgstr "Połączony"
+
+#: src/sessions.c:959 src/sessions.c:967
+msgid "Connecting"
+msgstr "Łączenie"
 
 #: src/stats.c:133
 msgid "Statistic not found"
