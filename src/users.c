@@ -1,4 +1,4 @@
-/* $Id: users.c,v 1.38 2003/04/22 08:23:00 jajcus Exp $ */
+/* $Id: users.c,v 1.39 2003/06/27 14:06:51 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -244,7 +244,7 @@ char *data;
 				if (uin<=0) continue;
 
 				c=g_new0(Contact,1);
-				c->status=GG_STATUS_NOT_AVAIL;
+				c->status=-1;
 				c->uin=uin;
 				contacts=g_list_append(contacts,c);
 				continue;
@@ -259,7 +259,7 @@ char *data;
 				if (uin<=0) continue;
 
 				c=g_new0(Contact,1);
-				c->status=GG_STATUS_NOT_AVAIL;
+				c->status=-1;
 				c->uin=uin;
 
 				contacts=g_list_append(contacts,c);
@@ -436,6 +436,19 @@ Contact *c;
 			}
 			return 0;
 		}
+	}
+
+	return -1;
+}
+
+int user_get_contact_status(User *u,unsigned int uin){
+GList *it;
+Contact *c;
+
+	g_assert(u!=NULL);
+	for(it=u->contacts;it;it=it->next){
+		c=(Contact *)it->data;
+		if (c->uin==uin) return c->status;
 	}
 
 	return -1;

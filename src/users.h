@@ -1,4 +1,4 @@
-/* $Id: users.h,v 1.19 2003/04/14 10:18:47 jajcus Exp $ */
+/* $Id: users.h,v 1.20 2003/06/27 14:06:51 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -64,6 +64,7 @@ int user_sys_msg_received(User *u,int nr);
 
 int user_set_contact_status(User *u,int status,unsigned int uin,char *desc,
 				int more,uint32_t ip,uint16_t port,uint32_t version);
+int user_get_contact_status(User *u,unsigned int uin);
 
 void user_load_locale(User *u);
 
