@@ -1,2 +1,1 @@
-- segfault when user logs-on twice (with different resources)
-- segfault on exit
+- none? (I don't belive this)

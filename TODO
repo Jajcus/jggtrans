@@ -1,6 +1,3 @@
-As soon as possible:
-- remove users_jid hash table, doesn't seem to be really needed, and it makes problems
-
 Always:
 - bug fixes
 

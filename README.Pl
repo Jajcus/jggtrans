@@ -21,6 +21,10 @@ prawid³owego skonfigurowania programu.
 Po skonfigurowaniu transport mo¿na uruchomiæ startuj±c "jggtrans"
 po odpowiednim zmodyfikowaniu jabber.xml i uruchomieniu serwera Jabber.
 
+jggtrans mo¿e byæ uruchomiony z konta "root", ale tylko gdy podana
+bêdzie opcja "-u" (oraz opcjonalnie "-g"). W takim przypadku program
+zmieni uid i gid zaraz po starcie.
+
 Proszê zg³aszaæ mi wszelkie znalezione b³êdy, mo¿e uda mi siê je
 poprawiæ.
 

@@ -1,4 +1,19 @@
 
+Version 0.9.9
+--------------
+This version fixes all fatal bugs known to me. If no bug report come this
+release will become 1.0.0 soon.
+
+Changes from 0.9.8:
+
+* Timeout and ping interval settings are now included in example config files
+
+* Auto-reconnect to GaduGadu server after connection is broken (<reconnect/>
+  option in config file)
+
+* Fixes for some crashes related to user lookup 
+
+
 Version 0.9.8
 --------------
 This will be (hopefully) the last one before jabber-gg-transport-1.0.0

@@ -8,6 +8,7 @@ Aby zbudowaæ jabber-gg-transport potrzeba:
 	
 	- libgg (czê¶æ EKG, http://dev.null.pl/ekg/)
 		Prawdopodobnie potrzebny bêdzie snapshot z CVS
+		Przetestowane ze snapshotem 20020223
 
 
 Kompilacja
@@ -18,5 +19,5 @@ Prosta jak w przypadku wiêkszo¶ci projektów OS:
 	make
 
 Mo¿na u¿yæ opcji configure "--sysconfdir=", aby ustawiæ katalog z plikiem konfiguracyjnym,
-lub "--enable-debug", aby w³±czyæ trochê kodu "odpluskwiaj±cego".
+lub "--disable-debug", aby wy³±czyæ kod "odpluskwiaj±cy".
 
