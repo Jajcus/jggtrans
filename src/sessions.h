@@ -1,4 +1,4 @@
-/* $Id: sessions.h,v 1.15 2003/01/27 11:15:32 mmazur Exp $ */
+/* $Id: sessions.h,v 1.16 2003/01/28 21:48:47 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -39,7 +39,7 @@ typedef struct sesion_s{
 	guint io_watch;
 
 	int connected;
-	int current_server;
+	GList *current_server;
 
 	char *jid;		/* users JID, with resource */
 	struct stream_s *s;	/* Jabber stream */
@@ -57,7 +57,7 @@ typedef struct sesion_s{
 typedef struct gg_server_s {
 	struct in_addr addr;
 	int port;
-}server_t;
+}Server;
 
 extern GHashTable *sessions_jid;
 
