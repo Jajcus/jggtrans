@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.54 2004/03/05 08:39:41 jajcus Exp $ */
+/* $Id: main.c,v 1.55 2004/03/17 20:05:07 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -371,6 +371,7 @@ const char *param_d=NULL,*param_D=NULL;
 int restarting=0;
 FILE *pidfile;
 guint lh;
+int i;
 
 	uid=getuid();
 	euid=geteuid();
@@ -585,14 +586,22 @@ guint lh;
 	signal(SIGCHLD,sigchld_handler);
 
 	start_time=time(NULL);
+	debug("starting the main loop...");
 	g_main_run(main_loop);
+	debug("g_main_run() finished.");
 
 	sessions_done();
 	users_done();
 	requests_done();
 
 	/* process pending events - write anything not written yet */
-	while(g_main_iteration(0));
+	if (g_main_pending())
+		for(i=0;i<100;i++) { 
+			/* FIXME: iteration limit should not be needed, but some event
+			 * is constantly pending when Jabber stream is not connected */
+			debug("flushing events...");
+			if (!g_main_iteration(1)) break;
+		}
 
 	jabber_done();
 	encoding_done();
