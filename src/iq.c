@@ -1,4 +1,4 @@
-/* $Id: iq.c,v 1.34 2003/03/24 13:51:35 jajcus Exp $ */
+/* $Id: iq.c,v 1.35 2003/03/25 07:43:45 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -27,6 +27,7 @@
 #include "browse.h"
 #include "debug.h"
 #include "conf.h"
+#include "gg_versions.h"
 #include <sys/utsname.h>
 
 char *gateway_desc;
@@ -61,29 +62,6 @@ IqNamespace client_iq_ns[]={
 	{"jabber:iq:version","query",jabber_iq_get_client_version,NULL},
 	{NULL,NULL,NULL,NULL}
 };
-
-/* Gadu-Gadu protocol=>version mapping (aproximations) */
-char *gg_version[]={
-	NULL,NULL,NULL,NULL,NULL,NULL,NULL,	/* 0x00 - 0x06 */
-	NULL,NULL,NULL,				/* 0x07 - 0x09 */
-	"(WPKontakt)",				/* 0x0a */
-	"4.0.2x",				/* 0x0b */
-	NULL,NULL,NULL,				/* 0x0c - 0x0e */
-	"4.5.1x",				/* 0x0f */
-	"4.5.2x",				/* 0x10 */
-	"4.6.x",				/* 0x11 */
-	NULL,NULL,				/* 0x12 - 0x13 */
-	"4.8.x",				/* 0x14 */
-	"4.8.9",				/* 0x15 */
-	"4.9.1",				/* 0x16 */
-	"4.9.2",				/* 0x17 */
-	"4.9.3/5.0.1",				/* 0x18 */
-	"5.0.3",				/* 0x19 */
-	"5.0.4",				/* 0x1a */
-	"5.0.5",				/* 0x1b */
-	NULL,NULL,NULL,NULL			/* 0x1c - 0x1f */
-};
-#define GG_VERSION_ELEMENTS 0x20
 
 void jabber_iq_send_error(Stream *s,const char *was_from,const char *was_to,const char *id,int code,char *string){
 xmlnode iq;
