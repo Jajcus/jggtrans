@@ -6,7 +6,7 @@ libtoolize --force
 rm -f po/ChangeLog
 autopoint --force
 touch po/Makefile.in m4/Makefile
-gettextize --force
+gettextize --force --no-changelog
 aclocal -I m4
 autoheader
 automake -a 
