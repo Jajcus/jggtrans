@@ -69,7 +69,7 @@
  	<instructions>
 	  	Proszę podać imię (first) i/lub nazwisko (last) 
 	  	i/lub ksywę (nick) i/lub miasto (city) szukanej osoby.<p/>
-	 	Można także wyszukiwać według adresu e-mail, lub numeru UIN.
+	 	Można także wyszukiwać według numeru UIN.
 	</instructions>
  </search>
 
