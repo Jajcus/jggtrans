@@ -1,4 +1,4 @@
-/* $Id: stream.c,v 1.23 2004/03/17 22:40:02 jajcus Exp $ */
+/* $Id: stream.c,v 1.24 2004/04/14 11:00:41 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -81,6 +81,8 @@ int fd;
 		return NULL;
 	}
 	s->ioch=g_io_channel_unix_new(fd);
+	g_io_channel_set_encoding(s->ioch,NULL,NULL);
+	g_io_channel_set_buffered(s->ioch,0);
 	s->sa.sin_family=AF_INET;
 	s->sa.sin_port=htons(port);
 	he=gethostbyname(host);
@@ -194,8 +196,9 @@ int r;
 
 int stream_io_read(GIOChannel *source,GIOCondition condition,gpointer data){
 Stream *s;
-GIOError err;
-guint br;
+GIOStatus st;
+GError *error=NULL;
+gsize br;
 
 	s=(Stream *)data;
 	g_assert(s);
@@ -207,17 +210,18 @@ guint br;
 		g_assert(s->read_buf!=0);
 		s->read_buf_len=1024;
 	}
-	err=g_io_channel_read(source,s->read_buf,s->read_buf_len,&br);
-	if (err==G_IO_ERROR_INVAL || br<1){
+	st=g_io_channel_read_chars(source,s->read_buf,s->read_buf_len,&br,&error);
+	if (st!=G_IO_STATUS_NORMAL){
+		g_warning("read: %i %s",st,error?error->message:"unknown");
+		if (error) g_error_free(error);
+		error=NULL;
 		s->read_watch=0;
 		s->xs->f(XSTREAM_CLOSE,NULL,s);
 		return FALSE;
 	}
-	if (err==G_IO_ERROR_AGAIN) return TRUE;
-	if (err!=G_IO_ERROR_NONE){
-		g_warning("read: %s",g_strerror(errno));
-		return TRUE;
-	}
+	if (error) g_error_free(error);
+	error=NULL;
+	if (st==G_IO_STATUS_AGAIN) return TRUE;
 	s->read_buf[br]=0;
 	debug("IN: %s",s->read_buf);
 	xstream_eat(s->xs,s->read_buf,br);
@@ -227,27 +231,34 @@ guint br;
 int stream_io_write(GIOChannel *source,GIOCondition condition,gpointer data){
 Stream *s;
 char * str;
-GIOError err;
-guint br;
+GIOStatus st;
+GError *error=NULL;
+gsize br;
 
 	s=(Stream *)data;
 	g_assert(s);
 
 	if (s->write_buf && s->write_pos>=0 && s->write_len>=0){
-		err=g_io_channel_write(source,
+		st=g_io_channel_write_chars(source,
 					s->write_buf+s->write_pos,
 					s->write_len-s->write_pos,
-					&br);
-		if (err==G_IO_ERROR_INVAL){
+					&br,
+					&error);
+		if (st==G_IO_STATUS_ERROR){
+			g_warning("write error: %s",error?error->message:"unknwown");
 			s->write_watch=0;
 			s->xs->f(XSTREAM_CLOSE,NULL,s);
+			if (error) g_error_free(error);
 			return FALSE;
 		}
-		if (err==G_IO_ERROR_AGAIN) return TRUE;
-		if (err!=G_IO_ERROR_NONE){
-			g_warning("write: %s",g_strerror(errno));
+		if (st==G_IO_STATUS_AGAIN) return TRUE;
+		if (st!=G_IO_STATUS_NORMAL){
+			g_warning("write status: %i (%s)",st,error?error->message:"unknown");
+			if (error) g_error_free(error);
 			return TRUE;
 		}
+		if (error) g_error_free(error);
+		error=NULL;
 		str=g_new(char,br+1);
 		g_assert(str!=NULL);
 		memcpy(str,s->write_buf+s->write_pos,br);
@@ -255,6 +266,7 @@ guint br;
 		debug("OUT: %s",str);
 		g_free(str);
 		s->write_pos+=br;
+		debug("write_pos: %i, write_len: %i, br: %i\n",s->write_pos,s->write_len,(int)br);
 		if (s->write_pos==s->write_len){
 			s->write_watch=0;
 			s->write_len=0;
@@ -267,6 +279,8 @@ guint br;
 
 int stream_write_bytes(Stream *s,const char *buf,int l){
 time_t stream_flush_timeout;
+GIOStatus st;
+GError *error=NULL;
 
 	if (!l) return 0;
 	g_assert(buf!=NULL);
@@ -284,18 +298,22 @@ time_t stream_flush_timeout;
 		}
 		if (!s->write_len && l>MAX_WRITE_BUF){
 			int pos=0;
-			int written,err;
+			gsize written;
 			char *str;
 			debug("Flushing data that don't fit into the write buffer.");
 			while(pos<l){
-				err=g_io_channel_write(s->ioch,
+				st=g_io_channel_write_chars(s->ioch,
 						(gchar *)buf+pos,
 						l-pos,
-						&written);
-				if (err!=G_IO_ERROR_AGAIN && err!=G_IO_ERROR_NONE){
-					g_warning("write: %s",g_strerror(errno));
+						&written,
+						&error);
+				if (st!=G_IO_STATUS_AGAIN && st!=G_IO_STATUS_NORMAL){
+					g_warning("write: %i: %s",st,error?error->message:"unknown");
+					if (error) g_error_free(error);
 					return -2;
 				}
+				if (error) g_error_free(error);
+				error=NULL;
 				str=g_new(char,written+1);
 				g_assert(str!=NULL);
 				memcpy(str,buf+pos,written);
@@ -370,16 +388,19 @@ GList *it;
 	if (!s->closing){
 		char goodbye[]="</stream:stream>";
 		guint i,l;
-		GIOError err;
-		guint br;
+		gsize br;
+		GIOStatus st;
+		GError *error=NULL;
 
 		i=0;
 		l=sizeof(goodbye);
 		do{
-			err=g_io_channel_write(s->ioch,goodbye+i,l,&br);
+			st=g_io_channel_write_chars(s->ioch,goodbye+i,l,&br,&error);
+			if (error) g_error_free(error);
+			error=NULL;
 			l-=br;
 			i+=br;
-		}while(err==G_IO_ERROR_AGAIN||(err=G_IO_ERROR_NONE && l>0));
+		}while(st==G_IO_STATUS_AGAIN||(st=G_IO_STATUS_NORMAL && l>0));
 		s->closing=1;
 	}
 	if (s->err_watch) g_source_remove(s->err_watch);
