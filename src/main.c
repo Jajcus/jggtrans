@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.48 2003/04/22 08:44:29 jajcus Exp $ */
+/* $Id: main.c,v 1.49 2003/04/22 10:00:28 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -233,11 +233,11 @@ void log_handler_syslog(const gchar *log_domain, GLogLevelFlags log_level,
 }
 
 const char *local_translate(const char *str){
-const char *lc_ctype,*lc_messages,*td_codeset,*ret;
+char *lc_ctype,*lc_messages,*td_codeset,*ret;
 
-	td_codeset=bind_textdomain_codeset(PACKAGE,NULL);
-	lc_ctype=setlocale(LC_CTYPE,NULL);
-	lc_messages=setlocale(LC_MESSAGES,NULL);
+	td_codeset=g_strdup(bind_textdomain_codeset(PACKAGE,NULL));
+	lc_ctype=g_strdup(setlocale(LC_CTYPE,NULL));
+	lc_messages=g_strdup(setlocale(LC_MESSAGES,NULL));
 	setlocale(LC_MESSAGES,"");
 	setlocale(LC_CTYPE,"");
 #ifdef HAVE_LANGINFO_CODESET
@@ -250,6 +250,9 @@ const char *lc_ctype,*lc_messages,*td_codeset,*ret;
 	setlocale(LC_CTYPE,lc_ctype);
 	setlocale(LC_MESSAGES,lc_ctype);
 	bind_textdomain_codeset(PACKAGE,td_codeset);
+	g_free(lc_ctype);
+	g_free(lc_messages);
+	g_free(td_codeset);
 
 	return ret;
 }
@@ -259,9 +262,9 @@ void log_handler(const gchar *log_domain, GLogLevelFlags log_level,
 
 char *lc_ctype,*lc_messages,*td_codeset;
 
-	td_codeset=bind_textdomain_codeset(PACKAGE,NULL);
-	lc_ctype=setlocale(LC_CTYPE,NULL);
-	lc_messages=setlocale(LC_MESSAGES,NULL);
+	td_codeset=g_strdup(bind_textdomain_codeset(PACKAGE,NULL));
+	lc_ctype=g_strdup(setlocale(LC_CTYPE,NULL));
+	lc_messages=g_strdup(setlocale(LC_MESSAGES,NULL));
 	setlocale(LC_MESSAGES,"");
 	setlocale(LC_CTYPE,"");
 #ifdef HAVE_LANGINFO_CODESET
@@ -275,8 +278,11 @@ char *lc_ctype,*lc_messages,*td_codeset;
 	if (use_syslog) log_handler_syslog(log_domain,log_level,message);
 
 	setlocale(LC_CTYPE,lc_ctype);
-	setlocale(LC_MESSAGES,lc_ctype);
+	setlocale(LC_MESSAGES,lc_messages);
 	bind_textdomain_codeset(PACKAGE,td_codeset);
+	g_free(lc_ctype);
+	g_free(lc_messages);
+	g_free(td_codeset);
 }
 
 void daemonize(FILE *pidfile){
