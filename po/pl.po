@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: jabber-gg-transport 1.4.1\n"
-"POT-Creation-Date: 2003-04-19 10:22+0200\n"
+"POT-Creation-Date: 2003-04-21 11:11+0200\n"
 "PO-Revision-Date: 2003-04-16 12:45+0200\n"
 "Last-Translator: Tomasz Sterna <tomek@smoczy.net>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -285,8 +285,10 @@ msgstr "Wydaje mi się, że jestem demonem."
 
 #: src/main.c:293
 #, c-format
-msgid "Jabber GaduGadu Transport %s\n"
-msgstr "Jabber GaduGadu Transport %s\n"
+msgid ""
+"\n"
+"Jabber GaduGadu Transport %s\n"
+msgstr "\nJabber GaduGadu Transport %s\n"
 
 #: src/main.c:295
 #, c-format
@@ -294,20 +296,26 @@ msgid "\tUsage: %s [OPTIONS]... [<config file>]\n"
 msgstr "\tUżycie: %s [OPCJE]... [<plik konfiguracyjny>]\n"
 
 #: src/main.c:296
-msgid "Options:\n"
-msgstr "Opcje:\n"
+msgid ""
+"\n"
+"Options:\n"
+msgstr "\nOpcje:\n"
 
 #: src/main.c:297
 msgid "\t-h\t      This message\n"
 msgstr "\t-h\t      Te informacje\n"
 
 #: src/main.c:298
-msgid "\t-f\t      Run in foreground. Debug/error messages will be sent to stderr\n"
-msgstr "\t-f\t      Działanie na konsoli. Informacje debug'u będą wysyłane na stderr\n"
+msgid ""
+"\t-f\t      Run in foreground. Debug/error messages will be sent to stderr\n"
+msgstr ""
+"\t-f\t      Działanie na konsoli. Informacje debug'u będą wysyłane na "
+"stderr\n"
 
 #: src/main.c:299
 msgid "\t-d <n>\tLog level (0(default) - normal, >0 more, <0 less)\n"
-msgstr "\t-d <n>\tPoziom logowania (0(domyślny) - normalny, >0 więcej, <0 mniej)\n"
+msgstr ""
+"\t-d <n>\tPoziom logowania (0(domyślny) - normalny, >0 więcej, <0 mniej)\n"
 
 #: src/main.c:300
 msgid "\t-D <n>\tlibgg debug level (enables also -f)\n"
@@ -499,8 +507,12 @@ msgid "I don't know you. Register first."
 msgstr "Nie znam Cię. Zarejestruj się."
 
 #: src/message.c:425
-msgid "\nAvailable commands and abbreviations:"
-msgstr "\nDostępne komendy (i skróty):"
+msgid ""
+"\n"
+"Available commands and abbreviations:"
+msgstr ""
+"\n"
+"Dostępne komendy (i skróty):"
 
 #: src/message.c:431
 msgid " EXPERIMENTAL!"
@@ -508,13 +520,21 @@ msgstr " EKSPERYMENTALNE!"
 
 #: src/message.c:433
 #, c-format
-msgid "%s\nCurrent settings:"
-msgstr "%s\nObecne ustawienia:"
+msgid ""
+"%s\n"
+"Current settings:"
+msgstr ""
+"%s\n"
+"Obecne ustawienia:"
 
 #: src/message.c:434
 #, c-format
-msgid "%s\n  friends only: %s"
-msgstr "%s\n  Tylko dla przyjaciół: %s"
+msgid ""
+"%s\n"
+"  friends only: %s"
+msgstr ""
+"%s\n"
+"  Tylko dla przyjaciół: %s"
 
 #: src/message.c:434 src/message.c:435
 msgid "on"
@@ -526,13 +546,21 @@ msgstr "wyłączone"
 
 #: src/message.c:435
 #, c-format
-msgid "%s\n  invisible: %s"
-msgstr "%s\n  Niewidzialność: %s"
+msgid ""
+"%s\n"
+"  invisible: %s"
+msgstr ""
+"%s\n"
+"  Niewidzialność: %s"
 
 #: src/message.c:436
 #, c-format
-msgid "%s\n  locale: %s"
-msgstr "%s\n  Lokale: %s"
+msgid ""
+"%s\n"
+"  locale: %s"
+msgstr ""
+"%s\n"
+"  Lokale: %s"
 
 #: src/message.c:484
 #, c-format
@@ -656,8 +684,8 @@ msgid ""
 "directory information or to unregister."
 msgstr ""
 "Wypełnij ten formularz aby zarejestrować się w transporcie.\n"
-"Możesz użyć trybu rejestracji w przyszłości aby zmienić swoje "
-"ustawienia, hasło, informacje w katalogu albo wyrejestrować się."
+"Możesz użyć trybu rejestracji w przyszłości aby zmienić swoje ustawienia, "
+"hasło, informacje w katalogu albo wyrejestrować się."
 
 #: src/register.c:53 src/search.c:52
 msgid "GG number"
@@ -667,6 +695,7 @@ msgstr "Numerek GG"
 msgid "Password"
 msgstr "Hasło"
 
+#. form_add_field(form,"boolean","new",_("Create new account"),"0",1);
 #: src/register.c:58 src/register.c:87
 msgid "Language"
 msgstr "Język"
@@ -903,8 +932,10 @@ msgid "Nothing to change"
 msgstr "Żadnych zmian"
 
 #: src/register.c:621
-msgid "Not registered, and no password gived for public directory change."
-msgstr "Użytkownik nie jest zarejestrowany i nie podał hasła by zmienić dane w katalogu."
+msgid "Not registered, and no password given for public directory change."
+msgstr ""
+"Użytkownik nie jest zarejestrowany i nie podał hasła by zmienić dane w "
+"katalogu."
 
 #: src/register.c:657 src/sessions.c:323 src/sessions.c:340 src/sessions.c:356
 msgid "Remote Server Error"
