@@ -1,4 +1,4 @@
-/* $Id: stream.c,v 1.21 2003/09/14 09:17:40 jajcus Exp $ */
+/* $Id: stream.c,v 1.22 2004/03/17 22:28:33 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -26,6 +26,7 @@
 #include <fcntl.h>
 #include <netdb.h>
 #include <errno.h>
+#include <time.h>
 
 #include "ggtrans.h"
 #include "stream.h"
@@ -34,6 +35,7 @@
 
 #define MAX_WRITE_BUF 102400
 #define MAX_READ_BUF 102400
+#define WRITE_BUF_FLUSH_TIMEOUT 10
 
 GList* destroy_handlers;
 
@@ -140,10 +142,10 @@ int r;
 	if (!s->connecting) return -1;
 	r=connect(g_io_channel_unix_get_fd(s->ioch),
 			(struct sockaddr *) &s->sa, sizeof (s->sa));
-	if (r==0){
+	if (r==0 || errno==EISCONN){
 		s->connected=1;
 		s->connecting=0;
-		if (!nonblock)
+		if (nonblock)
 			if (stream_set_nonblocking(s,0)){
 				return -1;
 			}
@@ -174,6 +176,7 @@ int stream_io_connect(GIOChannel *source,GIOCondition condition,gpointer data){
 Stream *s;
 int r;
 
+	debug("stream_io_connect()");
 	s=(Stream *)data;
 	g_assert(s);
 	g_assert(s->connecting);
@@ -263,12 +266,50 @@ guint br;
 }
 
 int stream_write_bytes(Stream *s,const char *buf,int l){
+time_t stream_flush_timeout;
 
 	if (!l) return 0;
 	g_assert(buf!=NULL);
 	g_assert(l>=0);
-	if (s->write_buf_len+l > MAX_WRITE_BUF){
-		return -2;
+	if (s->write_len+l > MAX_WRITE_BUF){
+		stream_flush_timeout=time(NULL)+WRITE_BUF_FLUSH_TIMEOUT;
+		if (s->write_len) {
+			debug("Flushing stream write buffer, as it is full (%i characters, %i to be added)",s->write_len,l);
+			/* block to flush the buffer */
+			while(time(NULL)<stream_flush_timeout){
+				if (!g_main_is_running(main_loop)) break;
+				stream_io_write(s->ioch,G_IO_OUT,(gpointer)s);
+				if (s->write_len==0) break;
+			}
+		}
+		if (!s->write_len && l>MAX_WRITE_BUF) {
+			int pos=0;
+			int written,err;
+			char *str;
+			debug("Flushing data that don't fit into the write buffer.");
+			while(pos<l){
+				err=g_io_channel_write(s->ioch,
+						(gchar *)buf+pos,
+						l-pos,
+						&written);
+				if (err!=G_IO_ERROR_AGAIN && err!=G_IO_ERROR_NONE){
+					g_warning("write: %s",g_strerror(errno));
+					return -2;
+				}
+				str=g_new(char,written+1);
+				g_assert(str!=NULL);
+				memcpy(str,buf+pos,written);
+				str[written]=0;
+				debug("OUT: %s",str);
+				g_free(str);
+				pos+=written;
+			}
+			return 0;
+		}
+		if (s->write_len+l > MAX_WRITE_BUF){
+			debug("Write buffer overflow!");
+			return -2;
+		}
 	}
 	if (!s->write_buf){
 		s->write_buf=g_new(char,1024);
