@@ -399,6 +399,10 @@ char *show,*status;
 		return presence_unsubscribed(stream,from,to);
 	else if (!strcmp(type,"probe"))
 		return presence_probe(stream,from,to);
+	else if (!strcmp(type,"error")){
+		g_warning("Error presence received: %s",xmlnode2str(tag));
+		return 0;
+	}
 	
 	g_warning("Unsupported type in %s",xmlnode2str(tag));
 	presence_send_error(stream,to,from,501,"Not Implemented");

@@ -255,7 +255,11 @@ xmlnode query;
 }
 
 void jabber_iq_result(Stream *s,xmlnode x){}
-void jabber_iq_error(Stream *s,xmlnode x){}
+
+void jabber_iq_error(Stream *s,xmlnode x){
+
+	g_warning("Error iq received: %s",xmlnode2str(x));
+}
 	
 void jabber_iq(Stream *s,xmlnode x){
 char *type;
