@@ -1,9 +1,1 @@
-ChangeLog
-Makefile
-Makefile.in
-Makefile.in.in
-POTFILES
-*.gmo
-jabber-gg-transport.pot
-Makevars
-stamp-po
+remove-potcdate.sed
