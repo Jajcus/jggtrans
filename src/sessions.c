@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.93 2003/09/10 07:25:38 jajcus Exp $ */
+/* $Id: sessions.c,v 1.94 2004/01/30 09:43:56 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -408,7 +408,6 @@ time_t timestamp;
 			if (s->req_id)
 				jabber_iq_send_result(s->s,s->jid,NULL,s->req_id,NULL);
 			presence_send_subscribe(s->s,NULL,s->user->jid);
-			presence_send_subscribed(s->s,NULL,s->user->jid);
 			if (s->req_id){
 				free(s->req_id);
 				s->req_id=NULL;
