@@ -234,7 +234,7 @@ int presence_unsubscribed(struct stream_s *stream,const char *from,const char *t
 
 	debug("Presence unsubscribed sent to me.");
 
-	unregister(stream,from,NULL,1);
+	unregister(stream,from,NULL,NULL,1);
 
 	return 0;
 }

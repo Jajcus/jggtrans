@@ -80,7 +80,7 @@ Session *s;
 	g_warning("Session timeout for %s",s->jid);
 	
 	if (s->req_id){
-		jabber_iq_send_error(s->s,s->jid,s->req_id,504,"Remote Server Timeout");
+		jabber_iq_send_error(s->s,s->jid,NULL,s->req_id,504,"Remote Server Timeout");
 	}
 	else{
 		presence_send(s->s,NULL,s->user->jid,0,NULL,"Connection Timeout",0);
@@ -191,7 +191,7 @@ gdouble t;
 		if (condition&G_IO_HUP) g_warning("Hangup on connection for %s",s->jid);
 		if (condition&G_IO_NVAL) g_warning("Invalid channel on connection for %s",s->jid);
 		if (s->req_id){
-			jabber_iq_send_error(s->s,s->jid,s->req_id,502,"Remote Server Error");
+			jabber_iq_send_error(s->s,s->jid,NULL,s->req_id,502,"Remote Server Error");
 		}
 		else{
 			presence_send(s->s,NULL,s->user->jid,0,NULL,"Connection broken",0);
@@ -207,7 +207,7 @@ gdouble t;
 	if (!event){
 		g_warning("Connection broken. Session of %s",s->jid);
 		if (s->req_id){
-			jabber_iq_send_error(s->s,s->jid,s->req_id,502,"Remote Server Error");
+			jabber_iq_send_error(s->s,s->jid,NULL,s->req_id,502,"Remote Server Error");
 		}
 		else{
 			presence_send(s->s,NULL,s->user->jid,0,NULL,"Connection broken",0);
@@ -222,7 +222,7 @@ gdouble t;
 		case GG_EVENT_CONN_FAILED:
 			g_warning("Login failed for %s",s->jid);
 			if (s->req_id)
-				jabber_iq_send_error(s->s,s->jid,s->req_id,401,"Unauthorized");
+				jabber_iq_send_error(s->s,s->jid,NULL,s->req_id,401,"Unauthorized");
 			else presence_send(s->s,NULL,s->user->jid,0,NULL,"Login failed",0);
 			s->io_watch=0;
 			session_remove(s);
@@ -230,7 +230,7 @@ gdouble t;
 		case GG_EVENT_CONN_SUCCESS:
 			g_message("Login succeed for %s",s->jid);
 			if (s->req_id)
-				jabber_iq_send_result(s->s,s->jid,s->req_id,NULL);
+				jabber_iq_send_result(s->s,s->jid,NULL,s->req_id,NULL);
 			presence_send_subscribe(s->s,NULL,s->user->jid);
 			/*presence_send_subscribed(s->s,NULL,s->user->jid);*/
 			if (s->req_id){

@@ -14,6 +14,7 @@ typedef enum request_type_e{
 
 typedef struct request_s{
 	char *from; /* jid of requesting user */
+	char *to; /* target of user request */
 	char *id;  /* ID if user request (<iq/>) */
 	xmlnode query; /* The query */
 	RequestType type;
@@ -25,7 +26,9 @@ typedef struct request_s{
 	struct stream_s *stream;
 }Request;
 
-Request * add_request(RequestType type,const char *from,const char *id,xmlnode query,struct gg_http *gghttp,struct stream_s *stream);
+Request * add_request(RequestType type,const char *from,const char *to,
+			const char *id,xmlnode query,struct gg_http *gghttp,
+			struct stream_s *stream);
 int remove_request(Request *r);
 
 #endif

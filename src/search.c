@@ -12,7 +12,7 @@ const char *search_instructions;
 
 int search_error(Request *r){
 
-	jabber_iq_send_error(r->stream,r->from,r->id,502,"Remote Server Error");
+	jabber_iq_send_error(r->stream,r->from,r->to,r->id,502,"Remote Server Error");
 	return 0;
 }
 
@@ -55,11 +55,11 @@ int i;
 		if (results->results[i].active)
 			xmlnode_insert_cdata(xmlnode_insert_tag(item,"active"),"yes",-1);
 	}
-	jabber_iq_send_result(r->stream,r->from,r->id,q);
+	jabber_iq_send_result(r->stream,r->from,r->to,r->id,q);
 	return 0;
 }
 
-void jabber_iq_get_search(Stream *s,const char *from,const char *id,xmlnode q){
+void jabber_iq_get_search(Stream *s,const char *from,const char *to,const char *id,xmlnode q){
 xmlnode iq,n;
 
 	iq=xmlnode_new_tag("query");
@@ -77,10 +77,10 @@ xmlnode iq,n;
 	xmlnode_insert_tag(iq,"phone");
 	xmlnode_insert_tag(iq,"username");
 
-	jabber_iq_send_result(s,from,id,iq);
+	jabber_iq_send_result(s,from,to,id,iq);
 }
 
-void jabber_iq_set_search(Stream *s,const char *from,const char *id,xmlnode q){
+void jabber_iq_set_search(Stream *s,const char *from,const char *to,const char *id,xmlnode q){
 struct gg_search_request sr;
 xmlnode n;
 struct gg_http *gghttp;
@@ -140,10 +140,10 @@ char *p,*str;
 	if (sr.email) g_free(sr.email);
 	if (sr.phone) g_free(sr.phone);
 	
-	if (!gghttp) jabber_iq_send_error(s,from,id,500,"Internal Server Error");
+	if (!gghttp) jabber_iq_send_error(s,from,to,id,500,"Internal Server Error");
 
-	r=add_request(RT_SEARCH,from,id,q,gghttp,s);
-	if (!r) jabber_iq_send_error(s,from,id,500,"Internal Server Error");
+	r=add_request(RT_SEARCH,from,to,id,q,gghttp,s);
+	if (!r) jabber_iq_send_error(s,from,to,id,500,"Internal Server Error");
 }
 
 void jabber_iq_get_user_vcard(Stream *s,const char *from,const char * to,const char *id,xmlnode q){
@@ -156,10 +156,10 @@ Request *r;
 	sr.uin=jid_get_uin(to);
 
 	gghttp=gg_search(&sr,1);
-	if (!gghttp) jabber_iq_send_error(s,from,id,500,"Internal Server Error");
+	if (!gghttp) jabber_iq_send_error(s,from,to,id,500,"Internal Server Error");
 
-	r=add_request(RT_VCARD,from,id,q,gghttp,s);
-	if (!r) jabber_iq_send_error(s,from,id,500,"Internal Server Error");
+	r=add_request(RT_VCARD,from,to,id,q,gghttp,s);
+	if (!r) jabber_iq_send_error(s,from,to,id,500,"Internal Server Error");
 }
 
 int vcard_done(struct request_s *r){
@@ -202,12 +202,12 @@ char *jid,*name,*str;
 	xmlnode_insert_cdata(n,jid,-1);
 	g_free(jid);
 	
-	jabber_iq_send_result(r->stream,r->from,r->id,vc);
+	jabber_iq_send_result(r->stream,r->from,r->to,r->id,vc);
 	return 0;
 }
 
 int vcard_error(Request *r){
 
-	jabber_iq_send_error(r->stream,r->from,r->id,502,"Remote Server Error");
+	jabber_iq_send_error(r->stream,r->from,r->to,r->id,502,"Remote Server Error");
 	return 0;
 }

@@ -55,7 +55,9 @@ GIOCondition cond;
 	return FALSE;
 }
 
-Request * add_request(RequestType type,const char *from,const char *id,xmlnode query,struct gg_http *gghttp,Stream *stream){
+Request * add_request(RequestType type,const char *from,const char *to,
+			const char *id,xmlnode query,struct gg_http *gghttp,
+			Stream *stream){
 Request *r;
 GIOCondition cond;	
 	
@@ -64,6 +66,8 @@ GIOCondition cond;
 	r->type=type;
 	r->id=g_strdup(id);
 	r->from=g_strdup(from);
+	if (to) r->to=g_strdup(to);
+	else r->to=NULL;
 	r->query=query;
 	r->gghttp=gghttp;
 	
