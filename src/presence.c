@@ -1,4 +1,4 @@
-/* $Id: presence.c,v 1.30 2003/04/13 14:36:47 jajcus Exp $ */
+/* $Id: presence.c,v 1.31 2003/04/13 15:14:54 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -413,7 +413,7 @@ User *u;
 	if (!strcmp(type,"available"))
 		return presence(stream,from,to,1,show,status,priority);
 	else if (!strcmp(type,"unavailable")){
-		if (strchr(to, '@'))
+		if (jid_has_uin(to))
 			return 0;
 		else
 			return presence(stream,from,to,0,show,status,priority);
