@@ -46,6 +46,11 @@
 		and password to register with agent.
 		<p/>To change your data in GaduGadu directory fill in the rest of fields.
 		<p/>To unregister leave the form empty.
+		<p/>By filling in this form you agree to sending this data to
+		sms-express.com Sp. z o.o.
+		<p/>On the server providing this transport only your GG password,
+		jabberid and GG numbers of you and persons in your roster will
+		be stored. 
 	</instructions>
   </register>
   

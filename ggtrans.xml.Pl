@@ -53,7 +53,12 @@
 		swój numerek GG (UIN) w polu "username".<p/>
 		Aby się wyrejestrować należy zostawić formularz pusty.<p/>
 		Aby zmienić swoje dane w bazie GaduGadu należy wypełnić 
-		rolę "e-mail" i "nickname" oraz w razie potrzeby pozostałe.
+		rolę "e-mail" i "nickname" oraz w razie potrzeby pozostałe.<p/>
+		Wypełniając ten formularz zgadzasz się na wysłanie zamieszczonych
+		tutaj danych do sms-express.com Sp. z o.o. i ich przetwarzanie
+		przez tę spółkę. <p/>
+		Na serwerze realizującym transport zachowane będzie jedynie hasło,
+		jabberid oraz numer GG użytkownika, a także numery osób w liście kontaktów.
 	</instructions>
   </register>
   
