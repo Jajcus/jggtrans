@@ -1,4 +1,4 @@
-/* $Id: iq.c,v 1.30 2003/01/15 08:04:56 jajcus Exp $ */
+/* $Id: iq.c,v 1.31 2003/01/15 14:44:09 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -21,6 +21,7 @@
 #include "jabber.h"
 #include "register.h"
 #include "jid.h"
+#include "users.h"
 #include "search.h"
 #include "iq.h"
 #include "browse.h"
@@ -36,6 +37,7 @@ void jabber_iq_get_server_vcard(Stream *s,const char *from,const char * to,const
 void jabber_iq_get_gateway(Stream *s,const char *from,const char * to,const char *id,xmlnode q);
 void jabber_iq_set_gateway(Stream *s,const char *from,const char * to,const char *id,xmlnode q);
 void jabber_iq_get_server_version(Stream *s,const char *from,const char * to,const char *id,xmlnode q);
+void jabber_iq_get_client_version(Stream *s,const char *from,const char * to,const char *id,xmlnode q);
 void jabber_iq_not_implemented(Stream *s,const char *from,const char * to,const char *id,xmlnode q);
 
 IqNamespace server_iq_ns[]={
@@ -56,9 +58,30 @@ IqNamespace client_iq_ns[]={
 	{"vcard-temp","VCARD",jabber_iq_get_user_vcard,NULL}, /* WinJab bug workaround */
 	{"jabber:iq:browse","item",jabber_iq_get_client_browse,NULL},
 	{"jabber:iq:browse","query",jabber_iq_get_client_browse,NULL},/* WinJab bug (?) workaround */
-	{"jabber:iq:version","query",jabber_iq_not_implemented,NULL},
+	{"jabber:iq:version","query",jabber_iq_get_client_version,NULL},
 	{NULL,NULL,NULL,NULL}
 };
+
+/* Gadu-Gadu protocol=>version mapping (aproximations) */
+char *gg_version[]={
+	NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,/* 0x00 - 0x07 */
+	NULL,NULL,NULL,				/* 0x08 - 0x09 */
+	"(WPKontakt)",				/* 0x0a */
+	"4.0.2x",				/* 0x0b */
+	NULL,NULL,NULL,				/* 0x0c - 0x0e */
+	"4.5.1x",				/* 0x0f */
+	"4.5.2x",				/* 0x10 */
+	"4.6.x",				/* 0x11 */
+	NULL,NULL,				/* 0x12 - 0x13 */
+	"4.8.x",				/* 0x14 */
+	"4.8.9",				/* 0x15 */
+	"4.9.1",				/* 0x16 */
+	"4.9.2",				/* 0x17 */
+	"5.0.1",				/* 0x18 */
+	"5.0.2",				/* 0x19 */
+	NULL,NULL,NULL,NULL,NULL,NULL		/* 0x1a - 0x1f */
+};
+#define GG_VERSION_ELEMENTS 0x20
 
 void jabber_iq_send_error(Stream *s,const char *was_from,const char *was_to,const char *id,int code,char *string){
 xmlnode iq;
@@ -142,6 +165,44 @@ struct utsname un;
 	xmlnode_insert_cdata(os,un.sysname,-1);
 	xmlnode_insert_cdata(os," ",1);
 	xmlnode_insert_cdata(os,un.release,-1);
+	jabber_iq_send_result(s,from,to,id,query);
+}
+
+void jabber_iq_get_client_version(Stream *s,const char *from,const char * to,const char *id,xmlnode q){
+xmlnode query;
+int uin;
+User *u;
+GList *it;
+Contact *c;
+char verstring[20] = "- unknown -"; /* let it be a bit longer */
+char *ver;
+int version;
+
+	query=xmlnode_new_tag("query");
+	xmlnode_put_attrib(query,"xmlns","jabber:iq:version");
+	xmlnode_insert_cdata(xmlnode_insert_tag(query,"name"),"Gadu-Gadu(tm)",-1);
+	if (!jid_has_uin(to)){
+		g_warning("No UIN given in 'to': %s",to);
+		jabber_iq_send_error(s,from,to,id,400,"Bad Request");
+		return;
+	}
+	uin=jid_get_uin(to);
+	u=user_get_by_jid(from);
+	ver=verstring;
+	g_assert(u!=NULL);
+	for(it=u->contacts;it;it=it->next){
+		c=(Contact *)it->data;
+		version=c->version & 0xff;
+		if (c->uin==uin && version){
+			if (version < GG_VERSION_ELEMENTS   /* < elements in gg_version[] */
+			   && gg_version[version]){
+				ver=gg_version[version];
+			} else{
+				sprintf(verstring, "(prot.0x%02X)", version);
+			}
+		}
+	}
+	xmlnode_insert_cdata(xmlnode_insert_tag(query,"version"),ver,-1);
 	jabber_iq_send_result(s,from,to,id,query);
 }
 
