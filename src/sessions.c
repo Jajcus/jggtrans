@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.74 2003/05/14 07:24:10 jajcus Exp $ */
+/* $Id: sessions.c,v 1.75 2003/05/16 17:46:16 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -731,8 +731,8 @@ Session *s=r->session;
 	if (r->status) g_free(r->status);
 	s->resources=g_list_remove(s->resources,r);
 	if (r->disconnect_delay_func){
-		r->disconnect_delay_func=0;
 		g_source_remove(r->disconnect_delay_func);
+		r->disconnect_delay_func=0;
 	}
 	g_free(r);
 	if (!s->resources && kill_session){
