@@ -1,6 +1,6 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT(jabber-gg-transport, 0.9.9,jajcus@pld.org.pl)
-AM_INIT_AUTOMAKE(jabber-gg-transport, 0.9.9,jajcus@pld.org.pl)
+AC_INIT(jabber-gg-transport, 1.0.0,jajcus@pld.org.pl)
+AM_INIT_AUTOMAKE(jabber-gg-transport, 1.0.0,jajcus@pld.org.pl)
 AC_CONFIG_SRCDIR([src/ggtrans.h])
 AM_CONFIG_HEADER(config.h)
 
