@@ -76,22 +76,22 @@ Request *r;
 	q=xmlnode_dup(q);
 	memset(&sr,0,sizeof(sr));
 	n=xmlnode_get_tag(q,"nick");
-	if (n) sr.nickname=from_utf8(xmlnode_get_data(n));
+	if (n) sr.nickname=g_strdup(from_utf8(xmlnode_get_data(n)));
 	else sr.nickname=NULL;
 	n=xmlnode_get_tag(q,"first");
-	if (n) sr.first_name=from_utf8(xmlnode_get_data(n));
+	if (n) sr.first_name=g_strdup(from_utf8(xmlnode_get_data(n)));
 	else sr.first_name=NULL;
 	n=xmlnode_get_tag(q,"last");
-	if (n) sr.last_name=from_utf8(xmlnode_get_data(n));
+	if (n) sr.last_name=g_strdup(from_utf8(xmlnode_get_data(n)));
 	else sr.last_name=NULL;
 	n=xmlnode_get_tag(q,"city");
-	if (n) sr.city=from_utf8(xmlnode_get_data(n));
+	if (n) sr.city=g_strdup(from_utf8(xmlnode_get_data(n)));
 	else sr.city=NULL;
 	n=xmlnode_get_tag(q,"email");
-	if (n) sr.email=from_utf8(xmlnode_get_data(n));
+	if (n) sr.email=g_strdup(from_utf8(xmlnode_get_data(n)));
 	else sr.email=NULL;
 	n=xmlnode_get_tag(q,"phone");
-	if (n) sr.phone=from_utf8(xmlnode_get_data(n));
+	if (n) sr.phone=g_strdup(from_utf8(xmlnode_get_data(n)));
 	else sr.phone=NULL;
 	n=xmlnode_get_tag(q,"uin");
 	if (n) sr.uin=atoi(xmlnode_get_data(n));
@@ -99,6 +99,14 @@ Request *r;
 
 	debug("gg_search()");
 	gghttp=gg_search(&sr,1);
+
+	if (sr.nickname) g_free(sr.nickname);
+	if (sr.first_name) g_free(sr.first_name);
+	if (sr.last_name) g_free(sr.last_name);
+	if (sr.city) g_free(sr.city);
+	if (sr.email) g_free(sr.email);
+	if (sr.phone) g_free(sr.phone);
+	
 	if (!gghttp) jabber_iq_send_error(s,from,id,"Search error");
 
 	r=add_request(RT_SEARCH,from,id,q,gghttp,s);
