@@ -1,4 +1,4 @@
-/* $Id: stats.c,v 1.5 2003/04/14 12:47:35 jajcus Exp $ */
+/* $Id: stats.c,v 1.6 2003/04/14 17:13:45 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -100,9 +100,10 @@ xmlnode result;
 xmlnode n,stat,err;
 char *str;
 int i;
-char *jid;
 
-/*	jid=jid_normalized(from);
+/*
+char *jid;
+	jid=jid_normalized(from);
 	if (g_list_find_custom(admins,jid,(GCompareFunc)strcmp)==NULL){
 		jabber_iq_send_error(s,from,to,id,401,_("You are not allowed to read statistics"));
 		return;
