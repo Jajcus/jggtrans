@@ -6,6 +6,9 @@
 #include "iq.h"
 #include "debug.h"
 
+const char *gateway_desc;
+const char *gateway_prompt;
+
 void jabber_iq_send_error(Stream *s,const char *from,const char *to,const char *id,int code,char *string){
 xmlnode iq;
 xmlnode error;
@@ -55,11 +58,42 @@ xmlnode query;
 	n=xmlnode_get_tag(config,"vCard/DESC");
 	if (n) xmlnode_insert_cdata( xmlnode_insert_tag(query,"description"),
 					xmlnode_get_data(n),-1);
-	xmlnode_insert_cdata(xmlnode_insert_tag(query,"transport"),"GaduGadu user number",-1);
+	xmlnode_insert_cdata(xmlnode_insert_tag(query,"transport"),gateway_prompt,-1);
 	xmlnode_insert_cdata(xmlnode_insert_tag(query,"service"),"gg",-1);
 	xmlnode_insert_tag(query,"register");
 	xmlnode_insert_tag(query,"search");
 		
+	jabber_iq_send_result(s,from,to,id,query);
+}
+
+void jabber_iq_get_gateway(Stream *s,const char *from,const char * to,const char *id,xmlnode q){
+xmlnode query;
+
+	query=xmlnode_new_tag("query");
+	xmlnode_put_attrib(query,"xmlns","jabber:iq:gateway");
+	xmlnode_insert_cdata(xmlnode_insert_tag(query,"desc"),gateway_desc,-1);
+	xmlnode_insert_cdata(xmlnode_insert_tag(query,"prompt"),gateway_prompt,-1);
+	jabber_iq_send_result(s,from,to,id,query);
+}
+
+void jabber_iq_set_gateway(Stream *s,const char *from,const char * to,const char *id,xmlnode q){
+xmlnode n;
+char *str;
+int uin;
+xmlnode query;
+
+	n=xmlnode_get_tag(q,"prompt");
+	if (!n) jabber_iq_send_error(s,from,to,id,406,"Not Acceptable");
+	str=xmlnode_get_data(n);
+	if (!str) jabber_iq_send_error(s,from,to,id,406,"Not Acceptable");
+	uin=atoi(str);
+	if (uin<=0) jabber_iq_send_error(s,from,to,id,406,"Not Acceptable");
+	
+	query=xmlnode_new_tag("query");
+	xmlnode_put_attrib(query,"xmlns","jabber:iq:gateway");
+	str=jid_build(uin);
+	xmlnode_insert_cdata(xmlnode_insert_tag(query,"jid"),str,-1);
+	g_free(str);
 	jabber_iq_send_result(s,from,to,id,query);
 }
 

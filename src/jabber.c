@@ -260,11 +260,19 @@ xmlnode node;
 	
 	register_instructions=load_config_string("register/instructions");
 	if (!register_instructions) 
-		g_error("Registration instructions not found in config file");
+		g_error("Registration instructions not not found in config file");
 
 	search_instructions=load_config_string("search/instructions");
 	if (!search_instructions)
-		g_error("Search instructions found in config file");
+		g_error("Search instructions not found in config file");
+
+	gateway_desc=load_config_string("gateway/desc");
+	if (!gateway_desc)
+		g_error("Gateway instructions not found in config file");
+
+	gateway_prompt=load_config_string("gateway/prompt");
+	if (!gateway_prompt)
+		g_error("Gateway prompt not found in config file");
 
 	jabber_state=JS_NONE;
 	stream=stream_connect(server,port,1,jabber_event_cb);

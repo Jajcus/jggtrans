@@ -20,5 +20,7 @@ extern enum jabber_state_e jabber_state;
 extern const char *my_name;
 extern const char *register_instructions;
 extern const char *search_instructions;
+extern const char *gateway_desc;
+extern const char *gateway_prompt;
 
 #endif
