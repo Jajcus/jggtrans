@@ -1,6 +1,6 @@
-AC_INIT()
-
-AM_INIT_AUTOMAKE(libxode,1.2)
+AC_INIT([libxode],[1.2-jggtrans],[])
+AC_CONFIG_SRCDIR([src/xmlnode.c])
+AM_INIT_AUTOMAKE
 AM_CONFIG_HEADER(include/config.h)
 
 AC_DISABLE_SHARED
@@ -12,10 +12,10 @@ AC_PROG_INSTALL
 AC_STDC_HEADERS
 AC_C_BIGENDIAN
 
-AC_CHECK_FUNC(snprintf,AC_DEFINE(HAVE_SNPRINTF))
+AC_CHECK_FUNC(snprintf,AC_DEFINE(HAVE_SNPRINTF,1,[Define if snprintf function is available]))
 
 AC_CHECK_LIB(nsl, gethostent)
-AC_CHECK_FUNC(connect,AC_DEFINE(HAVE_LIBSOCKET),[
+AC_CHECK_FUNC(connect,AC_DEFINE(HAVE_LIBSOCKET,1,[Define if libsocket library is used]),[
 	  AC_CHECK_LIB(socket,connect,use_lib_socket=yes,AC_MSG_ERROR([
 *************************************************************
 *  You do not seem to have the socket call available as a   *

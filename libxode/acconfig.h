@@ -1,3 +1,0 @@
-#undef POOL_NO_HEAP
-#undef HAVE_LIBSOCKET
-#undef HAVE_SNPRINTF
