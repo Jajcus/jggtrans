@@ -11,6 +11,8 @@ AC_C_BIGENDIAN
 AC_PROG_MAKE_SET
 AM_PROG_LIBTOOL
 
+CFLAGS="$CFLAGS -Wall"
+
 AM_PATH_GLIB([1.2.0],[],AC_MSG_ERROR("You need glib >= 1.2.0 to compile this."))
 
 PKG_CHECK_MODULES(JK_LIBGADU, libgadu >= 20030113)
