@@ -1,4 +1,4 @@
-/* $Id: encoding.c,v 1.9 2002/12/08 15:35:41 jajcus Exp $ */
+/* $Id: encoding.c,v 1.10 2002/12/25 11:03:48 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -60,6 +60,7 @@ size_t outbytesleft;
 int r;
 
 	if (str==NULL) return NULL;
+	*buf=0;
 	inbuf=(char *)str;
 	inbytesleft=strlen(str);
 	outbuf=buf;
