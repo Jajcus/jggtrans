@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.29 2003/01/22 08:35:14 jajcus Exp $ */
+/* $Id: main.c,v 1.30 2003/01/22 09:17:51 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -434,7 +434,7 @@ guint lh;
 		if (pidfile==NULL)
 			g_error("Couldn't open pidfile %s",pid_filename);
 	}
-	else 
+	else
 		pidfile=NULL;
 
 	if (group){
