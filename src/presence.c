@@ -1,4 +1,4 @@
-/* $Id: presence.c,v 1.51 2004/02/20 17:42:51 jajcus Exp $ */
+/* $Id: presence.c,v 1.52 2004/03/17 20:02:24 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -418,13 +418,15 @@ User *u;
 	if (!type) type="available";
 
 	if (!from || !to){
-		presence_send_error(stream,to,from,406,_("Not Acceptable"));
+		if (strcmp(type,"error"))
+			presence_send_error(stream,to,from,406,_("Not Acceptable"));
 		g_warning(N_("Bad <presence/>: %s"),xmlnode2str(tag));
 		return -1;
 	}
 
 	if (!jid_is_my(to)){
-		presence_send_error(stream,to,from,406,_("Not Acceptable"));
+		if (strcmp(type,"error"))
+			presence_send_error(stream,to,from,406,_("Not Acceptable"));
 		g_warning(N_("Wrong 'to' in %s"),xmlnode2str(tag));
 		return -1;
 	}
