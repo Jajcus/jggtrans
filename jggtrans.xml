@@ -3,9 +3,9 @@
   <!-- For this to work, you should also update /etc/jabber/jabber.xml
        Add the following (changed to your needs):
   <browse>
-    
+
     ...
-    
+
     <service type="x-gadugadu" jid="gg.localhost" name="GaduGadu Transport">
       <ns>jabber:iq:gateway</ns>
       <ns>jabber:iq:register</ns>
@@ -28,7 +28,7 @@
     </accept>
   </service>
   -->
-   
+
   <!-- this should match <service/> in <browse/> section of jabber.xml -->
   <service jid="gg.localhost"/>
 
@@ -44,7 +44,7 @@
 	<!-- You can use <p/> and/or <br/> to break lines. Multiple spaces and newlines
 	     are converted to just one, so formatting of config file doesn't really matter -->
   	<instructions>
-		Please enter your GG number (in the "username" field) 
+		Please enter your GG number (in the "username" field)
 		and password to register with agent.
 		<p/>To change your data in GaduGadu directory fill in the rest of fields.
 		<p/>To unregister leave the form empty.
@@ -52,10 +52,10 @@
 		sms-express.com Sp. z o.o.
 		<p/>On the server providing this transport only your GG password,
 		jabberid and GG numbers of you and persons in your roster will
-		be stored. 
+		be stored.
 	</instructions>
   </register>
-  
+
  <search>
   	<!-- This tag contains the message displayed to users at search time. -->
  	<instructions>
@@ -87,12 +87,12 @@
 	 <URL>http://www.jabberstudio.org/projects/jabber-gg-transport/project/view.php</URL>
  </vCard>
 
- <!-- Default user locale (language). 
-      Empty means system locale setting, 
+ <!-- Default user locale (language).
+      Empty means system locale setting,
       no (or commented-out) <default_locale> tag means no translations. -->
  <!-- <default_locale>pl_PL</default_locale> -->
 
- <!-- Logger configuration. 
+ <!-- Logger configuration.
       You may configure one logger of type "syslog" and/or one of type "file".
       You may also not configure logging at all. -->
  <log type="syslog" facility="local0"/>
@@ -110,7 +110,7 @@
  <conn_timeout>60</conn_timeout>
  <ping_interval>10</ping_interval>
 
- <!-- GaduGadu server doesn't seem to answer pings any more :-( 
+ <!-- GaduGadu server doesn't seem to answer pings any more :-(
       So let's give it a year :-) -->
  <pong_timeout>31536000</pong_timeout>
 
@@ -119,11 +119,11 @@
  <reconnect>300</reconnect>
 
  <!-- How long to wait before restart, after jabber server connection is broken
-      negative value means, that jggtrans should terminate --> 
+      negative value means, that jggtrans should terminate -->
  <restart_timeout>60</restart_timeout>
 
- <!-- list of gg servers to use. 
- 	<hub/> means "use GG hub to find server" 
+ <!-- list of gg servers to use.
+ 	<hub/> means "use GG hub to find server"
       	<server/> tag should contain server address and may contain "port"
       	attribute with port number.
 	Servers (including hub) are tried in order as they appear in <servers/>
@@ -133,18 +133,22 @@
  <!--
  <servers>
 	<hub/>
-	<server>217.17.41.84</server> 
-	<server>217.17.41.85</server> 
-	<server port="8074">217.17.41.86</server> 
+	<server>217.17.41.84</server>
+	<server>217.17.41.85</server>
+	<server port="8074">217.17.41.86</server>
  </servers>
  -->
- 
+
  <!-- Spool directory. This is the place, where user info will be stored. -->
  <!-- Be careful about permissions - users' GG passwords are stored there -->
  <spool>/var/lib/jabber/spool/gg.localhost/</spool>
 
  <!-- Where to store pid file. This tag is optional. -->
  <pidfile>/var/lib/jabber/ggtrans.pid</pidfile>
+
+ <!-- jid allowed to do some administrative task.
+      May be used multiple times. -->
+ <admin>god@heaven.org</admin>
 
 </jggtrans>
 <!--

@@ -8,7 +8,7 @@
 
   <!-- Żeby to zadziałało także plik jabber.xml musi być uaktualniony.
        Należy dodać następujące linie w sekcji <browse/>:
-    
+
     <service type="x-gadugadu" jid="gg.localhost" name="GaduGadu Transport">
       <ns>jabber:iq:gateway</ns>
       <ns>jabber:iq:register</ns>
@@ -32,11 +32,11 @@
   127.0.0.1 oraz 5353 na adres/port używany do komunikacji między jggtrans a jabberd,
   a secret na jakiś dowolny ciąg znaków.
   -->
-   
+
   <!-- Ten wpis powinien zgadzać się z <service/> w sekcji <browse/> pliku jabber.xml -->
   <service jid="gg.localhost"/>
 
-  <!-- A ten, z <service id="gglinker/> --> 
+  <!-- A ten, z <service id="gglinker/> -->
   <connect id="gglinker">
     <ip>127.0.0.1</ip>
     <port>5353</port>
@@ -44,17 +44,17 @@
   </connect>
 
   <register>
-  	<!-- Tutaj zdefiniowany jest tekst informacji wyświetlanej 
-	     użytkownikowi podczas rejestracji. 
-	    
-	     Do formatowania tego tekstu można użyć tagów: 
+  	<!-- Tutaj zdefiniowany jest tekst informacji wyświetlanej
+	     użytkownikowi podczas rejestracji.
+
+	     Do formatowania tego tekstu można użyć tagów:
 	     <p/> (nowy akapit) oraz <br/> (nowa linia).
 	-->
   	<instructions>
-		Aby się zarejestrować proszę wpisać 
+		Aby się zarejestrować proszę wpisać
 		swój numerek GG (UIN) w polu "username".<p/>
 		Aby się wyrejestrować należy zostawić formularz pusty.<p/>
-		Aby zmienić swoje dane w bazie GaduGadu należy wypełnić 
+		Aby zmienić swoje dane w bazie GaduGadu należy wypełnić
 		pole "nickname" oraz w razie potrzeby pozostałe.<p/>
 		Wypełniając ten formularz zgadzasz się na wysłanie zamieszczonych
 		tutaj danych do sms-express.com Sp. z o.o. i ich przetwarzanie
@@ -63,20 +63,20 @@
 		jabberid oraz numer GG użytkownika, a także numery osób w liście kontaktów.
 	</instructions>
   </register>
-  
+
  <search>
   	<!-- Tutaj zdefiniowana jest instrukcja przeszukiwania dla użytkowników. -->
  	<instructions>
-	  	Proszę podać imię (first) i/lub nazwisko (last) 
+	  	Proszę podać imię (first) i/lub nazwisko (last)
 	  	i/lub ksywę (nick) i/lub miasto (city) szukanej osoby.<p/>
 	 	Można także wyszukiwać według numeru UIN.
 	</instructions>
  </search>
 
  <gateway>
-  	<!-- 
-	     Poniższy komunikat może być wyświetlony użytkownikowi 
-	     przy dodawaniu kontaktu GG.                            
+  	<!--
+	     Poniższy komunikat może być wyświetlony użytkownikowi
+	     przy dodawaniu kontaktu GG.
 	-->
  	<desc>
 		Proszę podać numerek GaduGadu użytkownika z którym chcesz się
@@ -94,12 +94,12 @@
      <URL>http://www.jabberstudio.org/projects/jabber-gg-transport/project/view.php</URL>
  </vCard>
 
- <!-- domyślne locale (język) użytkownika. 
+ <!-- domyślne locale (język) użytkownika.
       Puste oznacza lokale systemowe, a brak to brak tłumaczeń -->
  <default_locale>pl_PL</default_locale>
 
- <!-- 
-      Konfiguracja logów. 
+ <!--
+      Konfiguracja logów.
       Można skonfigurować jeden logger typu "syslog" i/lub jeden "file".
       Można też nie skonfigurować żadnego logowania. -->
  <log type="syslog" facility="local0"/>
@@ -112,14 +112,14 @@
         <port>8080</port>
  </proxy>
  -->
- 
+
  <!-- Te wartości można zmieniać wedle własnych upodobań.
-      Jak sesja niepotrzebnie dostaje timeout można to zwiększać 
+      Jak sesja niepotrzebnie dostaje timeout można to zwiększać
       w nieskończoność :-) -->
  <conn_timeout>60</conn_timeout>
  <ping_interval>10</ping_interval>
 
- <!-- Od jakiegoś czasu serwer GaduGadu nie odpowiada na pingi :-( 
+ <!-- Od jakiegoś czasu serwer GaduGadu nie odpowiada na pingi :-(
       Ale dajmy mu rok czasu na odpowiedź :-) -->
  <pong_timeout>31536000</pong_timeout>
 
@@ -135,9 +135,9 @@
       przerwać pracę. -->
  <restart_timeout>60</restart_timeout>
 
- <!-- lista serwerów GG których jggtrans ma używać 
- 	<hub/> oznacza "użyj huba GG aby znaleźć właściwy serwer" 
-      	Element <server/> powinien zawierać adres serwera. Może też mieć 
+ <!-- lista serwerów GG których jggtrans ma używać
+ 	<hub/> oznacza "użyj huba GG aby znaleźć właściwy serwer"
+      	Element <server/> powinien zawierać adres serwera. Może też mieć
 	ustawiony atrybut "port" zawierający numer portu na serwerze.
 	Jggtrans będzie się próbował łączyć z podanymi serwerami w podanej
 	kolejności i użyje pierwszego działającego.
@@ -146,14 +146,18 @@
  <!--
  <servers>
 	<hub/>
-	<server>217.17.41.84</server> 
-	<server>217.17.41.85</server> 
-	<server port="8074">217.17.41.86</server> 
+	<server>217.17.41.84</server>
+	<server>217.17.41.85</server>
+	<server port="8074">217.17.41.86</server>
  </servers>
  -->
- 
+
  <!-- Gdzie zapisywać/sprawdzać plik z pid procesu ggtrans. -->
  <pidfile>/var/lib/jabber/ggtrans.pid</pidfile>
+
+ <!-- Jabber ID osoby upoważnionej do zadań administracyjnych.
+      Może być użyte wielokrotnie. -->
+ <admin>god@heaven.org</admin>
 
 </jggtrans>
 <!--
