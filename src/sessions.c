@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.94 2004/01/30 09:43:56 jajcus Exp $ */
+/* $Id: sessions.c,v 1.95 2004/02/05 12:46:10 smoku Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -304,7 +304,8 @@ int i;
 	for(i=0;event->event.notify[i].uin;i++)
 		session_event_status(s,event->event.notify[i].status,
 				event->event.notify[i].uin,
-				NULL,1,
+				NULL,
+				1,
 				event->event.notify[i].remote_ip,
 				event->event.notify[i].remote_port,
 				event->event.notify[i].version);
@@ -317,10 +318,25 @@ int i;
 	for(i=0;event->event.notify_descr.notify[i].uin;i++)
 		session_event_status(s,event->event.notify_descr.notify[i].status,
 				event->event.notify_descr.notify[i].uin,
-				event->event.notify_descr.descr,1,
+				event->event.notify_descr.descr,
+				1,
 				event->event.notify[i].remote_ip,
 				event->event.notify[i].remote_port,
 				event->event.notify[i].version);
+	return 0;
+}
+
+int session_event_notify60(Session *s,struct gg_event *event){
+int i;
+
+	for(i=0;event->event.notify60[i].uin;i++)
+		session_event_status(s,event->event.notify60[i].status,
+				event->event.notify60[i].uin,
+				event->event.notify60[i].descr,
+				1,
+				event->event.notify60[i].remote_ip,
+				event->event.notify60[i].remote_port,
+				event->event.notify60[i].version);
 	return 0;
 }
 
@@ -460,12 +476,28 @@ time_t timestamp;
 		case GG_EVENT_NOTIFY_DESCR:
 			session_event_notify_descr(s,event);
 			break;
+		case GG_EVENT_NOTIFY60:
+			session_event_notify60(s,event);
+			break;
 		case GG_EVENT_STATUS:
 			session_event_status(s,
 					event->event.status.status,
 					event->event.status.uin,
 					event->event.status.descr,
-					0,0,0,0);
+					1,
+					event->event.status.remote_ip,
+					event->event.status.remote_port,
+					event->event.status.version);
+			break;
+		case GG_EVENT_STATUS60:
+			session_event_status(s,
+					event->event.status60.status,
+					event->event.status60.uin,
+					event->event.status60.descr,
+					1,
+					event->event.status60.remote_ip,
+					event->event.status60.remote_port,
+					event->event.status60.version);
 			break;
 		case GG_EVENT_MSG:
 			gg_messages_in++;
