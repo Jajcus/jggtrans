@@ -36,7 +36,9 @@ jggtrans_SOURCES= \
 	stream.c \
 	stream.h \
 	users.c \
-	users.h 
+	users.h \
+	gg_versions.c \
+	gg_versions.h
 
 check_PROGRAMS = encodingtest
 encodingtest_SOURCES = \

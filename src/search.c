@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.24 2003/03/17 15:41:58 mmazur Exp $ */
+/* $Id: search.c,v 1.24.2.3 2003/04/09 08:09:11 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -27,6 +27,7 @@
 #include "jid.h"
 #include "encoding.h"
 #include "debug.h"
+#include "gg_versions.h"
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -269,10 +270,12 @@ const char *uin, *first_name, *last_name, *nickname, *born, *city;
 	n=xmlnode_insert_tag(n1,"LOCALITY");
 	xmlnode_insert_cdata(n,to_utf8(city),-1);
 
-	jid=jid_build(atoi(uin));
-	n=xmlnode_insert_tag(vc,"JABBERID");
-	xmlnode_insert_cdata(n,jid,-1);
-	g_free(jid);
+	if (uin){
+		jid=jid_build(atoi(uin));
+		n=xmlnode_insert_tag(vc,"JABBERID");
+		xmlnode_insert_cdata(n,jid,-1);
+		g_free(jid);
+	}
 
 	c=NULL;
 	u=user_get_by_jid(r->from);
@@ -289,7 +292,11 @@ const char *uin, *first_name, *last_name, *nickname, *born, *city;
 	if (c!=NULL){
 		struct in_addr a;
 		a.s_addr=c->ip;
-		str=g_strdup_printf("Client version: 0x%x\n",c->version);
+		str=g_strdup_printf("Client version: %s (prot.0x%02X)\n",
+					((c->version & 0xff) < GG_VERSION_ELEMENTS) && gg_version[c->version & 0xff]
+						? gg_version[c->version & 0xff]
+						: "?.?.?",
+					c->version & 0xff);
 		xmlnode_insert_cdata(n,str,-1);
 		g_free(str);
 		str=g_strdup_printf("User IP: %s\n",inet_ntoa(a));
@@ -304,5 +311,4 @@ const char *uin, *first_name, *last_name, *nickname, *born, *city;
 	xmlnode_free(vc);
 	return 0;
 }
-
 

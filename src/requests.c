@@ -1,4 +1,4 @@
-/* $Id: requests.c,v 1.19 2003/02/04 08:06:01 jajcus Exp $ */
+/* $Id: requests.c,v 1.19.2.4 2003/04/09 08:09:11 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -29,9 +29,12 @@
 #include "register.h"
 
 static GList *requests=NULL;
-GHashTable *lookups=NULL;
+static GHashTable *lookups=NULL;
+static int id_counter=0;
 
 int requests_init(){
+
+	id_counter=time(NULL);
 	lookups=g_hash_table_new(g_int_hash, g_int_equal);
 	if(!lookups)
 		return 1;
@@ -46,17 +49,19 @@ Request *r;
 	r=g_hash_table_lookup(lookups, &hash);
 	g_hash_table_remove(lookups, &hash);
 
-	switch(r->type){
-		case RT_VCARD:
-			vcard_done(r, data->event.pubdir50);
-			remove_request(r);
-			return;
-		case RT_SEARCH:
-			search_done(r, data->event.pubdir50);
-			remove_request(r);
-			return;
-		default:
-			break;
+	if (r){
+		switch(r->type){
+			case RT_VCARD:
+				vcard_done(r, data->event.pubdir50);
+				remove_request(r);
+				return;
+			case RT_SEARCH:
+				search_done(r, data->event.pubdir50);
+				remove_request(r);
+				return;
+			default:
+				break;
+		}
 	}
 
 }
@@ -128,12 +133,11 @@ struct gg_http *gghttp;
 	r->stream=stream;
 
 	if(type==RT_VCARD || type==RT_SEARCH){
-		r->hash=time(NULL);
-		gg_pubdir50_seq_set((gg_pubdir50_t)data, r->hash);
-
 		s=session_get_by_jid(from, stream);
+		if (s==NULL) return NULL;
+		r->hash=id_counter++;
+		gg_pubdir50_seq_set((gg_pubdir50_t)data, r->hash);
 		gg_pubdir50(s->ggs, (gg_pubdir50_t)data);
-
 		g_hash_table_insert(lookups, &r->hash, r);
 	}
 	else{

@@ -1,5 +1,5 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT([jabber-gg-transport], [1.4.1-test1], [jajcus@pld.org.pl])
+AC_INIT([jabber-gg-transport], [1.4.2], [jajcus@pld.org.pl])
 AC_CONFIG_SRCDIR([src/ggtrans.h])
 AM_INIT_AUTOMAKE
 AM_CONFIG_HEADER([config.h])
@@ -15,7 +15,8 @@ CFLAGS="$CFLAGS -Wall"
 
 AM_PATH_GLIB([1.2.0],[],AC_MSG_ERROR("You need glib >= 1.2.0 to compile this."))
 
-PKG_CHECK_MODULES(JK_LIBGADU, libgadu >= 20030130)
+PKG_CHECK_MODULES(JK_LIBGADU, [libgadu >= 1.0 libgadu < 20000000], [],
+		                  [ PKG_CHECK_MODULES(JK_LIBGADU, [libgadu >= 20030130] )])
 AC_SUBST(JK_LIBGADU_LIBS)
 AC_SUBST(JK_LIBGADU_CFLAGS)
 
