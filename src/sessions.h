@@ -1,4 +1,4 @@
-/* $Id: sessions.h,v 1.9 2002/02/03 16:25:53 jajcus Exp $ */
+/* $Id: sessions.h,v 1.10 2002/12/09 09:55:52 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -66,6 +66,7 @@ int session_subscribe(Session *s,uin_t uin);
 int session_unsubscribe(Session *s,uin_t uin);
 
 int session_send_message(Session *s,uin_t uin,int chat,const char *body);
+int session_send_notify(Session *s);
 
 /* Finds resource representing current state, 
  * probably the one with highest priority */

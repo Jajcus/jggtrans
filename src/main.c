@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.17 2002/12/08 15:35:41 jajcus Exp $ */
+/* $Id: main.c,v 1.18 2002/12/09 09:55:52 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -27,6 +27,7 @@
 #include <errno.h>
 #include <pwd.h>
 #include <grp.h>
+#include <ctype.h>
 #include "jabber.h"
 #include "sessions.h"
 #include "encoding.h"
@@ -479,6 +480,7 @@ guint lh;
 	}
 	xmlnode_free(config);
 
+	fprintf(stderr,"Exiting normally.\n");
 	return 0;
 }
 

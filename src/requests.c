@@ -1,4 +1,4 @@
-/* $Id: requests.c,v 1.11 2002/12/06 15:05:45 jajcus Exp $ */
+/* $Id: requests.c,v 1.12 2002/12/09 09:55:52 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -110,6 +110,7 @@ int remove_request(Request *r){
 	if (r->from) g_free(r->from);	
 	if (r->id) g_free(r->id);	
 	if (r->query) xmlnode_free(r->query);
+	if (r->gghttp) gg_http_free(r->gghttp);
 	g_free(r);
 	return 0;
 }

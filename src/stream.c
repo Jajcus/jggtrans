@@ -1,4 +1,4 @@
-/* $Id: stream.c,v 1.10 2002/12/08 15:35:41 jajcus Exp $ */
+/* $Id: stream.c,v 1.11 2002/12/09 09:55:52 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -167,7 +167,6 @@ Stream *s;
 
 int stream_io_connect(GIOChannel *source,GIOCondition condition,gpointer data){
 Stream *s;
-char * str;
 int r;
 
 	s=(Stream *)data;
@@ -187,7 +186,6 @@ int r;
 
 int stream_io_read(GIOChannel *source,GIOCondition condition,gpointer data){
 Stream *s;
-char * str;
 GIOError err;
 guint br;
 
@@ -247,6 +245,7 @@ guint br;
 		memcpy(str,s->write_buf+s->write_pos,br);
 		str[br]=0;
 		debug("OUT: %s",str);
+		g_free(str);
 		s->write_pos+=br;
 		if (s->write_pos==s->write_len){
 			s->write_watch=0;

@@ -35,7 +35,6 @@ int i;
 void jabber_iq_get_client_browse(Stream *s,const char *from,const char * to,const char *id,xmlnode q){
 xmlnode result;
 xmlnode n;
-char *str;
 int i;
 
 	result=xmlnode_new_tag("user");

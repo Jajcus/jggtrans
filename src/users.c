@@ -1,4 +1,4 @@
-/* $Id: users.c,v 1.19 2002/12/06 15:04:31 jajcus Exp $ */
+/* $Id: users.c,v 1.20 2002/12/09 09:55:52 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -242,8 +242,20 @@ char *njid;
 }
 
 static int user_destroy(User *u){
+GList *it;
+Contact *c;
 
 	g_message("Destroying user '%s'",u->jid);
+
+	g_assert(u!=NULL);
+	for(it=u->contacts;it;it=it->next){
+		c=(Contact *)it->data;
+		g_free(c->status_desc);
+		g_free(c);
+	}
+	g_list_free(u->contacts);
+	u->contacts=NULL;
+
 	if (u->jid) g_free(u->jid);
 	if (u->password) g_free(u->password);
 	g_free(u);
@@ -357,8 +369,8 @@ Contact *c;
 		if (c->uin==uin){
 			c->status=status;
 			c->last_update=time(NULL);
-			if (c->status_desc) free(c->status_desc);
-			if (desc) c->status_desc=strdup(desc);
+			if (c->status_desc) g_free(c->status_desc);
+			if (desc) c->status_desc=g_strdup(desc);
 			else c->status_desc=NULL;
 			if (more){
 				c->ip=ip;

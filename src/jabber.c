@@ -1,4 +1,4 @@
-/* $Id: jabber.c,v 1.14 2002/12/08 15:35:41 jajcus Exp $ */
+/* $Id: jabber.c,v 1.15 2002/12/09 09:55:52 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -198,7 +198,6 @@ static char *server;
 static int port;
 
 int jabber_init(){
-char *str;
 xmlnode node;
 
 	node=xmlnode_get_tag(config,"service");

@@ -1,4 +1,4 @@
-/* $Id: iq.c,v 1.23 2002/12/08 15:35:41 jajcus Exp $ */
+/* $Id: iq.c,v 1.24 2002/12/09 09:55:52 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -139,6 +139,7 @@ xmlnode query;
 	query=xmlnode_new_tag("query");
 	xmlnode_put_attrib(query,"xmlns","jabber:iq:gateway");
 	str=jid_build(uin);
+	xmlnode_insert_cdata(xmlnode_insert_tag(query,"prompt"),str,-1);
 	xmlnode_insert_cdata(xmlnode_insert_tag(query,"jid"),str,-1);
 	g_free(str);
 	jabber_iq_send_result(s,from,to,id,query);
@@ -198,7 +199,6 @@ char *ns;
 }
 
 void jabber_iq_get_server_vcard(Stream *s,const char *from,const char *to,const char *id,xmlnode q){
-char *ns;
 xmlnode n;
 
 	n=xmlnode_get_tag(config,"vCard");

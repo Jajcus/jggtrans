@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.12 2002/12/06 15:05:27 jajcus Exp $ */
+/* $Id: search.c,v 1.13 2002/12/09 09:55:52 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -79,6 +79,9 @@ int i;
 			xmlnode_insert_cdata(xmlnode_insert_tag(item,"active"),"yes",-1);
 	}
 	jabber_iq_send_result(r->stream,r->from,r->to,r->id,q);
+	xmlnode_free(q);
+	gg_free_search(r->gghttp);
+	r->gghttp=NULL;
 	return 0;
 }
 
@@ -101,6 +104,7 @@ xmlnode iq,n;
 	xmlnode_insert_tag(iq,"username");
 
 	jabber_iq_send_result(s,from,to,id,iq);
+	xmlnode_free(iq);
 }
 
 void jabber_iq_set_search(Stream *s,const char *from,const char *to,const char *id,xmlnode q){
@@ -204,6 +208,8 @@ User *u;
 	results=(struct gg_search *)r->gghttp->data;
 	if (!results || !results->count){
 		jabber_iq_send_error(r->stream,r->from,r->to,r->id,404,"Not Found");
+		gg_free_search(r->gghttp);
+		r->gghttp=NULL;
 		return 1;
 	}
 
@@ -268,6 +274,9 @@ User *u;
 	}
 
 	jabber_iq_send_result(r->stream,r->from,r->to,r->id,vc);
+	xmlnode_free(vc);
+	gg_free_search(r->gghttp);
+	r->gghttp=NULL;
 	return 0;
 }
 

@@ -1,4 +1,4 @@
-/* $Id: presence.c,v 1.19 2002/12/06 15:05:45 jajcus Exp $ */
+/* $Id: presence.c,v 1.20 2002/12/09 09:55:52 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -217,6 +217,7 @@ Resource *res;
 		if (res) presence_send(stream,NULL,jid,res->available,res->show,res->status,0);
 	}
 	g_free(jid);
+	return 0;
 }
 
 int presence_subscribe(struct stream_s *stream,const char *from,const char *to){

@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.30 2002/12/06 15:04:31 jajcus Exp $ */
+/* $Id: sessions.c,v 1.31 2002/12/09 09:55:52 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -271,6 +271,19 @@ Resource *r;
 	}
 	
 	switch(event->type){
+		case GG_EVENT_DISCONNECT:
+			g_warning("Server closed connection of %s",s->jid);
+			if (s->req_id){
+				jabber_iq_send_error(s->s,s->jid,NULL,s->req_id,502,"Remote Server Error");
+			}
+			else{
+				presence_send(s->s,NULL,s->user->jid,0,NULL,"Connection broken",0);
+			}
+			s->connected=0;
+			s->io_watch=0;
+			session_schedule_reconnect(s);
+			session_remove(s);
+			return FALSE;
 		case GG_EVENT_CONN_FAILED:
 			g_warning("Login failed for %s",s->jid);
 			if (s->req_id)
@@ -373,6 +386,7 @@ Resource *r;
 /* destroys Session object */
 static int session_destroy(Session *s){
 GList *it;
+Resource *r=NULL;
 
 	g_message("Deleting session for '%s'",s->jid);
 	if (s->ping_timeout_func) g_source_remove(s->ping_timeout_func);
@@ -401,6 +415,17 @@ GList *it;
 	}
 	if (s->query) xmlnode_free(s->query);
 	if (s->user) user_remove(s->user);
+	for(it=g_list_first(s->resources);it;){
+		r=(Resource *)it->data;
+		if (r->name) g_free(r->name);
+		if (r->show) g_free(r->show);
+		if (r->status) g_free(r->status);
+		it=it->next;
+		g_free(r);
+	}
+	g_list_free(s->resources);
+	s->resources=NULL;
+
 	g_free(s);
 	return 0;
 }
@@ -533,6 +558,7 @@ GList *it;
 			if (r->show) g_free(r->show);
 			if (r->status) g_free(r->status);
 			s->resources=g_list_remove(s->resources,r);
+			g_free(r);
 			if (!s->resources){
 				session_remove(s);
 				return -1;
@@ -654,7 +680,7 @@ char *njid;
 	g_message("%sGG session: %p",space,s->ggs);
 	g_message("%sIO Channel: %p",space,s->ioch);
 	g_message("%sStream: %p",space,s->s);
-	g_message("%sConnected: %p",space,s->connected);
+	g_message("%sConnected: %i",space,s->connected);
 	g_message("%sRequest id: %s",space,s->req_id?s->req_id:"(null)");
 	g_message("%sRequest query: %s",space,s->query?xmlnode2str(s->query):"(null)");
 	g_message("%sWaiting for ping: %i",space,(int)s->waiting_for_pong);
