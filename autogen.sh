@@ -2,11 +2,11 @@
 
 ( cd libxode ; ./autogen.sh ) || exit 1
 
-libtoolize --force
+libtoolize --force || exit $?
 rm -f po/ChangeLog
-autopoint --force
+autopoint --force || exit $?
 touch po/Makefile.in m4/Makefile
-aclocal -I m4
-autoheader
-automake -a 
-autoconf
+aclocal -I m4 || exit $?
+autoheader || exit $?
+automake -a || exit $?
+autoconf || exit $?
