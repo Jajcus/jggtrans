@@ -1,0 +1,52 @@
+.TH JGGTRANS 8 "$Date: 2003/10/03 16:58:51 $"
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage-specific macros, see man(7)
+.SH NAME
+jggtrans \- Jabber GaduGadu Transport
+.SH SYNOPSIS
+.B jggtrans
+.RI [ options ]
+.RI [<ConfigFile.xml>]
+.SH DESCRIPTION
+\fBjggtrans\fP is a gateway to GaduGadu instant messaging services, which is
+very popular in Poland, made as an external component for Jabber server
+daemon.
+.SH OPTIONS
+These programs follow the usual GNU command line syntax, without long
+options.
+A summary of options is included below.
+.TP
+.B \-h
+Show summary of options.
+.TP
+.B \-f
+Act on console (not as daemon), debug messages will be send to stderr.
+.TP
+.B \-d <n>
+Set the debug level, 0 (default), >0 print more messages, <0 print less
+messages.
+.TP
+.B \-D <n>
+Set the debug level for libgadu (it also sets the
+.B \-f
+option.
+.TP
+.B \-u <user>
+Switch to <user>s uid after start.
+.TP
+.B \-g <group>
+Switch to <group>s gid after start.
+.SH SEE ALSO
+.BR jabberd (8)
+.SH AUTHOR
+This manual page was written by Robert Olejnik <robert@zaron.debian.pl>,
+for the Debian project (but may be used by others).
