@@ -4,5 +4,6 @@
 :%s/)\s*\(\_$\|\s\+\)\_\s*{/){/g
 :%s/else\s*\(\_$\|\s\+\)\_\s*{/else{/g
 :retab!
-:wq
+:update
+:q
 :q!
