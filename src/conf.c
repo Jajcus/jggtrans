@@ -1,4 +1,4 @@
-/* $Id: conf.c,v 1.1 2002/02/02 19:50:26 jajcus Exp $ */
+/* $Id$ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
