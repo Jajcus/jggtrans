@@ -1,4 +1,4 @@
-/* $Id: iq.c,v 1.46 2003/06/27 17:30:51 jajcus Exp $ */
+/* $Id: iq.c,v 1.47 2003/09/07 14:06:54 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -183,8 +183,12 @@ char verstring[20] = N_("- unknown -"); /* let it be a bit longer */
 char *ver;
 int version;
 
-	sprintf(verstring, "%s", _(verstring));
-
+	u=user_get_by_jid(from);
+	if (u==NULL) {
+		g_warning(N_("Unknown user: %s"),from);
+		jabber_iq_send_error(s,from,to,id,401,_("I don't know you"));
+		return;
+	}
 	query=xmlnode_new_tag("query");
 	xmlnode_put_attrib(query,"xmlns","jabber:iq:version");
 	xmlnode_insert_cdata(xmlnode_insert_tag(query,"name"),"Gadu-Gadu(tm)",-1);
@@ -194,9 +198,8 @@ int version;
 		return;
 	}
 	uin=jid_get_uin(to);
-	u=user_get_by_jid(from);
+	sprintf(verstring, "%s", _(verstring));
 	ver=verstring;
-	g_assert(u!=NULL);
 	for(it=u->contacts;it;it=it->next){
 		c=(Contact *)it->data;
 		version=c->version & 0xff;
