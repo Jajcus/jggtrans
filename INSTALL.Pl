@@ -3,14 +3,17 @@ Wymagania.
 ===============
 Aby zbudowaæ jabber-gg-transport potrzeba:
 
-	- glib >= 1.2.0 (http://www.gtk.org/)
-		Przetestowane z glib-1.2.10
+	- glib >= 2.0.0 (http://www.gtk.org/)
+		Przetestowane z glib-2.4.0
 	
 	- libgadu >= 1.4 (czê¶æ EKG, http://dev.null.pl/ekg/)
 		Przetestowane z libgadu-1.4
 		libgadu-1.4 skompilowane z obs³ug± w±tków (pthread) czasami
 		tworzy bardzo du¿o niepotrzebnych w±tków. Zaleca siê
 		stosowanie libgadu skompilowanego bez obs³ugi pthread.
+
+	- libidn >= 0.3.0 (http://www.gnu.org/software/libidn/)
+		Przetestowane z libidn-0.4.1
 
 	- pkgconfig (http://www.freedesktop.org/software/pkgconfig/)
 
