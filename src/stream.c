@@ -97,7 +97,7 @@ fd_handler *h;
 		}
 		s->connected=1;
 	}
-	s->dest=g_strdup(host);
+	s->dest=g_strdup(host); /* FIXME */
 	h=(fd_handler *)g_malloc(sizeof(fd_handler));
 	assert(h!=NULL);
 	memset(h,0,sizeof(*h));

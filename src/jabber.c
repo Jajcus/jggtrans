@@ -26,7 +26,7 @@ xmlnode tag;
 	}
 
 	stream_id=xmlnode_get_attrib(x,"id");
-	str=g_strdup_printf("%s%s",stream_id,"test");
+	str=g_strdup_printf("%s%s",stream_id,secret);
 	shahash_r(str,hashbuf);
 	g_free(str);
 	tag=xmlnode_new_tag("handshake");
