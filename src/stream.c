@@ -1,4 +1,4 @@
-/* $Id: stream.c,v 1.20 2003/04/22 08:44:29 jajcus Exp $ */
+/* $Id: stream.c,v 1.21 2003/09/14 09:17:40 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -29,6 +29,7 @@
 
 #include "ggtrans.h"
 #include "stream.h"
+#include "jabber.h"
 #include "debug.h"
 
 #define MAX_WRITE_BUF 102400
@@ -303,7 +304,7 @@ char *str;
 int stream_write_hello(Stream *s){
 	return stream_write_str(s,"<?xml version=\"1.0\" encoding=\"UTF-8\" ?>")
 		|| stream_write_str(s,"<stream:stream to='")
-		|| stream_write_str(s,s->dest)
+		|| stream_write_str(s,my_name)
 		|| stream_write_str(s,"' xmlns='jabber:component:accept' xmlns:stream='http://etherx.jabber.org/streams'>");
 };
 
