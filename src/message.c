@@ -113,7 +113,7 @@ Session *s;
 	
 	if (subject)
 		body=g_strdup_printf("Subject: %s\n%s",subject,body);
-	session_send_message(s,jid_get_uin(to),chat,to_utf8(body));
+	session_send_message(s,jid_get_uin(to),chat,from_utf8(body));
 	if (subject)
 		g_free(body);
 	
