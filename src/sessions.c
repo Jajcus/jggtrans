@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.40 2003/01/28 21:48:47 mmazur Exp $ */
+/* $Id: sessions.c,v 1.41 2003/01/29 12:35:02 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -160,7 +160,7 @@ char *jid;
 void session_schedule_reconnect(Session *s){
 int t;
 
-	s->current_server=gg_server;
+	s->current_server=g_list_first(gg_server);
 	if (!reconnect) return;
 	t=(int)((reconnect*9.0/10.0)+(2.0*reconnect/10.0*rand()/(RAND_MAX+1.0)));
 	debug("Sheduling reconnect in %u seconds",t);
@@ -564,7 +564,7 @@ char *njid;
 	s->jid=g_strdup(jid);
 	if (req_id) s->req_id=g_strdup(req_id);
 	s->query=xmlnode_dup(query);
-	s->current_server=gg_server;
+	s->current_server=g_list_first(gg_server);
 
 	if(session_try_login(s))
 		return NULL;
