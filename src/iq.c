@@ -1,4 +1,4 @@
-/* $Id: iq.c,v 1.32 2003/01/15 15:14:12 jajcus Exp $ */
+/* $Id: iq.c,v 1.33 2003/01/22 07:53:01 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -124,15 +124,22 @@ xmlnode iq;
 void jabber_iq_get_agent(Stream *s,const char *from,const char * to,const char *id,xmlnode q){
 xmlnode n;
 xmlnode query;
+char *data;
 
 	query=xmlnode_new_tag("query");
 	xmlnode_put_attrib(query,"xmlns","jabber:iq:agent");
 	n=xmlnode_get_tag(config,"vCard/FN");
-	if (n) xmlnode_insert_cdata( xmlnode_insert_tag(query,"name"),
-					xmlnode_get_data(n),-1);
+	if (n!=NULL){
+		data=xmlnode_get_data(n);
+		if (data!=NULL)
+			xmlnode_insert_cdata( xmlnode_insert_tag(query,"name"),data,-1);
+	}
 	n=xmlnode_get_tag(config,"vCard/DESC");
-	if (n) xmlnode_insert_cdata( xmlnode_insert_tag(query,"description"),
-					xmlnode_get_data(n),-1);
+	if (n!=NULL){
+		data=xmlnode_get_data(n);
+		if (data!=NULL)
+			xmlnode_insert_cdata(xmlnode_insert_tag(query,"description"),data,-1);
+	}
 	xmlnode_insert_cdata(xmlnode_insert_tag(query,"transport"),gateway_prompt,-1);
 	xmlnode_insert_cdata(xmlnode_insert_tag(query,"service"),"x-gadugadu",-1); /* until gg is registered */
 	xmlnode_insert_tag(query,"register");
@@ -213,12 +220,12 @@ int uin;
 xmlnode query;
 
 	n=xmlnode_get_tag(q,"prompt");
-	if (!n){
+	if (n==NULL){
 		jabber_iq_send_error(s,from,to,id,406,"Not Acceptable");
 		return;
 	}
 	str=xmlnode_get_data(n);
-	if (!str){
+	if (str==NULL){
 		jabber_iq_send_error(s,from,to,id,406,"Not Acceptable");
 		return;
 	}

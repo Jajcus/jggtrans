@@ -1,4 +1,4 @@
-/* $Id: register.c,v 1.17 2003/01/15 08:04:56 jajcus Exp $ */
+/* $Id: register.c,v 1.18 2003/01/22 07:53:01 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -117,7 +117,7 @@ char *str,*password;
 struct gg_change_info_request change;
 uin_t uin;
 User *user;
-Session *session;
+Session *session=NULL;
 struct gg_http *gghttp;
 Request *r;
 

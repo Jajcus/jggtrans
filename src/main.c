@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.27 2003/01/16 07:31:05 jajcus Exp $ */
+/* $Id: main.c,v 1.28 2003/01/22 07:53:01 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -301,8 +301,9 @@ uid_t uid,euid,newgid;
 struct passwd *pwd;
 struct group *grp;
 char *user,*group;
+char *data;
 char saved_pwd_b[1024],*saved_pwd;
-const char *param_d,*param_D;
+const char *param_d=NULL,*param_D=NULL;
 int restarting=0;
 FILE *f;
 guint lh;
@@ -420,7 +421,11 @@ guint lh;
 		}
 		else if (!strcmp(log_type,"file")){
 			if (log_filename) g_warning("Multiple log files specified. Using only one.");
-			else log_filename=g_strstrip(xmlnode_get_data(tag));
+			else{
+				data=xmlnode_get_data(tag);
+				if (data!=NULL)
+					log_filename=g_strstrip(data);
+			}
 		}
 		else g_warning("Ignoring unknown log type: %s",xmlnode2str(tag));
 	}

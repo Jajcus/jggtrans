@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.15 2003/01/15 07:27:27 jajcus Exp $ */
+/* $Id: search.c,v 1.16 2003/01/22 07:53:01 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -112,51 +112,77 @@ struct gg_search_request sr;
 xmlnode n;
 struct gg_http *gghttp;
 Request *r;
-char *str;
+char *data;
 
 	q=xmlnode_dup(q);
 	memset(&sr,0,sizeof(sr));
 	n=xmlnode_get_tag(q,"active");
 	if (n){
-		str=xmlnode_get_data(n);
-		if (str && (str[0]=='y' || str[0]=='Y' || str[0]=='t' || str[0]=='T'))
+		data=xmlnode_get_data(n);
+		if (data!=NULL && (data[0]=='y' || data[0]=='Y' || data[0]=='t' || data[0]=='T'))
 				sr.active=1;
 	}
 	n=xmlnode_get_tag(q,"nick");
-	if (n) sr.nickname=g_strdup(from_utf8(xmlnode_get_data(n)));
-	else sr.nickname=NULL;
+	sr.nickname=NULL;
+	if (n){
+		data=xmlnode_get_data(n);
+		if (data)
+			sr.nickname=g_strdup(from_utf8(data));
+	}
 	n=xmlnode_get_tag(q,"first");
-	if (n) sr.first_name=g_strdup(from_utf8(xmlnode_get_data(n)));
-	else sr.first_name=NULL;
+	sr.first_name=NULL;
+	if (n){
+		data=xmlnode_get_data(n);
+		if (data)
+			sr.first_name=g_strdup(from_utf8(data));
+	}
 	n=xmlnode_get_tag(q,"last");
-	if (n) sr.last_name=g_strdup(from_utf8(xmlnode_get_data(n)));
-	else sr.last_name=NULL;
+	sr.last_name=NULL;
+	if (n){
+		data=xmlnode_get_data(n);
+		if (data)
+			sr.last_name=g_strdup(from_utf8(data));
+	}
 	n=xmlnode_get_tag(q,"city");
-	if (n) sr.city=g_strdup(from_utf8(xmlnode_get_data(n)));
-	else sr.city=NULL;
+	sr.city=NULL;
+	if (n){
+		data=xmlnode_get_data(n);
+		sr.city=g_strdup(from_utf8(data));
+	}
 	n=xmlnode_get_tag(q,"gender");
 	if (n){
-		str=xmlnode_get_data(n);
-		if (!str || !str[0]) sr.gender=GG_GENDER_NONE;
-		else if (str[0]=='k' || str[0]=='f' || str[0]=='K' || str[0]=='F') sr.gender=GG_GENDER_FEMALE;
+		data=xmlnode_get_data(n);
+		if (!data || !data[0]) sr.gender=GG_GENDER_NONE;
+		else if (data[0]=='k' || data[0]=='f' || data[0]=='K' || data[0]=='F') sr.gender=GG_GENDER_FEMALE;
 		else sr.gender=GG_GENDER_MALE;
 	}
 	else sr.gender=GG_GENDER_NONE;
 	n=xmlnode_get_tag(q,"born");
 	if (n){
-		str=xmlnode_get_data(n);
-		if (str) sscanf(str,"%u-%u",&sr.min_birth,&sr.max_birth);
+		data=xmlnode_get_data(n);
+		if (data) sscanf(data,"%u-%u",&sr.min_birth,&sr.max_birth);
 	}
 	n=xmlnode_get_tag(q,"email");
-	if (n) sr.email=g_strdup(from_utf8(xmlnode_get_data(n)));
-	else sr.email=NULL;
+	sr.email=NULL;
+	if (n){
+		data=xmlnode_get_data(n);
+		if (data)
+			sr.email=g_strdup(from_utf8(data));
+	}
 	n=xmlnode_get_tag(q,"phone");
-	if (n) sr.phone=g_strdup(from_utf8(xmlnode_get_data(n)));
-	else sr.phone=NULL;
+	sr.phone=NULL;
+	if (n){
+		data=xmlnode_get_data(n);
+		if (data)
+			sr.phone=g_strdup(from_utf8(data));
+	}
 	n=xmlnode_get_tag(q,"username");
-	if (n) str=xmlnode_get_data(n);
-	if (n && str) sr.uin=atoi(str);
-	else sr.uin=0;
+	sr.uin=0;
+	if (n){
+		data=xmlnode_get_data(n);
+		if (data)
+			sr.uin=atoi(data);
+	}
 
 	debug("gg_search()");
 	gghttp=gg_search(&sr,1);
@@ -199,7 +225,7 @@ Request *r;
 int vcard_done(struct request_s *r){
 xmlnode vc,n,n1;
 struct gg_search * results;
-char *jid,*name,*str;
+char *jid,*name=NULL,*str;
 GList *it;
 Contact *c;
 User *u;

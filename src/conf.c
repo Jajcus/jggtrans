@@ -1,4 +1,4 @@
-/* $Id: conf.c,v 1.5 2003/01/15 14:12:36 jajcus Exp $ */
+/* $Id: conf.c,v 1.6 2003/01/22 07:53:01 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -26,10 +26,13 @@ xmlnode config;
 
 char *config_load_string(const char *tag){
 xmlnode node;
+char *data;
 
 	node=xmlnode_get_tag(config,tag);
-	if (!node) return NULL;
-	return g_strstrip(xmlnode_get_data(node));
+	if (node==NULL) return NULL;
+	data=xmlnode_get_data(node);
+	if (data==NULL) return NULL;
+	return g_strstrip(data);
 }
 
 char *config_load_formatted_string(const char *tag){
@@ -58,6 +61,7 @@ int i,j,sp;
 				break;
 			case NTYPE_CDATA:
 				tmp=xmlnode_get_data(child);
+				if (tmp==NULL) break;
 				add=g_new(char,strlen(tmp)+1);
 				sp=1;
 				for(i=j=0;tmp[i];i++){
@@ -94,8 +98,11 @@ int i,j,sp;
 
 int config_load_int(const char *tag,int defval){
 xmlnode node;
+char *data;
 
 	node=xmlnode_get_tag(config,tag);
-	if (!node) return defval;
-	return atoi(g_strchug(xmlnode_get_data(node)));
+	if (node==NULL) return defval;
+	data=xmlnode_get_data(node);
+	if (data==NULL) return defval;
+	return atoi(g_strchug(data));
 }

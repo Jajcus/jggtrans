@@ -1,4 +1,4 @@
-/* $Id: encoding.c,v 1.14 2003/01/15 08:04:56 jajcus Exp $ */
+/* $Id: encoding.c,v 1.15 2003/01/22 07:53:01 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -88,7 +88,7 @@ unsigned u;
 }
 
 char *from_utf8(const char *str){
-unsigned char b,c;
+unsigned char b;
 unsigned u;
 int o=0;
 int i;

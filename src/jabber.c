@@ -1,4 +1,4 @@
-/* $Id: jabber.c,v 1.18 2003/01/15 14:13:12 jajcus Exp $ */
+/* $Id: jabber.c,v 1.19 2003/01/22 07:53:01 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -68,8 +68,11 @@ void jabber_handshake(Stream *s,xmlnode x){
 }
 
 void jabber_stream_error(Stream *s,xmlnode x){
+char *data;
 
-	g_critical("Stream error: %s",xmlnode_get_data(x));
+	data=xmlnode_get_data(x);
+	if (data==NULL) data="-unknown-";
+	g_critical("Stream error: %s",data);
 	stream_close(s);
 	stop_it=1;
 }
@@ -101,6 +104,7 @@ char *name;
 void jabber_event_cb(int type,xmlnode x,void *arg){
 Stream *s;
 char *str;
+char *data;
 
 	if (stop_it || !stream) return;
 
@@ -125,7 +129,9 @@ char *str;
 		case XSTREAM_ERR:
 			g_warning("Stream Error");
 			if (x){
-				g_warning("    %s",xmlnode_get_data(x));
+				data=xmlnode_get_data(x);
+				if (data==NULL) data="-unknown-";
+				g_warning("    %s",data);
 			}
 			break;
 		default:

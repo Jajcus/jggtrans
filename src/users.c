@@ -1,4 +1,4 @@
-/* $Id: users.c,v 1.24 2003/01/15 08:04:56 jajcus Exp $ */
+/* $Id: users.c,v 1.25 2003/01/22 07:53:01 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -20,6 +20,7 @@
 #include <string.h>
 #include <dirent.h>
 #include <sys/stat.h>
+#include <time.h>
 #include "ggtrans.h"
 #include "jabber.h"
 #include "users.h"
@@ -206,49 +207,54 @@ int last_sys_msg=0,invisible=0,friends_only=0;
 User *u;
 GList *contacts;
 char *p;
+char *data;
 
 	uin=ujid=name=password=email=NULL;
 	g_message("Loading user '%s'",jid);
 	fn=jid_normalized(jid);
 	errno=0;
 	xml=xmlnode_file(fn);
-	if (!xml){
+	if (xml==NULL){
 		g_warning("Couldn't read or parse '%s': %s",fn,errno?g_strerror(errno):"XML parse error");
 		g_free(fn);
 		return NULL;
 	}
 	g_free(fn);
 	tag=xmlnode_get_tag(xml,"jid");
-	if (tag) ujid=xmlnode_get_data(tag);
-	if (!ujid){
+	if (tag!=NULL) ujid=xmlnode_get_data(tag);
+	if (ujid==NULL){
 		g_warning("Couldn't find JID in %s's file",jid);
 		return NULL;
 	}
 	tag=xmlnode_get_tag(xml,"uin");
-	if (tag) uin=xmlnode_get_data(tag);
-	if (!uin){
+	if (tag!=NULL) uin=xmlnode_get_data(tag);
+	if (uin==NULL){
 		g_warning("Couldn't find UIN in %s's file",jid);
 		return NULL;
 	}
 	tag=xmlnode_get_tag(xml,"password");
-	if (tag) password=xmlnode_get_data(tag);
-	if (!password){
+	if (tag!=NULL) password=xmlnode_get_data(tag);
+	if (password==NULL){
 		g_warning("Couldn't find password in %s's file",jid);
 		return NULL;
 	}
 	tag=xmlnode_get_tag(xml,"email");
-	if (tag) email=xmlnode_get_data(tag);
+	if (tag!=NULL) email=xmlnode_get_data(tag);
 	tag=xmlnode_get_tag(xml,"name");
-	if (tag) name=xmlnode_get_data(tag);
+	if (tag!=NULL) name=xmlnode_get_data(tag);
 	tag=xmlnode_get_tag(xml,"last_sys_msg");
-	if (tag) last_sys_msg=atoi(xmlnode_get_data(tag));
+	if (tag!=NULL){
+		data=xmlnode_get_data(tag);
+		if (data!=NULL)
+			last_sys_msg=atoi(data);
+	}
 	tag=xmlnode_get_tag(xml,"friendsonly");
-	if (tag) friends_only=1;
+	if (tag!=NULL) friends_only=1;
 	tag=xmlnode_get_tag(xml,"invisible");
-	if (tag) invisible=1;
+	if (tag!=NULL) invisible=1;
 	tag=xmlnode_get_tag(xml,"userlist");
 	contacts=NULL;
-	if (tag){
+	if (tag!=NULL){
 		Contact *c;
 
 		for(t=xmlnode_get_firstchild(tag);t;t=xmlnode_get_nextsibling(t)){
@@ -281,61 +287,61 @@ char *p;
 				c->uin=uin;
 
 				tag=xmlnode_get_tag(xml,"first");
-				if (tag){
+				if (tag!=NULL){
 					d=xmlnode_get_data(tag);
 					if (d==NULL) d="";
 					c->first=g_strdup(d);
 				}
 				tag=xmlnode_get_tag(xml,"last");
-				if (tag){
+				if (tag!=NULL){
 					d=xmlnode_get_data(tag);
 					if (d==NULL) d="";
 					c->last=g_strdup(d);
 				}
 				tag=xmlnode_get_tag(xml,"nick");
-				if (tag){
+				if (tag!=NULL){
 					d=xmlnode_get_data(tag);
 					if (d==NULL) d="";
 					c->nick=g_strdup(d);
 				}
 				tag=xmlnode_get_tag(xml,"display");
-				if (tag){
+				if (tag!=NULL){
 					d=xmlnode_get_data(tag);
 					if (d==NULL) d="";
 					c->display=g_strdup(d);
 				}
 				tag=xmlnode_get_tag(xml,"phone");
-				if (tag){
+				if (tag!=NULL){
 					d=xmlnode_get_data(tag);
 					if (d==NULL) d="";
 					c->phone=g_strdup(d);
 				}
 				tag=xmlnode_get_tag(xml,"group");
-				if (tag){
+				if (tag!=NULL){
 					d=xmlnode_get_data(tag);
 					if (d==NULL) d="";
 					c->group=g_strdup(d);
 				}
 				tag=xmlnode_get_tag(xml,"email");
-				if (tag){
+				if (tag!=NULL){
 					d=xmlnode_get_data(tag);
 					if (d==NULL) d="";
 					c->email=g_strdup(d);
 				}
 				tag=xmlnode_get_tag(xml,"x1");
-				if (tag){
+				if (tag!=NULL){
 					d=xmlnode_get_data(tag);
 					if (d==NULL) d="";
 					c->x1=g_strdup(d);
 				}
 				tag=xmlnode_get_tag(xml,"x2");
-				if (tag){
+				if (tag!=NULL){
 					d=xmlnode_get_data(tag);
 					if (d==NULL) d="";
 					c->x2=g_strdup(d);
 				}
 				tag=xmlnode_get_tag(xml,"x3");
-				if (tag){
+				if (tag!=NULL){
 					d=xmlnode_get_data(tag);
 					if (d==NULL) d="";
 					c->x3=g_strdup(d);
