@@ -4,6 +4,7 @@
 #include "jabber.h"
 #include "ggtrans.h"
 #include "sessions.h"
+#include "encoding.h"
 #include <glib.h>
 #include <signal.h>
 #include <sys/wait.h>
@@ -56,6 +57,7 @@ int main(int argc,char *argv[]){
 	if (jabber_init()) return 1;
 	if (sessions_init()) return 1;
 	if (users_init()) return 1;
+	if (encoding_init()) return 1;
 		
 	signal(SIGPIPE,signal_handler);		
 	signal(SIGHUP,signal_handler);		

@@ -6,9 +6,10 @@
 #include "iq.h"
 #include "presence.h"
 #include "message.h"
+#include "users.h"
 #include <glib.h>
 
-Stream *stream;
+Stream *stream=NULL;
 char *stream_id=NULL;
 const char *secret;
 const char *my_name;
@@ -46,6 +47,7 @@ void jabber_handshake(Stream *s,xmlnode x){
 		
 	fprintf(stderr,"\nhandshake OK\n");	
 	jabber_state=JS_CONNECTED;
+	users_probe_all();
 }
 
 void jabber_stream_error(Stream *s,xmlnode x){
@@ -53,6 +55,10 @@ void jabber_stream_error(Stream *s,xmlnode x){
 	fprintf(stderr,"\n Stream error: %s\n",xmlnode_get_data(x));
 	stream_close(s);
 	stop_it=1;
+}
+
+struct stream_s * jabber_stream(){
+	return stream;
 }
 
 void jabber_node(Stream *s,xmlnode x){
@@ -149,10 +155,17 @@ xmlnode node;
 	
 	node=xmlnode_get_tag(config,"instructions");
 	if (!node){
-		fprintf(stderr,"Connect secret not found in config file\n");
+		fprintf(stderr,"Registration instructions not found in config file\n");
 		return -1;
 	}
 	instructions=xmlnode_get_data(node);
+
+	node=xmlnode_get_tag(config,"search");
+	if (!node){
+		fprintf(stderr,"Search instructions found in config file\n");
+		return -1;
+	}
+	search_instructions=xmlnode_get_data(node);
 
 	jabber_state=JS_NONE;
 	stream=stream_connect(server,port,1,jabber_event_cb);

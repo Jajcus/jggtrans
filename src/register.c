@@ -39,7 +39,7 @@ xmlnode instr;
 
 void jabber_iq_set_register(Stream *s,const char *from,const char *id,xmlnode q){
 xmlnode node;
-char *username,*password,*name,*email;
+char *username,*password;
 uin_t uin;
 User *user;
 Session *session;
@@ -65,18 +65,13 @@ Session *session;
 		jabber_iq_send_error(s,from,id,"password not given");
 		return;
 	}		
-	node=xmlnode_get_tag(q,"name");
-	if (node) name=xmlnode_get_data(node);
-	if (!node || strlen(name)==0) name=NULL;
-	node=xmlnode_get_tag(q,"email");
-	if (node) email=xmlnode_get_data(node);
-	if (!node || strlen(email)==0) email=NULL;
 
-	user=user_add(from,uin,name,password,email);
+	user=user_create(from,uin,password);
 	if (!user){
 		jabber_iq_send_error(s,from,id,"Registration failed");
 		return;
-	}	
+	}
+	
 	session=session_create(user,from,id,q,s);
 	if (!user){
 		jabber_iq_send_error(s,from,id,"Registration failed");

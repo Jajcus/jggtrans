@@ -17,7 +17,7 @@
 #define MAX_WRITE_BUF 102400
 #define MAX_READ_BUF 102400
 
-int stream_fd_handler(fd_handler *h);
+int stream_fd_handler(FdHandler *h);
 int stream_write_hello(Stream *s);
 	
 int stream_set_nonblocking(Stream *s,int nonblock){
@@ -44,7 +44,7 @@ Stream *s;
 struct hostent *he;
 int optval;
 int r;
-fd_handler *h;
+FdHandler *h;
 
 	s=(Stream *)g_malloc(sizeof(Stream));
 	memset(s,0,sizeof(Stream));
@@ -98,7 +98,7 @@ fd_handler *h;
 		s->connected=1;
 	}
 	s->dest=g_strdup(host); /* FIXME */
-	h=(fd_handler *)g_malloc(sizeof(fd_handler));
+	h=(FdHandler *)g_malloc(sizeof(FdHandler));
 	assert(h!=NULL);
 	memset(h,0,sizeof(*h));
 	s->h=h;
@@ -133,7 +133,7 @@ int r;
 	return -1;
 }
 
-int stream_fd_handler(fd_handler *h){
+int stream_fd_handler(FdHandler *h){
 Stream *s;
 char * str;
 int r;

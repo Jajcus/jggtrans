@@ -12,6 +12,7 @@ int presence_send_subscribed(struct stream_s *stream,const char *from,
 int presence_send(struct stream_s *stream,const char *from,
 		const char *to,int available,const char *show,
 		const char *status);
+int presence_send_probe(struct stream_s *stream,const char *to);
 
 int jabber_presence(struct stream_s *stream,xmlnode tag);
 

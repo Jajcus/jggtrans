@@ -8,6 +8,7 @@
 
 static int max_fd;
 static GList* handlers;
+static int handler_removed=0;
 
 int fd_init(){
 	max_fd=0;
@@ -15,7 +16,7 @@ int fd_init(){
 	return 0;
 }
 
-int fd_register_handler(fd_handler *h){
+int fd_register_handler(FdHandler *h){
 	
 	assert(h!=NULL);
 	if (h->fd>max_fd) max_fd=h->fd;
@@ -24,10 +25,11 @@ int fd_register_handler(fd_handler *h){
 	return 0;
 }
 
-int fd_unregister_handler(fd_handler *h){
+int fd_unregister_handler(FdHandler *h){
 
 	handlers=g_list_remove(handlers,(gpointer)h);
 	g_free(h);
+	handler_removed=1;
 	return 0;
 }
 
@@ -35,7 +37,7 @@ int fd_watch(int timeout){
 struct timeval tv;
 fd_set rd, wr, ex;
 GList *it;
-fd_handler *h;
+FdHandler *h;
 int event;
 int except;
 
@@ -47,7 +49,7 @@ int except;
 	FD_ZERO(&ex);	
 
 	for(it=g_list_first(handlers);it;it=it->next){
-		h=(fd_handler *)it->data;
+		h=(FdHandler *)it->data;
 		assert(h!=NULL);
 		if (h->read)
 			FD_SET(h->fd,&rd);
@@ -58,8 +60,9 @@ int except;
 	if (select(max_fd + 1, &rd, &wr, &ex, &tv) == -1){
 		return -1;
 	}
+	handler_removed=0;
 	for(it=g_list_first(handlers);it;it=it->next){
-		h=(fd_handler *)it->data;
+		h=(FdHandler *)it->data;
 		assert(h!=NULL);
 		event=0;
 		if (FD_ISSET(h->fd,&rd)){
@@ -79,6 +82,10 @@ int except;
 		else except=0;
 		if (event){
 			h->func(h);
+		}
+		if (handler_removed){
+			it=g_list_first(handlers);
+			handler_removed=0;
 		}
 	}
 	if (except) return 1;

@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include "jabber.h"
-#include "iq.h"
 #include "register.h"
 #include "jid.h"
+#include "search.h"
+#include "ggtrans.h"
+#include "iq.h"
 #include <glib.h>
 
 void jabber_iq_send_error(Stream *s,const char *from,const char *id,char *string){
@@ -34,7 +36,7 @@ xmlnode iq;
 	xmlnode_free(iq);
 }
 
-void jabber_iq_get_query(Stream *s,const char *from,const char *id,xmlnode q){
+void jabber_iq_get_query(Stream *s,const char *from,const char * to,const char *id,xmlnode q){
 char *ns;
 
 	ns=xmlnode_get_attrib(q,"xmlns");
@@ -42,13 +44,20 @@ char *ns;
 		fprintf(stderr,"\nNo xmlns!\n");
 		return;
 	}
-	if (!g_strcasecmp(ns,"jabber:iq:register"))
-		jabber_iq_get_register(s,from,id,q);
-	else
-		fprintf(stderr,"\nUnknown xmlns=%s!\n",ns);
+	if (jid_is_me(to)){
+		if (!g_strcasecmp(ns,"jabber:iq:register"))
+			jabber_iq_get_register(s,from,id,q);
+		if (!g_strcasecmp(ns,"jabber:iq:search"))
+			jabber_iq_get_search(s,from,id,q);
+		else
+			fprintf(stderr,"\nUnsupported xmlns=%s in server iq/get!\n",ns);
+	}
+	else {
+		fprintf(stderr,"\nUnsupported xmlns=%s in user iq/get!\n",ns);
+	}
 }
 
-void jabber_iq_set_query(Stream *s,const char *from,const char *id,xmlnode q){
+void jabber_iq_set_query(Stream *s,const char *from,const char * to,const char *id,xmlnode q){
 char *ns;
 
 	ns=xmlnode_get_attrib(q,"xmlns");
@@ -56,15 +65,50 @@ char *ns;
 		fprintf(stderr,"\nNo xmlns!\n");
 		return;
 	}
-	if (!g_strcasecmp(ns,"jabber:iq:register"))
-		jabber_iq_set_register(s,from,id,q);
-	else
-		fprintf(stderr,"\nUnknown xmlns=%s!\n",ns);
+
+	if (jid_is_me(to)){ 
+		if (!g_strcasecmp(ns,"jabber:iq:register"))
+			jabber_iq_set_register(s,from,id,q);
+		if (!g_strcasecmp(ns,"jabber:iq:search"))
+			jabber_iq_set_search(s,from,id,q);
+		else
+			fprintf(stderr,"\nUnknown xmlns=%s in server iq/set!\n",ns);
+	}
+	else fprintf(stderr,"\nUnsupported xmlns=%s in useriq/set!\n",ns);
 }
 
-void jabber_iq_get_vcard(Stream *s,const char *from,const char *id,xmlnode q){}
-void jabber_iq_set_vcard(Stream *s,const char *from,const char *id,xmlnode q){}
+void jabber_iq_get_vcard(Stream *s,const char *from,const char *to,const char *id,xmlnode q){
+char *ns;
+xmlnode n;
 
+	fprintf(stderr,"vCard request\n");
+	ns=xmlnode_get_attrib(q,"xmlns");
+	if (ns && g_strcasecmp(ns,"vcard-temp")){
+		fprintf(stderr,"\nUnsupported vcard namespace: %s!\n",ns);
+		return;
+	}
+	if (jid_is_me(to)){
+		n=xmlnode_get_tag(config,"vcard");
+		if (!n){
+			fprintf(stderr,"\nNo vcard for server defined\n");
+			return;
+		}
+		jabber_iq_send_result(s,from,id,n);
+	}
+	jabber_iq_get_user_vcard(s,from,to,id,q);
+}
+
+void jabber_iq_set_vcard(Stream *s,const char *from,const char *to,const char *id,xmlnode q){
+char *ns;
+
+	ns=xmlnode_get_attrib(q,"xmlns");
+	if (ns && g_strcasecmp(ns,"vcard-temp")){
+		fprintf(stderr,"\nUnsupported vcard namespace: %s!\n",ns);
+		return;
+	}
+	fprintf(stderr,"\nvcard setting unsupported\n");
+}
+	
 void jabber_iq_get(Stream *s,xmlnode x){
 char *to;
 char *id;
@@ -88,14 +132,16 @@ xmlnode query;
 	}
 	query=xmlnode_get_tag(x,"query");
 	if (query){
-		jabber_iq_get_query(s,from,id,query);
+		jabber_iq_get_query(s,from,to,id,query);
 		return;
 	}
 	query=xmlnode_get_tag(x,"vcard");
+	if (!query) query=xmlnode_get_tag(x,"vCard");
 	if (query){
-		jabber_iq_get_vcard(s,from,id,query);
+		jabber_iq_get_vcard(s,from,to,id,query);
 		return;
 	}
+	fprintf(stderr,"No known content in iq\n");
 }
 
 void jabber_iq_set(Stream *s,xmlnode x){
@@ -121,14 +167,16 @@ xmlnode query;
 	}
 	query=xmlnode_get_tag(x,"query");
 	if (query){
-		jabber_iq_set_query(s,from,id,query);
+		jabber_iq_set_query(s,from,to,id,query);
 		return;
 	}
 	query=xmlnode_get_tag(x,"vcard");
+	if (!query) query=xmlnode_get_tag(x,"vCard");
 	if (query){
-		jabber_iq_set_vcard(s,from,id,query);
+		jabber_iq_set_vcard(s,from,to,id,query);
 		return;
 	}
+	fprintf(stderr,"No known content in iq\n");
 }
 
 

@@ -12,6 +12,7 @@
 
 static int conn_timeout=30;
 static int ping_interval=10;
+GHashTable *sessions_jid;
 
 int sessions_init(){
 char *proxy_ip;
@@ -20,12 +21,10 @@ char *data;
 int port;
 xmlnode node;
 
-	gg_debug_level=255;
+	/*gg_debug_level=255;*/
 
 	sessions_jid=g_hash_table_new(g_str_hash,g_str_equal);
 	if (!sessions_jid) return -1;
-	sessions_uin=g_hash_table_new(g_int_hash,g_int_equal);
-	if (!sessions_uin) return -1;
 	
 	node=xmlnode_get_tag(config,"conn_timeout");
 	if (node){
@@ -65,7 +64,6 @@ static gboolean sessions_hash_remove_func(gpointer key,gpointer value,gpointer u
 int sessions_done(){
 
 	g_hash_table_foreach_remove(sessions_jid,sessions_hash_remove_func,NULL);
-	g_hash_table_destroy(sessions_uin);
 	return 0;
 }
 
@@ -137,7 +135,7 @@ int i;
 	return 0;
 }
 
-int session_fd_handler(fd_handler *h){
+int session_fd_handler(FdHandler *h){
 Session *s;
 struct gg_event *event;
 char *jid;
@@ -229,7 +227,7 @@ static int session_destroy(Session *s){
 		gg_free_session(s->ggs);
 	}
 	if (s->query) xmlnode_free(s->query);
-	if (s->user) user_delete(s->user);
+	if (s->user) user_remove(s->user);
 	g_free(s);
 	return 0;
 }
@@ -239,14 +237,12 @@ gpointer key,value;
 char *njid;
 
 	assert(sessions_jid!=NULL);
-	assert(sessions_uin!=NULL);
 	njid=jid_normalized(s->jid);
 	if (g_hash_table_lookup_extended(sessions_jid,(gpointer)njid,&key,&value)){
 		g_hash_table_remove(sessions_jid,(gpointer)njid);
 		g_free(key);
 	}
 	g_free(njid);
-	g_hash_table_remove(sessions_uin,GINT_TO_POINTER(s->user->uin));
 	session_destroy(s);
 
 	return 0;
@@ -271,8 +267,8 @@ char *njid;
 		g_free(s);
 		return NULL;
 	}
-	s->fdh=(fd_handler *)g_malloc(sizeof(fd_handler));
-	memset(s->fdh,0,sizeof(fd_handler));
+	s->fdh=(FdHandler *)g_malloc(sizeof(FdHandler));
+	memset(s->fdh,0,sizeof(FdHandler));
 	s->fdh->fd=s->ggs->fd;
 	s->fdh->read=(s->ggs->check & GG_CHECK_READ);
 	s->fdh->write=(s->ggs->check & GG_CHECK_WRITE);
@@ -283,10 +279,8 @@ char *njid;
 	s->last_ping=time(NULL);
 	assert(t==0);
 	assert(sessions_jid!=NULL);
-	assert(sessions_uin!=NULL);
 	njid=jid_normalized(s->jid);
 	g_hash_table_insert(sessions_jid,(gpointer)njid,(gpointer)s);
-	g_hash_table_insert(sessions_uin,GINT_TO_POINTER(s->user->uin),(gpointer)s);
 	return s;	
 }
 

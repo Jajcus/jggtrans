@@ -14,7 +14,11 @@ ggtrans_OBJECTS= \
 	sessions.o \
 	presence.o \
 	jid.o \
-	message.o
+	message.o \
+	requests.o \
+	search.o \
+	encoding.o
+
 
 ggtrans_HEADERS= \
 	jabber.h \
@@ -27,7 +31,10 @@ ggtrans_HEADERS= \
 	sessions.h \
 	presence.h \
 	jid.h \
-	message.h
+	message.h \
+	requests.h \
+	search.h \
+	encoding.h
 
 all: jggtrans
 

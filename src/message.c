@@ -4,6 +4,7 @@
 #include "jid.h"
 #include "users.h"
 #include "sessions.h"
+#include "encoding.h"
 #include <glib.h>
 
 int message_send(struct stream_s *stream,const char *from,
@@ -23,7 +24,7 @@ xmlnode n;
 	xmlnode_put_attrib(msg,"to",to);
 	if (chat) xmlnode_put_attrib(msg,"type","chat");
 	n=xmlnode_insert_tag(msg,"body");
-	xmlnode_insert_cdata(n,message,-1);
+	xmlnode_insert_cdata(n,to_utf8(message),-1);
 	stream_write(stream,msg);
 	xmlnode_free(msg);
 	return 0;
@@ -112,7 +113,7 @@ Session *s;
 	
 	if (subject)
 		body=g_strdup_printf("Subject: %s\n%s",subject,body);
-	session_send_message(s,jid_get_uin(to),chat,body);
+	session_send_message(s,jid_get_uin(to),chat,to_utf8(body));
 	if (subject)
 		g_free(body);
 	

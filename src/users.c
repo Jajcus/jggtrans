@@ -1,13 +1,15 @@
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
+#include <dirent.h>
+#include <sys/stat.h>
 #include "jabber.h"
 #include "ggtrans.h"
 #include "users.h"
 #include "jid.h"
+#include "presence.h"
 #include <glib.h>
 
-GHashTable *users_uin=NULL;
 GHashTable *users_jid=NULL;
 static char *spool_dir;
 
@@ -31,8 +33,6 @@ int r;
 	
 	users_jid=g_hash_table_new(g_str_hash,g_str_equal);
 	if (!users_jid) return -1;
-	users_uin=g_hash_table_new(g_int_hash,g_int_equal);
-	if (!users_uin) return -1;
 	return 0;
 }
 
@@ -49,7 +49,6 @@ int users_done(){
 
 	g_hash_table_foreach_remove(users_jid,users_hash_func,NULL);
 	g_hash_table_destroy(users_jid);
-	g_hash_table_destroy(users_uin);
 	return 0;
 }
 
@@ -85,14 +84,6 @@ xmlnode xml,tag,userlist;
 	g_free(str);
 	tag=xmlnode_insert_tag(xml,"password");
 	xmlnode_insert_cdata(tag,u->password,-1);
-	if (u->email){
-		tag=xmlnode_insert_tag(xml,"email");
-		xmlnode_insert_cdata(tag,u->email,-1);
-	}
-	if (u->name){
-		tag=xmlnode_insert_tag(xml,"name");
-		xmlnode_insert_cdata(tag,u->name,-1);
-	}
 
 	if (u->contacts){
 		GList *it;
@@ -212,27 +203,12 @@ char *p;
 	p=strchr(u->jid,'/');
 	if (p) *p=0;
 	u->password=g_strdup(password);
-	if (name) u->name=g_strdup(name);
-	if (email) u->email=g_strdup(email);
 	u->contacts=contacts;
 	xmlnode_free(xml);
 	assert(users_jid!=NULL);
-	assert(users_uin!=NULL);
 	njid=jid_normalized(u->jid);
 	g_hash_table_insert(users_jid,(gpointer)njid,(gpointer)u);
-	g_hash_table_insert(users_uin,GINT_TO_POINTER(u->uin),(gpointer)u);
 	u->confirmed=1;
-	return u;
-}
-
-User *user_get_by_uin(uin_t uin){
-User *u;
-char *njid;
-	
-	assert(users_uin!=NULL);
-	njid=jid_normalized(u->jid);
-	u=(User *)g_hash_table_lookup(users_uin,GINT_TO_POINTER(uin));
-	g_free(njid);
 	return u;
 }
 
@@ -254,17 +230,14 @@ static int user_destroy(User *u){
 
 	fprintf(stderr,"\nRemoving user '%s'\n",u->jid);
 	if (u->jid) g_free(u->jid);
-	if (u->name) g_free(u->name);
 	if (u->password) g_free(u->password);
-	if (u->email) g_free(u->email);
 	g_free(u);
 	return 0;
 }
 
 
-int user_delete(User *u){
+int user_remove(User *u){
 
-	if (u->uin && users_uin) g_hash_table_remove(users_uin,GINT_TO_POINTER(u->uin));
 	if (users_jid){
 		char *njid;
 		gpointer key,value;
@@ -278,7 +251,7 @@ int user_delete(User *u){
 	return user_destroy(u);
 }
 
-User *user_add(const char *jid,uin_t uin,const char *name,const char * password,const char *email){
+User *user_create(const char *jid,uin_t uin,const char * password){
 User *u;
 char *p,*njid;
 
@@ -303,16 +276,10 @@ char *p,*njid;
 	p=strchr(u->jid,'/');
 	if (p) *p=0;
 	u->password=g_strdup(password);
-	if (name) u->name=g_strdup(name);
-	else name=NULL;
-	if (email) u->email=g_strdup(email);
-	else name=NULL;
 	u->confirmed=0;
 	assert(users_jid!=NULL);
-	assert(users_uin!=NULL);
 	njid=jid_normalized(u->jid);
 	g_hash_table_insert(users_jid,(gpointer)njid,(gpointer)u);
-	g_hash_table_insert(users_uin,GINT_TO_POINTER(u->uin),(gpointer)u);
 	return u;
 }
 
@@ -368,3 +335,30 @@ Contact *c;
 	return -1;	
 }
 
+int users_probe_all(){
+DIR *dir;
+Stream *s;
+struct dirent *de;
+struct stat st;
+int r;
+
+	s=jabber_stream();
+	if (!s) return -1;
+	dir=opendir(".");
+	if (!dir){
+		fprintf(stderr,"Couldn't open '%s' directory\n",spool_dir);
+		perror("opendir");
+		return -1;
+	}
+	while((de=readdir(dir))){
+		r=stat(de->d_name,&st);
+		if (r){
+			fprintf(stderr,"Couldn't stat '%s'\n",de->d_name);
+			perror("stat");
+			continue;
+		}
+		if (S_ISREG(st.st_mode)) presence_send_probe(s,de->d_name);
+	}
+	closedir(dir);
+	return 0;
+}

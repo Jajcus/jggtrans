@@ -6,41 +6,27 @@
 
 #include <time.h>
 
-struct request_s;
-typedef int (*request_cb)(struct request_s *req,void *event);
-				/* event: struct gg_event or int z wynikiem gg_search_watchfd */
-
-typedef struct request_s{
-	int id;  /* ID if user request (<iq/>) */
-	xmlnode query; /* The query */
-	struct session_s *ses;
-	int gg_session_type;
-	struct gg_http* gghttp; 
-	int event_type;
-	struct fd_handler_s *fdh;
-	request_cb callback;
-}Request;
-
 typedef struct sesion_s{
-	char * jid; /* users JID, with resource */
 	User *user;
-	GList *requests;
-	struct gg_session *ggs;
-	struct fd_handler_s *fdh;
-	struct stream_s *s; /* server stream */
-
+	
+	struct gg_session *ggs; /* GG session */
+	struct fd_handler_s *fdh; /* GG session fd handler */
 	int connected;
+	
+	char *jid; 		/* users JID, with resource */
+	struct stream_s *s; 	/* Jabber stream */
 	int available;
 	char *show;
 	char *status;
 	
 	char *req_id;  /* ID if user registration request (<iq/>) */
 	xmlnode query; /* The query */
+
 	time_t last_ping;
+	time_t last_pong;
 }Session;
 
-GHashTable *sessions_jid;
-GHashTable *sessions_uin;
+extern GHashTable *sessions_jid;
 
 Session *session_create(User *user,const char *jid,const char *req_id,const xmlnode query,struct stream_s *stream);
 int session_remove(Session *s);

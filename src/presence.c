@@ -6,6 +6,21 @@
 #include "sessions.h"
 #include <glib.h>
 
+int presence_send_probe(struct stream_s *stream,const char *to){
+xmlnode pres;
+char *jid;
+
+	pres=xmlnode_new_tag("presence");
+	jid=jid_my_registered();
+	xmlnode_put_attrib(pres,"from",jid);
+	g_free(jid);
+	xmlnode_put_attrib(pres,"to",to);
+	xmlnode_put_attrib(pres,"type","probe");
+	stream_write(stream,pres);
+	xmlnode_free(pres);
+	return 0;
+}
+
 int presence_send_subscribe(struct stream_s *stream,const char *from,const char *to){
 xmlnode pres;
 
