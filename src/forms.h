@@ -26,5 +26,29 @@ xmlnode form_add_option(xmlnode field,const char *label,const char *val);
  */
 xmlnode form_add_fixed(xmlnode form,const char *val);
 
+/*
+ * creates a new jabber:x:data result form
+ * returns the node created added
+ */
+xmlnode form_new_result(const char *title);
+
+/*
+ * adds a field declaration to a jabber:x:data report
+ * returns the field added
+ */
+xmlnode form_add_result_field(xmlnode form,const char *var,const char *label,const char *type);
+
+/*
+ * adds an item jabber:x:data report
+ * returns the item added
+ */
+xmlnode form_add_result_item(xmlnode form);
+
+
+/*
+ * adds a value to a jabber:x:data report item
+ * returns the field added
+ */
+xmlnode form_add_result_value(xmlnode item,const char *var,const char *val);
 
 #endif

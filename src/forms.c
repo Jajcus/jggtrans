@@ -1,4 +1,4 @@
-/* $Id: forms.c,v 1.2 2003/04/11 15:59:38 jajcus Exp $ */
+/* $Id: forms.c,v 1.3 2003/04/13 10:59:57 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -35,6 +35,22 @@ xmlnode form,tag;
 	xmlnode_insert_cdata(tag,instructions,-1);
 	return form;
 }
+
+/*
+ * creates a new jabber:x:data result form
+ * returns the node created added
+ */
+xmlnode form_new_result(const char *title){
+xmlnode form,tag;
+	
+	form=xmlnode_new_tag("x");
+	xmlnode_put_attrib(form,"xmlns","jabber:x:data");
+	xmlnode_put_attrib(form,"type","result");
+	tag=xmlnode_insert_tag(form,"title");
+	xmlnode_insert_cdata(tag,title,-1);
+	return form;
+}
+
 
 /*
  * adds a field to a jabber:x:data form
@@ -82,6 +98,51 @@ xmlnode field,value;
 	xmlnode_put_attrib(field,"type","fixed");
 	value=xmlnode_insert_tag(field,"value");
 	xmlnode_insert_cdata(value,val,-1); 
+	return field;
+}
+
+/*
+ * adds a field declaration to a jabber:x:data report
+ * returns the field added
+ */
+xmlnode form_add_result_field(xmlnode form,const char *var,const char *label,const char *type){
+xmlnode rep,field;
+
+	rep=xmlnode_get_tag(form,"reported");
+	if (rep==NULL) {
+		rep=xmlnode_insert_tag(form,"reported");
+	}
+	field=xmlnode_insert_tag(rep,"field");
+	xmlnode_put_attrib(field,"var",var);
+	xmlnode_put_attrib(field,"label",label);
+	if (type!=NULL)
+		xmlnode_put_attrib(field,"type",type);
+	return field;
+}
+
+/*
+ * adds an item jabber:x:data report
+ * returns the item added
+ */
+xmlnode form_add_result_item(xmlnode form){
+xmlnode item;
+
+	item=xmlnode_insert_tag(form,"item");
+	return item;
+}
+
+/*
+ * adds a value to a jabber:x:data report item
+ * returns the field added
+ */
+xmlnode form_add_result_value(xmlnode item,const char *var,const char *val){
+xmlnode field,value;
+
+	field=xmlnode_insert_tag(item,"field");
+	xmlnode_put_attrib(field,"var",var);
+	value=xmlnode_insert_tag(field,"value");
+	if (val!=NULL) 
+		xmlnode_insert_cdata(value,val,-1);
 	return field;
 }
 
