@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.53 2003/04/08 17:45:28 jajcus Exp $ */
+/* $Id: sessions.c,v 1.54 2003/04/10 14:59:00 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -442,6 +442,8 @@ time_t timestamp;
 			break;
 		case GG_EVENT_PUBDIR50_SEARCH_REPLY:
 			request_response_search(event);
+			break;
+		case GG_EVENT_PUBDIR50_WRITE:
 			break;
 		case GG_EVENT_ACK:
 			debug("GG_EVENT_ACK");
