@@ -1,4 +1,4 @@
-/* $Id: encoding.c,v 1.6 2002/02/23 16:28:19 jajcus Exp $ */
+/* $Id: encoding.c,v 1.7 2002/06/10 17:57:46 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -53,6 +53,7 @@ char *oldbuf;
 size_t outbytesleft;
 int r;
 
+	if (str==NULL) return NULL;
 	inbuf=(char *)str;
 	inbytesleft=strlen(str);
 	outbuf=buf;
@@ -93,7 +94,7 @@ int r;
 }
 
 char *to_utf8(const char *str){
-	
+
 	return convert(to_utf8_c,str);
 }
 

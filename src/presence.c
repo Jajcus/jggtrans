@@ -1,4 +1,4 @@
-/* $Id: presence.c,v 1.17 2002/02/03 16:25:53 jajcus Exp $ */
+/* $Id: presence.c,v 1.18 2002/06/10 17:57:46 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -27,6 +27,7 @@
 #include "debug.h"
 #include "register.h"
 #include "status.h"
+#include "encoding.h"
 #include <time.h>
 
 int presence_send_error(struct stream_s *stream,const char *from,const char *to,
@@ -177,7 +178,7 @@ xmlnode n;
 	}
 	if (status){
 		n=xmlnode_insert_tag(pres,"status");
-		xmlnode_insert_cdata(n,status,-1);
+		xmlnode_insert_cdata(n,to_utf8(status),-1);
 	}
 	if (timestamp){
 		struct tm *t;
@@ -210,7 +211,7 @@ Resource *res;
 	}
 	jid=g_strdup(s->user->jid); /* session may be removed in the next step */
 	resource=jid_get_resource(from);
-	r=session_set_status(s,resource,available,show,status,priority);
+	r=session_set_status(s,resource,available,show,from_utf8(status),priority);
 	if (!r && s->connected){
 		res=session_get_cur_resource(s);
 		if (res) presence_send(stream,NULL,jid,res->available,res->show,res->status,0);
@@ -311,12 +312,14 @@ GTime timestamp;
 
 	uin=jid_get_uin(to);
 	status=0;
+	stat="";
 	for(it=u->contacts;it;it=it->next){
 		Contact *c=(Contact *)it->data;
 	
 		if (c && c->uin==uin){
 			status=c->status;
 			timestamp=c->last_update;
+			stat=c->status_desc;
 		}
 	}
 	if (!status){

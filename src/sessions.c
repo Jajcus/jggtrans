@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.28 2002/06/05 15:31:08 jajcus Exp $ */
+/* $Id: sessions.c,v 1.29 2002/06/10 17:57:46 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -160,16 +160,16 @@ Session *s;
 	return TRUE;
 }
 
-int session_event_status(Session *s,int status,uin_t uin){
+int session_event_status(Session *s,int status,uin_t uin,char *desc){
 int available;
 char *ujid;
-char *show,*stat;
+char *show;
 
-	user_set_contact_status(s->user,status,uin);
-	available=status_gg_to_jabber(status,&show,&stat);
+	available=status_gg_to_jabber(status,&show,&desc);
+	user_set_contact_status(s->user,status,uin,desc);
 
 	ujid=jid_build(uin);
-	presence_send(s->s,ujid,s->user->jid,available,show,stat,0);
+	presence_send(s->s,ujid,s->user->jid,available,show,desc,0);
 	g_free(ujid);
 	return 0;
 }
@@ -203,9 +203,21 @@ int i;
 
 	for(i=0;event->event.notify[i].uin;i++)
 		session_event_status(s,event->event.notify[i].status,
-				event->event.notify[i].uin);
+				event->event.notify[i].uin,
+				NULL);
 	return 0;
 }
+
+int session_event_notify_descr(Session *s,struct gg_event *event){
+int i;
+
+	for(i=0;event->event.notify_descr.notify[i].uin;i++)
+		session_event_status(s,event->event.notify_descr.notify[i].status,
+				event->event.notify_descr.notify[i].uin,
+				event->event.notify_descr.descr);
+	return 0;
+}
+
 
 int session_io_handler(GIOChannel *source,GIOCondition condition,gpointer data){
 Session *s;
@@ -298,8 +310,15 @@ Resource *r;
 		case GG_EVENT_NOTIFY:
 			session_event_notify(s,event);
 			break;
+		case GG_EVENT_NOTIFY_DESCR:
+			session_event_notify_descr(s,event);
+			break;
 		case GG_EVENT_STATUS:
-			session_event_status(s,event->event.status.status,event->event.status.uin);
+			session_event_status(s,
+					event->event.status.status,
+					event->event.status.uin,
+					event->event.status.descr
+					);
 			break;
 		case GG_EVENT_MSG:
 			if (event->event.msg.sender==0){
@@ -485,7 +504,7 @@ Resource *r;
 	if (!r) return -1;
 	status=status_jabber_to_gg(r->available,r->show,r->status);
 	debug("Changing gg status to %i",status);
-	gg_change_status(s->ggs,status);
+	gg_change_status_descr(s->ggs,status,r->status);
 	return 0;
 }
 
