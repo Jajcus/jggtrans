@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.44 2003/02/04 08:06:01 jajcus Exp $ */
+/* $Id: sessions.c,v 1.45 2003/02/04 08:09:21 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -39,7 +39,7 @@ static int conn_timeout=30;
 static int pong_timeout=30;
 static int ping_interval=10;
 static int reconnect=0;
-static GList *gg_server=NULL;
+static GList *gg_servers=NULL;
 GHashTable *sessions_jid;
 
 static int session_try_login(Session *s);
@@ -64,7 +64,7 @@ char *p,*r;
 int port;
 int i;
 xmlnode parent,tag;
-Server *server;
+GgServer *server;
 
 	stream_add_destroy_handler(sessions_stream_destroyed);
 
@@ -80,26 +80,26 @@ Server *server;
 	i=config_load_int("reconnect",0);
 	if (i>0) reconnect=i;
 
-	server=g_new(Server, 1);
+	server=g_new(GgServer, 1);
 	server->port=1;
-	gg_server=g_list_append(gg_server, server);
+	gg_servers=g_list_append(gg_servers, server);
 
-	server=g_new(Server, 1);
+	server=g_new(GgServer, 1);
 	inet_aton("217.17.41.84", &server->addr);
 	server->port=8074;
-	gg_server=g_list_append(gg_server, server);
+	gg_servers=g_list_append(gg_servers, server);
 
 	parent=xmlnode_get_tag(config,"servers");
 	if (parent && xmlnode_has_children(parent)){
-		gg_server=NULL;
+		gg_servers=NULL;
 		for(tag=xmlnode_get_firstchild(parent); tag!=NULL;
 				tag=xmlnode_get_nextsibling(tag)){
 			if(xmlnode_get_type(tag) != NTYPE_TAG) continue;
 			p=xmlnode_get_name(tag);
 			if (strcmp(p, "hub")==0){
-				server=g_new(Server, 1);
+				server=g_new(GgServer, 1);
 				server->port=1;
-				gg_server=g_list_append(gg_server, server);
+				gg_servers=g_list_append(gg_servers, server);
 			}
 			else if (strcmp(p, "server")==0){
 				if((r=xmlnode_get_attrib(tag, "port")))
@@ -109,7 +109,7 @@ Server *server;
 
 				r=xmlnode_get_data(tag);
 				if(inet_aton(r, &server->addr))
-					gg_server=g_list_append(gg_server, server);
+					gg_servers=g_list_append(gg_servers, server);
 			}
 		}
 
@@ -161,7 +161,7 @@ char *jid;
 void session_schedule_reconnect(Session *s){
 int t;
 
-	s->current_server=g_list_first(gg_server);
+	s->current_server=g_list_first(gg_servers);
 	if (!reconnect) return;
 	t=(int)((reconnect*9.0/10.0)+(2.0*reconnect/10.0*rand()/(RAND_MAX+1.0)));
 	debug("Sheduling reconnect in %u seconds",t);
@@ -175,7 +175,7 @@ Session *s;
 	s=(Session *)data;
 
 	g_warning("Timeout for server %u",
-			g_list_position(gg_server, s->current_server)-1);
+			g_list_position(gg_servers, s->current_server)-1);
 
 	if(s->current_server!=NULL)
 		if(!session_try_login(s))
@@ -519,10 +519,10 @@ char *njid;
 static int session_try_login(Session *s){
 struct gg_login_params login_params;
 GIOCondition cond;
-Server *serv;
+GgServer *serv;
 
 	g_warning("Trying to log in on server %u",
-			g_list_position(gg_server, s->current_server));
+			g_list_position(gg_servers, s->current_server));
 
 	if (s->timeout_func) g_source_remove(s->timeout_func);
 	if (s->io_watch) g_source_remove(s->io_watch);
@@ -532,7 +532,7 @@ Server *serv;
 	login_params.uin=s->user->uin;
 	login_params.password=s->user->password;
 	login_params.async=1;
-	serv=(Server*)s->current_server->data;
+	serv=(GgServer*)s->current_server->data;
 	if(serv->port!=1){
 		login_params.server_addr=serv->addr.s_addr;
 		login_params.server_port=serv->port;
@@ -568,7 +568,7 @@ char *njid;
 	s->jid=g_strdup(jid);
 	if (req_id) s->req_id=g_strdup(req_id);
 	s->query=xmlnode_dup(query);
-	s->current_server=g_list_first(gg_server);
+	s->current_server=g_list_first(gg_servers);
 
 	if(session_try_login(s))
 		return NULL;
