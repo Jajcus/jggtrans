@@ -1,4 +1,4 @@
-/* $Id: message.h,v 1.6 2003/04/13 21:50:48 mmazur Exp $ */
+/* $Id: message.h,v 1.7 2003/04/16 10:38:30 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -26,6 +26,9 @@ struct stream_s;
 
 int message_send(struct stream_s *stream,const char *from,
 		const char *to,int chat,const char *message, time_t timestamp);
+
+int message_send_subject(struct stream_s *stream,const char *from,
+		const char *to,const char *subject,const char *message, time_t timestamp);
 
 int message_error(struct stream_s *stream,const char *from,
 		const char *to,const char *body,int code, time_t timestamp);

@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.61 2003/04/16 09:53:02 jajcus Exp $ */
+/* $Id: sessions.c,v 1.62 2003/04/16 10:38:30 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -298,7 +298,7 @@ int i;
 int session_io_handler(GIOChannel *source,GIOCondition condition,gpointer data){
 Session *s;
 struct gg_event *event;
-char *jid;
+char *jid,*str;
 int chat;
 GIOCondition cond;
 Resource *r;
@@ -434,7 +434,12 @@ time_t timestamp;
 			if (event->event.msg.sender==0){
 				if (!user_sys_msg_received(s->user,event->event.msg.msgclass)) break;
 				jid=jid_my_registered();
-				chat=0;
+				timestamp=event->event.msg.time;
+				str=g_strdup_printf(_("GG System message #%i"),
+							event->event.msg.msgclass);
+				message_send_subject(s->s,jid,s->jid,str,
+						to_utf8(event->event.msg.message),timestamp);
+				g_free(str);
 			}
 			else{
 				jid=jid_build(event->event.msg.sender);
@@ -445,7 +450,8 @@ time_t timestamp;
 				timestamp=event->event.msg.time;
 			}
 			else timestamp=0;
-			message_send(s->s,jid,s->jid,chat,event->event.msg.message,timestamp);
+			message_send(s->s,jid,s->jid,chat,
+					to_utf8(event->event.msg.message),timestamp);
 			g_free(jid);
 			break;
 		case GG_EVENT_PONG:

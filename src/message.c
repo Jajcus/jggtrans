@@ -1,4 +1,4 @@
-/* $Id: message.c,v 1.28 2003/04/14 12:46:03 jajcus Exp $ */
+/* $Id: message.c,v 1.29 2003/04/16 10:38:30 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -59,6 +59,40 @@ MsgCommand msg_commands[]={
 	{NULL,NULL,NULL,0},
 };
 
+int message_send_subject(struct stream_s *stream,const char *from,
+		const char *to,const char *subject,const char *message,time_t timestamp){
+xmlnode msg;
+xmlnode n;
+struct tm *tm;
+char buf[101];
+
+	msg=xmlnode_new_tag("message");
+	if (from!=NULL)
+		xmlnode_put_attrib(msg,"from",from);
+	else{
+		char *jid;
+		jid=jid_my_registered();
+		xmlnode_put_attrib(msg,"from",jid);
+		g_free(jid);
+	}
+	xmlnode_put_attrib(msg,"to",to);
+	n=xmlnode_insert_tag(msg,"subject");
+	xmlnode_insert_cdata(n,subject,-1);
+	n=xmlnode_insert_tag(msg,"body");
+	xmlnode_insert_cdata(n,message,-1);
+	if (timestamp){
+		n=xmlnode_insert_tag(msg,"x");
+		xmlnode_put_attrib(n,"xmlns","jabber:x:delay");
+		tm=gmtime(&timestamp);
+		strftime(buf,100,"%Y%m%dT%H:%M:%S",tm);
+		xmlnode_put_attrib(n,"stamp",buf);
+		xmlnode_insert_cdata(n,"Delayed message",-1);
+	}
+	stream_write(stream,msg);
+	xmlnode_free(msg);
+	return 0;
+}
+
 int message_send(struct stream_s *stream,const char *from,
 		const char *to,int chat,const char *message,time_t timestamp){
 xmlnode msg;
@@ -78,7 +112,7 @@ char buf[101];
 	xmlnode_put_attrib(msg,"to",to);
 	if (chat) xmlnode_put_attrib(msg,"type","chat");
 	n=xmlnode_insert_tag(msg,"body");
-	xmlnode_insert_cdata(n,to_utf8(message),-1);
+	xmlnode_insert_cdata(n,message,-1);
 	if (timestamp){
 		n=xmlnode_insert_tag(msg,"x");
 		xmlnode_put_attrib(n,"xmlns","jabber:x:delay");
