@@ -1,15 +1,17 @@
+# translation of nl.po to Nederlands
 # translation of pl.po to Nederlands
 #
 # vi: encoding=utf-8
 # (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
+# Ben Branders <ben dot branders at skynet dot be>, 2004.
 # Sander Devrieze <s.devrieze@pandora.be>, 2004.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: jabber-gg-transport 2.0.9\n"
+"Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-03-28 11:26+0200\n"
-"PO-Revision-Date: 2004-03-26 18:35+0100\n"
+"POT-Creation-Date: 2004-04-06 18:29+0200\n"
+"PO-Revision-Date: 03/04/04 13:02\n"
 "Last-Translator: Sander Devrieze <s.devrieze@pandora.be>\n"
 "Language-Team: Nederlands\n"
 "MIME-Version: 1.0\n"
@@ -62,7 +64,7 @@ msgstr "Ik ken u niet"
 #: src/iq.c:196
 #, c-format
 msgid "No UIN given in 'to': %s"
-msgstr "Geen UIN opgegeven in 'to': %s"
+msgstr "Geen UIN opgegeven in 'aan': %s"
 
 #: src/iq.c:197 src/iq.c:276 src/iq.c:281 src/iq.c:290 src/iq.c:297
 #: src/message.c:480 src/message.c:490
@@ -70,8 +72,8 @@ msgid "Bad Request"
 msgstr "Onjuist verzoek"
 
 #: src/iq.c:227 src/iq.c:232 src/iq.c:237 src/presence.c:422
-#: src/presence.c:429 src/register.c:449 src/register.c:595 src/register.c:647
-#: src/register.c:657
+#: src/presence.c:429 src/register.c:450 src/register.c:596 src/register.c:648
+#: src/register.c:658
 msgid "Not Acceptable"
 msgstr "Niet aanvaardbaar"
 
@@ -91,7 +93,7 @@ msgstr "Verkeerde to=%s (mijn naam is %s)"
 #: src/iq.c:280
 #, c-format
 msgid "No from in query: %s"
-msgstr "Geen from in verzoek: %s"
+msgstr "Geen \"van\" in verzoek: %s"
 
 #: src/iq.c:289
 #, c-format
@@ -150,7 +152,7 @@ msgstr "onverwachte <hanshake/>"
 
 #: src/jabber.c:65
 msgid "handshake OK"
-msgstr "handdrukOK"
+msgstr "handdruk OK"
 
 #: src/jabber.c:75
 #, c-format
@@ -164,12 +166,12 @@ msgstr "Niet ondersteunde tag: %s"
 
 #: src/jabber.c:131
 msgid "Stream Error"
-msgstr "Stream-fout"
+msgstr "Streamfout"
 
 #: src/jabber.c:139
 #, c-format
 msgid "Unknown node type: %i"
-msgstr "Onbekend node-type: %i"
+msgstr "Onbekend nodetype: %i"
 
 #: src/jabber.c:219
 msgid "No <service/> found in config file"
@@ -556,7 +558,7 @@ msgstr "aan"
 
 #: src/message.c:417 src/message.c:418
 msgid "off"
-msgstr "af"
+msgstr "uit"
 
 #: src/message.c:418
 #, c-format
@@ -565,7 +567,7 @@ msgid ""
 "  invisible: %s"
 msgstr ""
 "%s\n"
-"  Onzichtbaar: %s"
+"  onzichtbaar: %s"
 
 #: src/message.c:419
 #, c-format
@@ -596,16 +598,16 @@ msgstr "Foutmelding ontvangen: %s"
 msgid "Unsupported message type"
 msgstr "Niet ondersteund berichttype"
 
-#: src/message.c:474 src/register.c:284 src/register.c:395 src/register.c:403
-#: src/register.c:416 src/register.c:499 src/register.c:525 src/register.c:603
-#: src/register.c:611
+#: src/message.c:474 src/register.c:285 src/register.c:396 src/register.c:404
+#: src/register.c:417 src/register.c:500 src/register.c:526 src/register.c:604
+#: src/register.c:612
 msgid "Internal Server Error"
-msgstr "Serverfout"
+msgstr "Interne serverfout"
 
 #: src/message.c:479
 #, c-format
 msgid "Bad 'to' in: %s"
-msgstr "Ongeldige 'to' in: %s"
+msgstr "Ongeldige 'ontvanger' in: %s"
 
 #: src/message.c:489
 #, c-format
@@ -643,7 +645,7 @@ msgstr "Geauthorizeerd van onbekende gebruiker (%s)"
 #: src/presence.c:244 src/presence.c:354
 #, c-format
 msgid "Bad 'to': %s"
-msgstr "Ongeldige 'to': %s"
+msgstr "Ongeldige 'aan': %s"
 
 #: src/presence.c:249 src/presence.c:359
 #, c-format
@@ -665,11 +667,11 @@ msgstr "Authorizatie mislukt"
 
 #: src/presence.c:267
 msgid "Presence unsubscribed sent to me."
-msgstr "Authorizatie is ongedaan gemaakt"
+msgstr "Authorizatie is ongedaan gemaakt."
 
-#: src/presence.c:298 src/presence.c:325 src/register.c:506 src/search.c:424
+#: src/presence.c:298 src/presence.c:325 src/register.c:507 src/search.c:424
 msgid "Not Found"
-msgstr "Niet gevonden "
+msgstr "Niet gevonden"
 
 #: src/presence.c:306
 msgid "Not registered"
@@ -677,12 +679,12 @@ msgstr "Niet geregistreerd"
 
 #: src/presence.c:344
 msgid "Presence unsubscribe request sent to me"
-msgstr ""
+msgstr "Uitschrijvingsaanvraag op aanwezigheid naar mij verstuurt"
 
 #: src/presence.c:362
 #, c-format
 msgid "Unsubscribing %s from %s..."
-msgstr ""
+msgstr "Uitschrijven %s van %s..."
 
 #: src/presence.c:365
 msgid "Unsubscribed."
@@ -696,7 +698,7 @@ msgstr "Ongeldige <presence/>: %s"
 #: src/presence.c:430
 #, c-format
 msgid "Wrong 'to' in %s"
-msgstr "Verkeerde 'to' in %s"
+msgstr "Verkeerde 'aan' in %s"
 
 #: src/presence.c:463
 #, c-format
@@ -712,301 +714,301 @@ msgstr "Niet ondersteund type in %s"
 msgid "Not Implemented"
 msgstr "Niet ingeprogrammeerd"
 
-#: src/register.c:50
+#: src/register.c:51
 msgid "Jabber GG transport registration form"
 msgstr "Jabber GG transport: registratieformulier"
 
-#: src/register.c:51
+#: src/register.c:52
 msgid ""
 "Fill in this form to regiser in the transport.\n"
 "You may use registration later to change your settings, password, public "
 "directory information or to unregister."
 msgstr ""
 "Vul dit formulier in om te registreren op het transport.\n"
-"U kan dit formulier later gebruiken om uw instellingen, wachtwoord,publieke "
+"U kan dit formulier later gebruiken om uw instellingen, wachtwoord, publieke "
 "directory gegevens te veranderen of om de registratie ongedaan te maken."
 
-#: src/register.c:55 src/search.c:52
+#: src/register.c:56 src/search.c:52
 msgid "GG number"
 msgstr "GG-nummer"
 
-#: src/register.c:56
+#: src/register.c:57
 msgid "Password"
 msgstr "Wachtwoord"
 
-#: src/register.c:58
+#: src/register.c:59
 msgid "Userlist on GG server"
 msgstr "Gebruikerslijst op GG-server"
 
-#: src/register.c:59
+#: src/register.c:60
 msgid "ignore"
 msgstr "negeren"
 
-#: src/register.c:60
+#: src/register.c:61
 msgid "retrieve"
 msgstr "ophalen"
 
-#: src/register.c:65 src/register.c:95
+#: src/register.c:66 src/register.c:96
 msgid "Language"
 msgstr "Taal"
 
-#: src/register.c:66 src/register.c:97
+#: src/register.c:67 src/register.c:98
 msgid "-default-"
 msgstr "-standaard-"
 
-#: src/register.c:70 src/register.c:100
+#: src/register.c:71 src/register.c:101
 msgid "Friends only"
 msgstr "Enkel vrienden"
 
-#: src/register.c:71 src/register.c:102
+#: src/register.c:72 src/register.c:103
 msgid "Invisible"
 msgstr "Onzichtbaar"
 
-#: src/register.c:81
+#: src/register.c:82
 msgid "Registration change form"
 msgstr "Registratiewijzigingsformulier"
 
-#: src/register.c:82
+#: src/register.c:83
 msgid ""
 "You may use this form to change account information, change personal "
 "information in the public directory or unregister from the transport."
 msgstr ""
-"U kan dit formulier gebruiken om account- of persoonelijke gegevens in de "
+"U kan dit formulier gebruiken om account- of persoonlijke gegevens in de "
 "publieke directory te veranderen of om de registratie op het transport "
 "ongedaan te maken."
 
-#: src/register.c:87
+#: src/register.c:88
 msgid "Action"
 msgstr "Actie"
 
-#: src/register.c:88
+#: src/register.c:89
 msgid "Change account options"
 msgstr "Wijzig accountinstellingen"
 
-#: src/register.c:89
+#: src/register.c:90
 msgid "Change password"
 msgstr "Wijzig wachtwoord"
 
-#: src/register.c:90
+#: src/register.c:91
 msgid "Change public directory information"
 msgstr "Verander gegevens in publieke directory"
 
-#: src/register.c:91
+#: src/register.c:92
 msgid "Unregister"
 msgstr "Registratie ongedaan maken"
 
-#: src/register.c:94
+#: src/register.c:95
 msgid "Fill out this part only when changing account options:"
 msgstr "Vul dit deel enkel in als u de accountopties verandert:"
 
-#: src/register.c:105
+#: src/register.c:106
 msgid "Fill out this part only when changing password:"
 msgstr "Vul dit deel enkel in als u het wachtwoord verandert:"
 
-#: src/register.c:106
+#: src/register.c:107
 msgid "New password"
 msgstr "Nieuw wachtwoord"
 
-#: src/register.c:107
+#: src/register.c:108
 msgid "Confirm new password"
 msgstr "Bevestig nieuw wachtwoord"
 
-#: src/register.c:108
+#: src/register.c:109
 msgid "Question"
 msgstr "Vraag"
 
-#: src/register.c:109
+#: src/register.c:110
 msgid "Answer"
-msgstr "Antwoordt"
+msgstr "Antwoord"
 
-#: src/register.c:111
+#: src/register.c:112
 msgid "Fill out this part only when changing public directory info:"
 msgstr ""
 "Vul dit deel enkel in als u veranderingen aanbrengt in de gegevens in de "
 "publieke directory:"
 
-#: src/register.c:112 src/search.c:54 src/search.c:91
+#: src/register.c:113 src/search.c:54 src/search.c:91
 msgid "First name"
 msgstr "Voornaam"
 
-#: src/register.c:113 src/search.c:55 src/search.c:92
+#: src/register.c:114 src/search.c:55 src/search.c:92
 msgid "Last name"
 msgstr "Achternaam"
 
-#: src/register.c:114 src/search.c:53 src/search.c:89
+#: src/register.c:115 src/search.c:53 src/search.c:89
 msgid "Nick"
 msgstr "Bijnaam"
 
-#: src/register.c:115 src/search.c:56
+#: src/register.c:116 src/search.c:56
 msgid "Birth year"
 msgstr "Geboortejaar"
 
-#: src/register.c:116 src/search.c:57 src/search.c:93
+#: src/register.c:117 src/search.c:57 src/search.c:93
 msgid "City"
 msgstr "Woonplaats"
 
-#: src/register.c:117 src/search.c:58 src/search.c:94
+#: src/register.c:118 src/search.c:58 src/search.c:94
 msgid "Sex"
 msgstr "Geslacht"
 
-#: src/register.c:119 src/search.c:129
+#: src/register.c:120 src/search.c:129
 msgid "female"
 msgstr "vrouwelijk"
 
-#: src/register.c:120 src/search.c:131
+#: src/register.c:121 src/search.c:131
 msgid "male"
 msgstr "mannelijk"
 
-#: src/register.c:121 src/search.c:63 src/search.c:96
+#: src/register.c:122 src/search.c:63 src/search.c:96
 msgid "Family name"
 msgstr "Familienaam"
 
-#: src/register.c:122 src/search.c:64 src/search.c:97
+#: src/register.c:123 src/search.c:64 src/search.c:97
 msgid "Family city"
 msgstr "Familie stad"
 
-#: src/register.c:178
+#: src/register.c:179
 msgid "No new password given"
 msgstr "Geen nieuw wachtwoord opgegeven"
 
-#: src/register.c:187
+#: src/register.c:188
 msgid "Passwords do not match"
 msgstr "Wachtwoorden komen niet overeen"
 
-#: src/register.c:191
+#: src/register.c:192
 msgid "New password is the same as the old one."
 msgstr "Het nieuwe wachtwoord is hetzelfde als het oude."
 
-#: src/register.c:201
+#: src/register.c:202
 msgid "Question contains illegal characters."
 msgstr "Vraag bevat ongeldige tekens."
 
-#: src/register.c:211
+#: src/register.c:212
 msgid "Answer contains illegal characters."
 msgstr "Antwoordt bevat ongeldige tekens."
 
-#: src/register.c:247
+#: src/register.c:248
 msgid "Not logged in?"
 msgstr "Niet aangemeld?"
 
-#: src/register.c:298
+#: src/register.c:299
 msgid "No action field present"
 msgstr "Geen actie-veld aanwezig"
 
-#: src/register.c:303 src/register.c:309
+#: src/register.c:304 src/register.c:310
 msgid "No action value defined"
 msgstr "Geen actie-waarde gedefiniëerd"
 
-#: src/register.c:331
+#: src/register.c:332
 msgid "Bad action given"
 msgstr "Ongeldige actie opgegeven"
 
-#: src/register.c:349
+#: src/register.c:350
 msgid "No uin field present"
 msgstr "Geen uin-veld aanwezig"
 
-#: src/register.c:354 src/register.c:359
+#: src/register.c:355 src/register.c:360
 msgid "No uin value defined"
 msgstr "Geen uin-waarde gedefiniëerd"
 
-#: src/register.c:364
+#: src/register.c:365
 msgid "Bad uin value defined"
 msgstr "Ongeldige uin-waarde gedefiniëerd"
 
-#: src/register.c:370
+#: src/register.c:371
 msgid "No password field present"
 msgstr "Geen wachtwoordveld aanwezig"
 
-#: src/register.c:375 src/register.c:380
+#: src/register.c:376 src/register.c:381
 msgid "No password value defined"
 msgstr "Geen wachtwoordwaarde gedefiniëerd"
 
-#: src/register.c:394 src/register.c:602
+#: src/register.c:395 src/register.c:603
 #, c-format
 msgid "Couldn't create user %s"
 msgstr "Kon gebruiker %s niet aanmaken"
 
-#: src/register.c:402 src/register.c:610
+#: src/register.c:403 src/register.c:611
 #, c-format
 msgid "Couldn't create session for %s"
 msgstr "Kon geen sessie aanmaken voor %s"
 
-#: src/register.c:415
+#: src/register.c:416
 #, c-format
 msgid "Password change error for user '%s'"
 msgstr "Wachtwoord wijzigingsfout voor gebruiker '%s'"
 
-#: src/register.c:425
+#: src/register.c:426
 msgid "Couldn't find the user."
 msgstr "Kon de gebruiker niet vinden."
 
-#: src/register.c:429
+#: src/register.c:430
 #, c-format
 msgid "Password changed for user '%s'"
 msgstr "Wachtwoord van gebruiker '%s' is gewijzigd"
 
-#: src/register.c:494
+#: src/register.c:495
 #, c-format
 msgid "Unregistering '%s'"
 msgstr "Bezig met authorizatie ongedaan te maken van '%s'"
 
-#: src/register.c:498 src/register.c:524
+#: src/register.c:499 src/register.c:525
 #, c-format
 msgid "'%s' unregistration failed"
 msgstr "Ongedaan maken van de registratie van '%s' is mislukt"
 
-#: src/register.c:505
+#: src/register.c:506
 #, c-format
 msgid "Tried to unregister '%s' who was never registered"
 msgstr ""
 "Probeerde de registratie van '%s' ongedaan te maken maar die was nooit "
 "geregistreerd"
 
-#: src/register.c:534
+#: src/register.c:535
 #, c-format
 msgid "User '%s' unregistered"
 msgstr "Registratie van gebruiker '%s' is ongedaan gemaakt"
 
-#: src/register.c:554 src/register.c:640
+#: src/register.c:555 src/register.c:641
 #, c-format
 msgid "Set query for jabber:iq:register empty: %s"
 msgstr "Stel vraag in voor jabber:iq:register empty: %s"
 
-#: src/register.c:563
+#: src/register.c:564
 msgid "Form returned with no type defined"
-msgstr ""
+msgstr "Formulier teruggestuurd zonder een type te definiëren"
 
-#: src/register.c:572
+#: src/register.c:573
 msgid "Cancelled"
 msgstr "Geannulleerd"
 
-#: src/register.c:574
+#: src/register.c:575
 msgid "Bad form type"
 msgstr "Ongeldig formuliertype"
 
-#: src/register.c:580
+#: src/register.c:581
 #, c-format
 msgid "<remove/> in jabber:iq:register set: %s"
 msgstr "<remove/> in jabber:iq:register set: %s"
 
-#: src/register.c:594
+#: src/register.c:595
 #, c-format
 msgid "User '%s' doesn't exist and not enough info to add him"
 msgstr ""
 "Gebruiker '%s' bestaat niet en er is niet genoeg informatie opgegeven om hem "
 "toe te voegen"
 
-#: src/register.c:645
+#: src/register.c:646
 msgid "Nothing to change"
 msgstr "Niets om te veranderen"
 
-#: src/register.c:655
+#: src/register.c:656
 msgid "Not registered, and no password given for public directory change."
 msgstr ""
 "Niet geregistreerd en geen wachtwoord opgegeven voor publieke directory "
 "verandering."
 
-#: src/register.c:691 src/sessions.c:346
+#: src/register.c:692 src/sessions.c:346
 msgid "Remote Server Error"
 msgstr "Serverfout"
 
@@ -1105,7 +1107,7 @@ msgstr "%u sessies in hash-tabel"
 #: src/sessions.c:200
 #, c-format
 msgid "Sheduling reconnect in %u seconds"
-msgstr ""
+msgstr "Geprogrammeerde reconnect in %u seconden"
 
 #: src/sessions.c:211
 #, c-format
@@ -1213,10 +1215,11 @@ msgstr "Bezig met proberen aanmelden op server: %u"
 msgid "Setting gg status to %i (%s)"
 msgstr "Bezig met instellen van gg-status naar %i (%s)"
 
+# Volgens mij wordt de %s vervangen door 'aan' of 'uit'.
 #: src/sessions.c:671
 #, c-format
 msgid "Turning TLS %s"
-msgstr ""
+msgstr "Zet TLS %s"
 
 #: src/sessions.c:699
 #, c-format
@@ -1226,7 +1229,7 @@ msgstr "Bezig met creëren van sessie voor '%s'"
 #: src/sessions.c:725
 #, c-format
 msgid "Looking up session for '%s'"
-msgstr ""
+msgstr "Sessie voor '%s' aan het opzoeken"
 
 #: src/sessions.c:727
 #, c-format
