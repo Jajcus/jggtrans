@@ -1,5 +1,8 @@
 2004-03-28  Jacek Konieczny  <jajcus@bnet.pl>
 
+	* src/register.c:
+	- Dutch in locale mapping (to be updated)
+
 	* po/nl.po, po/pl.po:
 	- cleanup
 
