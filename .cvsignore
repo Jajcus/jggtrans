@@ -18,5 +18,5 @@ mkinstalldirs
 stamp-h
 stamp-h.in
 stamp-h1
-jaber-gg-transport-*.tar.gz
+jabber-gg-transport-*.tar.gz
 autom4te.cache
