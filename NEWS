@@ -1,4 +1,19 @@
 
+Version 1.2.0
+-------------
+
+Changes from 1.1.0:
+
+* updated to new libgadu (works with libgadu-20021205)
+
+* searching works again
+
+* IP address of active GG user in roster is provided in "About" field of user's
+  vCard
+
+* several memory leaks fixed
+
+
 Version 1.1.0
 -------------
 

@@ -1,1 +1,2 @@
-- none? (I don't belive this)
+- some memory leaks still exist
+- jabber:iq:gateway doesn't work with some clients
