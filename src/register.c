@@ -1,4 +1,4 @@
-/* $Id: register.c,v 1.52 2004/03/28 10:06:16 jajcus Exp $ */
+/* $Id: register.c,v 1.53 2004/03/28 13:24:35 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -38,7 +38,7 @@ static struct {
 	char *locale;
 } locale_mapping[]={
 	{ "Polski", "pl_PL"},
-	{ "Dutch", "nl_NL"},
+	{ "Nederlands", "nl_NL"},
 	{ "English", "C" },
 	{ NULL, NULL}
 	};
