@@ -1,3 +1,8 @@
+2004-04-14  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/stream.c:
+	- ported to glib2
+
 2004-04-13  smoku  <smoku@jabber.org>
 
 	* autogen.sh, configure.ac: restored VERSION #define
