@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.56 2003/04/13 16:45:31 jajcus Exp $ */
+/* $Id: sessions.c,v 1.57 2003/04/14 10:18:47 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -412,6 +412,7 @@ time_t timestamp;
 					0,0,0,0);
 			break;
 		case GG_EVENT_MSG:
+			gg_messages_in++;
 			debug(N_("Message: sender: %i class: %i time: %lu"),
 							event->event.msg.sender,
 							event->event.msg.msgclass,
@@ -759,6 +760,7 @@ char *mp;
 	while(m){
 		mp=session_split_message(&m);
 		if (mp){
+			gg_messages_out++;
 			gg_send_message(s->ggs,chat?GG_CLASS_CHAT:GG_CLASS_MSG,uin,mp);
 			g_free(mp);
 		}

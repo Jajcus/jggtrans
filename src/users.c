@@ -1,4 +1,4 @@
-/* $Id: users.c,v 1.34 2003/04/14 08:13:58 jajcus Exp $ */
+/* $Id: users.c,v 1.35 2003/04/14 10:18:47 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -476,6 +476,29 @@ int r;
 	}
 	closedir(dir);
 	return 0;
+}
+
+int users_count(){
+DIR *dir;
+struct dirent *de;
+struct stat st;
+int r,count=0;
+
+	dir=opendir(".");
+	if (!dir){
+		g_warning(N_("Couldn't open '%s' directory: %s"),spool_dir,g_strerror(errno));
+		return -1;
+	}
+	while((de=readdir(dir))){
+		r=stat(de->d_name,&st);
+		if (r){
+			g_warning(N_("Couldn't stat '%s': %s"),de->d_name,g_strerror(errno));
+			continue;
+		}
+		count++;
+	}
+	closedir(dir);
+	return count;
 }
 
 int user_sys_msg_received(User *u,int nr){

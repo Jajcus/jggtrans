@@ -1,4 +1,4 @@
-/* $Id: jabber.c,v 1.21 2003/04/06 16:49:15 jajcus Exp $ */
+/* $Id: jabber.c,v 1.22 2003/04/14 10:18:47 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -84,6 +84,7 @@ struct stream_s * jabber_stream(){
 void jabber_node(Stream *s,xmlnode x){
 char *name;
 
+	packets_in++;
 	name=xmlnode_get_name(x);
 	if (strcmp(name,"stream:stream")==0)
 		jabber_stream_start(s,x);

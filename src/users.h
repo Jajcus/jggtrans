@@ -1,4 +1,4 @@
-/* $Id: users.h,v 1.18 2003/04/14 08:13:58 jajcus Exp $ */
+/* $Id: users.h,v 1.19 2003/04/14 10:18:47 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -69,6 +69,7 @@ void user_load_locale(User *u);
 
 void user_print(User *u,int indent);
 int users_probe_all();
+int users_count();
 int users_init();
 int users_done();
 

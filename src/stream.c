@@ -1,4 +1,4 @@
-/* $Id: stream.c,v 1.17 2003/04/06 15:42:42 mmazur Exp $ */
+/* $Id: stream.c,v 1.18 2003/04/14 10:18:47 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -295,6 +295,7 @@ char *str;
 
 	str=xmlnode2str(xn);
 	if (!str) return -1;
+	packets_out++;
 	return stream_write_bytes(s,str,strlen(str));
 }
 
