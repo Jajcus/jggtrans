@@ -35,6 +35,7 @@ char *str;
 void jabber_iq_send_result(Stream *s,const char *from,const char *to,const char *id,xmlnode content){
 xmlnode iq;
 
+	if (from==NULL) from=my_name;
 	iq=xmlnode_new_tag("iq");
 	xmlnode_put_attrib(iq,"type","result");
 	if (id) xmlnode_put_attrib(iq,"id",id);
@@ -193,13 +194,13 @@ char *from;
 xmlnode query;
 
 	to=xmlnode_get_attrib(x,"to");
+	id=xmlnode_get_attrib(x,"id");
+	from=xmlnode_get_attrib(x,"from");
 	if (!to || !jid_is_my(to) ){
 		g_warning("Wrong to=%s (my name is %s)",to?to:"(null)",my_name);
 		jabber_iq_send_error(s,from,to,id,400,"Bad Request");
 		return;
 	}
-	id=xmlnode_get_attrib(x,"id");
-	from=xmlnode_get_attrib(x,"from");
 	if (!from){
 		g_warning("No from in query: %s",xmlnode2str(x));
 		jabber_iq_send_error(s,from,to,id,400,"Bad Request");
@@ -227,13 +228,13 @@ char *from;
 xmlnode query;
 
 	to=xmlnode_get_attrib(x,"to");
-	if (!to || strcmp(to,my_name)){
-		g_warning("Wrong to=%s (my name is %s) in query:  %s",to?to:"(null)",my_name,xmlnode2str(x));
+	id=xmlnode_get_attrib(x,"id");
+	from=xmlnode_get_attrib(x,"from");
+	if (!to || !jid_is_my(to) ){
+		g_warning("Wrong to=%s (my name is %s) in query: %s",to?to:"(null)",my_name,xmlnode2str(x));
 		jabber_iq_send_error(s,from,to,id,400,"Bad Request");
 		return;
 	}
-	id=xmlnode_get_attrib(x,"id");
-	from=xmlnode_get_attrib(x,"from");
 	if (!from){
 		g_warning("No from in query: %s",xmlnode2str(x));
 		jabber_iq_send_error(s,from,to,id,400,"Bad Request");
