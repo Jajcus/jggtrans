@@ -7,6 +7,8 @@ jggtrans_SOURCES= \
 	conf.c \
 	conf.h \
 	debug.h \
+	enc_uni2win.h \
+	enc_win2uni.h \
 	encoding.c \
 	encoding.h \
 	ggtrans.h \
@@ -38,6 +40,8 @@ jggtrans_SOURCES= \
 
 check_PROGRAMS = encodingtest
 encodingtest_SOURCES = \
+	enc_uni2win.h \
+	enc_win2uni.h \
 	encoding.c \
 	encoding.h 
 encodingtest_CFLAGS=-DENCODINGTEST
