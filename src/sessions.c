@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.71 2003/05/09 12:22:36 jajcus Exp $ */
+/* $Id: sessions.c,v 1.72 2003/05/12 08:42:09 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -730,7 +730,6 @@ Session *s=r->session;
 	if (r->show) g_free(r->show);
 	if (r->status) g_free(r->status);
 	s->resources=g_list_remove(s->resources,r);
-	g_free(r);
 	if (!s->resources && kill_session){
 		session_remove(s);
 		return;
@@ -739,6 +738,7 @@ Session *s=r->session;
 		r->disconnect_delay_func=0;
 		g_source_remove(r->disconnect_delay_func);
 	}
+	g_free(r);
 }
 
 gboolean delayed_disconnect(gpointer data){
