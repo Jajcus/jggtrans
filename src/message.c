@@ -1,4 +1,4 @@
-/* $Id: message.c,v 1.38 2003/05/27 09:07:40 jajcus Exp $ */
+/* $Id: message.c,v 1.39 2003/06/27 09:30:29 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -452,7 +452,10 @@ Session *sess;
 char *msg;
 
 	sess=session_get_by_jid(from,stream,1);
-	user=sess->user;
+	if (sess)
+		user=sess->user;
+	else
+		user=NULL;
 	if (user==NULL){
 		message_send(stream,to,from,1,_("I don't know you. Register first."),0);
 		return -1;

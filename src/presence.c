@@ -1,4 +1,4 @@
-/* $Id: presence.c,v 1.44 2003/05/27 07:57:30 jajcus Exp $ */
+/* $Id: presence.c,v 1.45 2003/06/27 09:30:29 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -309,7 +309,7 @@ GTime timestamp;
 
 	uin=jid_get_uin(to);
 	status=0;
-	stat="";
+	stat=NULL;
 	timestamp=0;
 	for(it=u->contacts;it;it=it->next){
 		Contact *c=(Contact *)it->data;
