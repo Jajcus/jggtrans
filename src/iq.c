@@ -1,4 +1,4 @@
-/* $Id: iq.c,v 1.38 2003/04/06 11:00:01 mmazur Exp $ */
+/* $Id: iq.c,v 1.39 2003/04/09 13:33:23 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -141,7 +141,9 @@ xmlnode query;
 void jabber_iq_get_server_version(Stream *s,const char *from,const char * to,const char *id,xmlnode q){
 xmlnode query;
 xmlnode os;
+char *rel,*p;
 struct utsname un;
+
 
 	query=xmlnode_new_tag("query");
 	xmlnode_put_attrib(query,"xmlns","jabber:iq:version");
@@ -151,7 +153,15 @@ struct utsname un;
 	os = xmlnode_insert_tag(query,"os");
 	xmlnode_insert_cdata(os,un.sysname,-1);
 	xmlnode_insert_cdata(os," ",1);
-	xmlnode_insert_cdata(os,un.release,-1);
+	rel=g_strdup(un.release);
+	p=strchr(rel,'.');
+	if (p) p=strchr(p+1,'.');
+	if (p && p[1]) {
+		p[1]='x';
+		p[2]='\000';
+	}
+	xmlnode_insert_cdata(os,rel,-1);
+	g_free(rel);
 	jabber_iq_send_result(s,from,to,id,query);
 }
 
