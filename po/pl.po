@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jabber-gg-transport 2.0.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-03-18 13:06+0100\n"
+"POT-Creation-Date: 2004-03-28 11:26+0200\n"
 "PO-Revision-Date: 2004-03-10 13:15+0200\n"
 "Last-Translator: Jacek Konieczny <jajcus@pld.org.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -302,7 +302,6 @@ msgid "\tUsage: %s [OPTIONS]... [<config file>]\n"
 msgstr "\tUżycie: %s [OPCJE]... [<plik konfiguracyjny>]\n"
 
 #: src/main.c:345
-#, c-format
 msgid ""
 "\n"
 "Options:\n"
@@ -311,12 +310,10 @@ msgstr ""
 "Opcje:\n"
 
 #: src/main.c:346
-#, c-format
 msgid "\t-h\t      This message\n"
 msgstr "\t-h\t      Te informacje\n"
 
 #: src/main.c:347
-#, c-format
 msgid ""
 "\t-f\t      Run in foreground. Debug/error messages will be sent to stderr\n"
 msgstr ""
@@ -324,23 +321,19 @@ msgstr ""
 "stderr\n"
 
 #: src/main.c:348
-#, c-format
 msgid "\t-d <n>\tLog level (0(default) - normal, >0 more, <0 less)\n"
 msgstr ""
 "\t-d <n>\tPoziom logowania (0(domyślny) - normalny, >0 więcej, <0 mniej)\n"
 
 #: src/main.c:349
-#, c-format
 msgid "\t-D <n>\tlibgg debug level (enables also -f)\n"
 msgstr "\t-D <n>\tpoziom debugowania libgg (dodatkowo włącza -f)\n"
 
 #: src/main.c:350
-#, c-format
 msgid "\t-u <user>\tSwitch to uid of <user> on startup\n"
 msgstr "\t-u <user>\tPrzełączenie na uid <user>'a po starcie\n"
 
 #: src/main.c:351
-#, c-format
 msgid "\t-g <group>\tSwitch to gid of <group> on startup\n"
 msgstr "\t-g <group>\tPrzełączenie na gid <group>'y po starcie\n"
 
@@ -1573,4 +1566,3 @@ msgstr "%sStatus: %i"
 #, c-format
 msgid "%sLast update: %s"
 msgstr "%sOstatnia aktualizacja: %s"
-

@@ -6,9 +6,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: jabber-gg-transport 2.0.8\n"
+"Project-Id-Version: jabber-gg-transport 2.0.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-03-18 13:06+0100\n"
+"POT-Creation-Date: 2004-03-28 11:26+0200\n"
 "PO-Revision-Date: 2004-03-26 18:35+0100\n"
 "Last-Translator: Sander Devrieze <s.devrieze@pandora.be>\n"
 "Language-Team: Nederlands\n"
@@ -305,7 +305,6 @@ msgid "\tUsage: %s [OPTIONS]... [<config file>]\n"
 msgstr "\tGebruik: %s [OPTIES]... [<configuratiebestand>]\n"
 
 #: src/main.c:345
-#, c-format
 msgid ""
 "\n"
 "Options:\n"
@@ -314,32 +313,29 @@ msgstr ""
 "Opties:\n"
 
 #: src/main.c:346
-#, c-format
 msgid "\t-h\t      This message\n"
 msgstr "\t-h\t      Dit bericht\n"
 
 #: src/main.c:347
-#, c-format
-msgid "\t-f\t      Run in foreground. Debug/error messages will be sent to stderr\n"
-msgstr "\t-f\t      Uitvoeren op voorgrond. Debug/fout-meldingen zullen naar stderr gestuurd worden\n"
+msgid ""
+"\t-f\t      Run in foreground. Debug/error messages will be sent to stderr\n"
+msgstr ""
+"\t-f\t      Uitvoeren op voorgrond. Debug/fout-meldingen zullen naar stderr "
+"gestuurd worden\n"
 
 #: src/main.c:348
-#, c-format
 msgid "\t-d <n>\tLog level (0(default) - normal, >0 more, <0 less)\n"
 msgstr "\t-d <n>\tLog level (0(standaard) - normaal, >0 meer, <0 minder)\n"
 
 #: src/main.c:349
-#, c-format
 msgid "\t-D <n>\tlibgg debug level (enables also -f)\n"
 msgstr "\t-D <n>\tlibgg debug level (activeert ook -f)\n"
 
 #: src/main.c:350
-#, c-format
 msgid "\t-u <user>\tSwitch to uid of <user> on startup\n"
 msgstr "\t-u <user>\tSchakel naar uid van <user> tijdens opstarten\n"
 
 #: src/main.c:351
-#, c-format
 msgid "\t-g <group>\tSwitch to gid of <group> on startup\n"
 msgstr "\t-g <group>\tSchakel naar gid van <group> tijdens opstarten\n"
 
@@ -727,7 +723,8 @@ msgid ""
 "directory information or to unregister."
 msgstr ""
 "Vul dit formulier in om te registreren op het transport.\n"
-"U kan dit formulier later gebruiken om uw instellingen, wachtwoord,publieke directory gegevens te veranderen of om de registratie ongedaan te maken."
+"U kan dit formulier later gebruiken om uw instellingen, wachtwoord,publieke "
+"directory gegevens te veranderen of om de registratie ongedaan te maken."
 
 #: src/register.c:55 src/search.c:52
 msgid "GG number"
@@ -774,8 +771,9 @@ msgid ""
 "You may use this form to change account information, change personal "
 "information in the public directory or unregister from the transport."
 msgstr ""
-"U kan dit formulier gebruiken om account- of persoonelijke gegevens in "
-"de publieke directory te veranderen of om de registratie op het transport ongedaan te maken."
+"U kan dit formulier gebruiken om account- of persoonelijke gegevens in de "
+"publieke directory te veranderen of om de registratie op het transport "
+"ongedaan te maken."
 
 #: src/register.c:87
 msgid "Action"
@@ -823,7 +821,9 @@ msgstr "Antwoordt"
 
 #: src/register.c:111
 msgid "Fill out this part only when changing public directory info:"
-msgstr "Vul dit deel enkel in als u veranderingen aanbrengt in de gegevens in de publieke directory:"
+msgstr ""
+"Vul dit deel enkel in als u veranderingen aanbrengt in de gegevens in de "
+"publieke directory:"
 
 #: src/register.c:112 src/search.c:54 src/search.c:91
 msgid "First name"
@@ -958,7 +958,9 @@ msgstr "Ongedaan maken van de registratie van '%s' is mislukt"
 #: src/register.c:505
 #, c-format
 msgid "Tried to unregister '%s' who was never registered"
-msgstr "Probeerde de registratie van '%s' ongedaan te maken maar die was nooit geregistreerd"
+msgstr ""
+"Probeerde de registratie van '%s' ongedaan te maken maar die was nooit "
+"geregistreerd"
 
 #: src/register.c:534
 #, c-format
@@ -990,7 +992,9 @@ msgstr "<remove/> in jabber:iq:register set: %s"
 #: src/register.c:594
 #, c-format
 msgid "User '%s' doesn't exist and not enough info to add him"
-msgstr "Gebruiker '%s' bestaat niet en er is niet genoeg informatie opgegeven om hem toe te voegen"
+msgstr ""
+"Gebruiker '%s' bestaat niet en er is niet genoeg informatie opgegeven om hem "
+"toe te voegen"
 
 #: src/register.c:645
 msgid "Nothing to change"
@@ -998,7 +1002,9 @@ msgstr "Niets om te veranderen"
 
 #: src/register.c:655
 msgid "Not registered, and no password given for public directory change."
-msgstr "Niet geregistreerd en geen wachtwoord opgegeven voor publieke directory verandering."
+msgstr ""
+"Niet geregistreerd en geen wachtwoord opgegeven voor publieke directory "
+"verandering."
 
 #: src/register.c:691 src/sessions.c:346
 msgid "Remote Server Error"
@@ -1006,7 +1012,9 @@ msgstr "Serverfout"
 
 #: src/requests.c:88
 msgid "Got public directory change result for unknown request type."
-msgstr "Wijzigingsresultaat van publieke directory ontvangen voor onbekend aanvraagtype"
+msgstr ""
+"Wijzigingsresultaat van publieke directory ontvangen voor onbekend "
+"aanvraagtype"
 
 #: src/requests.c:129
 #, c-format
@@ -1569,4 +1577,3 @@ msgstr "%sStatus: %i"
 #, c-format
 msgid "%sLast update: %s"
 msgstr "%sLaaste update: %s"
-
