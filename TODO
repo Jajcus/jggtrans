@@ -1,3 +1,7 @@
+- remember # of last system message
+- some error message when cannot connect to jabberd
+- strip whitespaces from pidfile and possibly other settings read from ggtrans.xml
+
 - bug fixes
 - invisible/"just for friends" modes
 - file transfer
