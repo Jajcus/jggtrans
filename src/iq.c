@@ -1,4 +1,4 @@
-/* $Id: iq.c,v 1.31 2003/01/15 14:44:09 jajcus Exp $ */
+/* $Id: iq.c,v 1.32 2003/01/15 15:14:12 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -77,7 +77,7 @@ char *gg_version[]={
 	"4.8.9",				/* 0x15 */
 	"4.9.1",				/* 0x16 */
 	"4.9.2",				/* 0x17 */
-	"5.0.1",				/* 0x18 */
+	"4.9.3/5.0.1",				/* 0x18 */
 	"5.0.2",				/* 0x19 */
 	NULL,NULL,NULL,NULL,NULL,NULL		/* 0x1a - 0x1f */
 };
