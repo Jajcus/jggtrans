@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.14 2002/02/03 16:24:06 jajcus Exp $ */
+/* $Id: main.c,v 1.15 2002/02/03 17:10:50 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -366,7 +366,7 @@ FILE *f;
 	else if (uid==0) g_error("Refusing to run with uid=0");
 	
 	if (optind==argc-1) config_file=argv[optind];
-	else config_file=g_strdup_printf("%s/%s",SYSCONFDIR,"ggtrans.xml");
+	else config_file=g_strdup_printf("%s/%s",SYSCONFDIR,"jggtrans.xml");
 
 	g_log_set_handler(NULL,G_LOG_FLAG_FATAL | G_LOG_LEVEL_ERROR
 				| G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING 
@@ -379,8 +379,8 @@ FILE *f;
 		return 1;
 	}
 	str=xmlnode_get_name(config);
-	if (!str || strcmp(str,"ggtrans")){
-		g_error("/etc/jabber/ggtrans.xml doesn't look like ggtrans config file.");
+	if (!str || strcmp(str,"jggtrans")){
+		g_error("%s doesn't look like jggtrans config file.",config_file);
 		return 1;
 	}
 	
@@ -422,7 +422,7 @@ FILE *f;
 			fclose(f);
 			if (r==1 && pid>0){
 				r=kill(pid,0);
-				if (!r || (r && errno!=ESRCH)) g_error("ggtrans already running");
+				if (!r || (r && errno!=ESRCH)) g_error("jggtrans already running");
 				if (r){
 					g_warning("Stale pid file. Removing.");
 					unlink(pid_filename);
@@ -449,7 +449,7 @@ FILE *f;
 	}
 	
 	if (log_facility!=-1){
-		openlog("ggtrans",0,log_facility);
+		openlog("jggtrans",0,log_facility);
 		use_syslog=1;
 	}
 	
