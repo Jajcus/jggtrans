@@ -69,6 +69,14 @@ tags:
 
 .PHONY: valgrind
 
+
+VALGRIND_FLAGS=--num-callers=20 --leak-check=yes --show-reachable=yes -v --trace-children=no
+
+
 valgrind:
-	valgrind --num-callers=20 --leak-check=yes --show-reachable=yes --logfile-fd=3 -v \
-		--trace-children=no ./jggtrans -f -d 1 -D 1 3>jggtrans.valgrind
+	valgrind $(VALGRIND_FLAGS) --logfile-fd=3 \
+		./jggtrans -f -d 1 -D 1 3>jggtrans.valgrind
+
+valgrind-int:
+	valgrind $(VALGRIND_FLAGS) --gen-suppressions=yes\
+		./jggtrans -f -d 1 -D 1
