@@ -1,4 +1,4 @@
-/* $Id: acl.c,v 1.3 2003/04/16 11:10:17 jajcus Exp $ */
+/* $Id: acl.c,v 1.4 2003/04/22 08:44:29 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -46,7 +46,7 @@ struct acl_s *acl_e;
 		if (!str) continue;
 		if (!strcmp(str,"allow")) allow=1;
 		else if (!strcmp(str,"deny")) allow=0;
-		else g_error(N_("Invalid tag <%s/> in config section <acl/>"),str);
+		else g_error(L_("Invalid tag <%s/> in config section <acl/>"),str);
 		what=xmlnode_get_attrib(node,"what");
 		if (!what || what[0]=='\000' || !strcmp(what,"*")) what=NULL;
 		who=xmlnode_get_attrib(node,"who");
@@ -96,7 +96,7 @@ int result=0;
 	if (it==NULL) result=1;
 	xmlnode_free(x);
 	g_free(jid);
-	if (result) debug("Allowed");
-	else debug("Denied");
+	if (result) debug(L_("Allowed"));
+	else debug(L_("Denied"));
 	return result;
 }

@@ -1,4 +1,4 @@
-/* $Id: jid.c,v 1.10 2003/04/06 15:42:42 mmazur Exp $ */
+/* $Id: jid.c,v 1.11 2003/04/22 08:44:29 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -38,7 +38,7 @@ int just_digits;
 		if (jid[i]=='/' && slash<0) slash=i;
 		else if (jid[i]=='@')
 			if (!just_digits){
-				debug(N_("Non-digits before '@' in jid: %s"),jid);
+				debug(L_("Non-digits before '@' in jid: %s"),jid);
 				return 0;
 			}
 			else at=i;
@@ -53,17 +53,17 @@ int just_digits;
 	/* check hostname */
 	if (slash<0){
 		if ( g_strcasecmp(jid+at+1,my_name) ){
-			debug(N_("Bad hostname (%s) in JID: %s"),jid+at+1,jid);
+			debug(L_("Bad hostname (%s) in JID: %s"),jid+at+1,jid);
 			return 0;
 		}
 	} else{
 		if ( slash-at-1!=strlen(my_name) ){
-			debug(N_("Bad hostname len (%i) instead of %i in JID: %s"),slash-at-1,strlen(my_name),jid);
+			debug(L_("Bad hostname len (%i) instead of %i in JID: %s"),slash-at-1,strlen(my_name),jid);
 			return 0;
 		}
 
 		if ( g_strncasecmp(jid+at+1,my_name,slash-at-1) ){
-			debug(N_("Bad hostname in JID: %s[%i:%i]"),jid,at+1,slash-at-2);
+			debug(L_("Bad hostname in JID: %s[%i:%i]"),jid,at+1,slash-at-2);
 			return 0;
 		}
 	}

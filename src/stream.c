@@ -1,4 +1,4 @@
-/* $Id: stream.c,v 1.19 2003/04/15 16:33:04 jajcus Exp $ */
+/* $Id: stream.c,v 1.20 2003/04/22 08:44:29 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -73,7 +73,7 @@ int fd;
 	s=g_new0(Stream,1);
 	fd=socket(PF_INET,SOCK_STREAM,0);
 	if (!fd){
-		g_error(N_("socket: %s"),g_strerror(errno));
+		g_error(L_("socket: %s"),g_strerror(errno));
 		g_free(s);
 		return NULL;
 	}
@@ -115,7 +115,7 @@ int fd;
 	}
 	else{
 		if (r<0){
-			g_error(N_("connect: %s"),g_strerror(errno));
+			g_error(L_("connect: %s"),g_strerror(errno));
 			g_free(s);
 			return NULL;
 		}
@@ -149,7 +149,7 @@ int r;
 		return 0;
 	}
 	if (errno==EALREADY) return 0;
-	g_critical(N_("connect: %s"),g_strerror(errno));
+	g_critical(L_("connect: %s"),g_strerror(errno));
 	return -1;
 }
 
@@ -162,9 +162,9 @@ Stream *s;
 	s->err_watch=0;
 	s->xs->f(XSTREAM_CLOSE,NULL,s);
 	if (!s->connected)
-		g_critical(N_("Couldn't connect to jabber server"));
+		g_critical(L_("Couldn't connect to jabber server"));
 	else
-		g_critical(N_("Connection to jabber server broken"));
+		g_critical(L_("Connection to jabber server broken"));
 	do_restart=TRUE;
 	return FALSE;
 }
@@ -196,7 +196,7 @@ guint br;
 	s=(Stream *)data;
 	g_assert(s);
 
-	if (!s->connected) g_error(N_("Unconnected stream"));
+	if (!s->connected) g_error(L_("Unconnected stream"));
 
 	if (!s->read_buf){
 		s->read_buf=g_new(char,1025);

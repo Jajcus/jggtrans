@@ -1,4 +1,4 @@
-/* $Id: register.c,v 1.37 2003/04/20 14:09:39 jajcus Exp $ */
+/* $Id: register.c,v 1.38 2003/04/22 08:44:29 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -390,7 +390,7 @@ Session *session;
 
 int change_password_error(struct request_s *r){
 
-	g_message(N_("Password change error for user '%s'"),r->from);
+	g_message(L_("Password change error for user '%s'"),r->from);
 	jabber_iq_send_error(r->stream,r->from,r->to,r->id,500,_("Internal Server Error"));
 	return 0;
 }
@@ -404,7 +404,7 @@ User *u;
 		return -1;
 	}
 
-	g_message(N_("Password changed for user '%s'"),r->from);
+	g_message(L_("Password changed for user '%s'"),r->from);
 	if (r->data){
 		g_free(u->password);
 		u->password=(char *)r->data;
@@ -469,7 +469,7 @@ Session *ses;
 User *u;
 char *jid;
 
-	debug(N_("Unregistering '%s'"),from);
+	debug(L_("Unregistering '%s'"),from);
 	ses=session_get_by_jid(from,NULL);
 	if (ses)
 		if (session_remove(ses)){
@@ -499,7 +499,7 @@ char *jid;
 		presence_send_unsubscribe(s,NULL,jid);
 	}
 	presence_send_unsubscribed(s,NULL,jid);
-	g_message(N_("User '%s' unregistered"),from);
+	g_message(L_("User '%s' unregistered"),from);
 	g_free(jid);
 	return 0;
 }
@@ -519,7 +519,7 @@ Request *r;
 
 	node=xmlnode_get_firstchild(q);
 	if (!node){
-		debug(N_("Set query for jabber:iq:register empty: %s"),xmlnode2str(q));
+		debug(L_("Set query for jabber:iq:register empty: %s"),xmlnode2str(q));
 		unregister(s,from,to,id,0);
 		return;
 	}
@@ -545,7 +545,7 @@ Request *r;
 
 	node=xmlnode_get_tag(q,"remove");
 	if (node){
-		debug(N_("<remove/> in jabber:iq:register set: %s"),xmlnode2str(q));
+		debug(L_("<remove/> in jabber:iq:register set: %s"),xmlnode2str(q));
 		unregister(s,from,to,id,0);
 		return;
 	}
@@ -605,7 +605,7 @@ Request *r;
 
 	if (!first && !last && !nick && !city && !born && !sex){
 			if (!uin && !password){
-				debug(N_("Set query for jabber:iq:register empty: %s"),xmlnode2str(q));
+				debug(L_("Set query for jabber:iq:register empty: %s"),xmlnode2str(q));
 				unregister(s,from,to,id,0);
 				return;
 			}

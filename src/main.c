@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.47 2003/04/22 07:12:32 jajcus Exp $ */
+/* $Id: main.c,v 1.48 2003/04/22 08:44:29 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -30,6 +30,11 @@
 #include <ctype.h>
 #include <time.h>
 #include <locale.h>
+
+#ifdef HAVE_LANGINFO_CODESET
+#  include <langinfo.h>
+#endif
+
 #include "jabber.h"
 #include "sessions.h"
 #include "encoding.h"
@@ -172,26 +177,26 @@ void log_handler_file(FILE *f,const gchar *log_domain, GLogLevelFlags log_level,
 	if (log_domain && log_domain[0]) fprintf(f,"%s: ",log_domain);
 	switch(log_level){
 		case G_LOG_LEVEL_ERROR:
-			fprintf(f,_("Fatal error: %s\n"),_(message));
+			fprintf(f,_("Fatal error: %s\n"),message);
 			break;
 		case G_LOG_LEVEL_CRITICAL:
-			fprintf(f,_("Error: %s\n"),_(message));
+			fprintf(f,_("Error: %s\n"),message);
 			break;
 		case G_LOG_LEVEL_WARNING:
-			fprintf(f,_("Warning: %s\n"),_(message));
+			fprintf(f,_("Warning: %s\n"),message);
 			break;
 		case G_LOG_LEVEL_MESSAGE:
 			if (debug_level<-1) break;
 		case G_LOG_LEVEL_INFO:
 			if (debug_level<0) break;
-			fprintf(f,"%s\n",_(message));
+			fprintf(f,"%s\n",message);
 			break;
 		case G_LOG_LEVEL_DEBUG:
 			if (debug_level>0)
-				fprintf(f,_("Debug: %s\n"),_(message));
+				fprintf(f,_("Debug: %s\n"),message);
 			break;
 		default:
-			fprintf(f,_("Unknown: %s\n"),_(message));
+			fprintf(f,_("Unknown: %s\n"),message);
 			break;
 	}
 }
@@ -201,30 +206,52 @@ void log_handler_syslog(const gchar *log_domain, GLogLevelFlags log_level,
 
 	switch(log_level){
 		case G_LOG_LEVEL_ERROR:
-			syslog(LOG_ERR,_("Fatal error: %s"),_(message));
+			syslog(LOG_ERR,_("Fatal error: %s"),message);
 			break;
 		case G_LOG_LEVEL_CRITICAL:
-			syslog(LOG_ERR,_("Error: %s"),_(message));
+			syslog(LOG_ERR,_("Error: %s"),message);
 			break;
 		case G_LOG_LEVEL_WARNING:
-			syslog(LOG_WARNING,_("Warning: %s"),_(message));
+			syslog(LOG_WARNING,_("Warning: %s"),message);
 			break;
 		case G_LOG_LEVEL_MESSAGE:
 			if (debug_level<-1) break;
-			syslog(LOG_NOTICE,"%s",_(message));
+			syslog(LOG_NOTICE,"%s",message);
 			break;
 		case G_LOG_LEVEL_INFO:
 			if (debug_level<0) break;
-			syslog(LOG_NOTICE,"%s",_(message));
+			syslog(LOG_NOTICE,"%s",message);
 			break;
 		case G_LOG_LEVEL_DEBUG:
 			if (debug_level>0)
-				syslog(LOG_DEBUG,_("Debug: %s\n"),_(message));
+				syslog(LOG_DEBUG,_("Debug: %s\n"),message);
 			break;
 		default:
-			syslog(LOG_NOTICE,_("Unknown: %s\n"),_(message));
+			syslog(LOG_NOTICE,_("Unknown: %s\n"),message);
 			break;
 	}
+}
+
+const char *local_translate(const char *str){
+const char *lc_ctype,*lc_messages,*td_codeset,*ret;
+
+	td_codeset=bind_textdomain_codeset(PACKAGE,NULL);
+	lc_ctype=setlocale(LC_CTYPE,NULL);
+	lc_messages=setlocale(LC_MESSAGES,NULL);
+	setlocale(LC_MESSAGES,"");
+	setlocale(LC_CTYPE,"");
+#ifdef HAVE_LANGINFO_CODESET
+	bind_textdomain_codeset(PACKAGE,nl_langinfo(CODESET));
+#endif
+/*	textdomain(PACKAGE);*/
+
+	ret=gettext(str);
+
+	setlocale(LC_CTYPE,lc_ctype);
+	setlocale(LC_MESSAGES,lc_ctype);
+	bind_textdomain_codeset(PACKAGE,td_codeset);
+
+	return ret;
 }
 
 void log_handler(const gchar *log_domain, GLogLevelFlags log_level,
@@ -235,6 +262,12 @@ char *lc_ctype,*lc_messages,*td_codeset;
 	td_codeset=bind_textdomain_codeset(PACKAGE,NULL);
 	lc_ctype=setlocale(LC_CTYPE,NULL);
 	lc_messages=setlocale(LC_MESSAGES,NULL);
+	setlocale(LC_MESSAGES,"");
+	setlocale(LC_CTYPE,"");
+#ifdef HAVE_LANGINFO_CODESET
+	bind_textdomain_codeset(PACKAGE,nl_langinfo(CODESET));
+#endif
+/*	textdomain(PACKAGE);*/
 
 	log_level&=G_LOG_LEVEL_MASK;
 	if (foreground) log_handler_file(stderr,log_domain,log_level,message);
@@ -251,15 +284,15 @@ pid_t pid;
 pid_t sid;
 int fd;
 
-	debug(N_("Daemonizing..."));
+	debug(L_("Daemonizing..."));
 	pid=fork();
-	if (pid==-1) g_error(N_("Failed to fork(): %s"),g_strerror(errno));
+	if (pid==-1) g_error(L_("Failed to fork(): %s"),g_strerror(errno));
 	if (pid){
 		if (pidfile){
 			fprintf(pidfile,"%u",pid);
 			fclose(pidfile);
 		}
-		debug(N_("Daemon born, pid %i."),pid);
+		debug(L_("Daemon born, pid %i."),pid);
 		exit(0);
 	}
 
@@ -281,7 +314,7 @@ int fd;
 	sid=setsid();
 	if (sid==-1) abort();
 	foreground=FALSE;
-	debug(N_("I am a daemon, I think."));
+	debug(L_("I am a daemon, I think."));
 	return;
 }
 
@@ -405,12 +438,12 @@ guint lh;
 
 	config=xmlnode_file(config_file);
 	if (!config){
-		g_error(N_("Couldn't load config!"));
+		g_error(L_("Couldn't load config!"));
 		return 1;
 	}
 	str=xmlnode_get_name(config);
 	if (!str || strcmp(str,"jggtrans")){
-		g_error(N_("%s doesn't look like jggtrans config file."),config_file);
+		g_error(L_("%s doesn't look like jggtrans config file."),config_file);
 		return 1;
 	}
 	g_free(config_file);
@@ -437,7 +470,7 @@ guint lh;
 			for(log_facility=0;facilitynames[log_facility].name;log_facility++)
 				if (!strcmp(facilitynames[log_facility].name,str)) break;
 			if (!facilitynames[log_facility].name)
-				 g_error(N_("Unknown syslog facility: %s"),str);
+				 g_error(L_("Unknown syslog facility: %s"),str);
 		}
 		else if (!strcmp(log_type,"file")){
 			if (log_filename) g_warning(N_("Multiple log files specified. Using only one."));
@@ -464,36 +497,36 @@ guint lh;
 			fclose(pidfile);
 			if (r==1 && pid>0){
 				r=kill(pid,0);
-				if (!r || (r && errno!=ESRCH)) g_error(N_("jggtrans already running"));
+				if (!r || (r && errno!=ESRCH)) g_error(L_("jggtrans already running"));
 				if (r){
 					g_warning(N_("Stale pid file. Removing."));
 					unlink(pid_filename);
 				}
 			}
-			else if (r!=EOF) g_error(N_("Invalid pid file."));
+			else if (r!=EOF) g_error(L_("Invalid pid file."));
 		}
 		pidfile=fopen(pid_filename,"w");
 		if (pidfile==NULL)
-			g_error(N_("Couldn't open pidfile %s"),pid_filename);
+			g_error(L_("Couldn't open pidfile %s"),pid_filename);
 	}
 	else
 		pidfile=NULL;
 
 	if (group){
 		grp=getgrnam(group);
-		if (!grp) g_error(N_("Couldn't find group %s"),group);
+		if (!grp) g_error(L_("Couldn't find group %s"),group);
 		newgid=grp->gr_gid;
 	}
 	if (user){
 		pwd=getpwnam(user);
-		if (!pwd) g_error(N_("Couldn't find user %s"),user);
+		if (!pwd) g_error(L_("Couldn't find user %s"),user);
 		if (newgid<=0) newgid=pwd->pw_gid;
 		fchown(fileno(pidfile),pwd->pw_uid,newgid);
-		if (setgid(newgid)) g_error(N_("Couldn't change group: %s"),g_strerror(errno));
-		if (initgroups(user,newgid)) g_error(N_("Couldn't init groups: %s"),g_strerror(errno));
-		if (setuid(pwd->pw_uid)) g_error(N_("Couldn't change user: %s"),g_strerror(errno));
+		if (setgid(newgid)) g_error(L_("Couldn't change group: %s"),g_strerror(errno));
+		if (initgroups(user,newgid)) g_error(L_("Couldn't init groups: %s"),g_strerror(errno));
+		if (setuid(pwd->pw_uid)) g_error(L_("Couldn't change user: %s"),g_strerror(errno));
 	}
-	else if (uid==0 && !restarting) g_error(N_("Refusing to run with uid=0"));
+	else if (uid==0 && !restarting) g_error(L_("Refusing to run with uid=0"));
 
 	main_loop=g_main_new(0);
 
@@ -512,7 +545,7 @@ guint lh;
 
 	if (log_filename){
 		log_file=fopen(log_filename,"a");
-		if (!log_file) g_critical(N_("Couldn't open log file '%s': %s"),
+		if (!log_file) g_critical(L_("Couldn't open log file '%s': %s"),
 						log_filename,g_strerror(errno));
 		if (log_file) setvbuf(log_file,NULL,_IOLBF,0);
 	}
@@ -547,7 +580,7 @@ guint lh;
 		char *newargv[10];
 		int n;
 
-		g_message(N_("Restarting in %i seconds.\n"),restart_timeout);
+		g_message(L_("Restarting in %i seconds.\n"),restart_timeout);
 		if (restart_timeout>0) sleep(restart_timeout);
 		if (saved_pwd) chdir(saved_pwd);
 
@@ -570,7 +603,7 @@ guint lh;
 		}
 	}
 
-	g_message(N_("Exiting normally.\n"));
+	g_message(L_("Exiting normally.\n"));
 
 	g_log_remove_handler(NULL,lh);
 
