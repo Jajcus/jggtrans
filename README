@@ -1,0 +1,14 @@
+
+		     GaduGadu Transport for Jabber
+		    ===============================
+	      (c) 2002 Jacek Konieczny <jajcus@pld.org.pl>
+
+This is external component for Jabber (http://www.jabber.org) server
+providing gateway to GaduGadu instant messaging services. GaduGadu is IM
+system very popular in Poland.
+
+
+
+
+
+( vi: tw=72 fo=tcql1 )
