@@ -1,5 +1,3 @@
-- enable some debugging code by default
-- remember # of last system message
 - some error message when cannot connect to jabberd
 - strip whitespaces from pidfile and possibly other settings read from ggtrans.xml
 
