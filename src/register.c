@@ -1,4 +1,4 @@
-/* $Id: register.c,v 1.36 2003/04/16 10:18:57 jajcus Exp $ */
+/* $Id: register.c,v 1.37 2003/04/20 14:09:39 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -618,7 +618,7 @@ Request *r;
 	}
 
 	if (!user && (!password ||!uin)){
-		g_warning(N_("Not registered, and no password gived for public directory change."));
+		g_warning(N_("Not registered, and no password given for public directory change."));
 		session_remove(session);
 		jabber_iq_send_error(s,from,to,id,406,_("Not Acceptable"));
 		return;
