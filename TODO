@@ -1,8 +1,9 @@
 As soon as possible:
+- remove users_jid hash table, doesn't seem to be really needed, and it makes problems
 
 Always:
 - bug fixes
 
 Some day:
-- invisible/"just for friends" modes (waiting for support in Jabber)
+- invisible/"just for friends" modes
 - file transfer
