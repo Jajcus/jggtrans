@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.88 2003/09/07 11:43:01 smoku Exp $ */
+/* $Id: sessions.c,v 1.89 2003/09/07 11:45:49 smoku Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -829,7 +829,7 @@ int num_resources=0;
 		}
 		r->available=available;
 		if (show) r->show=g_strdup(show);
-		if (status) r->status=g_strdup(status);
+		if (status) r->status=g_strndup(status, 70);
 		if (priority>=0) r->priority=priority;
 		cr=session_get_cur_resource(s);
 		if (s->connected) presence_send(s->s,NULL,s->user->jid,cr->available,cr->show,cr->status,0);
