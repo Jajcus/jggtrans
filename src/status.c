@@ -1,4 +1,4 @@
-/* $Id: status.c,v 1.1 2002/02/03 15:38:02 jajcus Exp $ */
+/* $Id: status.c,v 1.2 2002/02/06 17:23:37 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <libgg.h>
+#include <libgadu.h>
 #include "ggtrans.h"
 #include "status.h"
 

@@ -1,4 +1,4 @@
-/* $Id: requests.c,v 1.8 2002/01/30 16:52:03 jajcus Exp $ */
+/* $Id: requests.c,v 1.9 2002/02/06 17:23:36 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -19,7 +19,7 @@
 
 #include <stdio.h>
 #include <libxode.h>
-#include <libgg.h>
+#include <libgadu.h>
 #include "ggtrans.h"
 #include "requests.h"
 #include "search.h"

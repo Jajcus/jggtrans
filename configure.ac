@@ -14,7 +14,7 @@ AM_PROG_LIBTOOL
 AM_PATH_GLIB(1.2.0,[],AC_MSG_ERROR("You need glib >= 1.2.0 to compile this."))
 
 # Checks for libraries.
-AC_CHECK_LIB([gg], [gg_login],[],AC_MSG_ERROR("You need libgg (from ekg package) to compile this."))
+AC_CHECK_LIB([gadu], [gg_login],[],AC_MSG_ERROR("You need libgg (from ekg package) to compile this."))
 
 AC_ARG_ENABLE(debug,AC_HELP_STRING([--disable-debug],[Disable debugging code]))
 

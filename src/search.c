@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.9 2002/01/30 16:52:03 jajcus Exp $ */
+/* $Id: search.c,v 1.10 2002/02/06 17:23:37 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <libgg.h>
+#include <libgadu.h>
 #include "ggtrans.h"
 #include "search.h"
 #include "requests.h"

@@ -1,4 +1,4 @@
-/* $Id: users.h,v 1.9 2002/02/03 16:25:53 jajcus Exp $ */
+/* $Id: users.h,v 1.10 2002/02/06 17:23:37 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -20,7 +20,7 @@
 #ifndef users_h
 #define users_h
 
-#include <libgg.h>
+#include <libgadu.h>
 
 typedef struct contact_s{
 	uin_t uin;

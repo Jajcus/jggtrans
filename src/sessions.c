@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.23 2002/02/04 09:52:57 jajcus Exp $ */
+/* $Id: sessions.c,v 1.24 2002/02/06 17:23:37 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -17,7 +17,7 @@
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <libgg.h>
+#include <libgadu.h>
 #include "ggtrans.h"
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
