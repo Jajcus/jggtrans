@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include <libxode.h>
+#include <libgg.h>
+#include "ggtrans.h"
 #include "requests.h"
 #include "search.h"
 #include "stream.h"
 #include "register.h"
-#include <libgg.h>
 
 static GList *requests=NULL;
 

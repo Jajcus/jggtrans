@@ -1,11 +1,7 @@
 #ifndef requests_h
 #define requests_h
 
-#include "libxode.h"
 #include "users.h"
-
-#include <time.h>
-#include <glib.h>
 
 struct request_s;
 
