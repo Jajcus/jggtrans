@@ -84,7 +84,7 @@ int i;
 char *jid;
 
 	jid=jid_normalized(from);
-	if (g_list_find_custom(admins,jid,(GCompareFunc)strcmp)!=NULL){
+	if (g_list_find_custom(admins,jid,(GCompareFunc)strcmp)==NULL){
 		jabber_iq_send_error(s,from,to,id,401,_("You are not allowed to read statistics"));
 		return;
 	}
