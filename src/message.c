@@ -1,4 +1,4 @@
-/* $Id: message.c,v 1.31 2003/04/21 10:04:04 jajcus Exp $ */
+/* $Id: message.c,v 1.32 2003/04/22 09:32:44 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -190,6 +190,10 @@ xmlnode msg;
 xmlnode n;
 int i;
 
+	if (r->gghttp->data==NULL) {
+		message_send_error(r->stream,r->to,r->from,NULL, 502,_("No userlist received."));
+		return;
+	}
 
 	message_send(r->stream,r->to,r->from,1,_("Roster received."),0);
 
@@ -292,7 +296,7 @@ int i;
 		xmlnode_put_attrib(item,"jid",jid);
 		g_free(jid);
 		if (name==NULL) name=g_strdup_printf("%u",uin);
-		xmlnode_put_attrib(item,"name",name);
+		xmlnode_put_attrib(item,"name",to_utf8(name));
 		g_free(name);
 		g_strfreev(cinfo);
 	}
