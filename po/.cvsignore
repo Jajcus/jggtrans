@@ -1,7 +1,0 @@
-remove-potcdate.sed
-stamp-po
-*.gmo
-jabber-gg-transport.pot
-POTFILES
-Makefile.in
-Makefile
