@@ -159,6 +159,39 @@
       Może być użyte wielokrotnie. -->
  <admin>god@heaven.org</admin>
 
+ <!-- ACL pozwala określić dokładne zasady dostępu do transportu -->
+ <acl>
+	<!-- przykładowe wpisy: -->
+
+	<!-- <allow who="admin@mydomain" what="iq/query?xmlns=http://jabber.org/protocol/stats"/> -->
+		<!-- pozwala na odczytywanie statystyk przez admin@mydomain -->
+
+	<!-- <deny who="*" what="iq/query?xmlns=http://jabber.org/protocol/stats"/> -->
+		<!-- zabranie odczytywania statystyk wszystkim pozostałym użytkownikom -->
+
+	<!-- <allow who="*@mydomain"/> -->
+		<!-- pozwala na wykonywanie wszelki pozostały operacji użytkonikom 
+			z domeny "mydomain" -->
+
+	<!-- <deny what="iq/query?xmlns=jabber:x:register"/> --> 
+		<!-- zabrania rejestracji innym użytkownikom -->
+
+	<!-- <allow what="presence"/> --> 
+		<!-- zezwala na wszystkie pakiety <presence/> -->
+
+	<!-- <allow what="iq"/> --> 
+		<!-- zezwala na wszystkie pozostałe pakiety <iq/> -->
+
+	<!-- <allow what="message"/> --> 
+		<!-- zezwala na wszystkie <message/> -->
+
+	<!-- <deny/> --> 
+		<!-- zabrania wszelkich innych pakietów (które i tak nie
+			powinny się zjawić, ani nie będą obsłużone) -->
+ </acl>
+
+
+
 </jggtrans>
 <!--
  vi: encoding=utf-8 syntax=xml

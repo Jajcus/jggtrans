@@ -146,9 +146,38 @@
  <!-- Where to store pid file. This tag is optional. -->
  <pidfile>/var/lib/jabber/ggtrans.pid</pidfile>
 
- <!-- jid allowed to do some administrative task.
+ <!-- jid allowed to do some administrative task (eg. browsing online users).
       May be used multiple times. -->
  <admin>god@heaven.org</admin>
+
+ <!-- ACL gives detailed access control to the transport -->
+ <acl>
+	<!-- example entries: -->
+
+	<!-- <allow who="admin@mydomain" what="iq/query?xmlns=http://jabber.org/protocol/stats"/> -->
+		<!-- will allow statistics gathering to admin@mydomain -->
+
+	<!-- <deny who="*" what="iq/query?xmlns=http://jabber.org/protocol/stats"/> -->
+		<!-- will deny statistics gathering for anybody else -->
+
+	<!-- <allow who="*@mydomain"/> -->
+		<!-- will allow anything else to users from "mydomain" -->
+
+	<!-- <deny what="iq/query?xmlns=jabber:x:register"/> --> 
+		<!-- will deny registration for all other users -->
+
+	<!-- <allow what="presence"/> --> 
+		<!-- allow presence from anybody -->
+
+	<!-- <allow what="iq"/> --> 
+		<!-- allow iq from anybody -->
+
+	<!-- <allow what="message"/> --> 
+		<!-- allow message from anybody -->
+
+	<!-- <deny/> --> 
+		<!-- will deny anything else -->
+ </acl>
 
 </jggtrans>
 <!--
