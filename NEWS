@@ -1,10 +1,18 @@
 
+Version 1.1.0
+-------------
+
+Changes from 1.0.1:
+
+* presence change reason (status description) support
+
+
 Version 1.0.1
 -------------
 This version contains mainly updates for the latest libgadu. 
 It works at least with libgadu-20020528.
 
-Changes from 1.0.0
+Changes from 1.0.0:
 
 * new config tags: <gg_server/> and <gg_port/>
 
