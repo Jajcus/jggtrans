@@ -1,4 +1,4 @@
-/* $Id: message.c,v 1.33 2003/04/22 10:02:22 jajcus Exp $ */
+/* $Id: message.c,v 1.34 2003/04/24 07:15:53 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -427,10 +427,11 @@ char *msg;
 				_(msg_commands[i].description),
 				msg_commands[i].experimental?_(" EXPERIMENTAL!"):"");
 	}
-	msg=g_strdup_printf(_("%s\nCurrent settings:"),msg);
+	msg=g_strdup_printf(_("%s\n\nCurrent settings:"),msg);
 	msg=g_strdup_printf(_("%s\n  friends only: %s"),msg,user->friends_only?_("on"):_("off"));
 	msg=g_strdup_printf(_("%s\n  invisible: %s"),msg,user->invisible?_("on"):_("off"));
 	msg=g_strdup_printf(_("%s\n  locale: %s"),msg,user->locale?user->locale:_("_default_"));
+	msg=g_strdup_printf(_("%s\n\nRegistered as: %u"),msg,user->uin);
 	message_send(stream,to,from,1,msg,0);
 	g_free(msg);
 
