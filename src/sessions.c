@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.27 2002/05/04 15:18:28 jajcus Exp $ */
+/* $Id: sessions.c,v 1.28 2002/06/05 15:31:08 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -36,11 +36,15 @@ static int conn_timeout=30;
 static int pong_timeout=30;
 static int ping_interval=10;
 static int reconnect=0;
+static int gg_port=0;
+static struct in_addr gg_server;
+static int gg_server_given=0;
 GHashTable *sessions_jid;
 
 int sessions_init(){
 char *proxy_ip;
 char *data;
+char *p;
 int port;
 int i;
 xmlnode node;
@@ -57,6 +61,12 @@ xmlnode node;
 	if (i>0) ping_interval=i;
 	i=config_load_int("reconnect");
 	if (i>0) reconnect=i;
+	
+	p=config_load_string("gg_server");
+	if (p && inet_aton(p,&gg_server)) 
+		gg_server_given=1;
+	i=config_load_int("gg_port");
+	if (i>0) gg_port=i;
 	
 	proxy_ip=config_load_string("proxy/ip");
 	if (!proxy_ip) return 0;
@@ -407,12 +417,8 @@ struct gg_login_params login_params;
 	login_params.uin=user->uin;
 	login_params.password=user->password;
 	login_params.async=1;
-	/* FIXME: login_params.status= */
-	/* FIXME: login_params.status_descr= */
-	/* FIXME: login_params.server_addr= */
-	/* FIXME: login_params.server_port= */
-	/* FIXME: login_params.client_addr= */
-	/* FIXME: login_params.client_port= */
+	if (gg_server_given) login_params.server_addr=gg_server.s_addr;
+	if (gg_port>0) login_params.server_port=gg_port;
 	
 	s->ggs=gg_login(&login_params);
 	if (!s->ggs) {
