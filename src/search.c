@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.22 2003/02/04 08:06:01 jajcus Exp $ */
+/* $Id: search.c,v 1.23 2003/02/04 13:27:33 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -45,6 +45,7 @@ const char *uin, *first_name, *last_name, *nickname, *born, *city, *gender, *act
 	for(i=0;i<gg_pubdir50_count(results);i++){
 		item=xmlnode_insert_tag(q,"item");
 		uin=gg_pubdir50_get(results, i, GG_PUBDIR50_UIN);
+		if (uin==NULL) continue;
 		jid=jid_build(atoi(uin));
 		xmlnode_put_attrib(item,"jid",jid);
 		g_free(jid);
