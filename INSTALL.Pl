@@ -15,6 +15,9 @@ Aby zbudowaæ jabber-gg-transport potrzeba:
 	- libidn >= 0.3.0 (http://www.gnu.org/software/libidn/)
 		Przetestowane z libidn-0.4.1
 
+	- expat >= 1.95.1 (http://expat.sourceforge.net/)
+		Przetestowane z expat-1.95.6-5
+
 	- pkgconfig (http://www.freedesktop.org/software/pkgconfig/)
 
 Kompilacja

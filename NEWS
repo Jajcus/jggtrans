@@ -23,6 +23,9 @@ Changes from 2.0.9:
 
 * Code has been ported to glib2.
 
+* External Expat is now used instead of the buggy version which was
+  included in previous versions of the transport.
+
 * Dutch translation is included.
 
 Version 2.0.9
