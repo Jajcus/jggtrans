@@ -1,4 +1,4 @@
-/* $Id: message.c,v 1.32 2003/04/22 09:32:44 jajcus Exp $ */
+/* $Id: message.c,v 1.33 2003/04/22 10:02:22 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -212,10 +212,11 @@ int i;
 	roster=xmlnode_insert_tag(msg,"x");
 	xmlnode_put_attrib(roster,"xmlns","jabber:x:roster");
 
+	body=g_strdup("");
 	results=g_strsplit(r->gghttp->data,"\r\n",0);
 	for(i=0;results[i];i++){
 		char **cinfo;
-		char *line,*t,*jid;
+		char *t,*jid;
 		char *name=NULL;
 		int j,uin;
 		xmlnode item,tag;
@@ -235,56 +236,48 @@ int i;
 		g_free(body);
 		body=t;
 
-		line=g_strdup_printf("Uin: %u\n",uin);
-		t=g_strconcat(body,line,NULL);
+		t=g_strdup_printf("%sUin: %u\n",body,uin);
 		g_free(body);
 		body=t;
 
 		if (cinfo[2] && cinfo[2][0]){
-			line=g_strdup_printf("Nick: %s\n",cinfo[2]);
-			t=g_strconcat(body,line,NULL);
+			t=g_strdup_printf("%sNick: %s\n",body,cinfo[2]);
 			g_free(body);
 			body=t;
 			if (name==NULL) name=g_strdup(cinfo[2]);
 		}
 		if (cinfo[0] && cinfo[0][0]){
-			line=g_strdup_printf("First name: %s\n",cinfo[0]);
-			t=g_strconcat(body,line,NULL);
+			t=g_strdup_printf("%sFirst name: %s\n",body,cinfo[0]);
 			g_free(body);
 			body=t;
 			if (name==NULL) name=g_strdup(cinfo[0]);
 		}
 		if (cinfo[1] && cinfo[1][0]){
-			line=g_strdup_printf("Last name: %s\n",cinfo[1]);
-			t=g_strconcat(body,line,NULL);
+			t=g_strdup_printf("%sLast name: %s\n",body,cinfo[1]);
 			g_free(body);
 			body=t;
 			if (name==NULL) name=g_strdup(cinfo[1]);
 		}
 		if (cinfo[3] && cinfo[3][0]){
-			line=g_strdup_printf("Display: %s\n",cinfo[3]);
-			t=g_strconcat(body,line,NULL);
+			t=g_strdup_printf("%sDisplay: %s\n",body,cinfo[3]);
 			g_free(body);
 			body=t;
 			/* if (name==NULL) name=g_strdup(cinfo[3]); */
 		}
 		if (cinfo[4] && cinfo[4][0]){
-			line=g_strdup_printf("Phone: %s\n",cinfo[4]);
-			t=g_strconcat(body,line,NULL);
+			t=g_strdup_printf("%sPhone: %s\n",body,cinfo[4]);
 			g_free(body);
 			body=t;
 		}
 		if (cinfo[5] && cinfo[5][0]){
-			line=g_strdup_printf("Group: %s\n",cinfo[5]);
-			t=g_strconcat(body,line,NULL);
+			t=g_strdup_printf("%sGroup: %s\n",body,cinfo[5]);
 			g_free(body);
 			body=t;
 			tag=xmlnode_insert_tag(item,"group");
 			xmlnode_insert_cdata(n,to_utf8(cinfo[5]),-1);
 		}
 		if (cinfo[7] && cinfo[7][0]){
-			line=g_strdup_printf("E-mail: %s\n",cinfo[7]);
-			t=g_strconcat(body,line,NULL);
+			t=g_strdup_printf("%sE-mail: %s\n",body,cinfo[7]);
 			g_free(body);
 			body=t;
 		}
