@@ -1,4 +1,4 @@
-/* $Id: register.c,v 1.48 2003/10/16 19:32:27 smoku Exp $ */
+/* $Id: register.c,v 1.49 2004/01/24 21:07:59 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -387,8 +387,8 @@ Session *session;
 	else value=NULL;
 	if (value!=NULL){
 		tmp=xmlnode_get_data(value);
-		if (!strcmp(tmp,"import")) import_roster=1;
-		else if (!strcmp(tmp,"get")) import_roster=-1;
+/*		if (!strcmp(tmp,"import")) import_roster=1;
+		else if (!strcmp(tmp,"get")) import_roster=-1;*/
 	}
 
 	user=user_create(from,uin,password);

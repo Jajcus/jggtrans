@@ -1,4 +1,4 @@
-/* $Id: message.c,v 1.41 2003/09/08 08:02:40 jajcus Exp $ */
+/* $Id: message.c,v 1.42 2004/01/24 21:07:59 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -54,8 +54,8 @@ void message_locale(struct stream_s *s,const char *from, const char *to,
 				const char *args, xmlnode msg);
 
 MsgCommand msg_commands[]={
-	{"get roster","gr",N_("Download user list from server"),message_get_roster,0},
-	{"import roster","ir",N_("Add users from the user list on server (not recommended - nicknames are not preserved)"),message_import_roster,0},
+/*	{"get roster","gr",N_("Download user list from server"),message_get_roster,0},
+	{"import roster","ir",N_("Add users from the user list on server (not recommended - nicknames are not preserved)"),message_import_roster,0},*/
 	{"friends only","fo",N_("\"Only for friends\" mode"),message_friends_only,0},
 	{"invisible","iv",N_("\"Invisible\" mode"),message_invisible,0},
 	{"locale","loc",N_("Set user locale (language)"),message_locale,0},
