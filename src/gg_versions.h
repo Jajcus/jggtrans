@@ -1,4 +1,4 @@
-/* $Id: gg_versions.h,v 1.1 2003/03/25 07:43:45 jajcus Exp $ */
+/* $Id: gg_versions.h,v 1.2 2003/09/07 11:40:10 smoku Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -21,6 +21,6 @@
 #define ggversions_h
 
 extern char *gg_version[];
-#define GG_VERSION_ELEMENTS 0x20
+#define GG_VERSION_ELEMENTS 0x28
 
 #endif
