@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.99 2004/02/20 17:42:51 jajcus Exp $ */
+/* $Id: sessions.c,v 1.100 2004/03/01 17:26:05 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -37,9 +37,7 @@
 
 
 static int conn_timeout=30;
-static int pong_timeout=30;
 static int disconnect_delay=2;
-static int ping_interval=10;
 static int reconnect=0;
 static GList *gg_servers=NULL;
 GHashTable *sessions_jid;
@@ -76,12 +74,8 @@ GgServer *server;
 
 	i=config_load_int("conn_timeout",0);
 	if (i>0) conn_timeout=i;
-	i=config_load_int("pong_timeout",0);
-	if (i>0) pong_timeout=i;
 	i=config_load_int("disconnect_delay",0);
 	if (i>0) disconnect_delay=i;
-	i=config_load_int("ping_interval",0);
-	if (i>0) ping_interval=i;
 	i=config_load_int("reconnect",0);
 	if (i>0) reconnect=i;
 
@@ -231,27 +225,6 @@ Session *s;
 	return FALSE;
 }
 
-gboolean session_ping(gpointer data){
-Session *s;
-
-	debug("Ping...");
-	g_assert(data!=NULL);
-	s=(Session *)data;
-	if (s->waiting_for_pong){
-		gg_ping(s->ggs); /* send ping, even if server doesn't respond
-				    this one will be not counted for the ping delay*/
-		return TRUE;
-	}
-
-	if (!s->ping_timer) s->ping_timer=g_timer_new();
-	else g_timer_reset(s->ping_timer);
-	g_timer_start(s->ping_timer);
-	gg_ping(s->ggs);
-	s->waiting_for_pong=TRUE;
-	if (s->timeout_func) g_source_remove(s->timeout_func);
-	s->timeout_func=g_timeout_add(pong_timeout*1000,session_timeout,s);
-	return TRUE;
-}
 
 int session_event_status(Session *s,int status,uin_t uin,char *desc,
 				int more,uint32_t ip,uint16_t port,uint32_t version){
@@ -446,8 +419,6 @@ time_t timestamp;
 			else
 				presence_send(s->s,NULL,s->user->jid,1,NULL,"Online",0);
 			if (s->timeout_func) g_source_remove(s->timeout_func);
-			s->ping_timeout_func=
-				g_timeout_add(ping_interval*1000,session_ping,s);
 			if (s->pubdir_change){
 				add_request(RT_CHANGE,s->jid,NULL,s->req_id,
 							NULL,s->pubdir_change,s->s);
@@ -527,15 +498,6 @@ time_t timestamp;
 					to_utf8(event->event.msg.message),timestamp);
 			g_free(jid);
 			break;
-		case GG_EVENT_PONG:
-			s->waiting_for_pong=FALSE;
-			if (s->ping_timer){
-				g_timer_stop(s->ping_timer);
-				debug(L_("Pong! ping time: %fs"),
-						g_timer_elapsed(s->ping_timer,NULL));
-			}
-			if (s->timeout_func) g_source_remove(s->timeout_func);
-			break;
 		case GG_EVENT_PUBDIR50_SEARCH_REPLY:
 			request_response_search(event);
 			break;
@@ -570,9 +532,7 @@ GList *it;
 
 	g_message(L_("Deleting session for '%s'"),s->jid);
 	if (s->io_watch) g_source_remove(s->io_watch);
-	if (s->ping_timeout_func) g_source_remove(s->ping_timeout_func);
 	if (s->timeout_func) g_source_remove(s->timeout_func);
-	if (s->ping_timer) g_timer_destroy(s->ping_timer);
 	if (s->connected && s->s && s->jid){
 		presence_send(s->s,NULL,s->user->jid,0,NULL,"Offline",0);
 		for(it=s->user->contacts;it;it=it->next){
@@ -955,7 +915,6 @@ char *njid;
 	g_message(L_("%sConnected: %i"),space,s->connected);
 	g_message(L_("%sRequest id: %s"),space,s->req_id?s->req_id:"(null)");
 	g_message(L_("%sRequest query: %s"),space,s->query?xmlnode2str(s->query):"(null)");
-	g_message(L_("%sWaiting for ping: %i"),space,(int)s->waiting_for_pong);
 	g_free(njid);
 	g_free(space1);
 	g_free(space);

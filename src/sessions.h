@@ -1,4 +1,4 @@
-/* $Id: sessions.h,v 1.26 2003/05/27 09:07:40 jajcus Exp $ */
+/* $Id: sessions.h,v 1.27 2004/03/01 17:26:05 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -54,10 +54,7 @@ typedef struct session_s{
 	xmlnode query; /* The query */
 	gg_pubdir50_t pubdir_change; /* Info for public directory change reqested on registration */
 	int import_roster; /* 1 if roster should be imported from GG server after successful registration */
-	guint ping_timeout_func;
 	guint timeout_func;
-	GTimer *ping_timer;
-	gboolean waiting_for_pong;
 }Session;
 
 typedef struct gg_server_s {
