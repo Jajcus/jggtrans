@@ -1,4 +1,4 @@
-/* $Id: requests.c,v 1.12 2002/12/09 09:55:52 jajcus Exp $ */
+/* $Id: requests.c,v 1.13 2002/12/10 07:41:15 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -87,7 +87,8 @@ GIOCondition cond;
 	r->from=g_strdup(from);
 	if (to) r->to=g_strdup(to);
 	else r->to=NULL;
-	r->query=query;
+	if (query) r->query=xmlnode_dup(query);
+	else r->query=NULL;
 	r->gghttp=gghttp;
 	
 	r->ioch=g_io_channel_unix_new(gghttp->fd);
