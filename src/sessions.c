@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.64 2003/04/17 13:51:42 jajcus Exp $ */
+/* $Id: sessions.c,v 1.65 2003/04/22 08:25:08 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -125,7 +125,7 @@ GgServer *server;
 	port=config_load_int("proxy/port",0);
 	if (port<=0) return 0;
 
-	g_message(N_("Using proxy: http://%s:%i"),proxy_ip,port);
+	g_message(L_("Using proxy: http://%s:%i"),proxy_ip,port);
 	gg_proxy_enabled=1;
 	gg_proxy_host=proxy_ip;
 	gg_proxy_port=port;
@@ -144,7 +144,7 @@ guint s;
 GList *it;
 
 	s=g_hash_table_size(sessions_jid);
-	debug(N_("%u sessions in hash table"),s);
+	debug(L_("%u sessions in hash table"),s);
 
 	for(it=g_list_first(gg_servers);it;it=g_list_next(it))
 		g_free(it->data);
@@ -173,7 +173,7 @@ int t;
 	s->current_server=g_list_first(gg_servers);
 	if (!reconnect) return;
 	t=(int)((reconnect*9.0/10.0)+(2.0*reconnect/10.0*rand()/(RAND_MAX+1.0)));
-	debug(N_("Sheduling reconnect in %u seconds"),t);
+	debug(L_("Sheduling reconnect in %u seconds"),t);
 	g_timeout_add(t*1000,sessions_reconnect,g_strdup(s->jid));
 }
 
@@ -306,7 +306,7 @@ time_t timestamp;
 
 	s=(Session *)data;
 	user_load_locale(s->user);
-	debug(N_("Checking error conditions..."));
+	debug(L_("Checking error conditions..."));
 	if (condition&(G_IO_ERR|G_IO_NVAL)){
 		if (condition&G_IO_ERR) g_warning(N_("Error on connection for %s"),s->jid);
 		if (condition&G_IO_HUP){
@@ -332,7 +332,7 @@ time_t timestamp;
 		return FALSE;
 	}
 
-	debug(N_("watching fd (gg_debug_level=%i)..."),gg_debug_level);
+	debug(L_("watching fd (gg_debug_level=%i)..."),gg_debug_level);
 	event=gg_watch_fd(s->ggs);
 	if (!event){
 		g_warning(N_("Connection broken. Session of %s"),s->jid);
@@ -376,11 +376,11 @@ time_t timestamp;
 			gg_event_free(event);
 			return FALSE;
 		case GG_EVENT_CONN_SUCCESS:
-			g_message(N_("Login succeed for %s"),s->jid);
+			g_message(L_("Login succeed for %s"),s->jid);
 			if (s->req_id)
 				jabber_iq_send_result(s->s,s->jid,NULL,s->req_id,NULL);
 			presence_send_subscribe(s->s,NULL,s->user->jid);
-			/*presence_send_subscribed(s->s,NULL,s->user->jid);*/
+			presence_send_subscribed(s->s,NULL,s->user->jid);
 			if (s->req_id){
 				free(s->req_id);
 				s->req_id=NULL;
@@ -427,7 +427,7 @@ time_t timestamp;
 			break;
 		case GG_EVENT_MSG:
 			gg_messages_in++;
-			debug(N_("Message: sender: %i class: %i time: %lu"),
+			debug(L_("Message: sender: %i class: %i time: %lu"),
 							event->event.msg.sender,
 							event->event.msg.msgclass,
 							(unsigned long)event->event.msg.time);
@@ -460,7 +460,7 @@ time_t timestamp;
 			s->waiting_for_pong=FALSE;
 			if (s->ping_timer){
 				g_timer_stop(s->ping_timer);
-				debug(N_("Pong! ping time: %fs"),
+				debug(L_("Pong! ping time: %fs"),
 						g_timer_elapsed(s->ping_timer,NULL));
 			}
 			if (s->timeout_func) g_source_remove(s->timeout_func);
@@ -488,7 +488,7 @@ time_t timestamp;
 	s->io_watch=g_io_add_watch(s->ioch,cond,session_io_handler,s);
 
 	gg_event_free(event);
-	debug(N_("io handler done..."));
+	debug(L_("io handler done..."));
 
 	return FALSE;
 }
@@ -498,7 +498,7 @@ static int session_destroy(Session *s){
 GList *it;
 Resource *r=NULL;
 
-	g_message(N_("Deleting session for '%s'"),s->jid);
+	g_message(L_("Deleting session for '%s'"),s->jid);
 	if (s->ping_timeout_func) g_source_remove(s->ping_timeout_func);
 	if (s->timeout_func) g_source_remove(s->timeout_func);
 	if (s->ping_timer) g_timer_destroy(s->ping_timer);
@@ -603,7 +603,7 @@ Session *session_create(User *user,const char *jid,const char *req_id,const xmln
 Session *s;
 char *njid;
 
-	g_message(N_("Creating session for '%s'"),jid);
+	g_message(L_("Creating session for '%s'"),jid);
 	g_assert(user!=NULL);
 	s=g_new0(Session,1);
 	s->user=user;
@@ -629,17 +629,17 @@ User *u;
 char *njid;
 
 	g_assert(sessions_jid!=NULL);
-	debug(N_("Looking up session for '%s'"),jid);
+	debug(L_("Looking up session for '%s'"),jid);
 	njid=jid_normalized(jid);
-	debug(N_("Using '%s' as key"),njid);
+	debug(L_("Using '%s' as key"),njid);
 	s=(Session *)g_hash_table_lookup(sessions_jid,(gpointer)njid);
 	g_free(njid);
 	if (s) return s;
-	debug(N_("Session not found"));
+	debug(L_("Session not found"));
 	if (!stream) return NULL;
 	u=user_get_by_jid(jid);
 	if (!u) return NULL;
-	debug(N_("Creating new session"));
+	debug(L_("Creating new session"));
 	return session_create(u,jid,NULL,NULL,stream);
 }
 
@@ -669,7 +669,7 @@ Resource *r;
 	status=status_jabber_to_gg(r->available,r->show,r->status);
 	if (s->user->invisible) status=GG_STATUS_INVISIBLE;
 	else if (s->user->friends_only) status|=GG_STATUS_FRIENDS_MASK;
-	debug(N_("Changing gg status to %i"),status);
+	debug(L_("Changing gg status to %i"),status);
 	if (r->status!=NULL)
 		gg_change_status_descr(s->ggs,status,r->status);
 	else
@@ -693,7 +693,7 @@ GList *it;
 
 	if (!available){
 		if (r){
-			debug(N_("Removing resource %s of %s"),resource?resource:"NULL",s->jid);
+			debug(L_("Removing resource %s of %s"),resource?resource:"NULL",s->jid);
 			if (r->name) g_free(r->name);
 			if (r->show) g_free(r->show);
 			if (r->status) g_free(r->status);
@@ -722,7 +722,7 @@ GList *it;
 			}
 		}
 		else{
-			debug(N_("New resource %s of %s"),resource?resource:"NULL",s->jid);
+			debug(L_("New resource %s of %s"),resource?resource:"NULL",s->jid);
 			r=g_new0(Resource,1);
 			if (resource) r->name=g_strdup(resource);
 			s->resources=g_list_append(s->resources,r);
@@ -800,31 +800,31 @@ char *njid;
 	space=g_strnfill(indent*2,' ');
 	space1=g_strnfill((indent+1)*2,' ');
 	njid=jid_normalized(s->jid);
-	g_message(N_("%sSession: %p"),space,s);
+	g_message(L_("%sSession: %p"),space,s);
 	g_message("%sJID: %s",space,s->jid);
-	g_message(N_("%sUser:"),space);
+	g_message(L_("%sUser:"),space);
 	user_print(s->user,indent+1);
-	g_message(N_("%sResources:"),space);
+	g_message(L_("%sResources:"),space);
 	cr=session_get_cur_resource(s);
 	for(it=g_list_first(s->resources);it;it=it->next){
 		r=(Resource *)it->data;
-		g_message(N_("%sResource: %p%s"),space1,r,(r==cr)?N_(" (current)"):"");
+		g_message(L_("%sResource: %p%s"),space1,r,(r==cr)?N_(" (current)"):"");
 		if (r->name) g_message("%sJID: %s/%s",space1,njid,r->name);
 		else g_message("%sJID: %s",space1,s->jid);
-		g_message(N_("%sPriority: %i"),space1,r->priority);
-		g_message(N_("%sAvailable: %i"),space1,r->available);
+		g_message(L_("%sPriority: %i"),space1,r->priority);
+		g_message(L_("%sAvailable: %i"),space1,r->available);
 		if (r->show)
-			g_message(N_("%sShow: %s"),space1,r->show);
+			g_message(L_("%sShow: %s"),space1,r->show);
 		if (r->status)
-			g_message(N_("%sStatus: %s"),space1,r->status);
+			g_message(L_("%sStatus: %s"),space1,r->status);
 	}
-	g_message(N_("%sGG session: %p"),space,s->ggs);
-	g_message(N_("%sIO Channel: %p"),space,s->ioch);
-	g_message(N_("%sStream: %p"),space,s->s);
-	g_message(N_("%sConnected: %i"),space,s->connected);
-	g_message(N_("%sRequest id: %s"),space,s->req_id?s->req_id:"(null)");
-	g_message(N_("%sRequest query: %s"),space,s->query?xmlnode2str(s->query):"(null)");
-	g_message(N_("%sWaiting for ping: %i"),space,(int)s->waiting_for_pong);
+	g_message(L_("%sGG session: %p"),space,s->ggs);
+	g_message(L_("%sIO Channel: %p"),space,s->ioch);
+	g_message(L_("%sStream: %p"),space,s->s);
+	g_message(L_("%sConnected: %i"),space,s->connected);
+	g_message(L_("%sRequest id: %s"),space,s->req_id?s->req_id:"(null)");
+	g_message(L_("%sRequest query: %s"),space,s->query?xmlnode2str(s->query):"(null)");
+	g_message(L_("%sWaiting for ping: %i"),space,(int)s->waiting_for_pong);
 	g_free(njid);
 	g_free(space1);
 	g_free(space);
