@@ -178,15 +178,18 @@ int presence(struct stream_s *stream,const char *from,const char *to,
 		int available,const char *show,const char *status){
 Session *s;
 int r;
+char *jid;
 
 	s=session_get_by_jid(from,available?stream:NULL);
 	if (!s){
 		debug("presence: No such session: %s",from);
-		presence_send(stream,to,from,0,NULL,"Not logged in",0);
+		presence_send_error(stream,NULL,from,407,"Not logged in");
 		return -1;
 	}
+	jid=g_strdup(s->user->jid); /* session may be removed in the next step */
 	r=session_set_status(s,available,show,status);
-	if (!r) presence_send(stream,NULL,from,available,show,status,0);
+	if (!r) presence_send(stream,NULL,jid,available,show,status,0);
+	g_free(jid);
 }
 
 int presence_subscribe(struct stream_s *stream,const char *from,const char *to){
@@ -253,7 +256,7 @@ GTime timestamp;
 
 	s=session_get_by_jid(from,NULL);
 	if (jid_is_me(to)){
-		if (s) presence_send(stream,to,from,s->available,s->show,s->status,0);
+		if (s) presence_send(stream,NULL,s->user->jid,s->available,s->show,s->status,0);
 		else presence_send(stream,to,from,0,NULL,"Not logged in",0);
 		return 0;
 	}
@@ -365,7 +368,7 @@ char *show,*status;
 	else show=NULL;
 	
 	status_n=xmlnode_get_tag(tag,"status");
-	if (status_n) show=xmlnode_get_data(status_n);
+	if (status_n) status=xmlnode_get_data(status_n);
 	else status=NULL;
 
 	if (!type) type="available";
