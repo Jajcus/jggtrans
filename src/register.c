@@ -129,6 +129,7 @@ int register_process_options_form(Stream *s,const char *from,const char *to,
 					const char *id,User *u,xmlnode form){
 xmlnode field,value;
 char *locale=NULL,*invisible=NULL,*friends_only=NULL;
+Session *session;
 
 	field=xmlnode_get_tag(form,"field?var=locale");
 	if (field!=NULL){
@@ -158,6 +159,8 @@ char *locale=NULL,*invisible=NULL,*friends_only=NULL;
 		u->friends_only=1;
 	else
 		u->friends_only=0;
+	session=session_get_by_jid(u->jid,NULL,0);
+	if (session!=NULL) session_send_status(session);
 	user_save(u);
 
 	return 0;
