@@ -70,4 +70,4 @@ tags:
 
 valgrind:
 	valgrind --num-callers=20 --leak-check=yes --show-reachable=yes --logfile-fd=3 -v \
-		--trace-children=no ./jggtrans -f 3>jggtrans.valgrind
+		--trace-children=no ./jggtrans -f -d 1 -D 1 3>jggtrans.valgrind

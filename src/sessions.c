@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.57 2003/04/14 10:18:47 jajcus Exp $ */
+/* $Id: sessions.c,v 1.58 2003/04/14 16:30:38 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -81,14 +81,6 @@ GgServer *server;
 	i=config_load_int("reconnect",0);
 	if (i>0) reconnect=i;
 
-	server=g_new(GgServer, 1);
-	server->port=1;
-	gg_servers=g_list_append(gg_servers, server);
-
-	server=g_new(GgServer, 1);
-	inet_aton("217.17.41.84", &server->addr);
-	server->port=8074;
-	gg_servers=g_list_append(gg_servers, server);
 
 	parent=xmlnode_get_tag(config,"servers");
 	if (parent && xmlnode_has_children(parent)){
@@ -117,6 +109,16 @@ GgServer *server;
 
 
 	}
+	else {
+		server=g_new(GgServer, 1);
+		server->port=1;
+		gg_servers=g_list_append(gg_servers, server);
+
+		server=g_new(GgServer, 1);
+		inet_aton("217.17.41.84", &server->addr);
+		server->port=8074;
+		gg_servers=g_list_append(gg_servers, server);
+	}
 
 	proxy_ip=config_load_string("proxy/ip");
 	if (!proxy_ip) return 0;
@@ -139,10 +141,15 @@ static gboolean sessions_hash_remove_func(gpointer key,gpointer value,gpointer u
 
 int sessions_done(){
 guint s;
+GList *it;
 
 	s=g_hash_table_size(sessions_jid);
 	debug(N_("%u sessions in hash table"),s);
 
+	for(it=g_list_first(gg_servers);it;it=g_list_next(it))
+		g_free(it->data);
+	g_list_free(gg_servers);
+	
 	g_hash_table_foreach_remove(sessions_jid,sessions_hash_remove_func,NULL);
 	g_hash_table_destroy(sessions_jid);
 
