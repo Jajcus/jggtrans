@@ -21,6 +21,12 @@ As simple, as for most OS projects:
 You may want to use "--sysconfdir=" configure option to set config directory,
 or "--disable-debug" to disable some debugging code.
 
+On FreeBSD and other systems it might be necessary to run configure as:
+
+	./configure CPPFLAGS="-I/usr/local/include" LDFLAGS="-L/usr/local/lib"
+
+otherwise configure will not properly detect gettext or other needed library.
+
 
 --------------------------------------------------------------------
 There is basic info on using ./configure script below.

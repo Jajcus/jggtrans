@@ -21,3 +21,9 @@ Prosta jak w przypadku wiêkszo¶ci projektów OS:
 Mo¿na u¿yæ opcji configure "--sysconfdir=", aby ustawiæ katalog z plikiem konfiguracyjnym,
 lub "--disable-debug", aby wy³±czyæ kod "odpluskwiaj±cy".
 
+Na FreeBSD i w innych systemach mo¿e okazaæ siê konieczne takie wywo³anie configure:
+	
+	./configure CPPFLAGS="-I/usr/local/include" LDFLAGS="-L/usr/local/lib"
+
+inaczej skrypt configure mo¿e poprawnie nie wykryæ zainstalowanych w systemie
+bibliotek, takich jak gettext.
