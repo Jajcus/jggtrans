@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.87 2003/09/07 11:36:30 smoku Exp $ */
+/* $Id: sessions.c,v 1.88 2003/09/07 11:43:01 smoku Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -633,6 +633,7 @@ int r;
 	login_params.password=from_utf8(s->user->password);
 	login_params.async=1;
 	login_params.last_sysmsg=s->user->last_sys_msg;
+	login_params.protocol_version=0x18;
 
 	r=session_make_status(s);
 	if (r!=-1){
