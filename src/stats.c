@@ -1,4 +1,4 @@
-/* $Id: stats.c,v 1.8 2003/04/16 11:10:17 jajcus Exp $ */
+/* $Id: stats.c,v 1.9 2003/05/16 18:41:04 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -118,7 +118,7 @@ char *jid;
 			xmlnode_put_attrib(stat,"name",stats[i].name);
 		}
 	}
-	for(;n;n=xmlnode_get_nextsibling(q)){
+	for(;n;n=xmlnode_get_nextsibling(n)){
 		str=xmlnode_get_name(n);
 		if (strcmp(str,"stat")) continue;
 		str=xmlnode_get_attrib(n,"name");
