@@ -470,7 +470,7 @@ msgstr "Pobierz listę użytkowników z serwera"
 
 #: src/message.c:58
 msgid "Add users from the user list on server"
-msgstr ""
+msgstr "Dodaj użytkowników z listy na serwerze"
 
 #: src/message.c:59
 msgid "\"Only for friends\" mode"
@@ -495,9 +495,8 @@ msgid "Internal Server Error"
 msgstr "Wewnętrzny błąd serwera"
 
 #: src/message.c:189
-#, fuzzy
 msgid "Importing roster..."
-msgstr "Pobieram roster..."
+msgstr "Importuję roster..."
 
 #: src/message.c:215 src/message.c:327
 msgid "No userlist received."
@@ -748,9 +747,8 @@ msgstr "Hasło"
 
 #. form_add_field(form,"boolean","new",_("Create new account"),"0",1);
 #: src/register.c:56
-#, fuzzy
 msgid "Import userlist from GG server"
-msgstr "Pobierz listę użytkowników z serwera"
+msgstr "Importuj listę użytkowników z serwera"
 
 #: src/register.c:58 src/register.c:87
 msgid "Language"
@@ -1197,9 +1195,9 @@ msgid "Trying to log in on server %u"
 msgstr "Próba logowania na serwerze %u"
 
 #: src/sessions.c:615
-#, fuzzy, c-format
+#, c-format
 msgid "Setting gg status to %i (%s)"
-msgstr "Zmiana statusu gg na %i"
+msgstr "Zmiana statusu gg na %i (%s)"
 
 #: src/sessions.c:650
 #, c-format
