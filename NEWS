@@ -1,3 +1,30 @@
+Version 2.1.0
+-------------
+
+Changes from 2.0.9:
+
+* GG "conference" messages are dropped.
+
+* GG roster is passed in 'normal', not 'chat' message. This makes it
+  compatible with recent Psi.
+
+* Proper handling of internationalized JIDs has been implemented using
+  libidn. Fixes crash on some JIDs.
+
+* Handling of unknown characters in messages has been improved.
+
+* 'Invisible' and 'Friends Only' modes are active immediately when set
+  by a registration form.
+
+* Various other bugs are fixed.
+
+* Various fixes to and updates of the build system. Mainly for the
+  code migration from CVS to Subversion that has been recently done.
+
+* Code has been ported to glib2.
+
+* Dutch translation is included.
+
 Version 2.0.9
 -------------
 
