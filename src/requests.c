@@ -1,4 +1,4 @@
-/* $Id: requests.c,v 1.24 2003/04/05 21:08:31 mmazur Exp $ */
+/* $Id: requests.c,v 1.25 2003/04/06 10:19:03 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -30,10 +30,13 @@
 #include "debug.h"
 
 static GList *requests=NULL;
-GHashTable *lookups=NULL;
-GHashTable *changes=NULL;
+static GHashTable *lookups=NULL;
+static GHashTable *changes=NULL;
+static int id_counter=0;
 
 int requests_init(){
+
+	id_counter=time(NULL);
 	lookups=g_hash_table_new(g_int_hash, g_int_equal);
 	if(!lookups)
 		return 1;
@@ -69,8 +72,8 @@ Request *r;
 }
 
 void request_do_pubdir_update(Session *s){
-int hash;
 Request *r;
+
 	r=g_hash_table_lookup(changes, s);
 	if(!r) return;
 	g_hash_table_remove(changes, s);
@@ -84,7 +87,6 @@ Request *r;
 int request_io_handler(GIOChannel *source,GIOCondition condition,gpointer data){
 Request *r;
 User *u;
-int t;
 GIOCondition cond;
 
 	r=(Request *)data;
@@ -148,7 +150,7 @@ struct gg_http *gghttp;
 		s=session_get_by_jid(from, stream);
 		if (s==NULL) return NULL;
 
-		r->hash=time(NULL);
+		r->hash=id_counter++;
 		gg_pubdir50_seq_set((gg_pubdir50_t)data, r->hash);
 		gg_pubdir50(s->ggs, (gg_pubdir50_t)data);
 		g_hash_table_insert(lookups, &r->hash, r);
