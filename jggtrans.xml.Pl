@@ -4,7 +4,7 @@
        Proszę pamiętać, że w XMLu obowiązującym kodowaniem jest UTF-8
 -->
 
-<ggtrans>
+<jggtrans>
 
   <!-- Żeby to zadziałało także plik jabber.xml musi być uaktualniony.
        Należy dodać następujące linie w sekcji <browse/>:
@@ -114,7 +114,7 @@
  <!-- Gdzie zapisywać/sprawdzać plik z pid procesu ggtrans. -->
  <pidfile>/var/lib/jabber/ggtrans.pid</pidfile>
 
-</ggtrans>
+</jggtrans>
 <!--
  vi: encoding=utf-8 syntax=xml
  -->

@@ -1,4 +1,4 @@
-<ggtrans>
+<jggtrans>
 
   <!-- For this to work, you should also update /etc/jabber/jabber.xml
        Add the following (changed to your needs):
@@ -108,4 +108,4 @@
  <!-- Where to store pid file. This tag is optional. -->
  <pidfile>/var/lib/jabber/ggtrans.pid</pidfile>
 
-</ggtrans>
+</jggtrans>
