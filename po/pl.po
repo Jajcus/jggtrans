@@ -1202,9 +1202,8 @@ msgid "Login succeed for %s"
 msgstr "Udane logowanie dla %s"
 
 #: src/sessions.c:489
-#, fuzzy, c-format
 msgid "Dropped conference message: sender: %i class: %i time: %lu"
-msgstr "Wiadomość: nadawca: %i klasa: %i czas: %lu"
+msgstr "Odrzucona wiadomość konferencyjna: nadawca: %i klasa: %i czas: %lu"
 
 #: src/sessions.c:496
 #, c-format
@@ -1452,7 +1451,7 @@ msgstr "Niepołączony strumień"
 
 #: src/stream.c:228
 msgid "Error reading from stream"
-msgstr ""
+msgstr "Błąd odczytu ze strumienia"
 
 #: src/users.c:44
 msgid "No <spool/> defined in config file"
@@ -1628,9 +1627,3 @@ msgstr "%sStatus: %i"
 #, c-format
 msgid "%sLast update: %s"
 msgstr "%sOstatnia aktualizacja: %s"
-
-#~ msgid "Bad hostname len (%i) instead of %i in JID: %s"
-#~ msgstr "Nieprawidłowa długość nazwy hosta (%i zamiast %i) w JID: %s"
-
-#~ msgid "Bad hostname in JID: %s[%i:%i]"
-#~ msgstr "Nieprawidłowa nazwa hosta w JID: %s[%i:%i]"
