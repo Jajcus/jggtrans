@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.82 2003/06/27 09:30:29 jajcus Exp $ */
+/* $Id: sessions.c,v 1.83 2003/06/27 14:53:34 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -255,14 +255,20 @@ Session *s;
 
 int session_event_status(Session *s,int status,uin_t uin,char *desc,
 				int more,uint32_t ip,uint16_t port,uint32_t version){
+int oldstat;
 int available;
 char *ujid;
 char *show;
 
 	available=status_gg_to_jabber(status,&show,&desc);
+	oldstat=user_get_contact_status(s->user,uin);
 	user_set_contact_status(s->user,status,uin,desc,more,ip,port,version);
 
-	ujid=jid_build_full(uin);
+	if (!available && oldstat==-1)
+		ujid=jid_build(uin);
+	else
+		ujid=jid_build_full(uin);
+
 	presence_send(s->s,ujid,s->user->jid,available,show,desc,0);
 	g_free(ujid);
 	return 0;
@@ -438,10 +444,16 @@ time_t timestamp;
 			if (s->import_roster){
 				struct gg_http * gghttp;
 				Request *r;
+				int rt;
 
 				gghttp=gg_userlist_get(s->user->uin,from_utf8(s->user->password),1);
-				r=add_request(RT_USERLIST_IMPORT,s->jid,NULL,"",NULL,
-									(void*)gghttp,s->s);
+
+				if (s->import_roster>0)
+					rt=RT_USERLIST_IMPORT;
+				else
+					rt=RT_USERLIST_GET;
+				
+				r=add_request(rt,s->jid,NULL,"",NULL,(void*)gghttp,s->s);
 				s->import_roster=0;
 			}
 			break;
@@ -540,7 +552,7 @@ GList *it;
 		for(it=s->user->contacts;it;it=it->next){
 			Contact *c=(Contact *)it->data;
 
-			if (c->status!=GG_STATUS_NOT_AVAIL){
+			if (c->status!=GG_STATUS_NOT_AVAIL && c->status!=-1){
 				char *ujid;
 				ujid=jid_build_full(c->uin);
 				presence_send(s->s,ujid,s->user->jid,0,NULL,"Transport disconnected",0);
@@ -708,7 +720,7 @@ GList *it;
 Resource *r=NULL;
 int maxprio;
 
-	maxprio=-1;
+	maxprio=-129;
 	for(it=g_list_last(s->resources);it;it=it->prev){
 		Resource *r1=(Resource *)it->data;
 		if (r1->priority>maxprio){
@@ -769,16 +781,17 @@ Resource *r=(Resource *)data;
 
 int session_set_status(Session *s,const char *resource,int available,
 			const char *show,const char *status,int priority){
-Resource *r;
+Resource *r,*cr;
 GList *it;
+int num_resources=0;
 
 	r=NULL;
 	for(it=g_list_first(s->resources);it;it=it->next){
 		Resource *r1=(Resource *)it->data;
 		if ( (!r1->name && !resource) || !strcmp(r1->name,resource) ){
 			r=r1;
-			break;
 		}
+		num_resources++;
 	}
 
 	if (!available){
@@ -786,7 +799,7 @@ GList *it;
 			g_warning(N_("Unknown resource %s of %s"),resource?resource:"NULL",s->jid);
 			return 0;
 		}
-		if (disconnect_delay>0 && r->available){
+		if (disconnect_delay>0 && r->available && num_resources==1){
 			r->available=0;
 			debug(L_("Delaying removal of resource %s of %s"),resource?resource:"NULL",s->jid);
 			r->disconnect_delay_func=g_timeout_add(disconnect_delay*1000,delayed_disconnect,r);
@@ -817,7 +830,8 @@ GList *it;
 		if (show) r->show=g_strdup(show);
 		if (status) r->status=g_strdup(status);
 		if (priority>=0) r->priority=priority;
-		if (s->connected) presence_send(s->s,NULL,s->user->jid,r->available,r->show,r->status,0);
+		cr=session_get_cur_resource(s);
+		if (s->connected) presence_send(s->s,NULL,s->user->jid,cr->available,cr->show,cr->status,0);
 	}
 
 	if (s->connected) session_send_status(s);
