@@ -1,4 +1,4 @@
-/* $Id: requests.c,v 1.19 2003/02/04 08:06:01 jajcus Exp $ */
+/* $Id: requests.c,v 1.20 2003/04/04 12:41:40 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -46,17 +46,19 @@ Request *r;
 	r=g_hash_table_lookup(lookups, &hash);
 	g_hash_table_remove(lookups, &hash);
 
-	switch(r->type){
-		case RT_VCARD:
-			vcard_done(r, data->event.pubdir50);
-			remove_request(r);
-			return;
-		case RT_SEARCH:
-			search_done(r, data->event.pubdir50);
-			remove_request(r);
-			return;
-		default:
-			break;
+	if (r) {
+		switch(r->type){
+			case RT_VCARD:
+				vcard_done(r, data->event.pubdir50);
+				remove_request(r);
+				return;
+			case RT_SEARCH:
+				search_done(r, data->event.pubdir50);
+				remove_request(r);
+				return;
+			default:
+				break;
+		}
 	}
 
 }
