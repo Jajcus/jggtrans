@@ -1,5 +1,5 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT([jabber-gg-transport], [2.0.7], [jajcus@pld.org.pl])
+AC_INIT([jabber-gg-transport], [2.0.8], [jajcus@pld.org.pl])
 AC_CONFIG_SRCDIR([src/ggtrans.h])
 AM_INIT_AUTOMAKE
 AM_CONFIG_HEADER([config.h])
@@ -66,5 +66,5 @@ AC_CONFIG_SUBDIRS([libxode])
 MKINSTALLDIRS="${MKINSTALLDIRS} -m 755"
 XGETTEXT="${XGETTEXT} --keyword=L_"
 
-AC_CONFIG_FILES([Makefile src/Makefile  m4/Makefile ])
+AC_CONFIG_FILES([Makefile src/Makefile m4/Makefile po/Makefile.in])
 AC_OUTPUT
