@@ -1,4 +1,4 @@
-/* $Id: search.h,v 1.4 2002/01/30 16:52:03 jajcus Exp $ */
+/* $Id: search.h,v 1.5 2003/02/03 20:28:19 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -23,13 +23,11 @@
 struct request_s;
 struct stream_s;
 
-int search_error(struct request_s *r);
-int search_done(struct request_s *r);
+int search_done(struct request_s *r, gg_pubdir50_t results);
 void jabber_iq_get_search(struct stream_s *s,const char *from,const char *to,const char *id,xmlnode q);
 void jabber_iq_set_search(struct stream_s *s,const char *from,const char *to,const char *id,xmlnode q);
 
-int vcard_error(struct request_s *r);
-int vcard_done(struct request_s *r);
+int vcard_done(struct request_s *r, gg_pubdir50_t results);
 void jabber_iq_get_user_vcard(struct stream_s *s,const char *from,const char * to,const char *id,xmlnode q);
 
 #endif

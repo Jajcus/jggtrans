@@ -1,4 +1,4 @@
-/* $Id: message.c,v 1.17 2003/01/22 07:53:01 jajcus Exp $ */
+/* $Id: message.c,v 1.18 2003/02/03 20:28:19 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -123,7 +123,7 @@ Request *r;
 	message_send(stream,to,from,1,"Receiving roster...");
 
 	gghttp=gg_userlist_get(user->uin,user->password,1);
-	r=add_request(RT_USERLIST_GET,from,to,"",msg,gghttp,stream);
+	r=add_request(RT_USERLIST_GET,from,to,"",msg,(void*)gghttp,stream);
 	if (!r){
 		message_send_error(stream,to,from,NULL,
 					500,"Internal Server Error");
@@ -301,7 +301,7 @@ Request *r;
 	message_send(stream,to,from,1,"Sending roster...");
 	gghttp=gg_userlist_put(user->uin,user->password,contacts,1);
 	g_free(contacts);
-	r=add_request(RT_USERLIST_PUT,from,to,"",msg,gghttp,stream);
+	r=add_request(RT_USERLIST_PUT,from,to,"",msg,(void*)gghttp,stream);
 	if (!r){
 		message_send_error(stream,to,from,NULL,
 					500,"Internal Server Error");

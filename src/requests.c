@@ -1,4 +1,4 @@
-/* $Id: requests.c,v 1.16 2003/01/15 15:17:28 jajcus Exp $ */
+/* $Id: requests.c,v 1.17 2003/02/03 20:28:19 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -23,10 +23,40 @@
 #include <libgadu.h>
 #include "requests.h"
 #include "search.h"
+#include "sessions.h"
 #include "stream.h"
 #include "register.h"
 
 static GList *requests=NULL;
+GHashTable *lookups=NULL;
+
+int requests_init(){
+	lookups=g_hash_table_new(g_int_hash, g_int_equal);
+	if(!lookups)
+		return 1;		
+	return 0;
+}
+
+void request_response_search(struct gg_event *data){
+int hash;
+Request *r;
+
+	hash=gg_pubdir50_seq(data->event.pubdir50);
+	r=g_hash_table_lookup(lookups, &hash);
+	g_hash_table_remove(lookups, &hash);
+
+	switch(r->type){
+		case RT_VCARD:
+			vcard_done(r, data->event.pubdir50);
+			remove_request(r);
+			return;
+		case RT_SEARCH:
+			search_done(r, data->event.pubdir50);
+			remove_request(r);
+			return;
+	}
+
+}
 
 int request_io_handler(GIOChannel *source,GIOCondition condition,gpointer data){
 Request *r;
@@ -36,22 +66,6 @@ GIOCondition cond;
 	r=(Request *)data;
 	g_assert(r!=NULL);
 	switch(r->type){
-		case RT_SEARCH:
-			t=gg_search_watch_fd(r->gghttp);
-			if (t || r->gghttp->state==GG_STATE_ERROR) search_error(r);
-			else if (!t && r->gghttp->state==GG_STATE_DONE) search_done(r);
-			else break;
-			r->io_watch=0;
-			remove_request(r);
-			return FALSE;
-		case RT_VCARD:
-			t=gg_search_watch_fd(r->gghttp);
-			if (t || r->gghttp->state==GG_STATE_ERROR) vcard_error(r);
-			else if (!t && r->gghttp->state==GG_STATE_DONE) vcard_done(r);
-			else break;
-			r->io_watch=0;
-			remove_request(r);
-			return FALSE;
 		case RT_CHANGE:
 			t=gg_search_watch_fd(r->gghttp);
 			if (t || r->gghttp->state==GG_STATE_ERROR) register_error(r);
@@ -93,12 +107,13 @@ GIOCondition cond;
 }
 
 Request * add_request(RequestType type,const char *from,const char *to,
-			const char *id,xmlnode query,struct gg_http *gghttp,
+			const char *id,xmlnode query, void *data,
 			Stream *stream){
 Request *r;
+Session *s;
 GIOCondition cond;
+struct gg_http *gghttp;
 
-	g_assert(gghttp!=NULL);
 	r=g_new0(Request,1);
 	r->type=type;
 	r->id=g_strdup(id);
@@ -107,16 +122,30 @@ GIOCondition cond;
 	else r->to=NULL;
 	if (query) r->query=xmlnode_dup(query);
 	else r->query=NULL;
-	r->gghttp=gghttp;
-
-	r->ioch=g_io_channel_unix_new(gghttp->fd);
-	cond=G_IO_ERR|G_IO_HUP|G_IO_NVAL;
-	if (r->gghttp->check&GG_CHECK_READ) cond|=G_IO_IN;
-	if (r->gghttp->check&GG_CHECK_WRITE) cond|=G_IO_OUT;
-	r->io_watch=g_io_add_watch(r->ioch,cond,request_io_handler,r);
-
 	r->stream=stream;
-	requests=g_list_append(requests,r);
+
+	if(type==RT_VCARD || type==RT_SEARCH){
+		r->hash=time(NULL);
+		gg_pubdir50_seq_set((gg_pubdir50_t)data, r->hash);
+
+		s=session_get_by_jid(from, stream);
+		gg_pubdir50(s->ggs, (gg_pubdir50_t)data);
+
+		g_hash_table_insert(lookups, &r->hash, r);
+	}
+	else{
+		gghttp=(struct gg_http*)data;
+
+		r->gghttp=gghttp;
+
+		r->ioch=g_io_channel_unix_new(gghttp->fd);
+			cond=G_IO_ERR|G_IO_HUP|G_IO_NVAL;
+		if (r->gghttp->check&GG_CHECK_READ) cond|=G_IO_IN;
+		if (r->gghttp->check&GG_CHECK_WRITE) cond|=G_IO_OUT;
+		r->io_watch=g_io_add_watch(r->ioch,cond,request_io_handler,r);
+
+		requests=g_list_append(requests,r);
+	}
 	return r;
 }
 
@@ -124,8 +153,10 @@ int remove_request(Request *r){
 
 	if (!r) return -1;
 	if (r->io_watch) g_source_remove(r->io_watch);
-	requests=g_list_remove(requests,r);
-	g_io_channel_close(r->ioch);
+	if(r->type!=RT_VCARD && r->type!=RT_SEARCH){
+		requests=g_list_remove(requests,r);
+		g_io_channel_close(r->ioch);
+	}
 	if (r->from) g_free(r->from);
 	if (r->id) g_free(r->id);
 	if (r->query) xmlnode_free(r->query);

@@ -1,4 +1,4 @@
-/* $Id: register.c,v 1.18 2003/01/22 07:53:01 jajcus Exp $ */
+/* $Id: register.c,v 1.19 2003/02/03 20:28:19 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -255,7 +255,7 @@ Request *r;
 		return;
 	}
 
-	r=add_request(RT_CHANGE,from,to,id,q,gghttp,s);
+	r=add_request(RT_CHANGE,from,to,id,q,(void*)gghttp,s);
 	if (!r){
 		session_remove(session);
 		jabber_iq_send_error(s,from,to,id,500,"Internal Server Error");

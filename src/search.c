@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.17 2003/01/22 08:09:36 jajcus Exp $ */
+/* $Id: search.c,v 1.18 2003/02/03 20:28:19 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -21,6 +21,7 @@
 #include <libgadu.h>
 #include "search.h"
 #include "requests.h"
+#include "sessions.h"
 #include "stream.h"
 #include "iq.h"
 #include "jid.h"
@@ -33,64 +34,64 @@
 
 const char *search_instructions;
 
-int search_error(Request *r){
-
-	jabber_iq_send_error(r->stream,r->from,r->to,r->id,502,"Remote Server Error");
-	return 0;
-}
-
-int search_done(struct request_s *r){
+int search_done(struct request_s *r, gg_pubdir50_t results){
 xmlnode q,item,n;
-struct gg_search * results;
-char *jid,*name,*str;
+char *jid,*name;
 int i;
-unsigned uin;
+char *uin, *first_name, *last_name, *nickname, *born, *city, *gender, *active;
 
-	results=(struct gg_search *)r->gghttp->data;
 	q=xmlnode_new_tag("query");
 	xmlnode_put_attrib(q,"xmlns","jabber:iq:search");
-	for(i=0;results && i<results->count;i++){
+	for(i=0;i<gg_pubdir50_count(results);i++){
 		item=xmlnode_insert_tag(q,"item");
-		uin=results->results[i].uin;
-		if (uin<=0)
-			uin=jid_get_uin(r->to);
-		jid=jid_build(uin);
+		uin=gg_pubdir50_get(results, i, GG_PUBDIR50_UIN);
+		jid=jid_build(atoi(uin));
 		xmlnode_put_attrib(item,"jid",jid);
 		g_free(jid);
-		name=g_strdup_printf("%s %s",results->results[i].first_name,results->results[i].last_name);
+		first_name=gg_pubdir50_get(results, i, GG_PUBDIR50_FIRSTNAME);
+		last_name=gg_pubdir50_get(results, i, GG_PUBDIR50_LASTNAME);
+		name=g_strdup_printf("%s %s",first_name,last_name);
 		n=xmlnode_insert_tag(item,"name");
 		xmlnode_insert_cdata(n,to_utf8(name),-1);
 		g_free(name);
 		n=xmlnode_insert_tag(item,"first");
-		xmlnode_insert_cdata(n,to_utf8(results->results[i].first_name),-1);
+		xmlnode_insert_cdata(n,to_utf8(first_name),-1);
 		n=xmlnode_insert_tag(item,"last");
-		xmlnode_insert_cdata(n,to_utf8(results->results[i].last_name),-1);
+		xmlnode_insert_cdata(n,to_utf8(last_name),-1);
+		nickname=gg_pubdir50_get(results, i, GG_PUBDIR50_NICKNAME);
 		n=xmlnode_insert_tag(item,"nick");
-		xmlnode_insert_cdata(n,to_utf8(results->results[i].nickname),-1);
-		if (results->results[i].born>0){
-			str=g_strdup_printf("%i",results->results[i].born);
+		xmlnode_insert_cdata(n,to_utf8(nickname),-1);
+		born=gg_pubdir50_get(results, i, GG_PUBDIR50_BIRTHYEAR);
+		if (born){
 			n=xmlnode_insert_tag(item,"born");
-			xmlnode_insert_cdata(n,str,-1);
-			g_free(str);
+			xmlnode_insert_cdata(n,born,-1);
 		}
-		if (results->results[i].gender==GG_GENDER_FEMALE)
+		gender=gg_pubdir50_get(results, i, GG_PUBDIR50_GENDER);
+		if (gender && strcmp(gender, GG_PUBDIR50_GENDER_FEMALE)==0)
 			xmlnode_insert_cdata(xmlnode_insert_tag(item,"gender"),"f",-1);
-		else if (results->results[i].gender==GG_GENDER_MALE)
+		else if (gender && strcmp(gender, GG_PUBDIR50_GENDER_MALE)==0)
 			xmlnode_insert_cdata(xmlnode_insert_tag(item,"gender"),"m",-1);
+		city=gg_pubdir50_get(results, i, GG_PUBDIR50_CITY);
 		n=xmlnode_insert_tag(item,"city");
-		xmlnode_insert_cdata(n,to_utf8(results->results[i].city),-1);
-		if (results->results[i].active)
+		xmlnode_insert_cdata(n,to_utf8(city),-1);
+		active=gg_pubdir50_get(results, i, GG_PUBDIR50_ACTIVE);
+		if (active && strcmp(active, GG_PUBDIR50_ACTIVE_TRUE)==0)
 			xmlnode_insert_cdata(xmlnode_insert_tag(item,"active"),"yes",-1);
 	}
 	jabber_iq_send_result(r->stream,r->from,r->to,r->id,q);
 	xmlnode_free(q);
-	gg_free_search(r->gghttp);
-	r->gghttp=NULL;
 	return 0;
 }
 
 void jabber_iq_get_search(Stream *s,const char *from,const char *to,const char *id,xmlnode q){
 xmlnode iq,n;
+Session *sess;
+	
+	sess=session_get_by_jid(from,NULL);
+	if (!sess || !sess->connected){
+		message_send_error(s,to,from,NULL,407,"Not logged in");
+		return;
+	}
 
 	iq=xmlnode_new_tag("query");
 	xmlnode_put_attrib(iq,"xmlns","jabber:iq:search");
@@ -112,187 +113,163 @@ xmlnode iq,n;
 }
 
 void jabber_iq_set_search(Stream *s,const char *from,const char *to,const char *id,xmlnode q){
-struct gg_search_request sr;
+gg_pubdir50_t sr;
 xmlnode n;
-struct gg_http *gghttp;
 Request *r;
+Session *sess;
 char *data;
 
+	sess=session_get_by_jid(from,NULL);
+	if (!sess || !sess->connected){
+		message_send_error(s,to,from,NULL,407,"Not logged in");
+		return;
+	}
+
 	q=xmlnode_dup(q);
-	memset(&sr,0,sizeof(sr));
+	sr=gg_pubdir50_new(GG_PUBDIR50_SEARCH);
 	n=xmlnode_get_tag(q,"active");
 	if (n){
 		data=xmlnode_get_data(n);
 		if (data!=NULL && (data[0]=='y' || data[0]=='Y' || data[0]=='t' || data[0]=='T'))
-				sr.active=1;
+			gg_pubdir50_add(sr, GG_PUBDIR50_ACTIVE, GG_PUBDIR50_ACTIVE_TRUE);
 	}
 	n=xmlnode_get_tag(q,"nick");
-	sr.nickname=NULL;
 	if (n){
 		data=xmlnode_get_data(n);
 		if (data)
-			sr.nickname=g_strdup(from_utf8(data));
+			gg_pubdir50_add(sr, GG_PUBDIR50_NICKNAME, from_utf8(data));
 	}
 	n=xmlnode_get_tag(q,"first");
-	sr.first_name=NULL;
 	if (n){
 		data=xmlnode_get_data(n);
 		if (data)
-			sr.first_name=g_strdup(from_utf8(data));
+			gg_pubdir50_add(sr, GG_PUBDIR50_FIRSTNAME, from_utf8(data));
 	}
 	n=xmlnode_get_tag(q,"last");
-	sr.last_name=NULL;
 	if (n){
 		data=xmlnode_get_data(n);
 		if (data)
-			sr.last_name=g_strdup(from_utf8(data));
+			gg_pubdir50_add(sr, GG_PUBDIR50_LASTNAME, from_utf8(data));
 	}
 	n=xmlnode_get_tag(q,"city");
-	sr.city=NULL;
 	if (n){
 		data=xmlnode_get_data(n);
-		sr.city=g_strdup(from_utf8(data));
+		if (data)
+			gg_pubdir50_add(sr, GG_PUBDIR50_CITY, from_utf8(data));
 	}
 	n=xmlnode_get_tag(q,"gender");
 	if (n){
 		data=xmlnode_get_data(n);
-		if (!data || !data[0]) sr.gender=GG_GENDER_NONE;
-		else if (data[0]=='k' || data[0]=='f' || data[0]=='K' || data[0]=='F') sr.gender=GG_GENDER_FEMALE;
-		else sr.gender=GG_GENDER_MALE;
+		if (data[0]=='k' || data[0]=='f' || data[0]=='K' || data[0]=='F') 
+			gg_pubdir50_add(sr, GG_PUBDIR50_GENDER, GG_PUBDIR50_GENDER_FEMALE);
+		else if (data[0]=='m' || data[0]=='M') 
+			gg_pubdir50_add(sr, GG_PUBDIR50_GENDER, GG_PUBDIR50_GENDER_MALE);
 	}
-	else sr.gender=GG_GENDER_NONE;
 	n=xmlnode_get_tag(q,"born");
 	if (n){
 		data=xmlnode_get_data(n);
-		if (data) sscanf(data,"%u-%u",&sr.min_birth,&sr.max_birth);
-	}
-	n=xmlnode_get_tag(q,"email");
-	sr.email=NULL;
-	if (n){
-		data=xmlnode_get_data(n);
 		if (data)
-			sr.email=g_strdup(from_utf8(data));
-	}
-	n=xmlnode_get_tag(q,"phone");
-	sr.phone=NULL;
-	if (n){
-		data=xmlnode_get_data(n);
-		if (data)
-			sr.phone=g_strdup(from_utf8(data));
+			gg_pubdir50_add(sr, GG_PUBDIR50_BIRTHYEAR, data);
 	}
 	n=xmlnode_get_tag(q,"username");
-	sr.uin=0;
 	if (n){
 		data=xmlnode_get_data(n);
 		if (data)
-			sr.uin=atoi(data);
+			gg_pubdir50_add(sr, GG_PUBDIR50_UIN, data);
 	}
 
-	debug("gg_search()");
-	gghttp=gg_search(&sr,1);
+	add_request(RT_SEARCH,from,to,id,q,(void*)sr,s);
 
-	if (sr.nickname) g_free(sr.nickname);
-	if (sr.first_name) g_free(sr.first_name);
-	if (sr.last_name) g_free(sr.last_name);
-	if (sr.city) g_free(sr.city);
-	if (sr.email) g_free(sr.email);
-	if (sr.phone) g_free(sr.phone);
-
-	if (!gghttp){
-		jabber_iq_send_error(s,from,to,id,500,"Internal Server Error");
-		return;
-	}
-
-	r=add_request(RT_SEARCH,from,to,id,q,gghttp,s);
-	if (!r) jabber_iq_send_error(s,from,to,id,500,"Internal Server Error");
+	gg_pubdir50_free(sr);
 }
 
 void jabber_iq_get_user_vcard(Stream *s,const char *from,const char * to,const char *id,xmlnode q){
-struct gg_search_request sr;
-struct gg_http *gghttp;
+int i=0;
+char *uin;
+gg_pubdir50_t sr;
 Request *r;
 
 	q=xmlnode_dup(q);
-	memset(&sr,0,sizeof(sr));
-	sr.uin=jid_get_uin(to);
+	sr=gg_pubdir50_new(GG_PUBDIR50_SEARCH);
+	
+	while(to[i]!='@')
+		i++;
 
-	gghttp=gg_search(&sr,1);
-	if (!gghttp){
-		jabber_iq_send_error(s,from,to,id,500,"Internal Server Error");
-		return;
-	}
+	uin=g_strndup(to, i);
 
-	r=add_request(RT_VCARD,from,to,id,q,gghttp,s);
-	if (!r) jabber_iq_send_error(s,from,to,id,500,"Internal Server Error");
+	gg_pubdir50_add(sr, GG_PUBDIR50_UIN, uin);
+
+	add_request(RT_VCARD,from,to,id,q,(void*)sr,s);
+
+	gg_pubdir50_free(sr);
+	g_free(uin);
 }
 
-int vcard_done(struct request_s *r){
+int vcard_done(struct request_s *r, gg_pubdir50_t results){
 xmlnode vc,n,n1;
-struct gg_search * results;
 char *jid,*name=NULL,*str;
 GList *it;
 Contact *c;
 User *u;
-unsigned uin;
+char *uin, *first_name, *last_name, *nickname, *born, *city;
 
 
-	results=(struct gg_search *)r->gghttp->data;
-	if (!results || !results->count){
+	if (gg_pubdir50_count(results)<1){
 		jabber_iq_send_error(r->stream,r->from,r->to,r->id,404,"Not Found");
-		gg_free_search(r->gghttp);
-		r->gghttp=NULL;
 		return 1;
 	}
+
+	uin=gg_pubdir50_get(results, 0, GG_PUBDIR50_UIN);
+	first_name=gg_pubdir50_get(results, 0, GG_PUBDIR50_FIRSTNAME);
+	last_name=gg_pubdir50_get(results, 0, GG_PUBDIR50_LASTNAME);
+	nickname=gg_pubdir50_get(results, 0, GG_PUBDIR50_NICKNAME);
+	born=gg_pubdir50_get(results, 0, GG_PUBDIR50_BIRTHYEAR);
+	city=gg_pubdir50_get(results, 0, GG_PUBDIR50_CITY);
 
 	vc=xmlnode_new_tag("vCard");
 	xmlnode_put_attrib(vc,"xmlns","vcard-temp");
 	xmlnode_put_attrib(vc,"version","2.0");
 
 	n=xmlnode_insert_tag(vc,"FN");
-	if (results->results[0].first_name && results->results[0].last_name){
-		name=g_strdup_printf("%s %s",results->results[0].first_name,
-							results->results[0].last_name);
+	if (first_name && last_name){
+		name=g_strdup_printf("%s %s",first_name,
+							last_name);
 		xmlnode_insert_cdata(n,to_utf8(name),-1);
 	}
-	else if (results->results[0].first_name){
-		xmlnode_insert_cdata(n,to_utf8(results->results[0].first_name),-1);
+	else if (first_name){
+		xmlnode_insert_cdata(n,to_utf8(first_name),-1);
 	}
-	else if (results->results[0].last_name){
-		xmlnode_insert_cdata(n,to_utf8(results->results[0].last_name),-1);
+	else if (last_name){
+		xmlnode_insert_cdata(n,to_utf8(last_name),-1);
 	}
 	g_free(name);
 
 	n1=xmlnode_insert_tag(vc,"N");
 	n=xmlnode_insert_tag(n1,"GIVEN");
-	if (results->results[0].first_name){
-		xmlnode_insert_cdata(n,to_utf8(results->results[0].first_name),-1);
+	if (first_name){
+		xmlnode_insert_cdata(n,to_utf8(first_name),-1);
 	}
 	n=xmlnode_insert_tag(n1,"FAMILY");
-	if (results->results[0].last_name){
-		xmlnode_insert_cdata(n,to_utf8(results->results[0].last_name),-1);
+	if (last_name){
+		xmlnode_insert_cdata(n,to_utf8(last_name),-1);
 	}
 
 	n=xmlnode_insert_tag(vc,"NICKNAME");
-	if (results->results[0].nickname){
-		xmlnode_insert_cdata(n,to_utf8(results->results[0].nickname),-1);
+	if (nickname){
+		xmlnode_insert_cdata(n,to_utf8(nickname),-1);
 	}
 
-	if (results->results[0].born>0){
+	if (born){
 		n=xmlnode_insert_tag(vc,"BDAY");
-		str=g_strdup_printf("%04i-00-00",results->results[0].born);
-		xmlnode_insert_cdata(n,str,-1);
-		g_free(str);
+		xmlnode_insert_cdata(n,born,-1);
 	}
 
 	n1=xmlnode_insert_tag(vc,"ADR");
 	xmlnode_insert_tag(n1,"HOME");
 	n=xmlnode_insert_tag(n1,"LOCALITY");
-	xmlnode_insert_cdata(n,to_utf8(results->results[0].city),-1);
+	xmlnode_insert_cdata(n,to_utf8(city),-1);
 
-	uin=results->results[0].uin;
-	if (uin<=0)
-		uin=jid_get_uin(r->to);
-	jid=jid_build(uin);
+	jid=jid_build(atoi(uin));
 	n=xmlnode_insert_tag(vc,"JABBERID");
 	xmlnode_insert_cdata(n,jid,-1);
 	g_free(jid);
@@ -302,7 +279,7 @@ unsigned uin;
 	if (u){
 		for(it=g_list_first(u->contacts);it;it=it->next){
 			c=(Contact *)it->data;
-			if (c->uin==results->results[0].uin) break;
+			if (c->uin=atoi(uin)) break;
 		}
 		if (it==NULL) c=NULL;
 	}
@@ -325,13 +302,7 @@ unsigned uin;
 
 	jabber_iq_send_result(r->stream,r->from,r->to,r->id,vc);
 	xmlnode_free(vc);
-	gg_free_search(r->gghttp);
-	r->gghttp=NULL;
 	return 0;
 }
 
-int vcard_error(Request *r){
 
-	jabber_iq_send_error(r->stream,r->from,r->to,r->id,502,"Remote Server Error");
-	return 0;
-}

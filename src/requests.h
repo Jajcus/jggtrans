@@ -1,4 +1,4 @@
-/* $Id: requests.h,v 1.9 2003/01/15 15:17:28 jajcus Exp $ */
+/* $Id: requests.h,v 1.10 2003/02/03 20:28:19 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -46,12 +46,17 @@ typedef struct request_s{
 	GIOChannel *ioch;
 	guint io_watch;
 
+	int hash; /* When standard request interface isn't used */
+
 	struct stream_s *stream;
 }Request;
 
 Request * add_request(RequestType type,const char *from,const char *to,
-			const char *id,xmlnode query,struct gg_http *gghttp,
+			const char *id,xmlnode query, void *data,
 			struct stream_s *stream);
 int remove_request(Request *r);
+
+void request_response_search(struct gg_event *data);
+int requests_ini();
 
 #endif
