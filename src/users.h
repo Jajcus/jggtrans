@@ -1,4 +1,4 @@
-/* $Id: users.h,v 1.11 2002/06/10 17:57:46 jajcus Exp $ */
+/* $Id: users.h,v 1.12 2002/12/06 15:04:31 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -27,6 +27,9 @@ typedef struct contact_s{
 	int status;
 	GTime last_update;
 	char *status_desc;
+	uint32_t ip;
+	uint16_t port;
+	uint32_t version;
 }Contact;
 
 typedef struct user_s{
@@ -54,7 +57,8 @@ int user_unsubscribe(User *u,uin_t uin);
 
 int user_sys_msg_received(User *u,int nr);
 
-int user_set_contact_status(User *u,int status,unsigned int uin,char *desc);
+int user_set_contact_status(User *u,int status,unsigned int uin,char *desc,
+				int more,uint32_t ip,uint16_t port,uint32_t version);
 
 void user_print(User *u,int indent);
 int users_probe_all();

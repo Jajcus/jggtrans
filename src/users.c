@@ -1,4 +1,4 @@
-/* $Id: users.c,v 1.18 2002/06/10 17:57:46 jajcus Exp $ */
+/* $Id: users.c,v 1.19 2002/12/06 15:04:31 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -32,7 +32,6 @@ GHashTable *users_jid=NULL;
 static char *spool_dir;
 
 int users_init(){
-xmlnode node;
 int r;
 
 	spool_dir=config_load_string("spool");
@@ -347,7 +346,8 @@ GList *it;
 	return -1;
 }
 
-int user_set_contact_status(User *u,int status,unsigned int uin,char *desc){
+int user_set_contact_status(User *u,int status,unsigned int uin,char *desc,
+				int more,uint32_t ip,uint16_t port,uint32_t version){
 GList *it;
 Contact *c;
 
@@ -360,6 +360,11 @@ Contact *c;
 			if (c->status_desc) free(c->status_desc);
 			if (desc) c->status_desc=strdup(desc);
 			else c->status_desc=NULL;
+			if (more){
+				c->ip=ip;
+				c->port=port;
+				c->version=version;
+			}
 			return 0;
 		}
 	}
@@ -445,7 +450,7 @@ Contact *c;
 		g_message("%sContact: %p",space1,c);
 		g_message("%sUin: %u",space1,(unsigned)c->uin);
 		g_message("%sStatus: %i",space1,c->status);
-		g_message("%sLast update: %i",space1,ctime((time_t *)&c->last_update));
+		g_message("%sLast update: %s",space1,ctime((time_t *)&c->last_update));
 	}	
 	g_free(space1);
 	g_free(space);

@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.29 2002/06/10 17:57:46 jajcus Exp $ */
+/* $Id: sessions.c,v 1.30 2002/12/06 15:04:31 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -17,11 +17,12 @@
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <libgadu.h>
 #include "ggtrans.h"
+#include <libgadu.h>
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
+#include <ctype.h>
 #include "sessions.h"
 #include "iq.h"
 #include "presence.h"
@@ -43,11 +44,9 @@ GHashTable *sessions_jid;
 
 int sessions_init(){
 char *proxy_ip;
-char *data;
 char *p;
 int port;
 int i;
-xmlnode node;
 
 
 	sessions_jid=g_hash_table_new(g_str_hash,g_str_equal);
@@ -160,13 +159,14 @@ Session *s;
 	return TRUE;
 }
 
-int session_event_status(Session *s,int status,uin_t uin,char *desc){
+int session_event_status(Session *s,int status,uin_t uin,char *desc,
+				int more,uint32_t ip,uint16_t port,uint32_t version){
 int available;
 char *ujid;
 char *show;
 
 	available=status_gg_to_jabber(status,&show,&desc);
-	user_set_contact_status(s->user,status,uin,desc);
+	user_set_contact_status(s->user,status,uin,desc,more,ip,port,version);
 
 	ujid=jid_build(uin);
 	presence_send(s->s,ujid,s->user->jid,available,show,desc,0);
@@ -204,7 +204,10 @@ int i;
 	for(i=0;event->event.notify[i].uin;i++)
 		session_event_status(s,event->event.notify[i].status,
 				event->event.notify[i].uin,
-				NULL);
+				NULL,1,
+				event->event.notify[i].remote_ip,
+				event->event.notify[i].remote_port,
+				event->event.notify[i].version);
 	return 0;
 }
 
@@ -214,7 +217,10 @@ int i;
 	for(i=0;event->event.notify_descr.notify[i].uin;i++)
 		session_event_status(s,event->event.notify_descr.notify[i].status,
 				event->event.notify_descr.notify[i].uin,
-				event->event.notify_descr.descr);
+				event->event.notify_descr.descr,1,
+				event->event.notify[i].remote_ip,
+				event->event.notify[i].remote_port,
+				event->event.notify[i].version);
 	return 0;
 }
 
@@ -225,7 +231,6 @@ struct gg_event *event;
 char *jid;
 int chat;
 GIOCondition cond;
-gdouble t;
 Resource *r;
 
 	s=(Session *)data;
@@ -317,8 +322,8 @@ Resource *r;
 			session_event_status(s,
 					event->event.status.status,
 					event->event.status.uin,
-					event->event.status.descr
-					);
+					event->event.status.descr,
+					0,0,0,0);
 			break;
 		case GG_EVENT_MSG:
 			if (event->event.msg.sender==0){
@@ -359,7 +364,7 @@ Resource *r;
 	if (s->ggs->check&GG_CHECK_WRITE) cond|=G_IO_OUT;
 	s->io_watch=g_io_add_watch(s->ioch,cond,session_io_handler,s);
 	
-	gg_free_event(event);
+	gg_event_free(event);
 	debug("io handler done...");
 	
 	return FALSE;
@@ -419,7 +424,6 @@ char *njid;
 
 Session *session_create(User *user,const char *jid,const char *req_id,const xmlnode query,struct stream_s *stream){
 Session *s;
-int t;
 char *njid;
 GIOCondition cond;
 struct gg_login_params login_params;
