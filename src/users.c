@@ -1,4 +1,4 @@
-/* $Id: users.c,v 1.13 2002/02/03 16:25:53 jajcus Exp $ */
+/* $Id: users.c,v 1.14 2002/02/22 15:20:35 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -49,16 +49,20 @@ int r;
 
 static int user_destroy(User *s);
 
+#if 0
 static gboolean users_hash_func(gpointer key,gpointer value,gpointer udata){
 
 	user_destroy((User *)value);
 	g_free(key);
 	return TRUE;
 }
+#endif
 
 int users_done(){
-
-	g_hash_table_foreach_remove(users_jid,users_hash_func,NULL);
+guint s;
+	s=g_hash_table_size(users_jid);
+	if (s) g_warning("Still %u users in hash table",s);
+	/*g_hash_table_foreach_remove(users_jid,users_hash_func,NULL);*/
 	g_hash_table_destroy(users_jid);
 	return 0;
 }
