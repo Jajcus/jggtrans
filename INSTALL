@@ -6,9 +6,11 @@ To build GaduGadu transport you need:
 	- glib >= 1.2.0 (http://www.gtk.org/)
 		Tested with glib-1.2.10
 
-	- libgadu >= 1.0 (http://dev.null.pl/ekg/)
+	- libgadu >= 1.4 (http://dev.null.pl/ekg/)
 		Tested with libgadu-1.4
-		You will need libgadu>=1.1 for TLS support
+		libgadu compiled with pthread support tend to create insane
+		number of threads. It is recommended to disable thread
+		support in libgadu.
 	
 	- pkgconfig (http://www.freedesktop.org/software/pkgconfig/)
 
