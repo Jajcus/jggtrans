@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.46 2003/04/19 10:51:54 jajcus Exp $ */
+/* $Id: main.c,v 1.47 2003/04/22 07:12:32 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -334,6 +334,7 @@ guint lh;
 	/* use local locale for error and debug messages */
 	setlocale(LC_MESSAGES,"");
 	setlocale(LC_CTYPE,"");
+	bindtextdomain(PACKAGE,LOCALEDIR);
 	textdomain(PACKAGE);
 
 	saved_pwd=getcwd(saved_pwd_b,1024);
