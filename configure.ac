@@ -3,7 +3,7 @@ AC_INIT([jabber-gg-transport], [2.0.99], [jajcus@bnet.pl])
 
 AC_CONFIG_SRCDIR([src/ggtrans.h])
 AM_INIT_AUTOMAKE([jabber-gg-transport], [2.0.99])
-AM_GNU_GETTEXT_VERSION([0.14.1])
+AM_GNU_GETTEXT_VERSION(0.14.1)
 AM_CONFIG_HEADER([config.h])
 
 # Checks for programs.
