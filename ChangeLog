@@ -1,3 +1,8 @@
+2004-06-16  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* .cvslog:
+	- reports for the CIA ( http://cia.navi.cx )
+
 2004-06-11  Tomasz Sterna  <smoku@chrome.pl>
 
 	* src/gg_versions.c: protocol 0x22 added
