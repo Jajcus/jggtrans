@@ -1,4 +1,4 @@
-/* $Id: stream.c,v 1.8 2002/01/30 16:52:03 jajcus Exp $ */
+/* $Id: stream.c,v 1.9 2002/02/02 15:04:36 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -158,6 +158,10 @@ Stream *s;
 	g_assert(s);
 	s->err_watch=0;
 	s->xs->f(XSTREAM_CLOSE,NULL,s);
+	if (!s->connected)
+		g_critical("Couldn't connect to jabber server");
+	else
+		g_critical("Connection to jabber server broken");
 	return FALSE;
 }
 
