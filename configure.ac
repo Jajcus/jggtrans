@@ -1,6 +1,6 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT(jabber-gg-transport, 0.9.1,jajcus@pld.org.pl)
-AM_INIT_AUTOMAKE(jabber-gg-transport, 0.9.1,jajcus@pld.org.pl)
+AC_INIT(jabber-gg-transport, 0.9.8,jajcus@pld.org.pl)
+AM_INIT_AUTOMAKE(jabber-gg-transport, 0.9.8,jajcus@pld.org.pl)
 AC_CONFIG_SRCDIR([src/ggtrans.h])
 AM_CONFIG_HEADER(config.h)
 
@@ -14,7 +14,7 @@ AM_PROG_LIBTOOL
 AM_PATH_GLIB(1.2.0,[],AC_MSG_ERROR("You need glib >= 1.2.0 to compile this."))
 
 # Checks for libraries.
-AC_CHECK_LIB([gadu], [gg_login],[],AC_MSG_ERROR("You need libgg (from ekg package) to compile this."))
+AC_CHECK_LIB([gadu], [gg_login],[],AC_MSG_ERROR("You need libgadu (from ekg package) to compile this."))
 
 AC_ARG_ENABLE(debug,AC_HELP_STRING([--disable-debug],[Disable debugging code]))
 
@@ -25,7 +25,7 @@ if test "x$enable_debug" != "xno" ; then
 	AC_DEFINE(DEBUG,1)
 fi
 
-if test "x$with_efence" != "xno" ; then
+if test "x$with_efence" == "xyes" ; then
 	AC_CHECK_LIB([efence], [malloc])
 fi
 
