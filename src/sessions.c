@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.26 2002/02/23 16:28:55 jajcus Exp $ */
+/* $Id: sessions.c,v 1.27 2002/05/04 15:18:28 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -64,9 +64,9 @@ xmlnode node;
 	if (port<=0) return 0;
 	
 	g_message("Using proxy: http://%s:%i",proxy_ip,port);
-	gg_http_use_proxy=1;
-	gg_http_proxy_host=proxy_ip;
-	gg_http_proxy_port=port;
+	gg_proxy_enabled=1;
+	gg_proxy_host=proxy_ip;
+	gg_proxy_port=port;
 	return 0;
 }
 
@@ -393,6 +393,7 @@ Session *s;
 int t;
 char *njid;
 GIOCondition cond;
+struct gg_login_params login_params;
 
 	g_message("Creating session for '%s'",jid);
 	g_assert(user!=NULL);
@@ -401,7 +402,19 @@ GIOCondition cond;
 	s->jid=g_strdup(jid);
 	if (req_id) s->req_id=g_strdup(req_id);
 	s->query=xmlnode_dup(query);
-	s->ggs=gg_login(user->uin,user->password,1);
+
+	memset(&login_params,0,sizeof(login_params));
+	login_params.uin=user->uin;
+	login_params.password=user->password;
+	login_params.async=1;
+	/* FIXME: login_params.status= */
+	/* FIXME: login_params.status_descr= */
+	/* FIXME: login_params.server_addr= */
+	/* FIXME: login_params.server_port= */
+	/* FIXME: login_params.client_addr= */
+	/* FIXME: login_params.client_port= */
+	
+	s->ggs=gg_login(&login_params);
 	if (!s->ggs) {
 		g_free(s);
 		return NULL;
