@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.22 2003/01/15 07:27:27 jajcus Exp $ */
+/* $Id: main.c,v 1.23 2003/01/15 08:04:56 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -78,10 +78,10 @@ static struct {
   };
 
 
-void sigchld_handler (int signum) {
+void sigchld_handler (int signum){
 int pid, status, serrno;
 	serrno = errno;
-	while (1) {
+	while (1){
 		   pid = waitpid (WAIT_ANY, &status, WNOHANG);
 		   if (pid<=0)
 		     break;
@@ -128,7 +128,7 @@ gboolean signal_source_check(gpointer  source_data,
 gboolean signal_source_dispatch(gpointer  source_data,
 			GTimeVal *current_time,
 			gpointer  user_data){
-	
+
 	psignal(signal_received,"signal received");
 	g_warning("Signal received: %s",g_strsignal(signal_received));
 	if (the_end) g_main_quit(main_loop);
@@ -150,7 +150,7 @@ static GSourceFuncs signal_source_funcs={
 		signal_source_destroy
 		};
 
-void log_handler_file(FILE *f,const gchar *log_domain, GLogLevelFlags log_level, 
+void log_handler_file(FILE *f,const gchar *log_domain, GLogLevelFlags log_level,
 			const gchar *message){
 
 	if (log_domain && log_domain[0]) fprintf(f,"%s: ",log_domain);
@@ -180,7 +180,7 @@ void log_handler_file(FILE *f,const gchar *log_domain, GLogLevelFlags log_level,
 	}
 }
 
-void log_handler_syslog(const gchar *log_domain, GLogLevelFlags log_level, 
+void log_handler_syslog(const gchar *log_domain, GLogLevelFlags log_level,
 			const gchar *message){
 
 	switch(log_level){
@@ -211,7 +211,7 @@ void log_handler_syslog(const gchar *log_domain, GLogLevelFlags log_level,
 	}
 }
 
-void log_handler(const gchar *log_domain, GLogLevelFlags log_level, 
+void log_handler(const gchar *log_domain, GLogLevelFlags log_level,
 			const gchar *message, gpointer user_data){
 
 	log_level&=G_LOG_LEVEL_MASK;
@@ -248,7 +248,7 @@ int fd;
 		close(fd);
 
 	fd = open("/dev/null", O_RDWR);
-	if (fd) {
+	if (fd){
 		if (fd != 0)
 			dup2(fd, 0);
 		if (fd != 1)
@@ -328,11 +328,11 @@ guint lh;
 			case 'u':
 				if (uid!=0) g_error("Cannot change user.");
 				user=optarg;
-				break;	
+				break;
 			case 'g':
 				if (uid!=0) g_error("Cannot change group.");
 				group=optarg;
-				break;	
+				break;
 			case '?':
 				if (isprint(optopt))
 					fprintf(stderr,"Unknown command-line option: -%c.\n",optopt);
@@ -343,9 +343,9 @@ guint lh;
 			default:
 				g_error("Error while processing command line options");
 				break;
-		}	
+		}
 	}
-	
+
 	if (optind<argc-1){
 		fprintf(stderr,"Unexpected argument: %s\n",argv[optind]);
 		usage(argv[0]);
@@ -366,12 +366,12 @@ guint lh;
 		if (setuid(pwd->pw_uid)) g_error("Couldn't change user: %s",g_strerror(errno));
 	}
 	else if (uid==0) g_error("Refusing to run with uid=0");
-	
+
 	if (optind==argc-1) config_file=g_strdup(argv[optind]);
 	else config_file=g_strdup_printf("%s/%s",SYSCONFDIR,"jggtrans.xml");
 
 	lh=g_log_set_handler(NULL,G_LOG_FLAG_FATAL | G_LOG_LEVEL_ERROR
-				| G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING 
+				| G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING
 				| G_LOG_LEVEL_MESSAGE | G_LOG_LEVEL_INFO
 				| G_LOG_LEVEL_DEBUG,log_handler,NULL);
 
@@ -386,7 +386,7 @@ guint lh;
 		return 1;
 	}
 	g_free(config_file);
-	
+
 	for(tag=xmlnode_get_firstchild(config);tag;tag=xmlnode_get_nextsibling(tag)){
 		str=xmlnode_get_name(tag);
 		if (!str || strcmp(str,"log")) continue;
@@ -420,7 +420,7 @@ guint lh;
 		if (f){
 			pid_t pid;
 			int r;
-				
+
 			r=fscanf(f,"%u",&pid);
 			fclose(f);
 			if (r==1 && pid>0){
@@ -436,38 +436,38 @@ guint lh;
 	}
 
 	main_loop=g_main_new(0);
-	
+
 	if (jabber_init()) return 1;
 	if (sessions_init()) return 1;
 	if (users_init()) return 1;
 	if (encoding_init()) return 1;
-	
+
 	if (!fg) daemonize();
-	
+
 	if (log_filename){
 		log_file=fopen(log_filename,"a");
 		if (!log_file) g_critical("Couldn't open log file '%s': %s",
 						log_filename,g_strerror(errno));
 		if (log_file) setvbuf(log_file,NULL,_IOLBF,0);
 	}
-	
+
 	if (log_facility!=-1){
 		openlog("jggtrans",0,log_facility);
 		use_syslog=1;
 	}
-	
+
 	if (jabber_connect()) return 1;
 
 	g_source_add(G_PRIORITY_HIGH,0,&signal_source_funcs,NULL,NULL,NULL);
-	signal(SIGPIPE,signal_handler);		
-	signal(SIGHUP,signal_handler);		
-	signal(SIGINT,signal_handler);		
-	signal(SIGTERM,signal_handler);		
-	signal(SIGUSR1,signal_handler);		
-	signal(SIGCHLD,sigchld_handler);		
+	signal(SIGPIPE,signal_handler);
+	signal(SIGHUP,signal_handler);
+	signal(SIGINT,signal_handler);
+	signal(SIGTERM,signal_handler);
+	signal(SIGUSR1,signal_handler);
+	signal(SIGCHLD,sigchld_handler);
 
 	g_main_run(main_loop);
-	
+
 	sessions_done();
 	users_done();
 	jabber_done();

@@ -1,4 +1,4 @@
-/* $Id: message.c,v 1.14 2003/01/14 14:25:24 jajcus Exp $ */
+/* $Id: message.c,v 1.15 2003/01/15 08:04:56 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -29,7 +29,7 @@
 #include "encoding.h"
 
 typedef void (*MsgHandler)(struct stream_s *s,const char *from, const char *to,
-				const char *args, xmlnode msg); 
+				const char *args, xmlnode msg);
 typedef struct iq_namespace_s{
 	const char *command;
 	const char *abr;
@@ -60,7 +60,7 @@ xmlnode msg;
 xmlnode n;
 
 	msg=xmlnode_new_tag("message");
-	if (from!=NULL) 
+	if (from!=NULL)
 		xmlnode_put_attrib(msg,"from",from);
 	else{
 		char *jid;
@@ -84,7 +84,7 @@ xmlnode n;
 char *s;
 
 	msg=xmlnode_new_tag("message");
-	if (from!=NULL) 
+	if (from!=NULL)
 		xmlnode_put_attrib(msg,"from",from);
 	else{
 		char *jid;
@@ -99,7 +99,7 @@ char *s;
 	g_free(s);
 	n=xmlnode_insert_tag(msg,"error");
 	xmlnode_insert_cdata(n,str,-1);
-	if (body) {
+	if (body){
 		n=xmlnode_insert_tag(msg,"body");
 		xmlnode_insert_cdata(n,body,-1);
 	}
@@ -116,20 +116,20 @@ User *user;
 Request *r;
 
 	user=user_get_by_jid(from);
-	
+
 	message_send(stream,to,from,1,"Receiving roster...");
-	
+
 	gghttp=gg_userlist_get(user->uin,user->password,1);
 	r=add_request(RT_USERLIST_GET,from,to,"",msg,gghttp,stream);
 	if (!r){
 		message_send_error(stream,to,from,NULL,
-					500,"Internal Server Error"); 
+					500,"Internal Server Error");
 	}
 }
 
 void get_roster_error(struct request_s *r){
 	message_send_error(r->stream,r->to,r->from,NULL,
-				500,"Internal Server Error"); 
+				500,"Internal Server Error");
 	gg_userlist_get_free(r->gghttp);
 	r->gghttp=NULL;
 }
@@ -141,12 +141,12 @@ xmlnode roster;
 xmlnode msg;
 xmlnode n;
 int i;
-	
+
 
 	message_send(r->stream,r->to,r->from,1,"Roster received.");
-	
+
 	msg=xmlnode_new_tag("message");
-	if (r->to!=NULL) 
+	if (r->to!=NULL)
 		xmlnode_put_attrib(msg,"from",r->to);
 	else{
 		char *jid;
@@ -159,7 +159,7 @@ int i;
 	n=xmlnode_insert_tag(msg,"body");
 	roster=xmlnode_insert_tag(msg,"x");
 	xmlnode_put_attrib(roster,"xmlns","jabber:x:roster");
-	
+
 	results=g_strsplit(r->gghttp->data,"\r\n",0);
 	for(i=0;results[i];i++){
 		char **cinfo;
@@ -167,7 +167,7 @@ int i;
 		char *name=NULL;
 		int j,uin;
 		xmlnode item,tag;
-		
+
 		cinfo=g_strsplit(results[i],";",0);
 		for(j=0;cinfo[j];j++);
 		if (j<7){
@@ -177,7 +177,7 @@ int i;
 
 		uin=atoi(cinfo[6]);
 		item=xmlnode_insert_tag(roster,"item");
-		
+
 		t=g_strconcat(body,"\n",NULL);
 		g_free(body);
 		body=t;
@@ -186,7 +186,7 @@ int i;
 		t=g_strconcat(body,line,NULL);
 		g_free(body);
 		body=t;
-	
+
 		if (cinfo[2] && cinfo[2][0]){
 			line=g_strdup_printf("Nick: %s\n",cinfo[2]);
 			t=g_strconcat(body,line,NULL);
@@ -246,7 +246,7 @@ int i;
 	}
 	g_strfreev(results);
 	xmlnode_insert_cdata(n,to_utf8(body),-1);
-	
+
 	gg_userlist_put_free(r->gghttp);
 	r->gghttp=NULL;
 	stream_write(r->stream,msg);
@@ -261,7 +261,7 @@ char *contacts=NULL,*cinfo,*t;
 Contact *c;
 GList *it;
 Request *r;
-	
+
 
 	user=user_get_by_jid(from);
 
@@ -279,36 +279,36 @@ Request *r;
 				c->x1?c->x1:"0",
 				c->x2?c->x2:"",
 				c->x3?c->x3:"0");
-		if (contacts==NULL) {
+		if (contacts==NULL){
 			contacts=cinfo;
 		}
-		else {
+		else{
 			t=g_strconcat(contacts,cinfo,NULL);
 			g_free(contacts);
 			contacts=t;
 			g_free(cinfo);
 		}
 	}
-	
+
 	if (contacts==NULL){
 		message_send(stream,to,from,1,"No contacts defined.");
 		return;
 	}
-	
+
 	message_send(stream,to,from,1,"Sending roster...");
 	gghttp=gg_userlist_put(user->uin,user->password,contacts,1);
 	g_free(contacts);
 	r=add_request(RT_USERLIST_PUT,from,to,"",msg,gghttp,stream);
 	if (!r){
 		message_send_error(stream,to,from,NULL,
-					500,"Internal Server Error"); 
+					500,"Internal Server Error");
 	}
 }
 
 void put_roster_error(struct request_s *r){
 
 	message_send_error(r->stream,r->to,r->from,NULL,
-				500,"Internal Server Error"); 
+				500,"Internal Server Error");
 	gg_userlist_put_free(r->gghttp);
 	r->gghttp=NULL;
 }
@@ -348,7 +348,7 @@ int on;
 
 	session_send_status(session);
 }
-	
+
 void message_invisible(struct stream_s *stream,const char *from, const char *to,
 				const char *args, xmlnode msg){
 Session *session;
@@ -377,7 +377,7 @@ int on;
 
 	session_send_status(session);
 }
-	
+
 int message_to_me(struct stream_s *stream,const char *from,
 		const char *to,const char *body,xmlnode tag){
 int i;
@@ -388,9 +388,9 @@ User *user;
 	user=user_get_by_jid(from);
 	if (user==NULL){
 		message_send(stream,to,from,1,"I don't know you. Register first.");
-		return;	
+		return;
 	}
-	
+
 	if (body!=NULL){
 		for(i=0;msg_commands[i].command;i++){
 			if (strncmp(body,msg_commands[i].command,
@@ -410,8 +410,8 @@ User *user;
 	}
 	message_send(stream,to,from,1,"Available commands (and abbreviations):");
 	for(i=0;msg_commands[i].command;i++){
-		p=g_strdup_printf("  %s (%s)%s", 
-				msg_commands[i].command, 
+		p=g_strdup_printf("  %s (%s)%s",
+				msg_commands[i].command,
 				msg_commands[i].abr,
 				msg_commands[i].experimental?" EXPERIMENTAL!":"");
 		message_send(stream,to,from,1,p);
@@ -424,7 +424,7 @@ User *user;
 	p=g_strdup_printf("  invisible: %s", user->invisible?"on":"off");
 	message_send(stream,to,from,1,p);
 	g_free(p);
-	
+
 	return 0;
 }
 
@@ -442,21 +442,21 @@ Session *s;
 	body_n=xmlnode_get_tag(tag,"body");
 	if (body_n) body=xmlnode_get_data(body_n);
 	else body=NULL;
-	
+
 	subject_n=xmlnode_get_tag(tag,"subject");
 	if (subject_n) subject=xmlnode_get_data(subject_n);
 	else subject=NULL;
-	
+
 	type=xmlnode_get_attrib(tag,"type");
 	if (!type || !strcmp(type,"normal")) chat=0;
 	else if (!strcmp(type,"chat")) chat=1;
-	else if (!strcmp(type,"error")) {
+	else if (!strcmp(type,"error")){
 		g_warning("Error message received: %s",xmlnode2str(tag));
 		return 0;
 	}
-	else {
+	else{
 		g_warning("Unsupported message type");
-		message_send_error(stream,to,from,body,500,"Internal Server Error"); 
+		message_send_error(stream,to,from,body,500,"Internal Server Error");
 		return -1;
 	}
 
@@ -464,33 +464,33 @@ Session *s;
 	to=xmlnode_get_attrib(tag,"to");
 	if (!to || !jid_is_my(to)){
 		g_warning("Bad 'to' in: %s",xmlnode2str(tag));
-		message_send_error(stream,to,from,body,400,"Bad Request"); 
+		message_send_error(stream,to,from,body,400,"Bad Request");
 		return -1;
 	}
-	
+
 	if (!jid_has_uin(to)){
 		return message_to_me(stream,from,to,body,tag);
 	}
 
 	if (!from){
 		g_warning("Anonymous message? %s",xmlnode2str(tag));
-		message_send_error(stream,to,from,body,400,"Bad Request"); 
+		message_send_error(stream,to,from,body,400,"Bad Request");
 		return -1;
 	}
-	
+
 	s=session_get_by_jid(from,NULL);
 	if (!s || !s->connected){
 		g_warning("%s not logged in. While processing %s",from,xmlnode2str(tag));
-		message_send_error(stream,to,from,body,407,"Not logged in"); 
+		message_send_error(stream,to,from,body,407,"Not logged in");
 		return -1;
-	}	
-	
+	}
+
 	if (subject)
 		body=g_strdup_printf("Subject: %s\n%s",subject,body);
 	session_send_message(s,jid_get_uin(to),chat,from_utf8(body));
 	if (subject)
 		g_free(body);
-	
+
 	return 0;
 }
 

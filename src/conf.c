@@ -1,4 +1,4 @@
-/* $Id: conf.c,v 1.3 2003/01/15 07:27:27 jajcus Exp $ */
+/* $Id: conf.c,v 1.4 2003/01/15 08:04:56 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -26,21 +26,21 @@ xmlnode config;
 
 char *config_load_string(const char *tag){
 xmlnode node;
-	
+
 	node=xmlnode_get_tag(config,tag);
 	if (!node) return NULL;
-	return g_strstrip(xmlnode_get_data(node));	
+	return g_strstrip(xmlnode_get_data(node));
 }
 
 char *config_load_formatted_string(const char *tag){
 xmlnode node,child;
 char *out,*tmp,*add,*name;
 int t;
-int i,j,sp;	
+int i,j,sp;
 
 	node=xmlnode_get_tag(config,tag);
 	if (!node) return NULL;
-	out=g_strdup("");	
+	out=g_strdup("");
 	child=xmlnode_get_firstchild(node);
 	while(child){
 		t=xmlnode_get_type(child);
@@ -88,14 +88,14 @@ int i,j,sp;
 		}
 		child=xmlnode_get_nextsibling(child);
 	}
-	
+
 	return out;
 }
 
 int config_load_int(const char *tag){
 xmlnode node;
-	
+
 	node=xmlnode_get_tag(config,tag);
 	if (!node) return 0;
-	return atoi(g_strchug(xmlnode_get_data(node)));	
+	return atoi(g_strchug(xmlnode_get_data(node)));
 }

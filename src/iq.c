@@ -1,4 +1,4 @@
-/* $Id: iq.c,v 1.29 2003/01/15 07:27:27 jajcus Exp $ */
+/* $Id: iq.c,v 1.30 2003/01/15 08:04:56 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -37,7 +37,7 @@ void jabber_iq_get_gateway(Stream *s,const char *from,const char * to,const char
 void jabber_iq_set_gateway(Stream *s,const char *from,const char * to,const char *id,xmlnode q);
 void jabber_iq_get_server_version(Stream *s,const char *from,const char * to,const char *id,xmlnode q);
 void jabber_iq_not_implemented(Stream *s,const char *from,const char * to,const char *id,xmlnode q);
-	
+
 IqNamespace server_iq_ns[]={
 	{"jabber:iq:register","query",jabber_iq_get_register,jabber_iq_set_register},
 	{"jabber:iq:search","query",jabber_iq_get_search,jabber_iq_set_search},
@@ -73,7 +73,7 @@ char *str;
 	if (was_to) xmlnode_put_attrib(iq,"from",was_to);
 	else xmlnode_put_attrib(iq,"from",my_name);
 	error=xmlnode_insert_tag(iq,"error");
-	if (code>0) {
+	if (code>0){
 		str=g_strdup_printf("%03u",(unsigned)code);
 		xmlnode_put_attrib(error,"code",str);
 		g_free(str);
@@ -114,7 +114,7 @@ xmlnode query;
 	xmlnode_insert_cdata(xmlnode_insert_tag(query,"service"),"x-gadugadu",-1); /* until gg is registered */
 	xmlnode_insert_tag(query,"register");
 	xmlnode_insert_tag(query,"search");
-		
+
 	jabber_iq_send_result(s,from,to,id,query);
 }
 
@@ -166,7 +166,7 @@ xmlnode query;
 		jabber_iq_send_error(s,from,to,id,406,"Not Acceptable");
 		return;
 	}
-	
+
 	query=xmlnode_new_tag("query");
 	xmlnode_put_attrib(query,"xmlns","jabber:iq:gateway");
 	str=jid_build(uin);
@@ -234,15 +234,15 @@ int i;
 		if (!strcmp(table[i].ns,ns) && !strcmp(table[i].node_name,name)){
 			if (set){
 				if (table[i].set_handler) table[i].set_handler(s,from,to,id,query);
-				else {
+				else{
 					g_warning("No <iq type='set'/> implemented for %s",ns);
 					jabber_iq_send_error(s,from,to,id,501,"Not implemented");
 					return;
 				}
 			}
-			else {
+			else{
 				if (table[i].get_handler) table[i].get_handler(s,from,to,id,query);
-				else {
+				else{
 					g_warning("No <iq type='get'/> implemented for %s",ns);
 					jabber_iq_send_error(s,from,to,id,501,"Not implemented");
 					return;
@@ -250,7 +250,7 @@ int i;
 			}
 			return;
 		}
-	
+
 	g_warning("No known content in iq: %s",xmlnode2str(x));
 	jabber_iq_send_error(s,from,to,id,501,"Not implemented");
 }
@@ -267,15 +267,15 @@ void jabber_iq_error(Stream *s,xmlnode x){
 
 	g_warning("Error iq received: %s",xmlnode2str(x));
 }
-	
+
 void jabber_iq(Stream *s,xmlnode x){
 char *type;
 
 	if (jabber_state!=JS_CONNECTED){
-		g_warning("unexpected <iq/> (not connected yet)");	
+		g_warning("unexpected <iq/> (not connected yet)");
 		return;
 	}
-	
+
 	type=xmlnode_get_attrib(x,"type");
 	if (strcmp(type,"get")==0)
 		jabber_iq_getset(s,x,0);

@@ -1,4 +1,4 @@
-/* $Id: users.h,v 1.14 2003/01/14 14:25:25 jajcus Exp $ */
+/* $Id: users.h,v 1.15 2003/01/15 08:04:56 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -32,7 +32,7 @@ typedef struct contact_s{
 	char * group;
 	char * email;
 	char * x1,*x2,*x3;
-	
+
 	int status;
 	GTime last_update;
 	char *status_desc;

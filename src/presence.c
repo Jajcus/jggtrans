@@ -1,4 +1,4 @@
-/* $Id: presence.c,v 1.22 2003/01/15 07:27:27 jajcus Exp $ */
+/* $Id: presence.c,v 1.23 2003/01/15 08:04:56 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -39,7 +39,7 @@ char *str;
 
 	pres=xmlnode_new_tag("presence");
 	jid=jid_my_registered();
-	if (from!=NULL) 
+	if (from!=NULL)
 		xmlnode_put_attrib(pres,"from",from);
 	else{
 		char *jid;
@@ -51,7 +51,7 @@ char *str;
 	xmlnode_put_attrib(pres,"to",to);
 	xmlnode_put_attrib(pres,"type","error");
 	error=xmlnode_insert_tag(pres,"error");
-	if (code>0) {
+	if (code>0){
 		str=g_strdup_printf("%03u",(unsigned)code);
 		xmlnode_put_attrib(error,"code",str);
 		g_free(str);
@@ -83,7 +83,7 @@ int presence_send_subscribe(struct stream_s *stream,const char *from,const char 
 xmlnode pres;
 
 	pres=xmlnode_new_tag("presence");
-	if (from!=NULL) 
+	if (from!=NULL)
 		xmlnode_put_attrib(pres,"from",from);
 	else{
 		char *jid;
@@ -102,7 +102,7 @@ int presence_send_subscribed(struct stream_s *stream,const char *from,const char
 xmlnode pres;
 
 	pres=xmlnode_new_tag("presence");
-	if (from!=NULL) 
+	if (from!=NULL)
 		xmlnode_put_attrib(pres,"from",from);
 	else{
 		char *jid;
@@ -121,7 +121,7 @@ int presence_send_unsubscribed(struct stream_s *stream,const char *from,const ch
 xmlnode pres;
 
 	pres=xmlnode_new_tag("presence");
-	if (from!=NULL) 
+	if (from!=NULL)
 		xmlnode_put_attrib(pres,"from",from);
 	else{
 		char *jid;
@@ -140,7 +140,7 @@ int presence_send_unsubscribe(struct stream_s *stream,const char *from,const cha
 xmlnode pres;
 
 	pres=xmlnode_new_tag("presence");
-	if (from!=NULL) 
+	if (from!=NULL)
 		xmlnode_put_attrib(pres,"from",from);
 	else{
 		char *jid;
@@ -162,7 +162,7 @@ xmlnode pres;
 xmlnode n;
 
 	pres=xmlnode_new_tag("presence");
-	if (from!=NULL) 
+	if (from!=NULL)
 		xmlnode_put_attrib(pres,"from",from);
 	else{
 		char *jid;
@@ -183,9 +183,9 @@ xmlnode n;
 	if (timestamp){
 		struct tm *t;
 		char str[21];
-		
+
 		t=localtime((time_t *)&timestamp);
-		strftime(str,20,"%Y%m%dT%T",t);	
+		strftime(str,20,"%Y%m%dT%T",t);
 		n=xmlnode_insert_tag(pres,"x");
 		xmlnode_put_attrib(n,"xmlns","jabber:x:delay");
 		xmlnode_put_attrib(n,"stamp",str);
@@ -224,7 +224,7 @@ int presence_subscribe(struct stream_s *stream,const char *from,const char *to){
 User *u;
 Session *s;
 int r;
-	
+
 	u=user_get_by_jid(from);
 	if (jid_is_me(to)){
 		debug("Presence subscribe request sent to me");
@@ -232,7 +232,7 @@ int r;
 		else presence_send_subscribed(stream,to,from);
 		return 0;
 	}
-	if (!u)	{
+	if (!u){
 		g_warning("Presence subscription from unknown user (%s)",from);
 		return -1;
 	}
@@ -252,7 +252,7 @@ int r;
 		presence_send_subscribed(stream,to,from);
 	}
 	else presence_send_subscribed(stream,to,from);
-	
+
 	return 0;
 }
 
@@ -262,7 +262,7 @@ int presence_subscribed(struct stream_s *stream,const char *from,const char *to)
 }
 
 int presence_unsubscribed(struct stream_s *stream,const char *from,const char *to){
-	
+
 	if (!jid_is_me(to)) return 0;
 
 	debug("Presence unsubscribed sent to me.");
@@ -297,15 +297,15 @@ GTime timestamp;
 		else presence_send(stream,to,from,0,NULL,"Not logged in",0);
 		return 0;
 	}
-	
+
 	if (!jid_is_my(to)){
 		presence_send_error(stream,to,from,404,"Not Found");
 		return -1;
 	}
 
 	if (s) u=s->user;
-	else u=user_get_by_jid(from);	
-	
+	else u=user_get_by_jid(from);
+
 	if (!u){
 		presence_send_error(stream,to,from,407,"Not logged in");
 		return -1;
@@ -316,7 +316,7 @@ GTime timestamp;
 	stat="";
 	for(it=u->contacts;it;it=it->next){
 		Contact *c=(Contact *)it->data;
-	
+
 		if (c && c->uin==uin){
 			status=c->status;
 			timestamp=c->last_update;
@@ -328,7 +328,7 @@ GTime timestamp;
 		return -1;
 	}
 
-	available=status_gg_to_jabber(status,&show,&stat);	
+	available=status_gg_to_jabber(status,&show,&stat);
 
 	presence_send(stream,to,u->jid,available,show,stat,timestamp);
 	if (s) session_send_notify(s);
@@ -339,14 +339,14 @@ int presence_unsubscribe(struct stream_s *stream,const char *from,const char *to
 User *u;
 Session *s;
 int r;
-	
+
 	if (jid_is_me(to)){
 		debug("Presence unsubscribe request sent to me");
 		presence_send_unsubscribed(stream,to,from);
 		return 0;
 	}
 	u=user_get_by_jid(from);
-	if (!u)	{
+	if (!u){
 		g_warning("Presence subscription from unknown user (%s)",from);
 		return -1;
 	}
@@ -365,7 +365,7 @@ int r;
 		debug("Unsubscribed.");
 		presence_send_unsubscribed(stream,to,from);
 	}
-	
+
 	return 0;
 }
 
@@ -386,17 +386,17 @@ int priority;
 	show_n=xmlnode_get_tag(tag,"show");
 	if (show_n) show=xmlnode_get_data(show_n);
 	else show=NULL;
-	
+
 	status_n=xmlnode_get_tag(tag,"status");
 	if (status_n) status=xmlnode_get_data(status_n);
 	else status=NULL;
-	
+
 	prio_n=xmlnode_get_tag(tag,"priority");
 	if (prio_n) priority=atoi(xmlnode_get_data(prio_n));
 	else priority=-1;
 
 	if (!type) type="available";
-	
+
 	if (!from || !to){
 		presence_send_error(stream,to,from,406,"Not Acceptable");
 		g_warning("Bad <presence/>: %s",xmlnode2str(tag));
@@ -408,7 +408,7 @@ int priority;
 		g_warning("Wrong 'to' in %s",xmlnode2str(tag));
 		return -1;
 	}
-	
+
 	if (!strcmp(type,"available"))
 		return presence(stream,from,to,1,show,status,priority);
 	else if (!strcmp(type,"unavailable"))
@@ -427,7 +427,7 @@ int priority;
 		g_warning("Error presence received: %s",xmlnode2str(tag));
 		return 0;
 	}
-	
+
 	g_warning("Unsupported type in %s",xmlnode2str(tag));
 	presence_send_error(stream,to,from,501,"Not Implemented");
 	return -1;

@@ -1,4 +1,4 @@
-/* $Id: requests.c,v 1.14 2003/01/14 14:25:24 jajcus Exp $ */
+/* $Id: requests.c,v 1.15 2003/01/15 08:04:56 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -80,13 +80,13 @@ GIOCondition cond;
 			g_warning("Unknow gg_http session type: %i",r->gghttp->type);
 			gg_http_watch_fd(r->gghttp);
 			break;
-	}		
+	}
 
 	cond=G_IO_ERR|G_IO_HUP|G_IO_NVAL;
 	if (r->gghttp->check&GG_CHECK_READ) cond|=G_IO_IN;
 	if (r->gghttp->check&GG_CHECK_WRITE) cond|=G_IO_OUT;
 	r->io_watch=g_io_add_watch(r->ioch,cond,request_io_handler,r);
-	
+
 	return FALSE;
 }
 
@@ -94,8 +94,8 @@ Request * add_request(RequestType type,const char *from,const char *to,
 			const char *id,xmlnode query,struct gg_http *gghttp,
 			Stream *stream){
 Request *r;
-GIOCondition cond;	
-	
+GIOCondition cond;
+
 	g_assert(gghttp!=NULL);
 	r=g_new0(Request,1);
 	r->type=type;
@@ -106,13 +106,13 @@ GIOCondition cond;
 	if (query) r->query=xmlnode_dup(query);
 	else r->query=NULL;
 	r->gghttp=gghttp;
-	
+
 	r->ioch=g_io_channel_unix_new(gghttp->fd);
 	cond=G_IO_ERR|G_IO_HUP|G_IO_NVAL;
 	if (r->gghttp->check&GG_CHECK_READ) cond|=G_IO_IN;
 	if (r->gghttp->check&GG_CHECK_WRITE) cond|=G_IO_OUT;
 	r->io_watch=g_io_add_watch(r->ioch,cond,request_io_handler,r);
-	
+
 	r->stream=stream;
 	requests=g_list_append(requests,r);
 	return r;
@@ -124,8 +124,8 @@ int remove_request(Request *r){
 	if (r->io_watch) g_source_remove(r->io_watch);
 	requests=g_list_remove(requests,r);
 	g_io_channel_close(r->ioch);
-	if (r->from) g_free(r->from);	
-	if (r->id) g_free(r->id);	
+	if (r->from) g_free(r->from);
+	if (r->id) g_free(r->id);
 	if (r->query) xmlnode_free(r->query);
 	if (r->gghttp) gg_http_free(r->gghttp);
 	g_free(r);

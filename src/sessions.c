@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.34 2003/01/14 11:03:03 jajcus Exp $ */
+/* $Id: sessions.c,v 1.35 2003/01/15 08:04:56 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -51,7 +51,7 @@ int i;
 
 	sessions_jid=g_hash_table_new(g_str_hash,g_str_equal);
 	if (!sessions_jid) return -1;
-	
+
 	i=config_load_int("conn_timeout");
 	if (i>0) conn_timeout=i;
 	i=config_load_int("pong_timeout");
@@ -60,18 +60,18 @@ int i;
 	if (i>0) ping_interval=i;
 	i=config_load_int("reconnect");
 	if (i>0) reconnect=i;
-	
+
 	p=config_load_string("gg_server");
-	if (p && inet_aton(p,&gg_server)) 
+	if (p && inet_aton(p,&gg_server))
 		gg_server_given=1;
 	i=config_load_int("gg_port");
 	if (i>0) gg_port=i;
-	
+
 	proxy_ip=config_load_string("proxy/ip");
 	if (!proxy_ip) return 0;
 	port=config_load_int("proxy/port");
 	if (port<=0) return 0;
-	
+
 	g_message("Using proxy: http://%s:%i",proxy_ip,port);
 	gg_proxy_enabled=1;
 	gg_proxy_host=proxy_ip;
@@ -110,7 +110,7 @@ char *jid;
 
 void session_schedule_reconnect(Session *s){
 int t;
-	
+
 	if (!reconnect) return;
 	t=(int)((reconnect*9.0/10.0)+(2.0*reconnect/10.0*rand()/(RAND_MAX+1.0)));
 	debug("Sheduling reconnect in reconnect %u seconds",t);
@@ -124,7 +124,7 @@ Session *s;
 	s=(Session *)data;
 	s->timeout_func=0;
 	g_warning("Session timeout for %s",s->jid);
-	
+
 	if (s->req_id){
 		jabber_iq_send_error(s->s,s->jid,NULL,s->req_id,504,"Remote Server Timeout");
 	}
@@ -144,11 +144,11 @@ Session *s;
 	s=(Session *)data;
 	if (s->waiting_for_pong){
 		debug("Pong still not received :-( ...");
-		gg_ping(s->ggs); /* send ping, even if server doesn't respond 
+		gg_ping(s->ggs); /* send ping, even if server doesn't respond
 				    this one will be not counted for the ping delay*/
 		return TRUE;
 	}
-	
+
 	if (!s->ping_timer) s->ping_timer=g_timer_new();
 	else g_timer_reset(s->ping_timer);
 	g_timer_start(s->ping_timer);
@@ -173,7 +173,7 @@ char *show;
 	g_free(ujid);
 	return 0;
 }
-			
+
 int session_send_notify(Session *s){
 GList *it;
 uin_t *userlist;
@@ -189,7 +189,7 @@ int i;
 		userlist[i++]=((Contact *)it->data)->uin;
 
 	userlist[i]=0;
-	
+
 	debug("gg_notify(%p,%p,%i)",s->ggs,userlist,userlist_len);
 	gg_notify(s->ggs,userlist,userlist_len);
 
@@ -252,7 +252,7 @@ Resource *r;
 		session_remove(s);
 		return FALSE;
 	}
-	
+
 	debug("watching fd (gg_debug_level=%i)...",gg_debug_level);
 	event=gg_watch_fd(s->ggs);
 	if (!event){
@@ -269,7 +269,7 @@ Resource *r;
 		session_remove(s);
 		return FALSE;
 	}
-	
+
 	switch(event->type){
 		case GG_EVENT_DISCONNECT:
 			g_warning("Server closed connection of %s",s->jid);
@@ -315,7 +315,7 @@ Resource *r;
 			s->connected=1;
 			session_send_status(s);
 			if (s->user->contacts) session_send_notify(s);
-			
+
 			r=session_get_cur_resource(s);
 			if (r)
 				presence_send(s->s,NULL,s->user->jid,r->available,r->show,r->status,0);
@@ -324,7 +324,7 @@ Resource *r;
 			if (s->timeout_func) g_source_remove(s->timeout_func);
 			s->ping_timeout_func=
 				g_timeout_add(ping_interval*1000,session_ping,s);
-			break;	
+			break;
 		case GG_EVENT_NOTIFY:
 			session_event_notify(s,event);
 			break;
@@ -340,7 +340,7 @@ Resource *r;
 			break;
 		case GG_EVENT_MSG:
 			if (event->event.msg.sender==0){
-				if (!user_sys_msg_received(s->user,event->event.msg.msgclass)) break;	
+				if (!user_sys_msg_received(s->user,event->event.msg.msgclass)) break;
 				jid=jid_my_registered();
 				chat=0;
 			}
@@ -376,10 +376,10 @@ Resource *r;
 	if (s->ggs->check&GG_CHECK_READ) cond|=G_IO_IN;
 	if (s->ggs->check&GG_CHECK_WRITE) cond|=G_IO_OUT;
 	s->io_watch=g_io_add_watch(s->ioch,cond,session_io_handler,s);
-	
+
 	gg_event_free(event);
 	debug("io handler done...");
-	
+
 	return FALSE;
 }
 
@@ -407,7 +407,7 @@ Resource *r=NULL;
 	}
 	if (s->ioch) g_io_channel_close(s->ioch);
 	if (s->ggs){
-		if (s->connected) {
+		if (s->connected){
 			debug("gg_logoff(%p)",s->ggs);
 			gg_logoff(s->ggs);
 		}
@@ -467,14 +467,14 @@ struct gg_login_params login_params;
 	login_params.async=1;
 	if (gg_server_given) login_params.server_addr=gg_server.s_addr;
 	if (gg_port>0) login_params.server_port=gg_port;
-	
+
 	s->ggs=gg_login(&login_params);
-	if (!s->ggs) {
+	if (!s->ggs){
 		g_free(s);
 		return NULL;
 	}
 	s->s=stream;
-	
+
 	s->ioch=g_io_channel_unix_new(s->ggs->fd);
 	cond=G_IO_ERR|G_IO_HUP|G_IO_NVAL;
 	if (s->ggs->check&GG_CHECK_READ) cond|=G_IO_IN;
@@ -485,14 +485,14 @@ struct gg_login_params login_params;
 	g_assert(sessions_jid!=NULL);
 	njid=jid_normalized(s->jid);
 	g_hash_table_insert(sessions_jid,(gpointer)njid,(gpointer)s);
-	return s;	
+	return s;
 }
 
 Session *session_get_by_jid(const char *jid,Stream *stream){
 Session *s;
 User *u;
 char *njid;
-	
+
 	g_assert(sessions_jid!=NULL);
 	debug("Looking up session for '%s'",jid);
 	njid=jid_normalized(jid);
@@ -521,7 +521,7 @@ int maxprio;
 			maxprio=r1->priority;
 		}
 	}
-	return r;	
+	return r;
 }
 
 int session_send_status(Session *s){
@@ -555,7 +555,7 @@ GList *it;
 			break;
 		}
 	}
-	
+
 	if (!available){
 		if (r){
 			debug("Removing resource %s of %s",resource?resource:"NULL",s->jid);
@@ -572,11 +572,11 @@ GList *it;
 		else{
 			g_warning("Unknown resource %s of %s",resource?resource:"NULL",s->jid);
 			return 0;
-		}	
+		}
 	}
-	else{		
-		
-		if ( r ) {
+	else{
+
+		if ( r ){
 			if (r->show){
 				g_free(r->show);
 				r->show=NULL;
@@ -586,7 +586,7 @@ GList *it;
 				r->status=NULL;
 			}
 		}
-		else {
+		else{
 			debug("New resource %s of %s",resource?resource:"NULL",s->jid);
 			r=g_new0(Resource,1);
 			if (resource) r->name=g_strdup(resource);
@@ -622,7 +622,7 @@ int session_unsubscribe(Session *s,uin_t uin){
 char * session_split_message(const char **msg){
 const char *m;
 int i;
-	
+
 	m=*msg;
 	if (strlen(*msg)<=2000){
 		*msg=NULL;
@@ -631,7 +631,7 @@ int i;
 	for(i=2000;i>1000;i++){
 		if (isspace(m[i])){
 			*msg=m+i+1;
-			return g_strndup(m,i);	
+			return g_strndup(m,i);
 		}
 	}
 	*msg=m+i;

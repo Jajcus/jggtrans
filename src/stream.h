@@ -1,4 +1,4 @@
-/* $Id: stream.h,v 1.4 2002/01/30 16:52:03 jajcus Exp $ */
+/* $Id: stream.h,v 1.5 2003/01/15 08:04:56 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -21,11 +21,11 @@
 #define stream_h
 
 typedef struct stream_s{
-	GIOChannel *ioch;	
+	GIOChannel *ioch;
 	guint err_watch;
 	guint read_watch;
 	guint write_watch;
-	
+
 	struct sockaddr_in sa;
 	char *dest;
 	int listening;

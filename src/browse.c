@@ -20,7 +20,7 @@ int i;
 		str=xmlnode_get_data(n);
 		if (str) xmlnode_put_attrib(result,"name",str);
 	}
-	
+
 	for(i=0;server_iq_ns[i].ns;i++){
 		if (i && !strcmp(server_iq_ns[i-1].ns,server_iq_ns[i].ns)){
 			/* workaround for the WinJab bug workaround :-) */
@@ -29,7 +29,7 @@ int i;
 		n=xmlnode_insert_tag(result,"ns");
 		xmlnode_insert_cdata(n,server_iq_ns[i].ns,-1);
 	}
-	jabber_iq_send_result(s,from,to,id,result);	
+	jabber_iq_send_result(s,from,to,id,result);
 }
 
 void jabber_iq_get_client_browse(Stream *s,const char *from,const char * to,const char *id,xmlnode q){

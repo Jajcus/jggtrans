@@ -1,4 +1,4 @@
-/* $Id: jabber.c,v 1.16 2003/01/15 07:27:27 jajcus Exp $ */
+/* $Id: jabber.c,v 1.17 2003/01/15 08:04:56 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -38,9 +38,9 @@ void jabber_stream_start(Stream *s,xmlnode x){
 char hashbuf[50];
 char *str;
 xmlnode tag;
-	
+
 	if (jabber_state!=JS_NONE){
-		g_warning("unexpected <stream:stream/>");	
+		g_warning("unexpected <stream:stream/>");
 		return;
 	}
 
@@ -58,10 +58,10 @@ xmlnode tag;
 void jabber_handshake(Stream *s,xmlnode x){
 
 	if (jabber_state!=JS_HANDSHAKE){
-		g_warning("unexpected <hanshake/>");	
+		g_warning("unexpected <hanshake/>");
 		return;
 	}
-		
+
 	g_message("handshake OK");
 	jabber_state=JS_CONNECTED;
 	users_probe_all();
@@ -127,7 +127,7 @@ char *str;
 			if (x){
 				g_warning("    %s",xmlnode_get_data(x));
 			}
-			break;	
+			break;
 		default:
 			g_critical("Unknown node type: %i",type);
 			stop_it=1;
@@ -157,7 +157,7 @@ gboolean jabber_source_check(gpointer  source_data,
 gboolean jabber_source_dispatch(gpointer  source_data,
 			GTimeVal *current_time,
 			gpointer  user_data){
-	
+
 	if (stop_it && stream){
 			if (stop_it>1){
 				stream_destroy(stream);
@@ -167,7 +167,7 @@ gboolean jabber_source_dispatch(gpointer  source_data,
 			stop_it++;
 	}
 	else if (stream==NULL) g_main_quit(main_loop);
-	
+
 	return TRUE;
 }
 
@@ -203,26 +203,26 @@ xmlnode node;
 	node=xmlnode_get_tag(config,"service");
 	if (!node)
 		g_error("No <service/> found in config file");
-	
+
 	my_name=xmlnode_get_attrib(node,"jid");
-	if (!my_name) 
+	if (!my_name)
 		g_error("<service/> without \"jid\" in config file");
-	
+
 	server=config_load_string("connect/ip");
 	if (!server)
 		g_error("Jabberd server not found in config file");
-	
+
 	port=config_load_int("connect/port");
-	if (port<=0) 
+	if (port<=0)
 		g_error("Connect port not found in config file");
-	
+
 	node=xmlnode_get_tag(config,"connect/secret");
 	if (node) secret=xmlnode_get_data(node);
-	if (!node || !secret) 
+	if (!node || !secret)
 		g_error("Connect secret not found in config file");
-	
+
 	register_instructions=config_load_formatted_string("register/instructions");
-	if (!register_instructions) 
+	if (!register_instructions)
 		g_error("Registration instructions not not found in config file");
 
 	search_instructions=config_load_formatted_string("search/instructions");

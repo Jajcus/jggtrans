@@ -1,4 +1,4 @@
-/* $Id: jabber.h,v 1.10 2003/01/15 07:27:27 jajcus Exp $ */
+/* $Id: jabber.h,v 1.11 2003/01/15 08:04:56 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -21,7 +21,7 @@
 #define jabber_h
 
 #include "stream.h"
-	
+
 int jabber_init();
 int jabber_connect();
 int jabber_done();
@@ -32,7 +32,7 @@ struct stream_s * jabber_stream();
 enum jabber_state_e{
 	JS_NONE,
 	JS_HANDSHAKE,
-	JS_CONNECTED	
+	JS_CONNECTED
 };
 extern enum jabber_state_e jabber_state;
 

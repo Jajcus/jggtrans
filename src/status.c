@@ -1,4 +1,4 @@
-/* $Id: status.c,v 1.7 2003/01/15 07:27:27 jajcus Exp $ */
+/* $Id: status.c,v 1.8 2003/01/15 08:04:56 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -38,13 +38,13 @@ int status_jabber_to_gg(int available,const char *show,const char *status){
 		else if (!strcmp(show,"dnd")) return GG_STATUS_BUSY;
 		else if (!strcmp(show,"xa")) return GG_STATUS_BUSY;
 	}
-	
+
 	return GG_STATUS_AVAIL;
 }
 
 int status_gg_to_jabber(int ggstatus,char **show,char **status){
 int available;
-	
+
 	switch(ggstatus){
 		case GG_STATUS_NOT_AVAIL:
 		case GG_STATUS_NOT_AVAIL_DESCR:

@@ -1,4 +1,4 @@
-/* $Id: users.c,v 1.23 2003/01/14 14:25:24 jajcus Exp $ */
+/* $Id: users.c,v 1.24 2003/01/15 08:04:56 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -40,7 +40,7 @@ int r;
 
 	r=chdir(spool_dir);
 	if (r) g_error("Couldn't enter %s: %s",spool_dir,g_strerror(errno));
-	
+
 	users_jid=g_hash_table_new(g_str_hash,g_str_equal);
 	if (!users_jid) return -1;
 	return 0;
@@ -71,7 +71,7 @@ FILE *f;
 char *fn;
 char *str;
 char *njid;
-int r;	
+int r;
 xmlnode xml,tag,ctag,userlist;
 
 	g_assert(u!=NULL);
@@ -111,7 +111,7 @@ xmlnode xml,tag,ctag,userlist;
 	if (u->contacts){
 		GList *it;
 		Contact *c;
-		
+
 		userlist=xmlnode_insert_tag(xml,"userlist");
 		for(it=g_list_first(u->contacts);it;it=it->next){
 			c=(Contact *)it->data;
@@ -182,7 +182,7 @@ xmlnode xml,tag,ctag,userlist;
 		g_free(njid);
 		return -1;
 	}
-	
+
 	r=rename(fn,njid);
 	if (r){
 		g_warning("Couldn't rename '%s' to '%s': %s",fn,u->jid,g_strerror(errno));
@@ -191,7 +191,7 @@ xmlnode xml,tag,ctag,userlist;
 		g_free(njid);
 		return -1;
 	}
-	
+
 	xmlnode_free(xml);
 	g_free(fn);
 	g_free(njid);
@@ -250,7 +250,7 @@ char *p;
 	contacts=NULL;
 	if (tag){
 		Contact *c;
-		
+
 		for(t=xmlnode_get_firstchild(tag);t;t=xmlnode_get_nextsibling(t)){
 			if (!strcmp(xmlnode_get_name(t),"uin")){
 				char *d;
@@ -263,7 +263,7 @@ char *p;
 
 				c=g_new0(Contact,1);
 				c->status=GG_STATUS_NOT_AVAIL;
-				c->uin=uin;	
+				c->uin=uin;
 				contacts=g_list_append(contacts,c);
 				continue;
 			}
@@ -278,7 +278,7 @@ char *p;
 
 				c=g_new0(Contact,1);
 				c->status=GG_STATUS_NOT_AVAIL;
-				c->uin=uin;	
+				c->uin=uin;
 
 				tag=xmlnode_get_tag(xml,"first");
 				if (tag){
@@ -366,12 +366,12 @@ char *p;
 User *user_get_by_jid(const char *jid){
 User *u;
 char *njid;
-	
+
 	njid=jid_normalized(jid);
 	u=(User *)g_hash_table_lookup(users_jid,(gpointer)njid);
 	g_free(njid);
 	if (u) return u;
-	return user_load(jid);	
+	return user_load(jid);
 }
 
 static int user_destroy(User *u){
@@ -411,7 +411,7 @@ gpointer key,value;
 char *njid;
 
 	g_assert(users_jid!=NULL);
-	
+
 	njid=jid_normalized(u->jid);
 	if (g_hash_table_lookup_extended(users_jid,(gpointer)njid,&key,&value)){
 		g_assert(u==value);
@@ -436,7 +436,7 @@ char *p,*njid;
 		g_free(njid);
 		return NULL;
 	}
-	
+
 	if (uin<1){
 		g_warning("Bad UIN");
 		g_free(njid);
@@ -468,7 +468,7 @@ char *p,*njid;
 }
 
 int user_subscribe(User *u,uin_t uin){
-Contact *c;	
+Contact *c;
 GList *it;
 
 	g_assert(u!=NULL);
@@ -483,7 +483,7 @@ GList *it;
 
 	u->contacts=g_list_append(u->contacts,c);
 	if (u->confirmed) user_save(u);
-	return 0;	
+	return 0;
 }
 
 int user_unsubscribe(User *u,uin_t uin){
@@ -525,8 +525,8 @@ Contact *c;
 			return 0;
 		}
 	}
-		
-	return -1;	
+
+	return -1;
 }
 
 int users_probe_all(){
@@ -582,10 +582,10 @@ char *njid;
 		r=-1;
 	}
 	else r=0;
-		
+
 	g_free(njid);
 
-	return r;	
+	return r;
 }
 
 void user_print(User *u,int indent){
@@ -608,7 +608,7 @@ Contact *c;
 		g_message("%sUin: %u",space1,(unsigned)c->uin);
 		g_message("%sStatus: %i",space1,c->status);
 		g_message("%sLast update: %s",space1,ctime((time_t *)&c->last_update));
-	}	
+	}
 	g_free(space1);
 	g_free(space);
 }

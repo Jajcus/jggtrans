@@ -1,4 +1,4 @@
-/* $Id: iq.h,v 1.7 2002/02/02 12:52:31 jajcus Exp $ */
+/* $Id: iq.h,v 1.8 2003/01/15 08:04:56 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -25,7 +25,7 @@ void jabber_iq(struct stream_s *s,xmlnode x);
 void jabber_iq_send_error(struct stream_s *s,const char *was_from,const char *was_to,const char *id,int code,char *string);
 void jabber_iq_send_result(struct stream_s *s,const char *was_from,const char *was_to,const char *id,xmlnode content);
 
-typedef void (*IqHandler)(struct stream_s *s,const char *from, const char *to,const char *id,xmlnode n); 
+typedef void (*IqHandler)(struct stream_s *s,const char *from, const char *to,const char *id,xmlnode n);
 typedef struct iq_namespace_s{
 	const char *ns;
 	const char *node_name;

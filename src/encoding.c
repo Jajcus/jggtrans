@@ -1,4 +1,4 @@
-/* $Id: encoding.c,v 1.13 2003/01/15 07:27:27 jajcus Exp $ */
+/* $Id: encoding.c,v 1.14 2003/01/15 08:04:56 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -77,7 +77,7 @@ unsigned u;
 			buf[o++]=0xc0|(u>>6);
 			buf[o++]=0x80|(u&0x3f);
 		}
-		else {
+		else{
 			buf[o++]=0xe0|(u>>12);
 			buf[o++]=0x80|((u>>6)&0x3f);
 			buf[o++]=0x80|(u&0x3f);
@@ -92,7 +92,7 @@ unsigned char b,c;
 unsigned u;
 int o=0;
 int i;
-	
+
 	if (str==NULL) return NULL;
 	if (buf_len<(strlen(str)+1)){
 		buf_len=strlen(str)+1; /* this should always be enough */
@@ -101,14 +101,14 @@ int i;
 	}
 	for(i=0;str[i];i++){
 		b=(unsigned char)str[i];
-		if ((b&0x80)==0) { /* ASCII */
+		if ((b&0x80)==0){ /* ASCII */
 			buf[o++]=b;
 			continue;
 		}
-		if ((b&0xc0)==0x80) { /* middle of UTF-8 char */
+		if ((b&0xc0)==0x80){ /* middle of UTF-8 char */
 			continue;
 		}
-		if ((b&0xe0)==0xc0) {
+		if ((b&0xe0)==0xc0){
 			u=b&0x1f;
 			i++;
 			b=(unsigned char)str[i];
@@ -116,20 +116,20 @@ int i;
 				buf[o++]='?';
 				break;
 			}
-			if ((b&0xc0)!=0x80){ 
+			if ((b&0xc0)!=0x80){
 				buf[o++]='?';
 				continue;
 			}
 			u=(u<<6)|(b&0x3f);
 		}
-		else if ((b&0xf0)==0xe0) {
+		else if ((b&0xf0)==0xe0){
 			u=b&0x0f;
 			b=(unsigned char)str[++i];
 			if (b==0){
 				buf[o++]='?';
 				break;
 			}
-			if ((b&0xc0)!=0x80){ 
+			if ((b&0xc0)!=0x80){
 				buf[o++]='?';
 				continue;
 			}
@@ -139,7 +139,7 @@ int i;
 				buf[o++]='?';
 				break;
 			}
-			if ((b&0xc0)!=0x80){ 
+			if ((b&0xc0)!=0x80){
 				buf[o++]='?';
 				continue;
 			}
@@ -149,9 +149,9 @@ int i;
 			buf[o++]='?';
 			continue;
 		}
-		if (u<0x00a0) 
+		if (u<0x00a0)
 			buf[o++]='?';
-		else if (u<0x0180) 
+		else if (u<0x0180)
 			buf[o++]=unicode_to_win1250_a0_17f[u-0x00a0];
 		else if (u==0x02c7)
 			buf[o++]=0xa1;

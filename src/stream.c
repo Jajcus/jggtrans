@@ -1,4 +1,4 @@
-/* $Id: stream.c,v 1.12 2003/01/15 07:27:27 jajcus Exp $ */
+/* $Id: stream.c,v 1.13 2003/01/15 08:04:56 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -39,18 +39,18 @@ int stream_io_connect(GIOChannel *source,GIOCondition condition,gpointer data);
 int stream_io_read(GIOChannel *source,GIOCondition condition,gpointer data);
 int stream_io_write(GIOChannel *source,GIOCondition condition,gpointer data);
 int stream_write_hello(Stream *s);
-	
+
 int stream_set_nonblocking(Stream *s,int nonblock){
 int oldflags;
 int fd;
-	
+
 	fd=g_io_channel_unix_get_fd(s->ioch);
 	oldflags=fcntl(fd, F_GETFL, 0);
 	if (oldflags==-1){
 		g_warning("fcntl(fd,F_GETFL,0): %s",g_strerror(errno));
 		return -1;
 	}
-	if (nonblock) 
+	if (nonblock)
 		oldflags |= O_NONBLOCK;
 	else
 		oldflags &= ~O_NONBLOCK;
@@ -76,8 +76,8 @@ int fd;
 		return NULL;
 	}
 	s->ioch=g_io_channel_unix_new(fd);
-	s->sa.sin_family=AF_INET;	
-	s->sa.sin_port=htons(port);	
+	s->sa.sin_family=AF_INET;
+	s->sa.sin_port=htons(port);
 	he=gethostbyname(host);
 	if (he == NULL){
 		g_warning("Unknown host: %s",host);
@@ -92,7 +92,7 @@ int fd;
 		g_free(s);
 		return NULL;
 	}
-	
+
 	optval=1;
 	r=setsockopt(fd,SOL_SOCKET,SO_KEEPALIVE,&optval,sizeof(optval));
 	if (r<0){
@@ -100,18 +100,18 @@ int fd;
 		g_free(s);
 		return NULL;
 	}
-	
+
 	if (nonblock)
 		if (stream_set_nonblocking(s,1)){
 			g_free(s);
 			return NULL;
 		}
-	
+
 	r=connect(fd, (struct sockaddr *) &s->sa, sizeof (s->sa));
 	if (r<0 && nonblock && errno==EINPROGRESS){
 		s->connecting=1;
 	}
-	else {
+	else{
 		if (r<0){
 			g_error("connect: %s",g_strerror(errno));
 			g_free(s);
@@ -121,9 +121,9 @@ int fd;
 	}
 	s->dest=g_strdup(host); /* FIXME */
 	s->err_watch=g_io_add_watch(s->ioch,G_IO_ERR|G_IO_HUP|G_IO_NVAL,stream_io_error,s);
-	if (s->connecting) 
+	if (s->connecting)
 		s->write_watch=g_io_add_watch(s->ioch,G_IO_OUT,stream_io_connect,s);
-	else 
+	else
 		s->read_watch=g_io_add_watch(s->ioch,G_IO_IN,stream_io_read,s);
 	s->xs=xstream_new(pool_new(),cb,s);
 	if (s->connected) stream_write_hello(s);
@@ -173,7 +173,7 @@ int r;
 	g_assert(s);
 	g_assert(s->connecting);
 	r=stream_connect_cont(s,0);
-	if (r){ 
+	if (r){
 		s->write_watch=0;
 		s->xs->f(XSTREAM_CLOSE,NULL,s);
 		return FALSE;
@@ -193,7 +193,7 @@ guint br;
 	g_assert(s);
 
 	if (!s->connected) g_error("Unconnected stream");
-	
+
 	if (!s->read_buf){
 		s->read_buf=g_new(char,1025);
 		g_assert(s->read_buf!=0);
@@ -215,7 +215,7 @@ guint br;
 	xstream_eat(s->xs,s->read_buf,br);
 	return TRUE;
 }
-	
+
 int stream_io_write(GIOChannel *source,GIOCondition condition,gpointer data){
 Stream *s;
 char * str;
@@ -304,7 +304,7 @@ int stream_write_hello(Stream *s){
 
 int stream_close(Stream *s){
 
-	if (!s->closing){ 
+	if (!s->closing){
 		s->closing=1;
 		return stream_write_str(s,"</stream:stream>");
 	}
@@ -319,7 +319,7 @@ int stream_destroy(Stream *s){
 		guint i,l;
 		GIOError err;
 		guint br;
-		
+
 		i=0;
 		l=sizeof(goodbye);
 		do{
