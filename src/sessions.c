@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.85 2003/06/27 17:30:51 jajcus Exp $ */
+/* $Id: sessions.c,v 1.86 2003/06/28 14:04:16 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -110,7 +110,7 @@ GgServer *server;
 					gg_servers=g_list_append(gg_servers, server);
 			}
 			else continue;
-			
+
 			r=xmlnode_get_attrib(tag, "tls");
 			if (r && !g_strcasecmp(r,"no"))
 				server->tls=0;
@@ -452,7 +452,7 @@ time_t timestamp;
 					rt=RT_USERLIST_IMPORT;
 				else
 					rt=RT_USERLIST_GET;
-				
+
 				r=add_request(rt,s->jid,NULL,"",NULL,(void*)gghttp,s->s);
 				s->import_roster=0;
 			}

@@ -1,4 +1,4 @@
-/* $Id: presence.c,v 1.47 2003/06/27 17:30:51 jajcus Exp $ */
+/* $Id: presence.c,v 1.48 2003/06/28 14:04:16 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -326,7 +326,7 @@ GTime timestamp;
 	available=status_gg_to_jabber(status,&show,&stat);
 	if (available) presence_send(stream,jid_build_full(uin),u->jid,available,show,stat,timestamp);
 	else presence_send(stream,jid_build(uin),u->jid,available,show,stat,timestamp);
-	/* more XMPP-like, but it doesn't work well with legacy clients 
+	/* more XMPP-like, but it doesn't work well with legacy clients
 	else presence_send_error(stream,to,from,404,_("Not Found"));*/
 	return 0;
 }

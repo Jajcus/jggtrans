@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.51 2003/05/27 08:25:14 jajcus Exp $ */
+/* $Id: main.c,v 1.52 2003/06/28 14:04:16 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -581,7 +581,7 @@ guint lh;
 
 	/* process pending events - write anything not written yet */
 	while(g_main_iteration(0));
-	
+
 	jabber_done();
 	encoding_done();
 	acl_done();

@@ -1,4 +1,4 @@
-/* $Id: register.c,v 1.46 2003/06/27 17:30:51 jajcus Exp $ */
+/* $Id: register.c,v 1.47 2003/06/28 14:04:16 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -509,7 +509,7 @@ char *jid;
 		return -1;
 	}
 
-	if (u->contacts) {
+	if (u->contacts){
 		GList *it;
 		Contact *c;
 		char *ujid;
@@ -520,7 +520,7 @@ char *jid;
 			g_free(ujid);
 		}
 	}
-	
+
 	jid=g_strdup(u->jid);
 	if (user_delete(u)){
 		g_warning(N_("'%s' unregistration failed"),from);
