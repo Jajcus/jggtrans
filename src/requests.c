@@ -1,4 +1,4 @@
-/* $Id: requests.c,v 1.9 2002/02/06 17:23:36 jajcus Exp $ */
+/* $Id: requests.c,v 1.10 2002/02/24 17:45:52 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -105,7 +105,7 @@ int remove_request(Request *r){
 
 	if (!r) return -1;
 	if (r->io_watch) g_source_remove(r->io_watch);
-	g_list_remove(requests,r);
+	requests=g_list_remove(requests,r);
 	g_io_channel_close(r->ioch);
 	if (r->from) g_free(r->from);	
 	if (r->id) g_free(r->id);	
