@@ -1,4 +1,4 @@
-/* $Id: users.c,v 1.26 2003/04/05 11:02:57 jajcus Exp $ */
+/* $Id: users.c,v 1.27 2003/04/06 11:04:10 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -370,7 +370,7 @@ char *data;
 	u->last_sys_msg=last_sys_msg;
 	u->friends_only=friends_only;
 	u->invisible=invisible;
-	u->locale=locale;
+	u->locale=g_strdup(locale);
 	u->contacts=contacts;
 	xmlnode_free(xml);
 	g_assert(users_jid!=NULL);
