@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.49 2003/04/22 10:00:28 jajcus Exp $ */
+/* $Id: main.c,v 1.50 2003/05/16 07:07:31 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -494,7 +494,8 @@ guint lh;
 	restart_timeout=config_load_int("restart_timeout",restart_timeout);
 
 	if (pid_filename && !restarting){
-		pidfile=fopen(pid_filename,"r");
+		if (pid_filename) pidfile=fopen(pid_filename,"r");
+		else pidfile=NULL;
 		if (pidfile){
 			pid_t pid;
 			int r;
@@ -511,7 +512,7 @@ guint lh;
 			}
 			else if (r!=EOF) g_error(L_("Invalid pid file."));
 		}
-		pidfile=fopen(pid_filename,"w");
+		if (pid_filename) pidfile=fopen(pid_filename,"w");
 		if (pidfile==NULL)
 			g_error(L_("Couldn't open pidfile %s"),pid_filename);
 	}
@@ -527,7 +528,7 @@ guint lh;
 		pwd=getpwnam(user);
 		if (!pwd) g_error(L_("Couldn't find user %s"),user);
 		if (newgid<=0) newgid=pwd->pw_gid;
-		fchown(fileno(pidfile),pwd->pw_uid,newgid);
+		if (pidfile) fchown(fileno(pidfile),pwd->pw_uid,newgid);
 		if (setgid(newgid)) g_error(L_("Couldn't change group: %s"),g_strerror(errno));
 		if (initgroups(user,newgid)) g_error(L_("Couldn't init groups: %s"),g_strerror(errno));
 		if (setuid(pwd->pw_uid)) g_error(L_("Couldn't change user: %s"),g_strerror(errno));
