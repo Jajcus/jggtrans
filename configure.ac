@@ -1,7 +1,7 @@
 # Process this file with autoconf to produce a configure script.
 AC_INIT([jabber-gg-transport], [2.0.99], [jajcus@bnet.pl])
 AC_CONFIG_SRCDIR([src/ggtrans.h])
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([jabber-gg-transport], [2.0.99])
 AM_CONFIG_HEADER([config.h])
 
 # Checks for programs.

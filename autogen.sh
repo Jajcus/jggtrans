@@ -4,6 +4,7 @@
 
 libtoolize --force
 rm -f po/ChangeLog
+autopoint --force
 touch po/Makefile.in m4/Makefile
 gettextize --force
 aclocal -I m4
