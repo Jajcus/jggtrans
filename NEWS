@@ -1,3 +1,22 @@
+Version 2.0.2
+-------------
+
+This is mainly bugfix release.
+
+Changes from 2.0.1:
+
+* Presence change notification handling improved. This should fix the
+  annoying problem with transport users changing their GG presence
+  multiple times when logging in.
+
+* "get roster" doesn't add users to roster any more. There is new
+  "import roster" command instead.
+
+* There is an option in registration form allowing to auto-import
+  userlist from GG server.
+
+* Should now link on FreeBSD and other OSes without gettext in libc.
+
 Version 2.0.1
 -------------
 
