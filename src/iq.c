@@ -1,4 +1,4 @@
-/* $Id: iq.c,v 1.19 2002/02/02 12:52:31 jajcus Exp $ */
+/* $Id: iq.c,v 1.20 2002/02/02 13:35:06 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -40,15 +40,17 @@ IqNamespace server_iq_ns[]={
 	{"jabber:iq:agent","query",jabber_iq_get_agent,NULL},
 	{"jabber:iq:gateway","query",jabber_iq_get_gateway,jabber_iq_set_gateway},
 	{"jabber:iq:browse","item",jabber_iq_get_server_browse,NULL},
+	{"jabber:iq:browse","query",jabber_iq_get_server_browse,NULL},/* WinJab bug (?) workaround */
 	{"vcard-temp","vCard",jabber_iq_get_server_vcard,NULL},
-	{"vcard-temp","VCARD",jabber_iq_get_server_vcard,NULL}, /* WinJab workaround */
+	{"vcard-temp","VCARD",jabber_iq_get_server_vcard,NULL}, /* WinJab bug workaround */
 	{NULL,NULL,NULL,NULL}
 };
 
 IqNamespace client_iq_ns[]={
 	{"vcard-temp","vCard",jabber_iq_get_user_vcard,NULL},
-	{"vcard-temp","VCARD",jabber_iq_get_user_vcard,NULL}, /* WinJab workaround */
+	{"vcard-temp","VCARD",jabber_iq_get_user_vcard,NULL}, /* WinJab bug workaround */
 	{"jabber:iq:browse","item",jabber_iq_get_client_browse,NULL},
+	{"jabber:iq:browse","query",jabber_iq_get_client_browse,NULL},/* WinJab bug (?) workaround */
 	{NULL,NULL,NULL,NULL}
 };
 
