@@ -5,6 +5,9 @@ Changes from 1.2.2
 
 * new character conversion function (instead of sometimes broken
   iconv()). Fixes crashes on invalid characters in GG input.
+
+* jggtrans will now ignore control characters in GG input. These are
+  invalid in XML stream
   
 * fixes in contact status handling 
 
