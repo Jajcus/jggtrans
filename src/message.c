@@ -1,4 +1,4 @@
-/* $Id: message.c,v 1.39 2003/06/27 09:30:29 jajcus Exp $ */
+/* $Id: message.c,v 1.40 2003/06/27 13:52:53 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -54,8 +54,8 @@ void message_locale(struct stream_s *s,const char *from, const char *to,
 				const char *args, xmlnode msg);
 
 MsgCommand msg_commands[]={
-	{"get roster","gr",N_("Download user list from server"),message_get_roster,1},
-	{"import roster","ir",N_("Add users from the user list on server"),message_import_roster,1},
+	{"get roster","gr",N_("Download user list from server"),message_get_roster,0},
+	{"import roster","ir",N_("Add users from the user list on server (not recommended - nicknames are not preserved)"),message_import_roster,0},
 	{"friends only","fo",N_("\"Only for friends\" mode"),message_friends_only,0},
 	{"invisible","iv",N_("\"Invisible\" mode"),message_invisible,0},
 	{"locale","loc",N_("Set user locale (language)"),message_locale,0},
@@ -480,7 +480,7 @@ char *msg;
 	}
 	msg=_("\nAvailable commands and abbreviations:");
 	for(i=0;msg_commands[i].command;i++){
-		msg=g_strdup_printf("%s\n  %-12s %-4s  - %s%s",msg,
+		msg=g_strdup_printf("%s\n  %-14s %-4s - %s%s",msg,
 				msg_commands[i].command,
 				msg_commands[i].abr,
 				_(msg_commands[i].description),
