@@ -1,6 +1,6 @@
 INCLUDES = -I$(top_builddir)/include
 
-lib_LTLIBRARIES = libxode.la
+noinst_LTLIBRARIES = libxode.la
 
 libxode_la_SOURCES = \
 	xstream.c \
