@@ -1,4 +1,4 @@
-/* $Id: status.c,v 1.6 2002/12/30 10:24:23 jajcus Exp $ */
+/* $Id: status.c,v 1.7 2003/01/15 07:27:27 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>

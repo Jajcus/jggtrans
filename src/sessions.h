@@ -1,4 +1,4 @@
-/* $Id: sessions.h,v 1.11 2003/01/14 11:03:03 jajcus Exp $ */
+/* $Id: sessions.h,v 1.12 2003/01/15 07:27:27 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -40,8 +40,8 @@ typedef struct sesion_s{
 
 	int connected;
 	
-	char *jid; 		/* users JID, with resource */
-	struct stream_s *s; 	/* Jabber stream */
+	char *jid;		/* users JID, with resource */
+	struct stream_s *s;	/* Jabber stream */
 	GList *resources;
 	
 	char *req_id;  /* ID if user registration request (<iq/>) */

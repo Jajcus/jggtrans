@@ -1,4 +1,4 @@
-/* $Id: debug.h,v 1.3 2002/01/30 16:52:03 jajcus Exp $ */
+/* $Id: debug.h,v 1.4 2003/01/15 07:27:27 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -22,13 +22,13 @@
 
 #ifdef DEBUG
 # if defined (__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
-#  define debug(...)    g_log (G_LOG_DOMAIN,         \
-                               G_LOG_LEVEL_DEBUG,    \
-                               __VA_ARGS__)
+#  define debug(...)	g_log (G_LOG_DOMAIN,	     \
+			       G_LOG_LEVEL_DEBUG,    \
+			       __VA_ARGS__)
 # elif defined (__GNUC__)
-#  define debug(format...)      g_log (G_LOG_DOMAIN,         \
-                                       G_LOG_LEVEL_DEBUG,    \
-                                       format)
+#  define debug(format...)	g_log (G_LOG_DOMAIN,	     \
+				       G_LOG_LEVEL_DEBUG,    \
+				       format)
 # endif
 #else
 # define debug

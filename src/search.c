@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.14 2002/12/25 11:03:20 jajcus Exp $ */
+/* $Id: search.c,v 1.15 2003/01/15 07:27:27 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>

@@ -1,4 +1,4 @@
-/* $Id: encoding.h,v 1.3 2002/12/08 15:35:41 jajcus Exp $ */
+/* $Id: encoding.h,v 1.4 2003/01/15 07:27:27 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>

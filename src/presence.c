@@ -1,4 +1,4 @@
-/* $Id: presence.c,v 1.21 2003/01/13 17:45:01 jajcus Exp $ */
+/* $Id: presence.c,v 1.22 2003/01/15 07:27:27 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>

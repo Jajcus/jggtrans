@@ -1,4 +1,4 @@
-/* $Id: requests.h,v 1.7 2002/12/06 15:05:45 jajcus Exp $ */
+/* $Id: requests.h,v 1.8 2003/01/15 07:27:27 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.21 2003/01/07 09:46:05 jajcus Exp $ */
+/* $Id: main.c,v 1.22 2003/01/15 07:27:27 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -109,7 +109,7 @@ void signal_handler(int sig){
 
 gboolean signal_source_prepare(gpointer  source_data,
 				GTimeVal *current_time,
-				gint     *timeout,
+				gint	 *timeout,
 				gpointer  user_data){
 
 	*timeout=1000;
@@ -118,16 +118,16 @@ gboolean signal_source_prepare(gpointer  source_data,
 }
 
 gboolean signal_source_check(gpointer  source_data,
-                        	GTimeVal *current_time,
-                        	gpointer  user_data){
+				GTimeVal *current_time,
+				gpointer  user_data){
 
 	if (signal_received) return TRUE;
 	return FALSE;
 }
 
 gboolean signal_source_dispatch(gpointer  source_data,
-                        GTimeVal *current_time,
-                        gpointer  user_data){
+			GTimeVal *current_time,
+			gpointer  user_data){
 	
 	psignal(signal_received,"signal received");
 	g_warning("Signal received: %s",g_strsignal(signal_received));
@@ -244,22 +244,22 @@ int fd;
 		exit(0);
 	}
 
-        for (fd=0; fd < OPEN_MAX; fd++)
-                close(fd);
+	for (fd=0; fd < OPEN_MAX; fd++)
+		close(fd);
 
-        fd = open("/dev/null", O_RDWR);
-        if (fd) {
-                if (fd != 0)
-                        dup2(fd, 0);
-                if (fd != 1)
-                        dup2(fd, 1);
-                if (fd != 2)
-                        dup2(fd, 2);
-                if (fd > 2)
-                        close(fd);
-        }
+	fd = open("/dev/null", O_RDWR);
+	if (fd) {
+		if (fd != 0)
+			dup2(fd, 0);
+		if (fd != 1)
+			dup2(fd, 1);
+		if (fd != 2)
+			dup2(fd, 2);
+		if (fd > 2)
+			close(fd);
+	}
 
-        sid=setsid();
+	sid=setsid();
 	if (sid==-1) abort();
 	foreground=FALSE;
 	debug("I am a daemon, I think.");
@@ -275,8 +275,8 @@ char *p;
 	printf("\n");
 	printf("\tUsage: %s [OPTIONS]... [<config file>]\n",name);
 	printf("\nOptions:\n");
-	printf("\t-h          This message\n");
-	printf("\t-f          Run in foreground. Debug/error messages will be sent to stderr\n");
+	printf("\t-h	      This message\n");
+	printf("\t-f	      Run in foreground. Debug/error messages will be sent to stderr\n");
 	printf("\t-d <n>      Log level (0(default) - normal, >0 more, <0 less)\n");
 	printf("\t-D <n>      libgg debug level (enables also -f)\n");
 	printf("\t-u <user>   Switch to uid of <user> on startup\n");

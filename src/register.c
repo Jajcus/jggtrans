@@ -1,4 +1,4 @@
-/* $Id: register.c,v 1.15 2003/01/13 17:34:02 jajcus Exp $ */
+/* $Id: register.c,v 1.16 2003/01/15 07:27:27 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>

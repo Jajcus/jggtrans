@@ -1,4 +1,4 @@
-/* $Id: jabber.c,v 1.15 2002/12/09 09:55:52 jajcus Exp $ */
+/* $Id: jabber.c,v 1.16 2003/01/15 07:27:27 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -138,7 +138,7 @@ char *str;
 
 gboolean jabber_source_prepare(gpointer  source_data,
 				GTimeVal *current_time,
-				gint     *timeout,
+				gint	 *timeout,
 				gpointer  user_data){
 
 	*timeout=1000;
@@ -147,16 +147,16 @@ gboolean jabber_source_prepare(gpointer  source_data,
 }
 
 gboolean jabber_source_check(gpointer  source_data,
-                        	GTimeVal *current_time,
-                        	gpointer  user_data){
+				GTimeVal *current_time,
+				gpointer  user_data){
 
 	if (stop_it || stream==NULL) return TRUE;
 	return FALSE;
 }
 
 gboolean jabber_source_dispatch(gpointer  source_data,
-                        GTimeVal *current_time,
-                        gpointer  user_data){
+			GTimeVal *current_time,
+			gpointer  user_data){
 	
 	if (stop_it && stream){
 			if (stop_it>1){

@@ -1,4 +1,4 @@
-/* $Id: iq.c,v 1.28 2003/01/13 17:41:02 jajcus Exp $ */
+/* $Id: iq.c,v 1.29 2003/01/15 07:27:27 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
