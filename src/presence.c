@@ -1,4 +1,4 @@
-/* $Id: presence.c,v 1.31 2003/04/13 15:14:54 mmazur Exp $ */
+/* $Id: presence.c,v 1.32 2003/04/14 12:46:03 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -28,6 +28,7 @@
 #include "register.h"
 #include "status.h"
 #include "encoding.h"
+#include "acl.h"
 #include <time.h>
 
 int presence_send_error(struct stream_s *stream,const char *from,const char *to,
@@ -384,6 +385,16 @@ User *u;
 	else u=NULL;
 	user_load_locale(u);
 
+	if (!acl_is_allowed(from,tag)){
+		if (type && !strcmp(type,"error")) {
+			debug("Ignoring forbidden presence error");
+			return -1;
+		}
+		if (!from) return -1;
+		presence_send_error(stream,from,to,405,_("Not allowed"));
+		return -1;
+	}
+	
 	show_n=xmlnode_get_tag(tag,"show");
 	if (show_n) show=xmlnode_get_data(show_n);
 	else show=NULL;

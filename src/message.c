@@ -1,4 +1,4 @@
-/* $Id: message.c,v 1.27 2003/04/13 21:50:48 mmazur Exp $ */
+/* $Id: message.c,v 1.28 2003/04/14 12:46:03 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -29,6 +29,7 @@
 #include "sessions.h"
 #include "requests.h"
 #include "encoding.h"
+#include "acl.h"
 #include "debug.h"
 
 typedef void (*MsgHandler)(struct stream_s *s,const char *from, const char *to,
@@ -427,12 +428,22 @@ User *u;
 
 	from=xmlnode_get_attrib(tag,"from");
 	to=xmlnode_get_attrib(tag,"to");
+	type=xmlnode_get_attrib(tag,"type");
+
+	if (!acl_is_allowed(from,tag)){
+		if (type && !strcmp(type,"error")) {
+			debug("Ignoring forbidden message error");
+			return -1;
+		}
+		if (!from) return -1;
+		message_send_error(stream,to,from,NULL,405,_("Not allowed"));
+		return -1;
+	}
 
 	if (from) u=user_get_by_jid(from);
 	else u=NULL;
 	user_load_locale(u);
 
-	type=xmlnode_get_attrib(tag,"type");
 	if (!type || !strcmp(type,"normal")) chat=0;
 	else if (!strcmp(type,"chat")) chat=1;
 	else if (!strcmp(type,"error")){

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.39 2003/04/14 09:07:29 jajcus Exp $ */
+/* $Id: main.c,v 1.40 2003/04/14 12:46:03 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -494,6 +494,7 @@ guint lh;
 	if (users_init()) return 1;
 	if (encoding_init()) return 1;
 	if (requests_init()) return 1;
+	if (acl_init()) return 1;
 
 	if (!fg && !restarting) daemonize(pidfile);
 	else if (pidfile!=NULL){
@@ -530,6 +531,7 @@ guint lh;
 	users_done();
 	jabber_done();
 	encoding_done();
+	acl_done();
 	g_main_destroy(main_loop);
 
 	if (do_restart && restart_timeout>=0){

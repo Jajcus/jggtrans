@@ -1,4 +1,4 @@
-/* $Id: iq.c,v 1.42 2003/04/14 09:52:40 jajcus Exp $ */
+/* $Id: iq.c,v 1.43 2003/04/14 12:46:03 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -30,6 +30,7 @@
 #include "debug.h"
 #include "conf.h"
 #include "gg_versions.h"
+#include "acl.h"
 #include <sys/utsname.h>
 
 char *gateway_desc;
@@ -338,6 +339,8 @@ void jabber_iq_error(Stream *s,xmlnode x){
 void jabber_iq(Stream *s,xmlnode x){
 char *type;
 char *from;
+char *to;
+char *id;
 User *u;
 
 	if (jabber_state!=JS_CONNECTED){
@@ -346,11 +349,23 @@ User *u;
 	}
 
 	from=xmlnode_get_attrib(x,"from");
+	type=xmlnode_get_attrib(x,"type");
+	if (!acl_is_allowed(from,x)){
+		if (type && !strcmp(type,"error")) {
+			debug("Ignoring forbidden error");
+			return;
+		}
+		if (!from) return;
+		to=xmlnode_get_attrib(x,"to");
+		id=xmlnode_get_attrib(x,"id");
+		jabber_iq_send_error(s,from,to,id,405,_("Not allowed"));
+		return;
+	}
+
 	if (from) u=user_get_by_jid(from);
 	else u=NULL;
 	user_load_locale(u);
 
-	type=xmlnode_get_attrib(x,"type");
 	if (strcmp(type,"get")==0)
 		jabber_iq_getset(s,x,0);
 	else if (strcmp(type,"set")==0)

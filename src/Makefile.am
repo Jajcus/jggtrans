@@ -2,6 +2,8 @@
 sbin_PROGRAMS=jggtrans
 
 jggtrans_SOURCES= \
+	acl.c \
+	acl.h \
 	browse.c \
 	browse.h \
 	conf.c \
