@@ -1,4 +1,4 @@
-/* $Id: forms.c,v 1.4 2003/04/13 11:19:46 jajcus Exp $ */
+/* $Id: forms.c,v 1.5 2003/04/16 10:18:57 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -23,10 +23,14 @@
  * creates a new jabber:x:data form
  * returns the node created added
  */
-xmlnode form_new(const char *title,const char *instructions){
+xmlnode form_new(xmlnode parent,const char *title,const char *instructions){
 xmlnode form,tag;
 
-	form=xmlnode_new_tag("x");
+	if (parent) 
+		form=xmlnode_insert_tag(parent,"x");
+	else
+		form=xmlnode_new_tag("x");
+	
 	xmlnode_put_attrib(form,"xmlns","jabber:x:data");
 	xmlnode_put_attrib(form,"type","form");
 	tag=xmlnode_insert_tag(form,"title");

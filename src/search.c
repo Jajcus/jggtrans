@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.32 2003/04/16 10:09:05 jajcus Exp $ */
+/* $Id: search.c,v 1.33 2003/04/16 10:18:57 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -44,13 +44,13 @@ struct search_req_s {
 void jabber_iq_set_search_byform(Stream *s,const char *from,const char *to,
 				const char *id,xmlnode q,int maxgroups,int start);
 
-xmlnode search_form(void){
+xmlnode search_form(xmlnode parent){
 xmlnode form,field;
 
-	form=form_new(_("GG public directory search"),
-			_("Enter your search filter"));
+	form=form_new(parent,_("GG public directory search"),_("Enter your search filter"));
 
 	form_add_field(form,"text-single","uin",_("GG number"),NULL,0);
+	form_add_field(form,"text-single","nick",_("Nick"),NULL,0);
 	form_add_field(form,"text-single","firstname",_("First name"),NULL,0);
 	form_add_field(form,"text-single","lastname",_("Last name"),NULL,0);
 	form_add_field(form,"text-single","birthyear",_("Birth year"),NULL,0);
@@ -226,7 +226,7 @@ Session *sess;
 	xmlnode_insert_tag(iq,"born");
 	xmlnode_insert_tag(iq,"phone");
 	xmlnode_insert_tag(iq,"username");
-	xmlnode_insert_tag_node(iq,search_form());
+	search_form(iq);
 
 	jabber_iq_send_result(s,from,to,id,iq);
 	xmlnode_free(iq);

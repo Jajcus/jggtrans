@@ -1,4 +1,4 @@
-/* $Id: register.c,v 1.35 2003/04/14 17:01:18 jajcus Exp $ */
+/* $Id: register.c,v 1.36 2003/04/16 10:18:57 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -41,11 +41,11 @@ static struct {
 	{ NULL, NULL}
 	};
 
-xmlnode register_form(User *u){
+xmlnode register_form(xmlnode parent,User *u){
 xmlnode form,field;
 int i;
 
-	form=form_new(_("Jabber GG transport registration form"),
+	form=form_new(parent,_("Jabber GG transport registration form"),
 			_("Fill in this form to regiser in the transport.\n"
 			"You may use registration later to change your settings,"
 			" password, public directory information or to unregister."));
@@ -66,11 +66,11 @@ int i;
 }
 
 
-xmlnode register_change_form(User *u){
+xmlnode register_change_form(xmlnode parent,User *u){
 xmlnode form,field;
 int i;
 
-	form=form_new(_("Registration change form"),
+	form=form_new(parent,_("Registration change form"),
 			_("You may use this form to change account"
 			" information, change personal information"
 			" in the public directory or unregister from"
@@ -456,9 +456,9 @@ User *u;
 
 	u=user_get_by_jid(from);
 	if (u==NULL)
-		xmlnode_insert_tag_node(query,register_form(u));
+		register_form(query,u);
 	else
-		xmlnode_insert_tag_node(query,register_change_form(u));
+		register_change_form(query,u);
 
 	stream_write(s,iq);
 	xmlnode_free(iq);
