@@ -1,4 +1,4 @@
-/* $Id: sessions.h,v 1.22 2003/04/28 07:22:53 jajcus Exp $ */
+/* $Id: sessions.h,v 1.23 2003/05/09 10:32:01 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -69,6 +69,7 @@ Session *session_create(User *user,const char *jid,const char *req_id,
 		const xmlnode query,struct stream_s *stream,int delay_login);
 int session_remove(Session *s);
 
+/* available==-1 means invisible */
 int session_set_status(Session *s,const char *resource,int available,
 			const char *show,const char *status,int priority);
 int session_send_status(Session *s);

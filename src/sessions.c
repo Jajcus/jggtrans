@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.69 2003/05/03 18:41:54 jajcus Exp $ */
+/* $Id: sessions.c,v 1.70 2003/05/09 10:32:01 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -250,7 +250,7 @@ char *show;
 	available=status_gg_to_jabber(status,&show,&desc);
 	user_set_contact_status(s->user,status,uin,desc,more,ip,port,version);
 
-	ujid=jid_build(uin);
+	ujid=jid_build_full(uin);
 	presence_send(s->s,ujid,s->user->jid,available,show,desc,0);
 	g_free(ujid);
 	return 0;
@@ -465,7 +465,7 @@ time_t timestamp;
 				break;
 			}
 			else{
-				jid=jid_build(event->event.msg.sender);
+				jid=jid_build_full(event->event.msg.sender);
 				if ((event->event.msg.msgclass&GG_CLASS_CHAT)!=0) chat=1;
 				else chat=0;
 			}
@@ -530,7 +530,7 @@ Resource *r=NULL;
 
 			if (c->status!=GG_STATUS_NOT_AVAIL){
 				char *ujid;
-				ujid=jid_build(c->uin);
+				ujid=jid_build_full(c->uin);
 				presence_send(s->s,ujid,s->user->jid,0,NULL,"Transport disconnected",0);
 				g_free(ujid);
 			}
@@ -588,7 +588,7 @@ Resource *r;
 	r=session_get_cur_resource(s);
 	if (!r) return -1;
 	status=status_jabber_to_gg(r->available,r->show,r->status);
-	if (s->user->invisible) status=GG_STATUS_INVISIBLE;
+	if (s->user->invisible || r->available==-1) status=GG_STATUS_INVISIBLE;
 	else if (s->user->friends_only) status|=GG_STATUS_FRIENDS_MASK;
 
 	if (status==s->gg_status){
@@ -601,7 +601,6 @@ Resource *r;
 	s->gg_status=status;
 	return 1;
 }
-
 
 static int session_try_login(Session *s){
 struct gg_login_params login_params;
