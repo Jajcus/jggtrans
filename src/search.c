@@ -140,7 +140,10 @@ char *p,*str;
 	if (sr.email) g_free(sr.email);
 	if (sr.phone) g_free(sr.phone);
 	
-	if (!gghttp) jabber_iq_send_error(s,from,to,id,500,"Internal Server Error");
+	if (!gghttp){
+		jabber_iq_send_error(s,from,to,id,500,"Internal Server Error");
+		return;
+	}
 
 	r=add_request(RT_SEARCH,from,to,id,q,gghttp,s);
 	if (!r) jabber_iq_send_error(s,from,to,id,500,"Internal Server Error");
@@ -156,7 +159,10 @@ Request *r;
 	sr.uin=jid_get_uin(to);
 
 	gghttp=gg_search(&sr,1);
-	if (!gghttp) jabber_iq_send_error(s,from,to,id,500,"Internal Server Error");
+	if (!gghttp){
+		jabber_iq_send_error(s,from,to,id,500,"Internal Server Error");
+		return;
+	}
 
 	r=add_request(RT_VCARD,from,to,id,q,gghttp,s);
 	if (!r) jabber_iq_send_error(s,from,to,id,500,"Internal Server Error");
