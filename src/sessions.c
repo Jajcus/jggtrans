@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.86 2003/06/28 14:04:16 jajcus Exp $ */
+/* $Id: sessions.c,v 1.87 2003/09/07 11:36:30 smoku Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -788,7 +788,7 @@ int num_resources=0;
 	r=NULL;
 	for(it=g_list_first(s->resources);it;it=it->next){
 		Resource *r1=(Resource *)it->data;
-		if ( (!r1->name && !resource) || !strcmp(r1->name,resource) ){
+		if ( (!r1->name && !resource) || (r1->name && resource && !strcmp(r1->name,resource)) ){
 			r=r1;
 		}
 		num_resources++;
