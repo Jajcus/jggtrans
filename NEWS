@@ -8,14 +8,14 @@ after upgrade until they log-off from Jabber and login again.
 
 Changes from 2.0.3:
 
-* All GG users use a "GG" resource
+* All GG users use a "GG" resource.
 
 * Search and registration form should now be fully compatible with JAJC's
-  JEP-004 implementation
+  JEP-004 implementation.
 
-* Support for Jabber presence type "invisible" added
+* Support for Jabber presence type "invisible" added.
 
-* Statistics gathering fixed, so multiple stats may be read at once
+* Statistics gathering fixed, so multiple stats may be read at once.
 
 Version 2.0.3
 -------------
@@ -24,10 +24,10 @@ This is mainly bugfix release.
 
 Changes from 2.0.2:
 
-* Browsing support updated to the active JEP-11 version
+* Browsing support updated to the active JEP-11 version.
 
 * More proxy configuration settings added: username, password and
-  http_only flag
+  http_only flag.
 
 Version 2.0.2
 -------------

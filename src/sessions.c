@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.76 2003/05/19 11:48:35 jajcus Exp $ */
+/* $Id: sessions.c,v 1.77 2003/05/19 12:23:29 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -130,7 +130,7 @@ GgServer *server;
 	if (port<=0) return 0;
 	proxy_username=config_load_string("proxy/username");
 	proxy_password=config_load_string("proxy/password");
-	
+
 	tag=xmlnode_get_tag(config,"proxy");
 	proxy_http_only=xmlnode_get_attrib(tag,"http_only");
 
@@ -585,7 +585,7 @@ Resource *r;
 	else if (s->user->friends_only) status|=GG_STATUS_FRIENDS_MASK;
 
 	if (status==s->gg_status){
-		if (r->status!=NULL && s->gg_status_descr!=NULL 
+		if (r->status!=NULL && s->gg_status_descr!=NULL
 				&& !strcmp(r->status,s->gg_status_descr)) return 0;
 		if (r->status==NULL && s->gg_status_descr==NULL) return 0;
 	}

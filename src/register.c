@@ -1,4 +1,4 @@
-/* $Id: register.c,v 1.43 2003/05/09 10:02:55 jajcus Exp $ */
+/* $Id: register.c,v 1.44 2003/05/19 12:23:29 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -58,7 +58,7 @@ char *tmp;
 
 	if (default_user_locale && default_user_locale[0]) tmp=default_user_locale;
 	else tmp="_default_";
-	
+
 	field=form_add_field(form,"list-single","locale",_("Language"),tmp,0);
 	form_add_option(field,_("-default-"),"_default_");
 	for(i=0;locale_mapping[i].locale!=NULL;i++)
@@ -132,7 +132,7 @@ char *locale=NULL,*invisible=NULL,*friends_only=NULL;
 		if (value!=NULL) locale=xmlnode_get_data(value);
 	}
 	if (locale && !strcmp(locale,"_default_")) locale="";
-	
+
 	field=xmlnode_get_tag(form,"field?var=invisible");
 	if (field!=NULL){
 		value=xmlnode_get_tag(field,"value");
