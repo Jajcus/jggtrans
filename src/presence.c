@@ -1,4 +1,4 @@
-/* $Id: presence.c,v 1.29 2003/04/12 13:20:42 mmazur Exp $ */
+/* $Id: presence.c,v 1.30 2003/04/13 14:36:47 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -251,7 +251,7 @@ int r;
 		debug(N_("Subscribed."));
 		presence_send_subscribed(stream,to,from);
 	}
-	else presence_send_subscribed(stream,to,from);
+	else presence_send_error(stream,to,from,500,_("Subscription failed"));
 
 	return 0;
 }

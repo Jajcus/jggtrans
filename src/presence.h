@@ -1,4 +1,4 @@
-/* $Id: presence.h,v 1.5 2002/01/30 16:52:03 jajcus Exp $ */
+/* $Id: presence.h,v 1.6 2003/04/13 14:36:47 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -24,6 +24,8 @@
 
 struct stream_s;
 
+int presence_send_error(struct stream_s *stream,const char *from,
+		const char *to,int code,const char *descr);
 int presence_send_subscribe(struct stream_s *stream,const char *from,
 		const char *to);
 int presence_send_unsubscribe(struct stream_s *stream,const char *from,
