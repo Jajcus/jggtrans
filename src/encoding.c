@@ -1,4 +1,4 @@
-/* $Id: encoding.c,v 1.15 2003/01/22 07:53:01 jajcus Exp $ */
+/* $Id: encoding.c,v 1.16 2003/08/08 16:08:10 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -53,7 +53,10 @@ unsigned u;
 	}
 	for(i=0;str[i];i++){
 		c=(unsigned char)str[i];
-		if (c=='\t' || c=='\n' || c=='\r'){
+		if (c=='\r'){
+			continue;
+		}
+		if (c=='\t' || c=='\n'){
 			buf[o++]=c;
 			continue;
 		}
@@ -95,12 +98,17 @@ int i;
 
 	if (str==NULL) return NULL;
 	if (buf_len<(strlen(str)+1)){
-		buf_len=strlen(str)+1; /* this should always be enough */
+		buf_len=strlen(str)*2+1; /* this should always be enough */
 		buf=(char *)g_realloc(buf,buf_len);
 		assert(buf!=NULL);
 	}
 	for(i=0;str[i];i++){
 		b=(unsigned char)str[i];
+		if (b=='\n'){
+			buf[o++]='\r';
+			buf[o++]='\n';
+			continue;
+		}
 		if ((b&0x80)==0){ /* ASCII */
 			buf[o++]=b;
 			continue;
