@@ -1,4 +1,4 @@
-/* $Id: register.c,v 1.42 2003/05/07 11:39:37 jajcus Exp $ */
+/* $Id: register.c,v 1.43 2003/05/09 10:02:55 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -44,6 +44,7 @@ static struct {
 xmlnode register_form(xmlnode parent,User *u){
 xmlnode form,field;
 int i;
+char *tmp;
 
 	form=form_new(parent,_("Jabber GG transport registration form"),
 			_("Fill in this form to regiser in the transport.\n"
@@ -55,8 +56,11 @@ int i;
 	/* form_add_field(form,"boolean","new",_("Create new account"),"0",1); */
 	form_add_field(form,"boolean","import_roster",_("Import userlist from GG server"),"0",1);
 
-	field=form_add_field(form,"list-single","locale",_("Language"),default_user_locale,0);
-	form_add_option(field,_("-default-"),"");
+	if (default_user_locale && default_user_locale[0]) tmp=default_user_locale;
+	else tmp="_default_";
+	
+	field=form_add_field(form,"list-single","locale",_("Language"),tmp,0);
+	form_add_option(field,_("-default-"),"_default_");
 	for(i=0;locale_mapping[i].locale!=NULL;i++)
 		form_add_option(field,locale_mapping[i].lang_name,locale_mapping[i].locale);
 
@@ -86,8 +90,8 @@ int i;
 
 	form_add_fixed(form,_("Fill out this part only when changing account options:"));
 	field=form_add_field(form,"list-single","locale",_("Language"),
-			(u->locale&&u->locale[0])?u->locale:"",0);
-	form_add_option(field,_("-default-"),"");
+			(u->locale&&u->locale[0])?u->locale:"_default_",0);
+	form_add_option(field,_("-default-"),"_default_");
 	for(i=0;locale_mapping[i].locale!=NULL;i++)
 		form_add_option(field,locale_mapping[i].lang_name,locale_mapping[i].locale);
 	form_add_field(form,"boolean","friends_only",_("Friends only"),
@@ -107,10 +111,10 @@ int i;
 	form_add_field(form,"text-single","nick",_("Nick"),NULL,0);
 	form_add_field(form,"text-single","birthyear",_("Birth year"),NULL,0);
 	form_add_field(form,"text-single","city",_("City"),NULL,0);
-	field=form_add_field(form,"list-single","gender",_("Sex"),"",0);
-	form_add_option(field,"","");
-	form_add_option(field,"female",GG_PUBDIR50_GENDER_FEMALE);
-	form_add_option(field,"male",GG_PUBDIR50_GENDER_MALE);
+	field=form_add_field(form,"list-single","gender",_("Sex"),"_none_",0);
+	form_add_option(field,"-","_none_");
+	form_add_option(field,_("female"),GG_PUBDIR50_GENDER_FEMALE);
+	form_add_option(field,_("male"),GG_PUBDIR50_GENDER_MALE);
 	form_add_field(form,"text-single","familyname",_("Family name"),NULL,0);
 	form_add_field(form,"text-single","familycity",_("Family city"),NULL,0);
 
@@ -127,6 +131,8 @@ char *locale=NULL,*invisible=NULL,*friends_only=NULL;
 		value=xmlnode_get_tag(field,"value");
 		if (value!=NULL) locale=xmlnode_get_data(value);
 	}
+	if (locale && !strcmp(locale,"_default_")) locale="";
+	
 	field=xmlnode_get_tag(form,"field?var=invisible");
 	if (field!=NULL){
 		value=xmlnode_get_tag(field,"value");

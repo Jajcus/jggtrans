@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.35 2003/04/27 19:18:44 jajcus Exp $ */
+/* $Id: search.c,v 1.36 2003/05/09 10:02:55 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -55,11 +55,11 @@ xmlnode form,field;
 	form_add_field(form,"text-single","lastname",_("Last name"),NULL,0);
 	form_add_field(form,"text-single","birthyear",_("Birth year"),NULL,0);
 	form_add_field(form,"text-single","city",_("City"),NULL,0);
-	field=form_add_field(form,"list-single","gender",_("Sex"),"",1);
-	form_add_option(field,_("Any"),"");
+	field=form_add_field(form,"list-single","gender",_("Sex"),"_any_",0);
+	form_add_option(field,_("Any"),"_any_");
 	form_add_option(field,_("Female"),GG_PUBDIR50_GENDER_FEMALE);
 	form_add_option(field,_("Male"),GG_PUBDIR50_GENDER_MALE);
-	form_add_field(form,"boolean","active",_("Active only"),"0",1);
+	form_add_field(form,"boolean","active",_("Active only"),"0",0);
 	form_add_field(form,"text-single","familyname",_("Family name"),NULL,0);
 	form_add_field(form,"text-single","familycity",_("Family city"),NULL,0);
 	form_add_field(form,"text-single","maxgroups",_("Max. result groups"),"1",1);
