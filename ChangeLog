@@ -1,5 +1,8 @@
 2004-04-13  Jacek Konieczny  <jajcus@bnet.pl>
 
+	* configure.ac:
+	- glib2 minimum version string fixed
+
 	* src/Makefile.am, src/acl.c, src/browse.c, src/disco.c, src/jabber.c, src/jid.c, src/jid.h, src/main.c, src/presence.c, src/sessions.c, src/users.c, po/nl.po, po/pl.po, configure.ac:
 	- ported to GLib 2
 	- use libidn for proper JID normalization (stringprep,IDNA)
