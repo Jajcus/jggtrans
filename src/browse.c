@@ -20,15 +20,19 @@ GgServer *server;
 	xmlnode_put_attrib(n,"type","client");
 	xmlnode_put_attrib(n,"jid",jid);
 
-	server=(GgServer *)sess->current_server->data;	
-
-	if (!server || server->port==1)
-		str=g_strdup_printf("%s (%s via hub)",jid,
-				sess->connected?_("Connected"):_("Connecting"));
+	if (sess->current_server){
+		server=(GgServer *)sess->current_server->data;	
+		if (!server || server->port==1)
+			str=g_strdup_printf("%s (%s via hub)",jid,
+					sess->connected?_("Connected"):_("Connecting"));
+		else
+			str=g_strdup_printf("%s (%s to %s:%u)",jid,
+					sess->connected?_("Connected"):_("Connecting"),
+					inet_ntoa(server->addr),server->port);
+	}
 	else
-		str=g_strdup_printf("%s (%s to %s:%u)",jid,
-				sess->connected?_("Connected"):_("Connecting"),
-				inet_ntoa(server->addr),ntohs(server->port));
+		str=g_strdup_printf("%s (%s)",jid,
+				sess->connected?_("Connected"):_("Connecting"));
 	xmlnode_put_attrib(n,"name",str);
 	g_free(str);
 }
