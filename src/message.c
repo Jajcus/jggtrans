@@ -1,4 +1,4 @@
-/* $Id: message.c,v 1.25 2003/04/06 15:42:42 mmazur Exp $ */
+/* $Id: message.c,v 1.26 2003/04/08 17:45:28 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -138,7 +138,7 @@ Request *r;
 
 	message_send(stream,to,from,1,_("Receiving roster..."));
 
-	gghttp=gg_userlist_get(user->uin,user->password,1);
+	gghttp=gg_userlist_get(user->uin,from_utf8(user->password),1);
 	r=add_request(RT_USERLIST_GET,from,to,"",msg,(void*)gghttp,stream);
 	if (!r){
 		message_send_error(stream,to,from,NULL,
@@ -315,7 +315,7 @@ Request *r;
 	}
 
 	message_send(stream,to,from,1,_("Sending roster..."));
-	gghttp=gg_userlist_put(user->uin,user->password,contacts,1);
+	gghttp=gg_userlist_put(user->uin,from_utf8(user->password),contacts,1);
 	g_free(contacts);
 	r=add_request(RT_USERLIST_PUT,from,to,"",msg,(void*)gghttp,stream);
 	if (!r){

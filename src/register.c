@@ -1,4 +1,4 @@
-/* $Id: register.c,v 1.26 2003/04/06 16:49:15 jajcus Exp $ */
+/* $Id: register.c,v 1.27 2003/04/08 17:45:28 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -62,7 +62,7 @@ int i;
 	xmlnode_put_attrib(field,"type","text-private");
 	xmlnode_put_attrib(field,"var","password");
 	xmlnode_insert_tag(field,"required");
-	xmlnode_put_attrib(field,"label",_("password"));
+	xmlnode_put_attrib(field,"label",_("Password"));
 
 /*	field=xmlnode_insert_tag(form,"field");
 	xmlnode_put_attrib(field,"type","boolean");
@@ -142,9 +142,9 @@ int i;
 	value=xmlnode_insert_tag(option,"value");
 	xmlnode_insert_cdata(value,"options",-1);
 	option=xmlnode_insert_tag(field,"option");
-	xmlnode_put_attrib(option,"label",_("Change account"));
+	xmlnode_put_attrib(option,"label",_("Change password"));
 	value=xmlnode_insert_tag(option,"value");
-	xmlnode_insert_cdata(value,"account",-1);
+	xmlnode_insert_cdata(value,"passwd",-1);
 	option=xmlnode_insert_tag(field,"option");
 	xmlnode_put_attrib(option,"label",_("Change public directory information:"));
 	value=xmlnode_insert_tag(option,"value");
@@ -199,7 +199,29 @@ int i;
 	field=xmlnode_insert_tag(form,"field");
 	xmlnode_put_attrib(field,"type","fixed");
 	value=xmlnode_insert_tag(field,"value");
-	xmlnode_insert_cdata(value,_("Fill out this part only when changing account:"),-1);
+	xmlnode_insert_cdata(value,_("Fill out this part only when changing password:"),-1);
+
+	field=xmlnode_insert_tag(form,"field");
+	xmlnode_put_attrib(field,"type","text-private");
+	xmlnode_put_attrib(field,"var","newpassword");
+	xmlnode_insert_tag(field,"required");
+	xmlnode_put_attrib(field,"label",_("New password"));
+
+	field=xmlnode_insert_tag(form,"field");
+	xmlnode_put_attrib(field,"type","text-private");
+	xmlnode_put_attrib(field,"var","newpassword2");
+	xmlnode_insert_tag(field,"required");
+	xmlnode_put_attrib(field,"label",_("Confirm new password"));
+
+	field=xmlnode_insert_tag(form,"field");
+	xmlnode_put_attrib(field,"type","text-single");
+	xmlnode_put_attrib(field,"var","question");
+	xmlnode_put_attrib(field,"label",_("Question"));
+	
+	field=xmlnode_insert_tag(form,"field");
+	xmlnode_put_attrib(field,"type","text-single");
+	xmlnode_put_attrib(field,"var","answer");
+	xmlnode_put_attrib(field,"label",_("Answer"));
 
 	field=xmlnode_insert_tag(form,"field");
 	xmlnode_put_attrib(field,"type","fixed");
@@ -245,6 +267,68 @@ char *locale=NULL,*invisible=NULL,*friends_only=NULL;
 	return 0;
 }
 
+int register_process_passwd_form(Stream *s,const char *from,const char *to,
+					const char *id,User *u,xmlnode form){
+xmlnode field,value;
+char *newpasswd=NULL,*newpasswdW,*newpasswd2=NULL,*question=NULL,*answer=NULL,*qa,*qaW;
+struct gg_http *gghttp;
+Request *r;
+
+	field=xmlnode_get_tag(form,"field?var=newpassword");
+	if (field!=NULL) {
+		value=xmlnode_get_tag(field,"value");
+		if (value!=NULL) newpasswd=xmlnode_get_data(value);
+	}
+	if (newpasswd==NULL){
+		jabber_iq_send_error(s,from,to,id,406,_("No new password given"));
+		return -1;
+	}
+	field=xmlnode_get_tag(form,"field?var=newpassword2");
+	if (field!=NULL) {
+		value=xmlnode_get_tag(field,"value");
+		if (value!=NULL) newpasswd2=xmlnode_get_data(value);
+	}
+	if (newpasswd2==NULL || strcmp(newpasswd,newpasswd2)!=0){
+		jabber_iq_send_error(s,from,to,id,406,_("Passwords do not match"));
+		return -1;
+	}
+	if (strcmp(newpasswd,u->password)==0){
+		jabber_iq_send_error(s,from,to,id,406,_("New password is the same as the old one."));
+		return -1;
+	}
+	field=xmlnode_get_tag(form,"field?var=question");
+	if (field!=NULL) {
+		value=xmlnode_get_tag(field,"value");
+		if (value!=NULL) question=xmlnode_get_data(value);
+	}
+	if (question==NULL) question="";
+	else if (strchr(question,'~')) {
+		jabber_iq_send_error(s,from,to,id,406,_("Question contains illegal characters."));
+		return -1;
+	}
+	field=xmlnode_get_tag(form,"field?var=answer");
+	if (field!=NULL) {
+		value=xmlnode_get_tag(field,"value");
+		if (value!=NULL) answer=xmlnode_get_data(value);
+	}
+	if (answer==NULL) answer="";
+	else if (strchr(answer,'~')) {
+		jabber_iq_send_error(s,from,to,id,406,_("Answer contains illegal characters."));
+		return -1;
+	}
+	qa=g_strdup_printf("%s~%s",question,answer);
+	qaW=g_strdup(from_utf8(qa));
+	g_free(qa);
+	newpasswdW=g_strdup(from_utf8(newpasswd));
+	gghttp=gg_change_passwd3(u->uin,from_utf8(u->password),newpasswdW,qaW,1);
+	g_free(newpasswdW);
+	g_free(qaW);
+
+	r=add_request(RT_PASSWD,from,to,id,form,gghttp,s);
+	r->data=g_strdup(newpasswd);
+	return 0;
+}
+
 int register_process_change_form(Stream *s,const char *from,const char *to,
 					const char *id,User *u,xmlnode form){
 xmlnode field,value;
@@ -270,9 +354,9 @@ char *action;
 		if (register_process_options_form(s,from,to,id,u,form))
 			return -1;
 	}
-	else if (!strcmp(action,"account")){
-		jabber_iq_send_error(s,from,to,id,501,_("Not implemented (yet)"));
-		return -1;
+	else if (!strcmp(action,"passwd")){
+		if (register_process_passwd_form(s,from,to,id,u,form))
+			return -1;
 	}
 	else if (!strcmp(action,"pubdir")){
 		jabber_iq_send_error(s,from,to,id,501,_("Not implemented (yet)"));
@@ -355,6 +439,31 @@ Session *session;
 	return 0;
 }
 
+int change_password_error(struct request_s *r){
+
+	g_message(N_("Password change error for user '%s'"),r->from);
+	jabber_iq_send_error(r->stream,r->from,r->to,r->id,500,_("Internal Server Error"));
+	return 0;
+}
+
+int change_password_done(struct request_s *r){
+User *u;
+
+	u=user_get_by_jid(r->from);
+	if (u==NULL){
+		jabber_iq_send_error(r->stream,r->from,r->to,r->id,500,_("Couldn't find the user."));
+		return -1;
+	}
+	
+	g_message(N_("Password changed for user '%s'"),r->from);
+	if (r->data){
+		g_free(u->password);
+		u->password=(char *)r->data;
+		user_save(u);
+	}
+	jabber_iq_send_result(r->stream,r->from,r->to,r->id,NULL);
+	return 0;
+}
 
 void jabber_iq_get_register(Stream *s,const char *from,const char *to,const char *id,xmlnode q){
 xmlnode node;

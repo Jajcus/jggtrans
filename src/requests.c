@@ -1,4 +1,4 @@
-/* $Id: requests.c,v 1.26 2003/04/06 15:42:42 mmazur Exp $ */
+/* $Id: requests.c,v 1.27 2003/04/08 17:45:28 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -88,6 +88,7 @@ int request_io_handler(GIOChannel *source,GIOCondition condition,gpointer data){
 Request *r;
 User *u;
 GIOCondition cond;
+int res=0;
 
 	r=(Request *)data;
 	g_assert(r!=NULL);
@@ -95,25 +96,38 @@ GIOCondition cond;
 	u=user_get_by_jid(r->from);
 	user_load_locale(u);
 
+	if (r->gghttp){
+		if (r->gghttp->callback)
+			res=r->gghttp->callback(r->gghttp);
+		else
+			res=gg_http_watch_fd(r->gghttp);
+	}
+
 	switch(r->type){
 #ifdef REMOTE_USERLIST
 		case RT_USERLIST_GET:
-			t=gg_userlist_get_watch_fd(r->gghttp);
-			if (t || r->gghttp->state==GG_STATE_ERROR) get_roster_error(r);
-			else if (!t && r->gghttp->state==GG_STATE_DONE) get_roster_done(r);
+			if (res || r->gghttp->state==GG_STATE_ERROR) get_roster_error(r);
+			else if (!res && r->gghttp->state==GG_STATE_DONE) get_roster_done(r);
 			else break;
 			r->io_watch=0;
 			remove_request(r);
 			return FALSE;
 		case RT_USERLIST_PUT:
-			t=gg_userlist_put_watch_fd(r->gghttp);
-			if (t || r->gghttp->state==GG_STATE_ERROR) put_roster_error(r);
-			else if (!t && r->gghttp->state==GG_STATE_DONE) put_roster_done(r);
+			if (res || r->gghttp->state==GG_STATE_ERROR) put_roster_error(r);
+			else if (!res && r->gghttp->state==GG_STATE_DONE) put_roster_done(r);
 			else break;
 			r->io_watch=0;
 			remove_request(r);
 			return FALSE;
 #endif /* REMOTE USERLIST */
+		case RT_PASSWD:
+			if (res || r->gghttp->state==GG_STATE_ERROR) change_password_error(r);
+			else if (!res && r->gghttp->state==GG_STATE_DONE) change_password_done(r);
+			else break;
+			r->io_watch=0;
+			remove_request(r);
+			return FALSE;
+
 		default:
 			g_warning(N_("Unknow gg_http session type: %i"),r->gghttp->type);
 			gg_http_watch_fd(r->gghttp);
@@ -187,7 +201,13 @@ int remove_request(Request *r){
 	if (r->from) g_free(r->from);
 	if (r->id) g_free(r->id);
 	if (r->query) xmlnode_free(r->query);
-	if (r->gghttp) gg_http_free(r->gghttp);
+	if (r->gghttp) {
+		if (r->gghttp->destroy)
+			r->gghttp->destroy(r->gghttp);
+		else
+			gg_http_free(r->gghttp);
+	}
+
 	g_free(r);
 	return 0;
 }

@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.52 2003/04/08 12:58:02 jajcus Exp $ */
+/* $Id: sessions.c,v 1.53 2003/04/08 17:45:28 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -33,6 +33,7 @@
 #include "status.h"
 #include "requests.h"
 #include "debug.h"
+#include "encoding.h"
 
 
 static int conn_timeout=30;
@@ -543,7 +544,7 @@ GgServer *serv;
 
 	memset(&login_params,0,sizeof(login_params));
 	login_params.uin=s->user->uin;
-	login_params.password=s->user->password;
+	login_params.password=from_utf8(s->user->password);
 	login_params.async=1;
 	serv=(GgServer*)s->current_server->data;
 	if(serv->port!=1){

@@ -1,4 +1,4 @@
-/* $Id: users.c,v 1.29 2003/04/06 16:49:15 jajcus Exp $ */
+/* $Id: users.c,v 1.30 2003/04/08 17:45:28 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -81,6 +81,11 @@ xmlnode xml,tag,ctag,userlist;
 	g_assert(u!=NULL);
 	str=strchr(u->jid,'/');
 	g_assert(str==NULL);
+
+	if (!u->confirmed) {
+		g_message(N_("Not saving user '%s' - account not confirmed."),u->jid);
+		return -1;
+	}
 
 	g_message(N_("Saving user '%s'"),u->jid);
 	njid=jid_normalized(u->jid);
@@ -499,7 +504,7 @@ GList *it;
 	c->uin=uin;
 
 	u->contacts=g_list_append(u->contacts,c);
-	if (u->confirmed) user_save(u);
+	user_save(u);
 	return 0;
 }
 
@@ -513,7 +518,7 @@ GList *it;
 			u->contacts=g_list_remove(u->contacts,c);
 			if (c->status_desc) free(c->status_desc);
 			g_free(c);
-			if (u->confirmed) user_save(u);
+			user_save(u);
 			return 0;
 		}
 	}
@@ -588,7 +593,7 @@ int user_sys_msg_received(User *u,int nr){
 
 	if (nr<=u->last_sys_msg) return 0;
 	u->last_sys_msg=nr;
-	if (u->confirmed) user_save(u);
+	user_save(u);
 	return 1;
 }
 
