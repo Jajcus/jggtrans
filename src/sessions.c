@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.80 2003/05/27 08:52:02 jajcus Exp $ */
+/* $Id: sessions.c,v 1.81 2003/05/27 09:07:40 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -929,4 +929,42 @@ void sessions_print_all(int indent){
 	g_hash_table_foreach(sessions_jid,sessions_print_func,GINT_TO_POINTER(indent));
 }
 
+char * session_get_info_string(const Session *sess){
+char *str;
+GgServer *server;
+char *using_tls="";
 
+	if (sess->current_server){
+		server=(GgServer *)sess->current_server->data;
+#ifdef __GG_LIBGADU_HAVE_OPENSSL
+		if (server->tls) using_tls=_(" with TLS");
+#endif
+		if (!server || server->port==1){
+			if (sess->connected){
+				str=g_strdup_printf(_("%s (Connected via hub to %s:%i%s)"),
+						sess->jid,
+						inet_ntoa(*(struct in_addr*)&sess->ggs->server_addr),
+						sess->ggs->port,
+						using_tls);
+			}
+			else{
+				str=g_strdup_printf(_("%s (Connecting via hub%s)"),
+						sess->jid,
+						using_tls);
+			}
+		}
+		else
+			str=g_strdup_printf(_("%s (%s to %s:%u%s)"),
+					sess->jid,
+					sess->connected?_("Connected"):_("Connecting"),
+					inet_ntoa(server->addr),
+					server->port,
+					using_tls);
+	}
+	else
+		str=g_strdup_printf("%s (%s)",
+				sess->jid,
+				sess->connected?_("Connected"):_("Connecting"));
+
+	return str;
+}

@@ -1,4 +1,4 @@
-/* $Id: browse.c,v 1.15 2003/05/27 07:52:36 jajcus Exp $ */
+/* $Id: browse.c,v 1.16 2003/05/27 09:07:40 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -25,8 +25,6 @@
 #include "conf.h"
 #include "jid.h"
 #include "sessions.h"
-#include "disco.h"
-
 
 void browse_session(gpointer key,gpointer value,gpointer data){
 const char *jid=(char *)key;
@@ -39,7 +37,7 @@ char *str;
 	xmlnode_put_attrib(n,"category","user");
 	xmlnode_put_attrib(n,"type","client");
 	xmlnode_put_attrib(n,"jid",jid);
-	str=get_user_disco_string(sess);
+	str=session_get_info_string(sess);
 	xmlnode_put_attrib(n,"name",str);
 	g_free(str);
 }

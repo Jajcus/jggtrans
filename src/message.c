@@ -1,4 +1,4 @@
-/* $Id: message.c,v 1.37 2003/04/28 07:22:53 jajcus Exp $ */
+/* $Id: message.c,v 1.38 2003/05/27 09:07:40 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -448,9 +448,11 @@ int i;
 const char *ce;
 char *args,*p;
 User *user;
+Session *sess;
 char *msg;
 
-	user=user_get_by_jid(from);
+	sess=session_get_by_jid(from,stream,1);
+	user=sess->user;
 	if (user==NULL){
 		message_send(stream,to,from,1,_("I don't know you. Register first."),0);
 		return -1;
@@ -486,6 +488,7 @@ char *msg;
 	msg=g_strdup_printf(_("%s\n  invisible: %s"),msg,user->invisible?_("on"):_("off"));
 	msg=g_strdup_printf(_("%s\n  locale: %s"),msg,user->locale?user->locale:_("_default_"));
 	msg=g_strdup_printf(_("%s\n\nRegistered as: %u"),msg,user->uin);
+	if (sess->ggs) msg=g_strdup_printf("%s\n  %s",msg,session_get_info_string(sess));
 	message_send(stream,to,from,1,msg,0);
 	g_free(msg);
 
