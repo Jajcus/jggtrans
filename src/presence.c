@@ -188,7 +188,7 @@ char *jid;
 	}
 	jid=g_strdup(s->user->jid); /* session may be removed in the next step */
 	r=session_set_status(s,available,show,status);
-	if (!r) presence_send(stream,NULL,jid,available,show,status,0);
+	if (available && s->connected && !r) presence_send(stream,NULL,jid,available,show,status,0);
 	g_free(jid);
 }
 
