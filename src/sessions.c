@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.42 2003/02/03 20:28:19 mmazur Exp $ */
+/* $Id: sessions.c,v 1.43 2003/02/04 07:57:12 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -80,7 +80,7 @@ Server *server;
 	server=g_new(Server, 1);
 	server->port=1;
 	gg_server=g_list_append(gg_server, server);
-	
+
 	server=g_new(Server, 1);
 	inet_aton("217.17.41.84", &server->addr);
 	server->port=8074;
@@ -108,10 +108,10 @@ Server *server;
 				if(inet_aton(r, &server->addr))
 					gg_server=g_list_append(gg_server, server);
 			}
-		} 
-		
+		}
 
-	}	
+
+	}
 
 	proxy_ip=config_load_string("proxy/ip");
 	if (!proxy_ip) return 0;
@@ -175,11 +175,11 @@ Session *s;
 
 	g_warning("Timeout for server %u",
 			g_list_position(gg_server, s->current_server)-1);
-	
+
 	if(s->current_server!=NULL)
 		if(!session_try_login(s))
 			return FALSE;
-		
+
 	s->timeout_func=0;
 	g_warning("Session timeout for %s",s->jid);
 
@@ -189,7 +189,7 @@ Session *s;
 	else{
 		presence_send(s->s,NULL,s->user->jid,0,NULL,"Connection Timeout",0);
 	}
-	
+
 	session_schedule_reconnect(s);
 	session_remove(s);
 	return FALSE;
@@ -427,7 +427,7 @@ Resource *r;
 			if (s->timeout_func) g_source_remove(s->timeout_func);
 			break;
 		case GG_EVENT_PUBDIR50_SEARCH_REPLY:
-			request_response_search(event);			
+			request_response_search(event);
 			break;
 		case GG_EVENT_ACK:
 			debug("GG_EVENT_ACK");
@@ -542,7 +542,7 @@ Server *serv;
 		g_free(s);
 		return 1;
 	}
-	
+
 	s->ioch=g_io_channel_unix_new(s->ggs->fd);
 	cond=G_IO_ERR|G_IO_HUP|G_IO_NVAL;
 	if (s->ggs->check&GG_CHECK_READ) cond|=G_IO_IN;
@@ -552,7 +552,7 @@ Server *serv;
 	s->timeout_func=g_timeout_add(conn_timeout*1000,session_timeout,s);
 
 	s->current_server=g_list_next(s->current_server);
-	
+
 	return 0;
 }
 

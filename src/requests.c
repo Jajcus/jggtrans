@@ -1,4 +1,4 @@
-/* $Id: requests.c,v 1.17 2003/02/03 20:28:19 mmazur Exp $ */
+/* $Id: requests.c,v 1.18 2003/02/04 07:57:12 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -33,7 +33,7 @@ GHashTable *lookups=NULL;
 int requests_init(){
 	lookups=g_hash_table_new(g_int_hash, g_int_equal);
 	if(!lookups)
-		return 1;		
+		return 1;
 	return 0;
 }
 

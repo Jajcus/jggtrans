@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.20 2003/02/04 07:56:26 jajcus Exp $ */
+/* $Id: search.c,v 1.21 2003/02/04 07:57:12 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -86,7 +86,7 @@ char *uin, *first_name, *last_name, *nickname, *born, *city, *gender, *active;
 void jabber_iq_get_search(Stream *s,const char *from,const char *to,const char *id,xmlnode q){
 xmlnode iq,n;
 Session *sess;
-	
+
 	sess=session_get_by_jid(from,NULL);
 	if (!sess || !sess->connected){
 		jabber_iq_send_error(s,from,to,id,407,"Not logged in");
@@ -160,10 +160,10 @@ char *data;
 	n=xmlnode_get_tag(q,"gender");
 	if (n){
 		data=xmlnode_get_data(n);
-		if (data!=NULL) {
-			if (data[0]=='k' || data[0]=='f' || data[0]=='K' || data[0]=='F') 
+		if (data!=NULL){
+			if (data[0]=='k' || data[0]=='f' || data[0]=='K' || data[0]=='F')
 				gg_pubdir50_add(sr, GG_PUBDIR50_GENDER, GG_PUBDIR50_GENDER_FEMALE);
-			else if (data[0]=='m' || data[0]=='M') 
+			else if (data[0]=='m' || data[0]=='M')
 				gg_pubdir50_add(sr, GG_PUBDIR50_GENDER, GG_PUBDIR50_GENDER_MALE);
 		}
 	}
@@ -193,7 +193,7 @@ Request *r;
 
 	q=xmlnode_dup(q);
 	sr=gg_pubdir50_new(GG_PUBDIR50_SEARCH);
-	
+
 	while(to[i]!='@')
 		i++;
 
