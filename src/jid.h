@@ -1,4 +1,4 @@
-/* $Id: jid.h,v 1.4 2002/02/03 16:25:53 jajcus Exp $ */
+/* $Id: jid.h,v 1.5 2003/05/09 10:32:59 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -32,5 +32,6 @@ const char *jid_get_resource(const char *jid);
 char * jid_normalized(const char *jid);
 char * jid_my_registered();
 char * jid_build(long unsigned int uin);
+char * jid_build_full(long unsigned int uin);
 
 #endif

@@ -1,4 +1,4 @@
-/* $Id: jid.c,v 1.11 2003/04/22 08:44:29 jajcus Exp $ */
+/* $Id: jid.c,v 1.12 2003/05/09 10:32:59 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -119,6 +119,10 @@ char * jid_my_registered(){
 
 char * jid_build(long unsigned int uin){
 	return g_strdup_printf("%lu@%s",uin,my_name);
+}
+
+char * jid_build_full(long unsigned int uin){
+	return g_strdup_printf("%lu@%s/%lu",uin,my_name,uin);
 }
 
 char * jid_normalized(const char *jid){
