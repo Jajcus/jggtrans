@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.31 2002/12/09 09:55:52 jajcus Exp $ */
+/* $Id: sessions.c,v 1.32 2002/12/10 07:40:03 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -533,7 +533,10 @@ Resource *r;
 	if (!r) return -1;
 	status=status_jabber_to_gg(r->available,r->show,r->status);
 	debug("Changing gg status to %i",status);
-	gg_change_status_descr(s->ggs,status,r->status);
+	if (r->status!=NULL)
+		gg_change_status_descr(s->ggs,status,r->status);
+	else
+		gg_change_status(s->ggs,status);
 	return 0;
 }
 
