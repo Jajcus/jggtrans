@@ -1,4 +1,4 @@
-/* $Id: presence.c,v 1.50 2004/01/24 21:04:24 jajcus Exp $ */
+/* $Id: presence.c,v 1.51 2004/02/20 17:42:51 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -183,7 +183,7 @@ xmlnode n;
 	}
 	if (status || available==-1){
 		n=xmlnode_insert_tag(pres,"status");
-		if (available==-1) 
+		if (available==-1)
 			xmlnode_insert_cdata(n,_("(invisible)"),-1);
 		if (status)
 			xmlnode_insert_cdata(n,to_utf8(status),-1);

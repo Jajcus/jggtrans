@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.98 2004/02/05 14:22:24 smoku Exp $ */
+/* $Id: sessions.c,v 1.99 2004/02/20 17:42:51 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -341,7 +341,7 @@ int i;
 }
 
 void session_broken(Session *s){
-	
+
 	if (s->req_id){
 		jabber_iq_send_error(s->s,s->jid,NULL,s->req_id,502,_("Remote Server Error"));
 	}

@@ -1,4 +1,4 @@
-/* $Id: iq.c,v 1.47 2003/09/07 14:06:54 jajcus Exp $ */
+/* $Id: iq.c,v 1.48 2004/02/20 17:42:51 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -184,7 +184,7 @@ char *ver;
 int version;
 
 	u=user_get_by_jid(from);
-	if (u==NULL) {
+	if (u==NULL){
 		g_warning(N_("Unknown user: %s"),from);
 		jabber_iq_send_error(s,from,to,id,401,_("I don't know you"));
 		return;
