@@ -3,13 +3,14 @@ Wymagania.
 ===============
 Aby zbudowaæ jabber-gg-transport potrzeba:
 
-	- glib (http://www.gtk.org/)
+	- glib >= 1.2.0 (http://www.gtk.org/)
 		Przetestowane z glib-1.2.10
 	
-	- libgg (czê¶æ EKG, http://dev.null.pl/ekg/)
+	- libgadu >= 20030113 (czê¶æ EKG, http://dev.null.pl/ekg/)
 		Prawdopodobnie potrzebny bêdzie snapshot z CVS
-		Przetestowane ze snapshotem 20021205
+		Przetestowane ze snapshotem 20030113
 
+	- pkgconfig (http://www.freedesktop.org/software/pkgconfig/)
 
 Kompilacja
 ==============
