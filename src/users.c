@@ -1,4 +1,4 @@
-/* $Id: users.c,v 1.36 2003/04/16 09:34:37 jajcus Exp $ */
+/* $Id: users.c,v 1.37 2003/04/16 11:32:56 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -496,7 +496,7 @@ int r,count=0;
 			g_warning(N_("Couldn't stat '%s': %s"),de->d_name,g_strerror(errno));
 			continue;
 		}
-		count++;
+		if (S_ISREG(st.st_mode)) count++;
 	}
 	closedir(dir);
 	return count;
