@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.40 2003/04/14 12:46:03 jajcus Exp $ */
+/* $Id: main.c,v 1.41 2003/04/14 13:05:23 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -34,6 +34,7 @@
 #include "encoding.h"
 #include "requests.h"
 #include "conf.h"
+#include "acl.h"
 #include "debug.h"
 
 #ifndef OPEN_MAX
