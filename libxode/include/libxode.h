@@ -420,7 +420,7 @@ char *xstream_header_char(xmlnode x);
  * GPL.
  */
 
-#include <stdint.h>
+#include <inttypes.h>
 
 typedef struct {
   uint32_t H[5];
