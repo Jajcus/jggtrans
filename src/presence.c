@@ -5,6 +5,7 @@
 #include "users.h"
 #include "sessions.h"
 #include "debug.h"
+#include "register.h"
 #include <glib.h>
 
 int presence_send_probe(struct stream_s *stream,const char *to){
@@ -168,8 +169,10 @@ int r;
 	}
 	debug("Subscribing %s to %s...",from,to);
 	r=session_subscribe(s,jid_get_uin(to));
-	debug("Subscribed.");
-	if (!r) presence_send_subscribed(stream,to,from);
+	if (!r){
+		debug("Subscribed.");
+		presence_send_subscribed(stream,to,from);
+	}
 	else presence_send_subscribed(stream,to,from);
 	
 	return 0;
@@ -181,7 +184,47 @@ int presence_subscribed(struct stream_s *stream,const char *from,const char *to)
 }
 
 int presence_unsubscribed(struct stream_s *stream,const char *from,const char *to){
+	
+	if (!jid_is_me(to)) return 0;
 
+	debug("Presence unsubscribed sent to me.");
+
+	unregister(stream,from,NULL,1);
+
+	return 0;
+}
+
+int presence_unsubscribe(struct stream_s *stream,const char *from,const char *to){
+User *u;
+Session *s;
+int r;
+	
+	if (jid_is_me(to)){
+		debug("Presence unsubscribe request sent to me");
+		presence_send_unsubscribed(stream,to,from);
+		return 0;
+	}
+	u=user_get_by_jid(from);
+	if (!u)	{
+		g_warning("Presence subscription from unknown user (%s)",from);
+		return -1;
+	}
+	if (!jid_has_uin(to) || !jid_is_my(to)){
+		g_warning("Bad 'to': %s",to);
+		return -1;
+	}
+	s=session_get_by_jid(from,stream);
+	if (!s){
+		g_warning("Couldn't find or open session for '%s'",from);
+		return -1;
+	}
+	debug("Unsubscribing %s to %s...",from,to);
+	r=session_unsubscribe(s,jid_get_uin(to));
+	if (!r){
+		debug("Unsubscribed.");
+		presence_send_unsubscribed(stream,to,from);
+	}
+	
 	return 0;
 }
 
@@ -223,6 +266,8 @@ char *show,*status;
 		return presence(stream,from,to,0,show,status);
 	else if (!g_strcasecmp(type,"subscribe"))
 		return presence_subscribe(stream,from,to);
+	else if (!g_strcasecmp(type,"unsubscribe"))
+		return presence_unsubscribe(stream,from,to);
 	else if (!g_strcasecmp(type,"subscribed"))
 		return presence_subscribed(stream,from,to);
 	else if (!g_strcasecmp(type,"unsubscribed"))

@@ -53,9 +53,10 @@ xmlnode instr;
 	xmlnode_free(iq);
 }
 		
-static void unregister(Stream *s,const char *from,const char *id){
+void unregister(Stream *s,const char *from,const char *id,int presence_used){
 Session *ses;
 User *u;
+char *jid;
 
 	debug("Unregistering '%s'",from);
 	ses=session_get_by_jid(from,NULL);
@@ -67,12 +68,14 @@ User *u;
 		}
 			
 	u=user_get_by_jid(from);
-	if (u)
+	if (u){
+		jid=g_strdup(u->jid);
 		if (user_delete(u)){
 			g_warning("'%s' unregistration failed",from);
 			jabber_iq_send_error(s,from,id,"Unregistration failed");
 			return;
 		}
+	}
 	
 	if (!u){
 		g_warning("Tried to register '%s' who was never registered",from);
@@ -80,10 +83,13 @@ User *u;
 		return;
 	}
 
-	jabber_iq_send_result(s,from,id,NULL);
-	presence_send_unsubscribe(s,NULL,from);	
-	presence_send_unsubscribed(s,NULL,from);	
+	if (!presence_used){
+		jabber_iq_send_result(s,from,id,NULL);
+		presence_send_unsubscribe(s,NULL,jid);	
+	}
+	presence_send_unsubscribed(s,NULL,jid);
 	g_message("User '%s' unregistered",from);
+	g_free(jid);
 }
 
 void jabber_iq_set_register(Stream *s,const char *from,const char *id,xmlnode q){
@@ -99,7 +105,7 @@ Request *r;
 	node=xmlnode_get_firstchild(q);
 	if (!node){
 		debug("Set query for jabber:iq:register empty: %s",xmlnode2str(q));
-		unregister(s,from,id);
+		unregister(s,from,id,0);
 		return;
 	}
 	
@@ -173,11 +179,13 @@ Request *r;
 		&& !modify.city && !modify.email && !modify.born && !modify.gender){ 
 			if (!uin && !password){
 				debug("Set query for jabber:iq:register empty: %s",xmlnode2str(q));
-				unregister(s,from,id);
+				unregister(s,from,id,0);
 				return;
 			}
-			g_warning("Nothing to change");
-			jabber_iq_send_error(s,from,id,"Nothing to change.");
+			if (!uin || !password){
+				g_warning("Nothing to change");
+				jabber_iq_send_error(s,from,id,"Nothing to change.");
+			}
 			return;
 	}
 
@@ -197,11 +205,11 @@ Request *r;
 
 	debug("gg_change_pubdir()");
 	
-	if (modify.first_name) modify.first_name=from_utf8(modify.first_name);
-	if (modify.last_name) modify.last_name=from_utf8(modify.last_name);
-	if (modify.nickname) modify.nickname=from_utf8(modify.nickname);
-	if (modify.email) modify.email=from_utf8(modify.email);
-	if (modify.city) modify.city=from_utf8(modify.city);
+	if (modify.first_name) modify.first_name=g_strdup(from_utf8(modify.first_name));
+	if (modify.last_name) modify.last_name=g_strdup(from_utf8(modify.last_name));
+	if (modify.nickname) modify.nickname=g_strdup(from_utf8(modify.nickname));
+	if (modify.email) modify.email=g_strdup(from_utf8(modify.email));
+	if (modify.city) modify.city=g_strdup(from_utf8(modify.city));
 	
 	gghttp=gg_change_pubdir(uin,password,&modify,1);
 	

@@ -35,6 +35,7 @@ int session_set_status(Session *s,int available,const char *show,const char *sta
 int session_send_status(Session *s);
 
 int session_subscribe(Session *s,uin_t uin);
+int session_unsubscribe(Session *s,uin_t uin);
 
 int session_send_message(Session *s,uin_t uin,int chat,const char *body);
 
