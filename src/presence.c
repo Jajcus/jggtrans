@@ -1,4 +1,4 @@
-/* $Id: presence.c,v 1.48 2003/06/28 14:04:16 jajcus Exp $ */
+/* $Id: presence.c,v 1.49 2003/09/08 08:23:56 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -173,16 +173,20 @@ xmlnode n;
 	}
 	xmlnode_put_attrib(pres,"to",to);
 
-	if (available==-1) xmlnode_put_attrib(pres,"type","invisible");
-	else if (!available) xmlnode_put_attrib(pres,"type","unavailable");
+	/* if (available==-1) xmlnode_put_attrib(pres,"type","invisible");
+	else*/ if (!available) xmlnode_put_attrib(pres,"type","unavailable");
 
+	if (available==-1) show="away";
 	if (show){
 		n=xmlnode_insert_tag(pres,"show");
 		xmlnode_insert_cdata(n,show,-1);
 	}
-	if (status){
+	if (status || available==-1){
 		n=xmlnode_insert_tag(pres,"status");
-		xmlnode_insert_cdata(n,to_utf8(status),-1);
+		if (available==-1) 
+			xmlnode_insert_cdata(n,_("(invisible)"),-1);
+		if (status)
+			xmlnode_insert_cdata(n,to_utf8(status),-1);
 	}
 	if (timestamp){
 		struct tm *t;
