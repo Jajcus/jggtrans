@@ -1,4 +1,4 @@
-/* $Id: iq.h,v 1.5 2002/01/30 16:52:03 jajcus Exp $ */
+/* $Id: iq.h,v 1.6 2002/02/02 11:55:48 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -22,7 +22,7 @@
 
 struct stream_s;
 void jabber_iq(struct stream_s *s,xmlnode x);
-void jabber_iq_send_error(struct stream_s *s,const char *from,const char *to,const char *id,int code,char *string);
-void jabber_iq_send_result(struct stream_s *s,const char *from,const char *to,const char *id,xmlnode content);
+void jabber_iq_send_error(struct stream_s *s,const char *was_from,const char *was_to,const char *id,int code,char *string);
+void jabber_iq_send_result(struct stream_s *s,const char *was_from,const char *was_to,const char *id,xmlnode content);
 
 #endif
