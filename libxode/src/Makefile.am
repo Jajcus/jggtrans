@@ -15,6 +15,5 @@ libxode_la_SOURCES = \
 
 AM_CFLAGS = -Wall -g
 
-EXTRA_DIST = xmltok_impl.c xmltok_ns.c
 libxode_la_CFLAGS = $(EXPAT_CFLAGS)
 libxode_la_LDFLAGS = -version-info 2:0:1 $(EXPAT_LIBS)
