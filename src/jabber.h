@@ -19,7 +19,7 @@ extern enum jabber_state_e jabber_state;
 
 
 extern const char *my_name;
-extern const char *instructions;
+extern const char *register_instructions;
 extern const char *search_instructions;
 
 #endif
