@@ -1,4 +1,4 @@
-/* $Id: message.c,v 1.11 2002/12/06 15:03:05 jajcus Exp $ */
+/* $Id: message.c,v 1.12 2003/01/13 18:44:34 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -25,6 +25,24 @@
 #include "users.h"
 #include "sessions.h"
 #include "encoding.h"
+
+typedef void (*MsgHandler)(struct stream_s *s,const char *from, const char *to,const char *args); 
+typedef struct iq_namespace_s{
+	const char *command;
+	const char *abr;
+	MsgHandler handler;
+}MsgCommand;
+
+void message_get_roster(struct stream_s *s,const char *from, const char *to,const char *args);
+void message_put_roster(struct stream_s *s,const char *from, const char *to,const char *args);
+void message_friends_only(struct stream_s *s,const char *from, const char *to,const char *args);
+
+MsgCommand msg_commands[]={
+	{"get roster","gr",message_get_roster},
+	{"put roster","pr",message_put_roster},
+	{"friends only","fo",message_friends_only},
+	{NULL,NULL,NULL},
+};
 
 int message_send(struct stream_s *stream,const char *from,
 		const char *to,int chat,const char *message){
@@ -79,23 +97,49 @@ char *s;
 	xmlnode_free(msg);
 	return 0;
 }
-		
+
+
+void message_get_roster(struct stream_s *stream,const char *from, const char *to,const char *args){
+	message_send(stream,to,from,1,"Receiving roster...");
+}
+
+void message_put_roster(struct stream_s *stream,const char *from, const char *to,const char *args){
+	message_send(stream,to,from,1,"Sending roster...");
+}
+
+void message_friends_only(struct stream_s *stream,const char *from, const char *to,const char *args){
+}
+	
 int message_to_me(struct stream_s *stream,const char *from,
 		const char *to,const char *body,xmlnode tag){
+int i;
+const char *ce;
+char *args,*p;
 
+	
 	if (body!=NULL){
-		if (strstr(body,"get roster")){
-			message_send(stream,to,from,1,"Receiving roster...");
-			return 0;
-		}
-		else if (strstr(body,"put roster")){
-			message_send(stream,to,from,1,"Sending roster...");
-			return 0;
+		for(i=0;msg_commands[i].command;i++){
+			if (strncmp(body,msg_commands[i].command,
+					strlen(msg_commands[i].command))==0)
+				ce=body+strlen(msg_commands[i].command);
+			else if (strncmp(body,msg_commands[i].abr,
+					strlen(msg_commands[i].abr))==0)
+				ce=body+strlen(msg_commands[i].abr);
+			else continue;
+			if (ce[0]!='\000' && !isspace(ce[0])) continue;
+			p=g_strdup(ce);
+			args=g_strstrip(p);
+			msg_commands[i].handler(stream,from,to,args);
+			g_free(p);
+			return;
 		}
 	}
-	message_send(stream,to,from,1,"Available commands:");
-	message_send(stream,to,from,1,"  get roster");
-	message_send(stream,to,from,1,"  put roster");
+	message_send(stream,to,from,1,"Available commands (and abbreviations):");
+	for(i=0;msg_commands[i].command;i++){
+		p=g_strdup_printf("  %s (%s)", msg_commands[i].command, msg_commands[i].abr);
+		message_send(stream,to,from,1,p);
+		g_free(p);
+	}
 	return 0;
 }
 
