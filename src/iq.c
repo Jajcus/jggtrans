@@ -1,4 +1,4 @@
-/* $Id: iq.c,v 1.25 2002/12/10 07:42:09 jajcus Exp $ */
+/* $Id: iq.c,v 1.26 2003/01/12 15:20:24 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -163,59 +163,6 @@ xmlnode query;
 	xmlnode_insert_cdata(xmlnode_insert_tag(query,"jid"),str,-1);
 	g_free(str);
 	jabber_iq_send_result(s,from,to,id,query);
-}
-
-void jabber_iq_get_query(Stream *s,const char *from,const char * to,const char *id,xmlnode q){
-char *ns;
-
-	ns=xmlnode_get_attrib(q,"xmlns");
-	if (!ns){
-		g_warning("iq_get_query: No xmlns!");
-		g_warning("Query: %s!",xmlnode2str(q));
-		return;
-	}
-	if (jid_is_me(to)){
-		if (!strcmp(ns,"jabber:iq:register"))
-			jabber_iq_get_register(s,from,to,id,q);
-		else if (!strcmp(ns,"jabber:iq:search"))
-			jabber_iq_get_search(s,from,to,id,q);
-		else if (!strcmp(ns,"jabber:iq:agent"))
-			jabber_iq_get_agent(s,from,to,id,q);
-		else{
-			g_warning("Unsupported xmlns=%s in server iq/get!",ns);
-			jabber_iq_send_error(s,from,to,id,501,"Not Implemented");
-		}
-	}
-	else{
-		g_warning("Unsupported xmlns=%s in user iq/get!",ns);
-		jabber_iq_send_error(s,from,to,id,501,"Not Implemented");
-	}
-}
-
-void jabber_iq_set_query(Stream *s,const char *from,const char * to,const char *id,xmlnode q){
-char *ns;
-
-	ns=xmlnode_get_attrib(q,"xmlns");
-	if (!ns){
-		g_warning("iq_get_query: No xmlns!");
-		g_warning("Query: %s!",xmlnode2str(q));
-		return;
-	}
-
-	if (jid_is_me(to)){ 
-		if (!strcmp(ns,"jabber:iq:register"))
-			jabber_iq_set_register(s,from,to,id,q);
-		else if (!strcmp(ns,"jabber:iq:search"))
-			jabber_iq_set_search(s,from,to,id,q);
-		else{
-			g_warning("Unknown xmlns=%s in server iq/set!",ns);
-			jabber_iq_send_error(s,from,to,id,501,"Not Implemented");
-		}
-	}
-	else{
-		g_warning("Unsupported xmlns=%s in useriq/set!",ns);
-		jabber_iq_send_error(s,from,to,id,501,"Not Implemented");
-	}
 }
 
 void jabber_iq_get_server_vcard(Stream *s,const char *from,const char *to,const char *id,xmlnode q){
