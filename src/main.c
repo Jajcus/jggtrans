@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.19 2002/12/29 17:29:31 jajcus Exp $ */
+/* $Id: main.c,v 1.20 2002/12/30 09:52:18 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -275,12 +275,12 @@ char *p;
 	printf("\n");
 	printf("\tUsage: %s [OPTIONS]... [<config file>]\n",name);
 	printf("\nOptions:\n");
-	printf("\t-h      This message\n");
-	printf("\t-f      Run in foreground. Debug/error messages will be sent to stderr\n");
-	printf("\t-d<n>   Log level (0(default) - normal, >0 more, <0 less)\n");
-	printf("\t-D<n>   libgg debug level (enables also -f)\n");
-	printf("\t-u <user>   Change uid on startup to uid of <user>\n");
-	printf("\t-g <group>  Change gid on startup to gid of <group>\n");
+	printf("\t-h          This message\n");
+	printf("\t-f          Run in foreground. Debug/error messages will be sent to stderr\n");
+	printf("\t-d <n>      Log level (0(default) - normal, >0 more, <0 less)\n");
+	printf("\t-D <n>      libgg debug level (enables also -f)\n");
+	printf("\t-u <user>   Switch to uid of <user> on startup\n");
+	printf("\t-g <group>  Switch to gid of <group> on startup\n");
 	printf("\n");
 }
 

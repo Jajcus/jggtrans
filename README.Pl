@@ -15,7 +15,7 @@ Jeden z tych plików powinien byæ zainstalowany jako "ggtrans.xml"
 w katalogu podanym opcj± "--sysconfdir=..." do configure 
 (domy¶lnie: /usr/local/etc).
 	
-Pliki konfiguracyjne zawieraj± komentarza, które powinny wystarczyæ do
+Pliki konfiguracyjne zawieraj± komentarze, które powinny wystarczyæ do
 prawid³owego skonfigurowania programu.
 
 Po skonfigurowaniu transport mo¿na uruchomiæ startuj±c "jggtrans"
