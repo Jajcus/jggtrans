@@ -1,4 +1,4 @@
-/* $Id: iq.c,v 1.33 2003/01/22 07:53:01 jajcus Exp $ */
+/* $Id: iq.c,v 1.34 2003/03/24 13:51:35 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -64,8 +64,8 @@ IqNamespace client_iq_ns[]={
 
 /* Gadu-Gadu protocol=>version mapping (aproximations) */
 char *gg_version[]={
-	NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,/* 0x00 - 0x07 */
-	NULL,NULL,NULL,				/* 0x08 - 0x09 */
+	NULL,NULL,NULL,NULL,NULL,NULL,NULL,	/* 0x00 - 0x06 */
+	NULL,NULL,NULL,				/* 0x07 - 0x09 */
 	"(WPKontakt)",				/* 0x0a */
 	"4.0.2x",				/* 0x0b */
 	NULL,NULL,NULL,				/* 0x0c - 0x0e */
@@ -78,8 +78,10 @@ char *gg_version[]={
 	"4.9.1",				/* 0x16 */
 	"4.9.2",				/* 0x17 */
 	"4.9.3/5.0.1",				/* 0x18 */
-	"5.0.2",				/* 0x19 */
-	NULL,NULL,NULL,NULL,NULL,NULL		/* 0x1a - 0x1f */
+	"5.0.3",				/* 0x19 */
+	"5.0.4",				/* 0x1a */
+	"5.0.5",				/* 0x1b */
+	NULL,NULL,NULL,NULL			/* 0x1c - 0x1f */
 };
 #define GG_VERSION_ELEMENTS 0x20
 
