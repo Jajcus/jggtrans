@@ -36,10 +36,10 @@ jggtrans_SOURCES= \
 	users.c \
 	users.h 
 
-INCLUDES=$(GLIB_CFLAGS) -I../libxode/include
+INCLUDES=$(GLIB_CFLAGS) -I$(top_srcdir)/libxode/include
 
 jggtrans_CFLAGS=-DVERSION="\"$(VERSION)\"" -DSYSCONFDIR=\"$(sysconfdir)\"
-jggtrans_LDADD=$(GLIB_LIBS) ../libxode/src/libxode.la
+jggtrans_LDADD=$(GLIB_LIBS) $(top_builddir)/libxode/src/libxode.la
 
 tags: 
 	ctags -R . ../libxode/

@@ -1,4 +1,4 @@
-INCLUDES = -I$(top_builddir)/include
+INCLUDES = -I$(top_srcdir)/include
 
 noinst_LTLIBRARIES = libxode.la
 
