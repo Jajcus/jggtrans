@@ -1,4 +1,4 @@
-/* $Id: jabber.c,v 1.19 2003/01/22 07:53:01 jajcus Exp $ */
+/* $Id: jabber.c,v 1.20 2003/04/06 15:42:42 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -40,7 +40,7 @@ char *str;
 xmlnode tag;
 
 	if (jabber_state!=JS_NONE){
-		g_warning("unexpected <stream:stream/>");
+		g_warning(N_("unexpected <stream:stream/>"));
 		return;
 	}
 
@@ -58,11 +58,11 @@ xmlnode tag;
 void jabber_handshake(Stream *s,xmlnode x){
 
 	if (jabber_state!=JS_HANDSHAKE){
-		g_warning("unexpected <hanshake/>");
+		g_warning(N_("unexpected <hanshake/>"));
 		return;
 	}
 
-	g_message("handshake OK");
+	g_message(N_("handshake OK"));
 	jabber_state=JS_CONNECTED;
 	users_probe_all();
 }
@@ -71,8 +71,8 @@ void jabber_stream_error(Stream *s,xmlnode x){
 char *data;
 
 	data=xmlnode_get_data(x);
-	if (data==NULL) data="-unknown-";
-	g_critical("Stream error: %s",data);
+	if (data==NULL) data=N_("-unknown-");
+	g_critical(N_("Stream error: %s"),data);
 	stream_close(s);
 	stop_it=1;
 }
@@ -97,7 +97,7 @@ char *name;
 		jabber_presence(s,x);
 	else if (strcmp(name,"message")==0)
 		jabber_message(s,x);
-	else g_warning("Unsupported tag: %s",xmlnode2str(x));
+	else g_warning(N_("Unsupported tag: %s"),xmlnode2str(x));
 	xmlnode_free(x);
 }
 
@@ -127,15 +127,15 @@ char *data;
 			jabber_node(s,x);
 			break;
 		case XSTREAM_ERR:
-			g_warning("Stream Error");
+			g_warning(N_("Stream Error"));
 			if (x){
 				data=xmlnode_get_data(x);
-				if (data==NULL) data="-unknown-";
+				if (data==NULL) data=N_("-unknown-");
 				g_warning("    %s",data);
 			}
 			break;
 		default:
-			g_critical("Unknown node type: %i",type);
+			g_critical(N_("Unknown node type: %i"),type);
 			stop_it=1;
 			stream_close(s);
 			break;
@@ -215,40 +215,40 @@ xmlnode node;
 	stream_add_destroy_handler(jabber_stream_destroyed);
 	node=xmlnode_get_tag(config,"service");
 	if (!node)
-		g_error("No <service/> found in config file");
+		g_error(N_("No <service/> found in config file"));
 
 	my_name=xmlnode_get_attrib(node,"jid");
 	if (!my_name)
-		g_error("<service/> without \"jid\" in config file");
+		g_error(N_("<service/> without \"jid\" in config file"));
 
 	server=config_load_string("connect/ip");
 	if (!server)
-		g_error("Jabberd server not found in config file");
+		g_error(N_("Jabberd server not found in config file"));
 
 	port=config_load_int("connect/port",0);
 	if (port<=0)
-		g_error("Connect port not found in config file");
+		g_error(N_("Connect port not found in config file"));
 
 	node=xmlnode_get_tag(config,"connect/secret");
 	if (node) secret=xmlnode_get_data(node);
 	if (!node || !secret)
-		g_error("Connect secret not found in config file");
+		g_error(N_("Connect secret not found in config file"));
 
 	register_instructions=config_load_formatted_string("register/instructions");
 	if (!register_instructions)
-		g_error("Registration instructions not not found in config file");
+		g_error(N_("Registration instructions not not found in config file"));
 
 	search_instructions=config_load_formatted_string("search/instructions");
 	if (!search_instructions)
-		g_error("Search instructions not found in config file");
+		g_error(N_("Search instructions not found in config file"));
 
 	gateway_desc=config_load_formatted_string("gateway/desc");
 	if (!gateway_desc)
-		g_error("Gateway instructions not found in config file");
+		g_error(N_("Gateway instructions not found in config file"));
 
 	gateway_prompt=config_load_formatted_string("gateway/prompt");
 	if (!gateway_prompt)
-		g_error("Gateway prompt not found in config file");
+		g_error(N_("Gateway prompt not found in config file"));
 
 	jabber_state=JS_NONE;
 	return 0;

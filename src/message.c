@@ -1,4 +1,4 @@
-/* $Id: message.c,v 1.24 2003/04/06 11:06:54 jajcus Exp $ */
+/* $Id: message.c,v 1.25 2003/04/06 15:42:42 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -136,19 +136,19 @@ Request *r;
 
 	user=user_get_by_jid(from);
 
-	message_send(stream,to,from,1,"Receiving roster...");
+	message_send(stream,to,from,1,_("Receiving roster..."));
 
 	gghttp=gg_userlist_get(user->uin,user->password,1);
 	r=add_request(RT_USERLIST_GET,from,to,"",msg,(void*)gghttp,stream);
 	if (!r){
 		message_send_error(stream,to,from,NULL,
-					500,"Internal Server Error");
+					500,_("Internal Server Error"));
 	}
 }
 
 void get_roster_error(struct request_s *r){
 	message_send_error(r->stream,r->to,r->from,NULL,
-				500,"Internal Server Error");
+				500,_("Internal Server Error"));
 	gg_userlist_get_free(r->gghttp);
 	r->gghttp=NULL;
 }
@@ -162,7 +162,7 @@ xmlnode n;
 int i;
 
 
-	message_send(r->stream,r->to,r->from,1,"Roster received.");
+	message_send(r->stream,r->to,r->from,1,_("Roster received."));
 
 	msg=xmlnode_new_tag("message");
 	if (r->to!=NULL)
@@ -310,31 +310,31 @@ Request *r;
 	}
 
 	if (contacts==NULL){
-		message_send(stream,to,from,1,"No contacts defined.");
+		message_send(stream,to,from,1,_("No contacts defined."));
 		return;
 	}
 
-	message_send(stream,to,from,1,"Sending roster...");
+	message_send(stream,to,from,1,_("Sending roster..."));
 	gghttp=gg_userlist_put(user->uin,user->password,contacts,1);
 	g_free(contacts);
 	r=add_request(RT_USERLIST_PUT,from,to,"",msg,(void*)gghttp,stream);
 	if (!r){
 		message_send_error(stream,to,from,NULL,
-					500,"Internal Server Error");
+					500,_("Internal Server Error"));
 	}
 }
 
 void put_roster_error(struct request_s *r){
 
 	message_send_error(r->stream,r->to,r->from,NULL,
-				500,"Internal Server Error");
+				500,_("Internal Server Error"));
 	gg_userlist_put_free(r->gghttp);
 	r->gghttp=NULL;
 }
 
 void put_roster_done(struct request_s *r){
 
-	message_send(r->stream,r->to,r->from,1,"Roster sent.");
+	message_send(r->stream,r->to,r->from,1,_("Roster sent."));
 	gg_userlist_put_free(r->gghttp);
 	r->gghttp=NULL;
 }
@@ -356,15 +356,15 @@ int on;
 	else on=!user->friends_only;
 
 	if (user->friends_only==on){
-		message_send(stream,to,from,1,"No change.",0);
+		message_send(stream,to,from,1,_("No change."),0);
 		return;
 	}
 	user->friends_only=on;
 
 	if (on)
-		message_send(stream,to,from,1,"friends only: on",0);
+		message_send(stream,to,from,1,_("friends only: on"),0);
 	else
-		message_send(stream,to,from,1,"friends only: off",0);
+		message_send(stream,to,from,1,_("friends only: off"),0);
 
 	session_send_status(session);
 
@@ -387,15 +387,15 @@ int on;
 	else on=!user->invisible;
 
 	if (user->invisible==on){
-		message_send(stream,to,from,1,"No change.",0);
+		message_send(stream,to,from,1,_("No change."),0);
 		return;
 	}
 	user->invisible=on;
 
 	if (on)
-		message_send(stream,to,from,1,"invisible: on",0);
+		message_send(stream,to,from,1,_("invisible: on"),0);
 	else
-		message_send(stream,to,from,1,"invisible: off",0);
+		message_send(stream,to,from,1,_("invisible: off"),0);
 
 	session_send_status(session);
 
@@ -436,7 +436,7 @@ char *msg;
 
 	user=user_get_by_jid(from);
 	if (user==NULL){
-		message_send(stream,to,from,1,"I don't know you. Register first.",0);
+		message_send(stream,to,from,1,_("I don't know you. Register first."),0);
 		return -1;
 	}
 
@@ -506,18 +506,18 @@ User *u;
 	if (!type || !strcmp(type,"normal")) chat=0;
 	else if (!strcmp(type,"chat")) chat=1;
 	else if (!strcmp(type,"error")){
-		g_warning("Error message received: %s",xmlnode2str(tag));
+		g_warning(N_("Error message received: %s"),xmlnode2str(tag));
 		return 0;
 	}
 	else{
-		g_warning("Unsupported message type");
-		message_send_error(stream,to,from,body,500,"Internal Server Error");
+		g_warning(N_("Unsupported message type"));
+		message_send_error(stream,to,from,body,500,_("Internal Server Error"));
 		return -1;
 	}
 
 	if (!to || !jid_is_my(to)){
-		g_warning("Bad 'to' in: %s",xmlnode2str(tag));
-		message_send_error(stream,to,from,body,400,"Bad Request");
+		g_warning(N_("Bad 'to' in: %s"),xmlnode2str(tag));
+		message_send_error(stream,to,from,body,400,_("Bad Request"));
 		return -1;
 	}
 
@@ -526,15 +526,15 @@ User *u;
 	}
 
 	if (!from){
-		g_warning("Anonymous message? %s",xmlnode2str(tag));
-		message_send_error(stream,to,from,body,400,"Bad Request");
+		g_warning(N_("Anonymous message? %s"),xmlnode2str(tag));
+		message_send_error(stream,to,from,body,400,_("Bad Request"));
 		return -1;
 	}
 
 	s=session_get_by_jid(from,NULL);
 	if (!s || !s->connected){
-		g_warning("%s not logged in. While processing %s",from,xmlnode2str(tag));
-		message_send_error(stream,to,from,body,407,"Not logged in");
+		g_warning(N_("%s not logged in. While processing %s"),from,xmlnode2str(tag));
+		message_send_error(stream,to,from,body,407,_("Not logged in"));
 		return -1;
 	}
 

@@ -1,4 +1,4 @@
-/* $Id: register.c,v 1.24 2003/04/06 10:36:15 jajcus Exp $ */
+/* $Id: register.c,v 1.25 2003/04/06 15:42:42 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -223,7 +223,7 @@ User *u;
 	node=xmlnode_get_firstchild(q);
 	if (node){
 		g_warning("Get for jabber:iq:register not empty!: %s",xmlnode2str(q));
-		jabber_iq_send_error(s,from,to,id,406,"Not Acceptable");
+		jabber_iq_send_error(s,from,to,id,406,_("Not Acceptable"));
 		return;
 	}
 	iq=xmlnode_new_tag("iq");
@@ -267,12 +267,12 @@ Session *ses;
 User *u;
 char *jid;
 
-	debug("Unregistering '%s'",from);
+	debug(N_("Unregistering '%s'"),from);
 	ses=session_get_by_jid(from,NULL);
 	if (ses)
 		if (session_remove(ses)){
-			g_warning("'%s' unregistration failed",from);
-			jabber_iq_send_error(s,from,to,id,500,"Internal Server Error");
+			g_warning(N_("'%s' unregistration failed"),from);
+			jabber_iq_send_error(s,from,to,id,500,_("Internal Server Error"));
 			return;
 		}
 
@@ -280,15 +280,15 @@ char *jid;
 	if (u){
 		jid=g_strdup(u->jid);
 		if (user_delete(u)){
-			g_warning("'%s' unregistration failed",from);
-			jabber_iq_send_error(s,from,to,id,500,"Internal Server Error");
+			g_warning(N_("'%s' unregistration failed"),from);
+			jabber_iq_send_error(s,from,to,id,500,_("Internal Server Error"));
 			return;
 		}
 	}
 
 	if (!u){
-		g_warning("Tried to unregister '%s' who was never registered",from);
-		jabber_iq_send_error(s,from,to,id,404,"Not Found");
+		g_warning(N_("Tried to unregister '%s' who was never registered"),from);
+		jabber_iq_send_error(s,from,to,id,404,_("Not Found"));
 		return;
 	}
 
@@ -297,7 +297,7 @@ char *jid;
 		presence_send_unsubscribe(s,NULL,jid);
 	}
 	presence_send_unsubscribed(s,NULL,jid);
-	g_message("User '%s' unregistered",from);
+	g_message(N_("User '%s' unregistered"),from);
 	g_free(jid);
 }
 
@@ -316,7 +316,7 @@ Request *r;
 
 	node=xmlnode_get_firstchild(q);
 	if (!node){
-		debug("Set query for jabber:iq:register empty: %s",xmlnode2str(q));
+		debug(N_("Set query for jabber:iq:register empty: %s"),xmlnode2str(q));
 		unregister(s,from,to,id,0);
 		return;
 	}
@@ -342,7 +342,7 @@ Request *r;
 
 	node=xmlnode_get_tag(q,"remove");
 	if (node){
-		debug("<remove/> in jabber:iq:register set: %s",xmlnode2str(q));
+		debug(N_("<remove/> in jabber:iq:register set: %s"),xmlnode2str(q));
 		unregister(s,from,to,id,0);
 		return;
 	}
@@ -356,24 +356,24 @@ Request *r;
 	if (node) password=xmlnode_get_data(node);
 
 	if (!user && (!uin || !password)){
-		g_warning("User '%s' doesn't exist and not enough info to add him",from);
-		jabber_iq_send_error(s,from,to,id,406,"Not Acceptable");
+		g_warning(N_("User '%s' doesn't exist and not enough info to add him"),from);
+		jabber_iq_send_error(s,from,to,id,406,_("Not Acceptable"));
 		return;
 	}
 
 	if (!user){
 		user=user_create(from,uin,password);
 		if (!user){
-			g_warning("Couldn't create user %s",from);
-			jabber_iq_send_error(s,from,to,id,500,"Internal Server Error");
+			g_warning(N_("Couldn't create user %s"),from);
+			jabber_iq_send_error(s,from,to,id,500,_("Internal Server Error"));
 			return;
 		}
 
 		session=session_create(user,from,id,q,s);
 		if (!session){
 			user_remove(user);
-			g_warning("Couldn't create session for %s",from);
-			jabber_iq_send_error(s,from,to,id,500,"Internal Server Error");
+			g_warning(N_("Couldn't create session for %s"),from);
+			jabber_iq_send_error(s,from,to,id,500,_("Internal Server Error"));
 			return;
 		}
 	}
@@ -414,29 +414,29 @@ Request *r;
 
 	if (!first && !last && !nick && !city && !born && !sex){
 			if (!uin && !password){
-				debug("Set query for jabber:iq:register empty: %s",xmlnode2str(q));
+				debug(N_("Set query for jabber:iq:register empty: %s"),xmlnode2str(q));
 				unregister(s,from,to,id,0);
 				return;
 			}
 			if (!uin || !password){
-				g_warning("Nothing to change");
+				g_warning(N_("Nothing to change"));
 				session_remove(session);
-				jabber_iq_send_error(s,from,to,id,406,"Not Acceptable");
+				jabber_iq_send_error(s,from,to,id,406,_("Not Acceptable"));
 			}
 			return;
 	}
 
 	if (!nick){
-		debug("nickname not given for registration");
+		debug(N_("nickname not given for registration"));
 		session_remove(session);
-		jabber_iq_send_error(s,from,to,id,406,"Not Acceptable");
+		jabber_iq_send_error(s,from,to,id,406,_("Not Acceptable"));
 		return;
 	}
 
 	if (!user && (!password ||!uin)){
-		g_warning("Not registered, and no password gived for public directory change.");
+		g_warning(N_("Not registered, and no password gived for public directory change."));
 		session_remove(session);
-		jabber_iq_send_error(s,from,to,id,406,"Not Acceptable");
+		jabber_iq_send_error(s,from,to,id,406,_("Not Acceptable"));
 		return;
 	}
 	if (!password) password=user->password;
@@ -458,13 +458,13 @@ Request *r;
 	r=add_request(RT_CHANGE,from,to,id,q,(void*)change,s);
 	if (!r){
 		session_remove(session);
-		jabber_iq_send_error(s,from,to,id,500,"Internal Server Error");
+		jabber_iq_send_error(s,from,to,id,500,_("Internal Server Error"));
 	}
 }
 
 int register_error(Request *r){
 
-	jabber_iq_send_error(r->stream,r->from,r->to,r->id,502,"Remote Server Error");
+	jabber_iq_send_error(r->stream,r->from,r->to,r->id,502,_("Remote Server Error"));
 	return 0;
 }
 

@@ -1,4 +1,4 @@
-/* $Id: jid.c,v 1.9 2003/01/15 08:04:56 jajcus Exp $ */
+/* $Id: jid.c,v 1.10 2003/04/06 15:42:42 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -38,7 +38,7 @@ int just_digits;
 		if (jid[i]=='/' && slash<0) slash=i;
 		else if (jid[i]=='@')
 			if (!just_digits){
-				debug("Non-digits before '@' in jid: %s",jid);
+				debug(N_("Non-digits before '@' in jid: %s"),jid);
 				return 0;
 			}
 			else at=i;
@@ -46,24 +46,24 @@ int just_digits;
 	}
 
 	if (slash>=0 && slash<at){
-		g_warning("slash<at (%i<%i) in %s",slash,at,jid);
+		g_warning(N_("slash<at (%i<%i) in %s"),slash,at,jid);
 		return 0;
 	}
 
 	/* check hostname */
 	if (slash<0){
 		if ( g_strcasecmp(jid+at+1,my_name) ){
-			debug("Bad hostname (%s) in JID: %s",jid+at+1,jid);
+			debug(N_("Bad hostname (%s) in JID: %s"),jid+at+1,jid);
 			return 0;
 		}
 	} else{
 		if ( slash-at-1!=strlen(my_name) ){
-			debug("Bad hostname len (%i) instead of %i in JID: %s",slash-at-1,strlen(my_name),jid);
+			debug(N_("Bad hostname len (%i) instead of %i in JID: %s"),slash-at-1,strlen(my_name),jid);
 			return 0;
 		}
 
 		if ( g_strncasecmp(jid+at+1,my_name,slash-at-1) ){
-			debug("Bad hostname in JID: %s[%i:%i]",jid,at+1,slash-at-2);
+			debug(N_("Bad hostname in JID: %s[%i:%i]"),jid,at+1,slash-at-2);
 			return 0;
 		}
 	}

@@ -1,4 +1,4 @@
-/* $Id: requests.c,v 1.25 2003/04/06 10:19:03 jajcus Exp $ */
+/* $Id: requests.c,v 1.26 2003/04/06 15:42:42 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -115,7 +115,7 @@ GIOCondition cond;
 			return FALSE;
 #endif /* REMOTE USERLIST */
 		default:
-			g_warning("Unknow gg_http session type: %i",r->gghttp->type);
+			g_warning(N_("Unknow gg_http session type: %i"),r->gghttp->type);
 			gg_http_watch_fd(r->gghttp);
 			break;
 	}

@@ -1,4 +1,4 @@
-/* $Id: presence.c,v 1.25 2003/04/05 11:02:57 jajcus Exp $ */
+/* $Id: presence.c,v 1.26 2003/04/06 15:42:42 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -205,8 +205,8 @@ Resource *res;
 
 	s=session_get_by_jid(from,available?stream:NULL);
 	if (!s){
-		debug("presence: No such session: %s",from);
-		presence_send_error(stream,NULL,from,407,"Not logged in");
+		debug(N_("presence: No such session: %s"),from);
+		presence_send_error(stream,NULL,from,407,_("Not logged in"));
 		return -1;
 	}
 	jid=g_strdup(s->user->jid); /* session may be removed in the next step */
@@ -227,28 +227,28 @@ int r;
 
 	u=user_get_by_jid(from);
 	if (jid_is_me(to)){
-		debug("Presence subscribe request sent to me");
+		debug(N_("Presence subscribe request sent to me"));
 		if (!u) presence_send_unsubscribed(stream,to,from);
 		else presence_send_subscribed(stream,to,from);
 		return 0;
 	}
 	if (!u){
-		g_warning("Presence subscription from unknown user (%s)",from);
+		g_warning(N_("Presence subscription from unknown user (%s)"),from);
 		return -1;
 	}
 	if (!jid_has_uin(to) || !jid_is_my(to)){
-		g_warning("Bad 'to': %s",to);
+		g_warning(N_("Bad 'to': %s"),to);
 		return -1;
 	}
 	s=session_get_by_jid(from,stream);
 	if (!s){
-		g_warning("Couldn't find or open session for '%s'",from);
+		g_warning(N_("Couldn't find or open session for '%s'"),from);
 		return -1;
 	}
-	debug("Subscribing %s to %s...",from,to);
+	debug(N_("Subscribing %s to %s..."),from,to);
 	r=session_subscribe(s,jid_get_uin(to));
 	if (!r){
-		debug("Subscribed.");
+		debug(N_("Subscribed."));
 		presence_send_subscribed(stream,to,from);
 	}
 	else presence_send_subscribed(stream,to,from);
@@ -265,7 +265,7 @@ int presence_unsubscribed(struct stream_s *stream,const char *from,const char *t
 
 	if (!jid_is_me(to)) return 0;
 
-	debug("Presence unsubscribed sent to me.");
+	debug(N_("Presence unsubscribed sent to me."));
 
 	unregister(stream,from,NULL,NULL,1);
 
@@ -299,7 +299,7 @@ GTime timestamp;
 	}
 
 	if (!jid_is_my(to)){
-		presence_send_error(stream,to,from,404,"Not Found");
+		presence_send_error(stream,to,from,404,_("Not Found"));
 		return -1;
 	}
 
@@ -307,7 +307,7 @@ GTime timestamp;
 	else u=user_get_by_jid(from);
 
 	if (!u){
-		presence_send_error(stream,to,from,407,"Not logged in");
+		presence_send_error(stream,to,from,407,_("Not logged in"));
 		return -1;
 	}
 
@@ -325,7 +325,7 @@ GTime timestamp;
 		}
 	}
 	if (!status){
-		presence_send_error(stream,to,from,404,"Not Found");
+		presence_send_error(stream,to,from,404,_("Not Found"));
 		return -1;
 	}
 
@@ -342,28 +342,28 @@ Session *s;
 int r;
 
 	if (jid_is_me(to)){
-		debug("Presence unsubscribe request sent to me");
+		debug(N_("Presence unsubscribe request sent to me"));
 		presence_send_unsubscribed(stream,to,from);
 		return 0;
 	}
 	u=user_get_by_jid(from);
 	if (!u){
-		g_warning("Presence subscription from unknown user (%s)",from);
+		g_warning(N_("Presence subscription from unknown user (%s)"),from);
 		return -1;
 	}
 	if (!jid_has_uin(to) || !jid_is_my(to)){
-		g_warning("Bad 'to': %s",to);
+		g_warning(N_("Bad 'to': %s"),to);
 		return -1;
 	}
 	s=session_get_by_jid(from,stream);
 	if (!s){
-		g_warning("Couldn't find or open session for '%s'",from);
+		g_warning(N_("Couldn't find or open session for '%s'"),from);
 		return -1;
 	}
-	debug("Unsubscribing %s to %s...",from,to);
+	debug(N_("Unsubscribing %s to %s..."),from,to);
 	r=session_unsubscribe(s,jid_get_uin(to));
 	if (!r){
-		debug("Unsubscribed.");
+		debug(N_("Unsubscribed."));
 		presence_send_unsubscribed(stream,to,from);
 	}
 
@@ -404,14 +404,14 @@ User *u;
 	if (!type) type="available";
 
 	if (!from || !to){
-		presence_send_error(stream,to,from,406,"Not Acceptable");
-		g_warning("Bad <presence/>: %s",xmlnode2str(tag));
+		presence_send_error(stream,to,from,406,_("Not Acceptable"));
+		g_warning(N_("Bad <presence/>: %s"),xmlnode2str(tag));
 		return -1;
 	}
 
 	if (!jid_is_my(to)){
-		presence_send_error(stream,to,from,406,"Not Acceptable");
-		g_warning("Wrong 'to' in %s",xmlnode2str(tag));
+		presence_send_error(stream,to,from,406,_("Not Acceptable"));
+		g_warning(N_("Wrong 'to' in %s"),xmlnode2str(tag));
 		return -1;
 	}
 
@@ -430,12 +430,12 @@ User *u;
 	else if (!strcmp(type,"probe"))
 		return presence_probe(stream,from,to);
 	else if (!strcmp(type,"error")){
-		g_warning("Error presence received: %s",xmlnode2str(tag));
+		g_warning(N_("Error presence received: %s"),xmlnode2str(tag));
 		return 0;
 	}
 
-	g_warning("Unsupported type in %s",xmlnode2str(tag));
-	presence_send_error(stream,to,from,501,"Not Implemented");
+	g_warning(N_("Unsupported type in %s"),xmlnode2str(tag));
+	presence_send_error(stream,to,from,501,_("Not Implemented"));
 	return -1;
 }
 

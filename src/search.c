@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.27 2003/04/04 13:49:02 jajcus Exp $ */
+/* $Id: search.c,v 1.28 2003/04/06 15:42:42 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -91,7 +91,7 @@ Session *sess;
 
 	sess=session_get_by_jid(from,NULL);
 	if (!sess || !sess->connected){
-		jabber_iq_send_error(s,from,to,id,407,"Not logged in");
+		jabber_iq_send_error(s,from,to,id,407,_("Not logged in"));
 		return;
 	}
 
@@ -121,7 +121,7 @@ char *data;
 
 	sess=session_get_by_jid(from,NULL);
 	if (!sess || !sess->connected){
-		jabber_iq_send_error(s,from,to,id,407,"Not logged in");
+		jabber_iq_send_error(s,from,to,id,407,_("Not logged in"));
 		return;
 	}
 
@@ -216,7 +216,7 @@ const char *uin, *first_name, *last_name, *nickname, *born, *city;
 
 
 	if (gg_pubdir50_count(results)<1){
-		jabber_iq_send_error(r->stream,r->from,r->to,r->id,404,"Not Found");
+		jabber_iq_send_error(r->stream,r->from,r->to,r->id,404,_("Not Found"));
 		return 1;
 	}
 
@@ -288,21 +288,21 @@ const char *uin, *first_name, *last_name, *nickname, *born, *city;
 	}
 
 	n=xmlnode_insert_tag(vc,"DESC");
-	xmlnode_insert_cdata(n,"GG user\n",-1);
+	xmlnode_insert_cdata(n,_("GG user\n"),-1);
 	if (c!=NULL){
 		struct in_addr a;
 		a.s_addr=c->ip;
-		str=g_strdup_printf("Client version: %s (prot.0x%02X)\n",
+		str=g_strdup_printf(_("Client version: %s (prot.0x%02X)\n"),
 					((c->version & 0xff) < GG_VERSION_ELEMENTS) && gg_version[c->version & 0xff]
 						? gg_version[c->version & 0xff]
 						: "?.?.?",
 					c->version & 0xff);
 		xmlnode_insert_cdata(n,str,-1);
 		g_free(str);
-		str=g_strdup_printf("User IP: %s\n",inet_ntoa(a));
+		str=g_strdup_printf(_("User IP: %s\n"),inet_ntoa(a));
 		xmlnode_insert_cdata(n,str,-1);
 		g_free(str);
-		str=g_strdup_printf("User port: %u\n",(unsigned)c->port);
+		str=g_strdup_printf(_("User port: %u\n"),(unsigned)c->port);
 		xmlnode_insert_cdata(n,str,-1);
 		g_free(str);
 	}
