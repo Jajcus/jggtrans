@@ -1,12 +1,11 @@
 #include <stdio.h>
 #include <unistd.h>
-#include "jabber.h"
-#include "ggtrans.h"
-#include "sessions.h"
-#include "encoding.h"
-#include <glib.h>
 #include <signal.h>
 #include <sys/wait.h>
+#include "ggtrans.h"
+#include "jabber.h"
+#include "sessions.h"
+#include "encoding.h"
 
 xmlnode config;
 GMainLoop *main_loop;

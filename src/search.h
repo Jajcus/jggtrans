@@ -1,8 +1,6 @@
 #ifndef search_h
 #define search_h
 
-#include <libxode.h>
-
 struct request_s;
 struct stream_s;
 

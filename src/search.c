@@ -1,4 +1,5 @@
 #include <libgg.h>
+#include "ggtrans.h"
 #include "search.h"
 #include "requests.h"
 #include "stream.h"
@@ -6,7 +7,6 @@
 #include "jid.h"
 #include "encoding.h"
 #include "debug.h"
-#include <glib.h>
 
 const char *search_instructions;
 

@@ -1,11 +1,11 @@
 #include <stdio.h>
+#include "ggtrans.h"
 #include "presence.h"
 #include "jabber.h"
 #include "jid.h"
 #include "users.h"
 #include "sessions.h"
 #include "encoding.h"
-#include <glib.h>
 
 int message_send(struct stream_s *stream,const char *from,
 		const char *to,int chat,const char *message){

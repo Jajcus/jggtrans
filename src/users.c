@@ -1,13 +1,12 @@
 #include <string.h>
 #include <dirent.h>
 #include <sys/stat.h>
-#include "jabber.h"
 #include "ggtrans.h"
+#include "jabber.h"
 #include "users.h"
 #include "jid.h"
 #include "presence.h"
 #include "debug.h"
-#include <glib.h>
 
 GHashTable *users_jid=NULL;
 static char *spool_dir;

@@ -1,14 +1,15 @@
+#include <libgg.h>
+#include "ggtrans.h"
 #include "sessions.h"
 #include "iq.h"
-#include "ggtrans.h"
 #include "presence.h"
 #include "users.h"
 #include "jid.h"
 #include "message.h"
 #include "debug.h"
-#include <libgg.h>
 
 static int conn_timeout=30;
+static int pong_timeout=30;
 static int ping_interval=10;
 GHashTable *sessions_jid;
 
@@ -63,6 +64,35 @@ int sessions_done(){
 
 	g_hash_table_foreach_remove(sessions_jid,sessions_hash_remove_func,NULL);
 	return 0;
+}
+
+gboolean session_timeout(gpointer data){
+Session *s;
+
+	g_assert(data!=NULL);
+	s=(Session *)data;
+	s->timeout_func=0;
+	g_warning("Session timeout for %s",s->jid);
+	
+	if (s->req_id){
+		jabber_iq_send_error(s->s,s->jid,s->req_id,504,"Remote Server Timeout");
+	}
+	else{
+		presence_send(s->s,NULL,s->user->jid,0,NULL,"Connection Timeout");
+	}
+
+	session_remove(s);
+	return FALSE;
+}
+
+gboolean session_ping(gpointer data){
+Session *s;
+
+	debug("Ping...");
+	g_assert(data!=NULL);
+	s=(Session *)data;
+	gg_ping(s->ggs);
+	return TRUE;
 }
 
 int session_event_status(Session *s,int status,uin_t uin){
@@ -139,6 +169,7 @@ struct gg_event *event;
 char *jid;
 int chat;
 GIOCondition cond;
+gdouble t;
 
 	if (condition&(G_IO_ERR|G_IO_NVAL)){
 		s=(Session *)data;
@@ -205,6 +236,8 @@ GIOCondition cond;
 			session_send_status(s);
 			if (s->user->contacts) session_send_notify(s);
 			presence_send(s->s,NULL,s->user->jid,1,NULL,"Online");
+			s->ping_timeout_func=
+				g_timeout_add(ping_interval*1000,session_ping,s);
 			break;	
 		case GG_EVENT_NOTIFY:
 			session_event_notify(s,event);
@@ -220,8 +253,13 @@ GIOCondition cond;
 			g_free(jid);
 			break;
 		case GG_EVENT_PONG:
-			s->last_pong=time(NULL);
-			debug("Pong! ping time: %lus",(unsigned long)s->last_pong-s->last_ping);
+			if (s->ping_timer){
+				g_timer_stop(s->ping_timer);
+				debug("Pong! ping time: %fs",
+						g_timer_elapsed(s->ping_timer,NULL));
+			}
+			if (s->timeout_func) g_source_remove(s->timeout_func);
+			s->timeout_func=g_timeout_add(pong_timeout*1000,session_timeout,s);
 			break;
 		case GG_EVENT_ACK:
 			debug("GG_EVENT_ACK");
@@ -249,6 +287,9 @@ static int session_destroy(Session *s){
 GList *it;
 
 	g_message("Deleting session for '%s'",s->jid);
+	if (s->ping_timeout_func) g_source_remove(s->ping_timeout_func);
+	if (s->timeout_func) g_source_remove(s->timeout_func);
+	if (s->ping_timer) g_timer_destroy(s->ping_timer);
 	if (s->connected && s->s && s->jid){
 		presence_send(s->s,NULL,s->user->jid,0,NULL,"Offline");
 		for(it=s->user->contacts;it;it=it->next){
@@ -318,9 +359,8 @@ GIOCondition cond;
 	if (s->ggs->check&GG_CHECK_READ) cond|=G_IO_IN;
 	if (s->ggs->check&GG_CHECK_WRITE) cond|=G_IO_OUT;
 	s->io_watch=g_io_add_watch(s->ioch,cond,session_io_handler,s);
-	
-	s->last_ping=time(NULL);
-	s->last_pong=time(NULL)-1;
+
+	s->timeout_func=g_timeout_add(conn_timeout*1000,session_timeout,s);
 	g_assert(sessions_jid!=NULL);
 	njid=jid_normalized(s->jid);
 	g_hash_table_insert(sessions_jid,(gpointer)njid,(gpointer)s);
@@ -388,31 +428,6 @@ int session_unsubscribe(Session *s,uin_t uin){
 	user_unsubscribe(s->user,uin);
 	if (s->connected)
 		gg_remove_notify(s->ggs,uin);
-	return 0;
-}
-
-static void sessions_iter_func(gpointer key,gpointer value,gpointer udata){
-Session *s;
-time_t now;
-
-	s=(Session *)value;
-	if (s->connected && s->ggs && ping_interval){
-		now=time(NULL);
-		if (! s->last_pong) { 
-			g_warning("PONG not (yet) received");
-			return;
-		}
-		if (now>s->last_ping+ping_interval){
-			gg_ping(s->ggs);
-			s->last_ping=now;
-			s->last_pong=0;
-		}
-	}
-}
-
-int sessions_iter(){
-
-	g_hash_table_foreach(sessions_jid,sessions_iter_func,NULL);
 	return 0;
 }
 

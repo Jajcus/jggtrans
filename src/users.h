@@ -2,7 +2,6 @@
 #define users_h
 
 #include <libgg.h>
-#include <glib.h>
 
 typedef struct contact_s{
 	uin_t uin;

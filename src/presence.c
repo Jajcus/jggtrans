@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "ggtrans.h"
 #include "presence.h"
 #include "jabber.h"
 #include "jid.h"
@@ -6,7 +7,7 @@
 #include "sessions.h"
 #include "debug.h"
 #include "register.h"
-#include <glib.h>
+
 
 int presence_send_probe(struct stream_s *stream,const char *to){
 xmlnode pres;

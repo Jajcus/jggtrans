@@ -1,11 +1,7 @@
 #ifndef sessions_h
 #define sessions_h
 
-#include "libxode.h"
 #include "users.h"
-
-#include <time.h>
-#include <glib.h>
 
 typedef struct sesion_s{
 	User *user;
@@ -27,8 +23,9 @@ typedef struct sesion_s{
 	char *req_id;  /* ID if user registration request (<iq/>) */
 	xmlnode query; /* The query */
 
-	time_t last_ping;
-	time_t last_pong;
+	guint ping_timeout_func;
+	guint timeout_func;
+	GTimer *ping_timer;
 }Session;
 
 extern GHashTable *sessions_jid;

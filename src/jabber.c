@@ -1,11 +1,10 @@
+#include "ggtrans.h"
 #include "jabber.h"
 #include "stream.h"
-#include "ggtrans.h"
 #include "iq.h"
 #include "presence.h"
 #include "message.h"
 #include "users.h"
-#include <glib.h>
 
 Stream *stream=NULL;
 char *stream_id=NULL;

@@ -1,3 +1,4 @@
+#include "ggtrans.h"
 #include "jabber.h"
 #include "register.h"
 #include "iq.h"
@@ -8,7 +9,6 @@
 #include "debug.h"
 #include "requests.h"
 #include "encoding.h"
-#include <glib.h>
 
 const char *register_instructions;
 

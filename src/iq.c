@@ -1,11 +1,10 @@
+#include "ggtrans.h"
 #include "jabber.h"
 #include "register.h"
 #include "jid.h"
 #include "search.h"
-#include "ggtrans.h"
 #include "iq.h"
 #include "debug.h"
-#include <glib.h>
 
 void jabber_iq_send_error(Stream *s,const char *from,const char *id,int code,char *string){
 xmlnode iq;

@@ -1,8 +1,8 @@
 #include <iconv.h>
 #include <errno.h>
 #include <assert.h>
+#include "ggtrans.h"
 #include "encoding.h"
-#include <glib.h>
 
 #define ENCODING "windows-1250"
 

@@ -1,9 +1,9 @@
 #include <stdio.h>
+#include "ggtrans.h"
 #include "jid.h"
 #include "jabber.h"
 #include "ctype.h"
 #include "debug.h"
-#include <glib.h>
 
 int jid_is_my(const char *jid){
 int i,at,slash;

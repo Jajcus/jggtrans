@@ -1,9 +1,6 @@
 #ifndef stream_h
 #define stream_h
 
-#include <libxode.h>
-#include <glib.h>
-
 typedef struct stream_s{
 	GIOChannel *ioch;	
 	guint err_watch;

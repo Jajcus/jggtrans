@@ -8,9 +8,9 @@
 #include <netdb.h>
 #include <errno.h>
 
+#include "ggtrans.h"
 #include "stream.h"
 #include "debug.h"
-#include <glib.h>
 
 #define MAX_WRITE_BUF 102400
 #define MAX_READ_BUF 102400
@@ -28,7 +28,7 @@ int fd;
 	fd=g_io_channel_unix_get_fd(s->ioch);
 	oldflags=fcntl(fd, F_GETFL, 0);
 	if (oldflags==-1){
-		perror("fcntl(fd,F_GETFL,0)");
+		g_warning("fcntl(fd,F_GETFL,0): %s",g_strerror(errno));
 		return -1;
 	}
 	if (nonblock) 
@@ -36,7 +36,7 @@ int fd;
 	else
 		oldflags &= ~O_NONBLOCK;
 	if (fcntl(fd, F_SETFL, oldflags)<0){
-		perror("fcntl(fd,F_SETFL,0)");
+		g_warning("fcntl(fd,F_SETFL,0): %s",g_strerror(errno));
 		return -1;
 	}
 	return 0;
@@ -52,7 +52,7 @@ int fd;
 	s=g_new0(Stream,1);
 	fd=socket(PF_INET,SOCK_STREAM,0);
 	if (!fd){
-		perror("socket");
+		g_error("socket: %s",g_strerror(errno));
 		g_free(s);
 		return NULL;
 	}
@@ -94,7 +94,7 @@ int fd;
 	}
 	else {
 		if (r<0){
-			perror("connect");
+			g_error("connect: %s",g_strerror(errno));
 			g_free(s);
 			return NULL;
 		}
@@ -128,7 +128,7 @@ int r;
 		return 0;
 	}
 	if (errno==EALREADY) return 0;
-	perror("connect");
+	g_critical("connect: %s",g_strerror(errno));
 	return -1;
 }
 
