@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.60 2003/04/15 16:33:04 jajcus Exp $ */
+/* $Id: sessions.c,v 1.61 2003/04/16 09:53:02 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -362,6 +362,7 @@ time_t timestamp;
 			s->io_watch=0;
 			session_schedule_reconnect(s);
 			session_remove(s);
+			gg_event_free(event);
 			return FALSE;
 		case GG_EVENT_CONN_FAILED:
 			g_warning(N_("Login failed for %s"),s->jid);
@@ -372,6 +373,7 @@ time_t timestamp;
 			if (!s->req_id)
 				session_schedule_reconnect(s);
 			session_remove(s);
+			gg_event_free(event);
 			return FALSE;
 		case GG_EVENT_CONN_SUCCESS:
 			g_message(N_("Login succeed for %s"),s->jid);

@@ -1,4 +1,4 @@
-/* $Id: stats.c,v 1.6 2003/04/14 17:13:45 jajcus Exp $ */
+/* $Id: stats.c,v 1.7 2003/04/16 09:53:02 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -139,5 +139,6 @@ char *jid;
 		g_free(str);
 	}
 	jabber_iq_send_result(s,from,to,id,result);
+	xmlnode_free(result);
 }
 
