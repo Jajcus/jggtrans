@@ -1,4 +1,4 @@
-/* $Id: presence.c,v 1.38 2003/04/28 10:03:15 jajcus Exp $ */
+/* $Id: presence.c,v 1.39 2003/05/09 10:33:50 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -172,7 +172,10 @@ xmlnode n;
 		g_free(jid);
 	}
 	xmlnode_put_attrib(pres,"to",to);
-	if (!available) xmlnode_put_attrib(pres,"type","unavailable");
+	
+	if (available==-1) xmlnode_put_attrib(pres,"type","invisible");
+	else if (!available) xmlnode_put_attrib(pres,"type","unavailable");
+
 	if (show){
 		n=xmlnode_insert_tag(pres,"show");
 		xmlnode_insert_cdata(n,show,-1);
@@ -425,16 +428,23 @@ User *u;
 		return -1;
 	}
 
-	if (!strcmp(type,"available"))
+	if (!strcmp(type,"available")){
 		if (jid_has_uin(to))
 			return 0;
 		else
 			return presence(stream,from,to,1,show,status,priority);
+	}
 	else if (!strcmp(type,"unavailable")){
 		if (jid_has_uin(to))
 			return 0;
 		else
 			return presence(stream,from,to,0,show,status,priority);
+	}
+	if (!strcmp(type,"invisible")){
+		if (jid_has_uin(to))
+			return 0;
+		else
+			return presence(stream,from,to,-1,show,status,priority);
 	}
 	else if (!strcmp(type,"subscribe"))
 		return presence_subscribe(stream,from,to);
