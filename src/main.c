@@ -3,6 +3,7 @@
 #include <signal.h>
 #include <sys/wait.h>
 #include <limits.h>
+#include <errno.h>
 #include "ggtrans.h"
 #include "jabber.h"
 #include "sessions.h"
@@ -23,6 +24,7 @@ static int debug_level=0;
 
 static FILE *log_file=NULL;
 static gboolean use_syslog=FALSE;
+static char *pid_filename=NULL;
 
 static struct {
 	const char *name;
@@ -200,6 +202,17 @@ int fd;
 	pid=fork();
 	if (pid==-1) g_error("Failed to fork(): %s",g_strerror(errno));
 	if (pid){
+		if (pid_filename){
+			FILE *f;
+			f=fopen(pid_filename,"w");
+			if (!f){
+				g_critical("Couldn't write pid file, killing child: %s",g_strerror(errno));
+				kill(pid,SIGTERM);
+				exit(1);
+			}
+			fprintf(f,"%u",pid);
+			fclose(f);
+		}
 		debug("Daemon born, pid %i.",pid);
 		exit(0);
 	}
@@ -253,6 +266,7 @@ char *log_filename=NULL;
 char *str;
 char *config_file;
 int log_facility=-1;
+FILE *f;
 
 	opterr=0;
 
@@ -332,6 +346,29 @@ int log_facility=-1;
 			else log_filename=xmlnode_get_data(tag);
 		}
 		else g_warning("Ignoring unknown log type: %s",xmlnode2str(tag));
+	}
+
+	tag=xmlnode_get_tag(config,"pidfile");
+	if (tag) pid_filename=xmlnode_get_data(tag);
+
+	if (pid_filename){
+		f=fopen(pid_filename,"r");
+		if (f){
+			pid_t pid;
+			int r;
+				
+			r=fscanf(f,"%u",&pid);
+			fclose(f);
+			if (r==1 && pid>0){
+				r=kill(pid,0);
+				if (!r || (r && errno!=ESRCH)) g_error("ggtrans already running");
+				if (r){
+					g_warning("Stale pid file. Removing.");
+					unlink(pid_filename);
+				}
+			}
+			else g_error("Invalid pid file.");
+		}
 	}
 
 	main_loop=g_main_new(0);
