@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.36 2003/01/15 14:13:12 jajcus Exp $ */
+/* $Id: sessions.c,v 1.37 2003/01/15 14:17:08 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -111,7 +111,7 @@ guint s;
 
 	g_hash_table_foreach_remove(sessions_jid,sessions_hash_remove_func,NULL);
 	g_hash_table_destroy(sessions_jid);
-	
+
 	stream_del_destroy_handler(sessions_stream_destroyed);
 
 	return 0;

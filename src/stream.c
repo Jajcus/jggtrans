@@ -1,4 +1,4 @@
-/* $Id: stream.c,v 1.14 2003/01/15 14:13:12 jajcus Exp $ */
+/* $Id: stream.c,v 1.15 2003/01/15 14:17:08 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -320,7 +320,7 @@ GList *it;
 	g_assert(s!=NULL);
 	for(it=destroy_handlers;it;it=it->next){
 		stream_destroy_handler_t h=
-			(stream_destroy_handler_t)it->data; 
+			(stream_destroy_handler_t)it->data;
 		h(s);
 	}
 	if (!s->closing){
@@ -350,11 +350,11 @@ GList *it;
 }
 
 int stream_add_destroy_handler(stream_destroy_handler_t h){
-	
+
 	destroy_handlers=g_list_append(destroy_handlers,h);
 }
 
 int stream_del_destroy_handler(stream_destroy_handler_t h){
-	
+
 	destroy_handlers=g_list_remove(destroy_handlers,h);
 }

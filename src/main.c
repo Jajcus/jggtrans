@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.24 2003/01/15 14:13:12 jajcus Exp $ */
+/* $Id: main.c,v 1.25 2003/01/15 14:17:08 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -426,7 +426,7 @@ guint lh;
 	}
 
 	pid_filename=config_load_string("pidfile");
-	
+
 	restart_timeout=config_load_int("restart_timeout",restart_timeout);
 
 	if (pid_filename && !restarting){
@@ -493,7 +493,7 @@ guint lh;
 		log_file=NULL;
 	}
 	xmlnode_free(config);
-	
+
 	if (do_restart && restart_timeout>=0){
 		fprintf(stderr,"Restarting in %i seconds.\n",restart_timeout);
 		if (restart_timeout>0) sleep(restart_timeout);
