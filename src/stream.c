@@ -1,4 +1,4 @@
-/* $Id: stream.c,v 1.24 2004/04/14 11:00:41 jajcus Exp $ */
+/* $Id: stream.c,v 1.25 2004/04/22 08:05:17 smoku Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -224,8 +224,12 @@ gsize br;
 	if (st==G_IO_STATUS_AGAIN) return TRUE;
 	s->read_buf[br]=0;
 	debug("IN: %s",s->read_buf);
-	xstream_eat(s->xs,s->read_buf,br);
-	return TRUE;
+	if(xstream_eat(s->xs,s->read_buf,br) > XSTREAM_NODE){
+		g_error(L_("Error reading from stream"));
+		return FALSE;
+	}else{
+		return TRUE;
+	}
 }
 
 int stream_io_write(GIOChannel *source,GIOCondition condition,gpointer data){
