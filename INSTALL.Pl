@@ -7,7 +7,9 @@ Aby zbudowaæ jabber-gg-transport potrzeba:
 		Przetestowane z glib-1.2.10
 	
 	- libgadu >= 20030130 lub 1.0 (czê¶æ EKG, http://dev.null.pl/ekg/)
-		Przetestowane z libgadu-1.0
+		Przetestowane z libgadu-1.0 i 1.1
+		Aby u¿ywaæ TLS (szyfrowane po³±czenia do serwera GG) potrzebne
+		jest libgadu >= 1.1
 
 	- pkgconfig (http://www.freedesktop.org/software/pkgconfig/)
 

@@ -1,3 +1,30 @@
+Version 2.0.7
+-------------
+
+This is another bugfix release.
+
+Changes from 2.0.6:
+
+* Multiline messages processing fixes
+
+* Segmentation fault when user with empty resource connects (possible
+  DoS) fixed
+
+* Gadu-Gadu protocol to client version mapping updated
+
+* Status message sent to Jabber user from the transport chopped to 70
+  characters (as seen by GG users)
+
+* Crash after unregistered user requests GG client version (another DoS
+  possibility) fixed
+
+* All contacts are reported to be unavailable when the transport
+  disconnects from GG server
+
+* Send 'away' presence with '(invisible)' status to user instead of
+  invisible presence when going to invisible mode after Jabber invisible
+  presence request
+
 Version 2.0.6
 -------------
 

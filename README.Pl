@@ -31,6 +31,10 @@ http://www.jabberstudio.org/projects/jabber-gg-transport/project/view.php
 
 Mo¿na oczywi¶cie te¿ s³aæ mailem do mnie.
 
+Jest te¿ lista dyskusyjna: jggtrans@lists.bnet.pl
+Aby siê na ni± zapisaæ nale¿y wys³aæ majla na adres: jggtrans-subscribe@lists.bnet.pl
+
+
 	Mi³ego Jabberowania :-)
 	
 		Jacek Konieczny
