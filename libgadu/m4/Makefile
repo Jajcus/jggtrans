@@ -1,0 +1,3 @@
+default:
+	cd .. && ./autogen.sh
+

@@ -1,0 +1,12 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: libgadu
+Version: 20050128
+Description: libgadu
+Requires: @PC_REQUIRES@
+Libs: -L${libdir} -lgadu @LIBS_LIBGADU@
+Cflags: -I${includedir} @CFLAGS_LIBGADU@
+

@@ -1,5 +1,5 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT([jabber-gg-transport], [2.1.0+svn], [jajcus@bnet.pl])
+AC_INIT([jabber-gg-transport], [2.1.99+svn], [jajcus@bnet.pl])
 
 AC_CONFIG_SRCDIR([src/ggtrans.h])
 AM_INIT_AUTOMAKE
@@ -17,16 +17,6 @@ CFLAGS="$CFLAGS -Wall"
 
 AM_PATH_GLIB_2_0([2.0.0],[],AC_MSG_ERROR("You need glib >= 2.0.0 to compile this."))
 PKG_CHECK_MODULES([JK_LIBIDN], [libidn >= 0.3.0])
-
-AC_ARG_WITH([libgadu-snapshot],AC_HELP_STRING([--with-libgadu-snapshot],[Try to compile and link with some libgadu snapshot]))
-if test "x$with_libgadu_snapshot" = "xyes" ; then
-PKG_CHECK_MODULES([JK_LIBGADU], [libgadu >= 20031008])
-else
-PKG_CHECK_MODULES([JK_LIBGADU], [libgadu >= 1.4 libgadu < 20000000])
-fi
-
-AC_SUBST(JK_LIBGADU_LIBS)
-AC_SUBST(JK_LIBGADU_CFLAGS)
 
 AC_SUBST(JK_LIBIDN_LIBS)
 AC_SUBST(JK_LIBIDN_CFLAGS)
@@ -68,7 +58,7 @@ AC_CHECK_FUNCS([isascii],[],AC_MSG_ERROR("Some functions needed are missing"))
 AC_CHECK_FUNCS([select],[],AC_MSG_ERROR("Some functions needed are missing"))
 AC_CHECK_FUNCS([memset strchr],[],AC_MSG_ERROR("Some functions needed are missing"))
 
-AC_CONFIG_SUBDIRS([libxode])
+AC_CONFIG_SUBDIRS([libxode libgadu])
 
 MKINSTALLDIRS="${MKINSTALLDIRS} -m 755"
 XGETTEXT="${XGETTEXT} --keyword=L_"

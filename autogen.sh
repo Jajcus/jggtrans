@@ -1,6 +1,9 @@
 #!/bin/sh
 
+set -x
+
 ( cd libxode ; ./autogen.sh ) || exit 1
+( cd libgadu ; ./autogen.sh ) || exit 1
 
 libtoolize --force || exit $?
 rm -f po/ChangeLog
