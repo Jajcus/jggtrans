@@ -1,4 +1,4 @@
-/* $Id: message.c,v 1.40 2003/06/27 13:52:53 jajcus Exp $ */
+/* $Id: message.c,v 1.41 2003/09/08 08:02:40 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -382,7 +382,7 @@ int on;
 	else
 		message_send(stream,to,from,1,_("friends only: off"),0);
 
-	session_send_status(session);
+	if (session!=NULL) session_send_status(session);
 
 	user_save(user);
 }
@@ -413,7 +413,7 @@ int on;
 	else
 		message_send(stream,to,from,1,_("invisible: off"),0);
 
-	session_send_status(session);
+	if (session!=NULL) session_send_status(session);
 
 	user_save(user);
 }
