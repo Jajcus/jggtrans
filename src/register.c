@@ -1,4 +1,4 @@
-/* $Id: register.c,v 1.32 2003/04/11 16:06:53 mmazur Exp $ */
+/* $Id: register.c,v 1.33 2003/04/13 10:55:32 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -42,7 +42,7 @@ static struct {
 	};
 
 xmlnode register_form(User *u){
-xmlnode form,tag,field;
+xmlnode form,field;
 int i;
 
 	form=form_new(_("Jabber GG transport registration form"),
@@ -67,7 +67,7 @@ int i;
 
 
 xmlnode register_change_form(User *u){
-xmlnode form,tag,field;
+xmlnode form,field;
 int i;
 
 	form=form_new(_("Registration change form"),
@@ -214,6 +214,7 @@ Request *r;
 }
 
 #define FIELD_TO_PUBDIR(fieldname,symbol) \
+	val=0; \
 	field=xmlnode_get_tag(form,"field?var=" fieldname); \
 	if (field!=NULL) { \
 		value=xmlnode_get_tag(field,"value"); \
