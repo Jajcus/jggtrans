@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.46 2003/02/04 13:23:28 jajcus Exp $ */
+/* $Id: sessions.c,v 1.47 2003/02/28 19:04:35 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -102,6 +102,7 @@ GgServer *server;
 				gg_servers=g_list_append(gg_servers, server);
 			}
 			else if (strcmp(p, "server")==0){
+				server=g_new(GgServer, 1);
 				if((r=xmlnode_get_attrib(tag, "port")))
 					server->port=atoi(r);
 				else
