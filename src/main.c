@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.53 2004/02/26 07:32:54 jajcus Exp $ */
+/* $Id: main.c,v 1.54 2004/03/05 08:39:41 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -236,6 +236,7 @@ void log_handler_syslog(const gchar *log_domain, GLogLevelFlags log_level,
 	}
 }
 
+#ifdef ENABLE_NLS
 const char *local_translate(const char *str){
 char *lc_ctype,*lc_messages,*td_codeset,*ret;
 
@@ -260,10 +261,12 @@ char *lc_ctype,*lc_messages,*td_codeset,*ret;
 
 	return ret;
 }
+#endif
 
 void log_handler(const gchar *log_domain, GLogLevelFlags log_level,
 			const gchar *message, gpointer user_data){
 
+#ifdef ENABLE_NLS	
 char *lc_ctype,*lc_messages,*td_codeset;
 
 	td_codeset=g_strdup(bind_textdomain_codeset(PACKAGE,NULL));
@@ -271,22 +274,25 @@ char *lc_ctype,*lc_messages,*td_codeset;
 	lc_messages=g_strdup(setlocale(LC_MESSAGES,NULL));
 	setlocale(LC_MESSAGES,"");
 	setlocale(LC_CTYPE,"");
-#ifdef HAVE_LANGINFO_CODESET
+#  ifdef HAVE_LANGINFO_CODESET
 	bind_textdomain_codeset(PACKAGE,nl_langinfo(CODESET));
-#endif
+#  endif
 /*	textdomain(PACKAGE);*/
+#endif
 
 	log_level&=G_LOG_LEVEL_MASK;
 	if (foreground) log_handler_file(stderr,log_domain,log_level,message);
 	if (log_file) log_handler_file(log_file,log_domain,log_level,message);
 	if (use_syslog) log_handler_syslog(log_domain,log_level,message);
 
+#ifdef ENABLE_NLS	
 	setlocale(LC_CTYPE,lc_ctype);
 	setlocale(LC_MESSAGES,lc_messages);
 	bind_textdomain_codeset(PACKAGE,td_codeset);
 	g_free(lc_ctype);
 	g_free(lc_messages);
 	g_free(td_codeset);
+#endif
 }
 
 void daemonize(FILE *pidfile){
@@ -441,10 +447,12 @@ guint lh;
 				| G_LOG_LEVEL_MESSAGE | G_LOG_LEVEL_INFO
 				| G_LOG_LEVEL_DEBUG,log_handler,NULL);
 
+#ifdef ENABLE_NLS
 	/* now the log handlers worry about the right language */
 	setlocale(LC_MESSAGES,"C");
 	setlocale(LC_CTYPE,"C");
 	bind_textdomain_codeset(PACKAGE,"UTF-8");
+#endif
 
 	config=xmlnode_file(config_file);
 	if (!config){

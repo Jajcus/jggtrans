@@ -1,4 +1,4 @@
-/* $Id: ggtrans.h,v 1.12 2003/04/22 08:44:29 jajcus Exp $ */
+/* $Id: ggtrans.h,v 1.13 2004/03/05 08:39:41 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -25,16 +25,22 @@
 #include <glib.h>
 #include "../config.h"
 
+#ifdef ENABLE_NLS
 /* gettext shortcut for translating messages */
-#define _(String) gettext (String)
+#  define _(String) gettext (String)
 
 /* dummy gettext shortcut for translations out-of-place */
-#define N_(String) (String)
+#  define N_(String) (String)
 
 /* gettext shortcut for translating error/debug messages (locale/encoding must be switched) */
-#define L_(String) local_translate(String)
-
+#  define L_(String) local_translate(String)
 const char *local_translate(const char *str);
+#else
+#  define _(String) String
+#  define N_(String) String
+#  define L_(String) String
+#endif
+
 
 extern GMainLoop *main_loop;
 extern gboolean do_restart;
