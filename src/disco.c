@@ -1,4 +1,4 @@
-/* $Id: disco.c,v 1.6 2003/04/17 12:04:03 jajcus Exp $ */
+/* $Id: disco.c,v 1.7 2003/04/24 07:50:45 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -26,7 +26,7 @@
 #include "jid.h"
 #include "sessions.h"
 
-static const char *extra_features[]={"iq","message","presence","presence-invisible",NULL};
+static const char *extra_features[]={"iq","message","presence",/*"presence-invisible",*/NULL};
 
 static void disco_session(gpointer key,gpointer value,gpointer data){
 const char *jid=(char *)key;
