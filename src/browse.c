@@ -22,11 +22,18 @@ GgServer *server;
 
 	if (sess->current_server){
 		server=(GgServer *)sess->current_server->data;	
-		if (!server || server->port==1)
-			str=g_strdup_printf("%s (%s via hub)",jid,
-					sess->connected?_("Connected"):_("Connecting"));
+		if (!server || server->port==1){
+			if (sess->connected) {
+				str=g_strdup_printf(_("%s (Connected via hub to %s:%i)"),jid,
+						inet_ntoa(*(struct in_addr*)&sess->ggs->server_addr),
+						sess->ggs->port);
+			}
+			else{
+				str=g_strdup_printf(_("%s (Connecting via hub)"),jid);
+			}
+		}
 		else
-			str=g_strdup_printf("%s (%s to %s:%u)",jid,
+			str=g_strdup_printf(_("%s (%s to %s:%u)"),jid,
 					sess->connected?_("Connected"):_("Connecting"),
 					inet_ntoa(server->addr),server->port);
 	}
