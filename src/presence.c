@@ -1,4 +1,4 @@
-/* $Id: presence.c,v 1.28 2003/04/12 12:37:13 mmazur Exp $ */
+/* $Id: presence.c,v 1.29 2003/04/12 13:20:42 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -256,11 +256,6 @@ int r;
 	return 0;
 }
 
-int presence_subscribed(struct stream_s *stream,const char *from,const char *to){
-
-	return 0;
-}
-
 int presence_unsubscribed(struct stream_s *stream,const char *from,const char *to){
 
 	if (!jid_is_me(to)) return 0;
@@ -428,7 +423,7 @@ User *u;
 	else if (!strcmp(type,"unsubscribe"))
 		return presence_unsubscribe(stream,from,to);
 	else if (!strcmp(type,"subscribed"))
-		return presence_subscribed(stream,from,to);
+		return presence_subscribe(stream,from,to);
 	else if (!strcmp(type,"unsubscribed"))
 		return presence_unsubscribed(stream,from,to);
 	else if (!strcmp(type,"probe"))
