@@ -231,7 +231,7 @@ msgstr "Nieprawidłowa nazwa hosta w JID: %s[%i:%i]"
 #: src/main.c:180
 #, c-format
 msgid "Fatal error: %s\n"
-msgstr "Fatalny błąd: %s\n"
+msgstr "Błąd krytyczny: %s\n"
 
 #: src/main.c:183
 #, c-format
@@ -256,7 +256,7 @@ msgstr "Nieznany: %s\n"
 #: src/main.c:209
 #, c-format
 msgid "Fatal error: %s"
-msgstr "Fatalny błąd"
+msgstr "Błąd krytyczny: %s"
 
 #: src/main.c:212
 #, c-format
