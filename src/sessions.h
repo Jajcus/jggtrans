@@ -1,4 +1,4 @@
-/* $Id: sessions.h,v 1.18 2003/04/13 15:55:43 jajcus Exp $ */
+/* $Id: sessions.h,v 1.19 2003/04/14 17:01:18 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -46,8 +46,9 @@ typedef struct session_s{
 	GList *resources;
 
 	char *req_id;  /* ID if user registration request (<iq/>) */
+	
 	xmlnode query; /* The query */
-
+	gg_pubdir50_t pubdir_change; /* Info for public directory change reqested on registration */
 	guint ping_timeout_func;
 	guint timeout_func;
 	GTimer *ping_timer;

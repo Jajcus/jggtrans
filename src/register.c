@@ -1,4 +1,4 @@
-/* $Id: register.c,v 1.34 2003/04/13 11:19:47 jajcus Exp $ */
+/* $Id: register.c,v 1.35 2003/04/14 17:01:18 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -643,11 +643,12 @@ Request *r;
 		g_free(born);
 	}
 
-	r=add_request(RT_CHANGE,from,to,id,NULL,change,s);
-	gg_pubdir50_free(change);
-	if (!r){
-		session_remove(session);
-		jabber_iq_send_error(s,from,to,id,500,_("Internal Server Error"));
+	if (session->connected){
+		r=add_request(RT_CHANGE,from,to,id,NULL,change,s);
+		gg_pubdir50_free(change);
+	}
+	else{
+		session->pubdir_change=change;
 	}
 }
 

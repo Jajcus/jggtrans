@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.58 2003/04/14 16:30:38 jajcus Exp $ */
+/* $Id: sessions.c,v 1.59 2003/04/14 17:01:18 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -403,7 +403,12 @@ time_t timestamp;
 			if (s->timeout_func) g_source_remove(s->timeout_func);
 			s->ping_timeout_func=
 				g_timeout_add(ping_interval*1000,session_ping,s);
-			request_do_pubdir_update(s);
+			if (s->pubdir_change){
+				add_request(RT_CHANGE,s->jid,NULL,s->req_id,
+							NULL,s->pubdir_change,s->s);
+				gg_pubdir50_free(s->pubdir_change);
+				s->pubdir_change=NULL;
+			}
 			break;
 		case GG_EVENT_NOTIFY:
 			session_event_notify(s,event);

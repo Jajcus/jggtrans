@@ -1,4 +1,4 @@
-/* $Id: requests.c,v 1.30 2003/04/13 21:50:48 mmazur Exp $ */
+/* $Id: requests.c,v 1.31 2003/04/14 17:01:18 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -33,7 +33,6 @@
 
 static GList *requests=NULL;
 static GHashTable *lookups=NULL;
-static GHashTable *changes=NULL;
 static int id_counter=0;
 
 int requests_init(){
@@ -41,9 +40,6 @@ int requests_init(){
 	id_counter=time(NULL);
 	lookups=g_hash_table_new(g_int_hash, g_int_equal);
 	if(!lookups)
-		return 1;
-	changes=g_hash_table_new(g_int_hash, g_int_equal);
-	if(!changes)
 		return 1;
 	return 0;
 }
@@ -100,19 +96,6 @@ Request *r;
 		debug("Query not defined in request - not sending result.");
 }
 
-
-void request_do_pubdir_update(Session *s){
-Request *r;
-
-	r=g_hash_table_lookup(changes, s);
-	if(!r) return;
-	g_hash_table_remove(changes, s);
-
-	debug("gg_pubdir50()");
-
-	gg_pubdir50(s->ggs, r->ggchange);
-	gg_pubdir50_free(r->ggchange);
-}
 
 int request_io_handler(GIOChannel *source,GIOCondition condition,gpointer data){
 Request *r;
