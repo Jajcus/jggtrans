@@ -1,4 +1,4 @@
 
 SUBDIRS = libxode src
 
-EXTRA_DIST = ggtrans.xml ggtrans.xml.pl TODO BUGS README.pl INSTALL.pl
+EXTRA_DIST = ggtrans.xml ggtrans.xml.Pl TODO BUGS README.Pl INSTALL.Pl
