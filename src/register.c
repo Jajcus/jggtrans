@@ -1,4 +1,4 @@
-/* $Id: register.c,v 1.29 2003/04/10 17:19:18 jajcus Exp $ */
+/* $Id: register.c,v 1.30 2003/04/11 13:26:21 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -28,6 +28,7 @@
 #include "debug.h"
 #include "requests.h"
 #include "encoding.h"
+#include "forms.h"
 
 char *register_instructions;
 
@@ -41,7 +42,7 @@ static struct {
 	};
 
 xmlnode register_form(User *u){
-xmlnode form,tag,field,option,value;
+xmlnode form,tag,field;
 int i;
 
 	form=xmlnode_new_tag("x");
@@ -53,60 +54,25 @@ int i;
 	xmlnode_insert_cdata(tag,_("Fill in this form to regiser in the transport.\n"
 				"You may use registration later to change your settings,"
 				" password, public directory information or to unregister."),-1);
+
+	form_add_field(form,"text-single","uin",_("GG number"),NULL,1);
+	form_add_field(form,"text-private","password",_("Password"),NULL,1);
+	/* form_add_field(form,"boolean","new",_("Create new account"),"0",1); */
+
+
+	field=form_add_field(form,"list-single","locale",_("Language"),default_user_locale,0);
+	for(i=0;locale_mapping[i].locale!=NULL;i++)
+		form_add_option(field,locale_mapping[i].lang_name,locale_mapping[i].locale);
 	
-	field=xmlnode_insert_tag(form,"field");
-	xmlnode_put_attrib(field,"type","text-single");
-	xmlnode_put_attrib(field,"var","uin");
-	xmlnode_insert_tag(field,"required");
-	xmlnode_put_attrib(field,"label",_("GG number"));
-
-	field=xmlnode_insert_tag(form,"field");
-	xmlnode_put_attrib(field,"type","text-private");
-	xmlnode_put_attrib(field,"var","password");
-	xmlnode_insert_tag(field,"required");
-	xmlnode_put_attrib(field,"label",_("Password"));
-
-/*	field=xmlnode_insert_tag(form,"field");
-	xmlnode_put_attrib(field,"type","boolean");
-	xmlnode_put_attrib(field,"label",_("Create new account"));
-	xmlnode_put_attrib(field,"var","create");
-	xmlnode_insert_tag(field,"required");
-	value=xmlnode_insert_tag(field,"value");
-	xmlnode_insert_cdata(value,"0",-1); */
-
-	field=xmlnode_insert_tag(form,"field");
-	xmlnode_put_attrib(field,"type","list-single");
-	xmlnode_put_attrib(field,"label",_("Language"));
-	xmlnode_put_attrib(field,"var","locale");
-	value=xmlnode_insert_tag(field,"value");
-	xmlnode_insert_cdata(value,default_user_locale,-1);
-	for(i=0;locale_mapping[i].locale!=NULL;i++){
-		option=xmlnode_insert_tag(field,"option");
-		xmlnode_put_attrib(option,"label",locale_mapping[i].lang_name);
-		value=xmlnode_insert_tag(option,"value");
-		xmlnode_insert_cdata(value,locale_mapping[i].locale,-1);
-	}
-	
-	field=xmlnode_insert_tag(form,"field");
-	xmlnode_put_attrib(field,"type","boolean");
-	xmlnode_put_attrib(field,"label",_("Friends only"));
-	xmlnode_put_attrib(field,"var","friends_only");
-	value=xmlnode_insert_tag(field,"value");
-	xmlnode_insert_cdata(value,"1",-1);
-
-	field=xmlnode_insert_tag(form,"field");
-	xmlnode_put_attrib(field,"type","boolean");
-	xmlnode_put_attrib(field,"label",_("Invisible"));
-	xmlnode_put_attrib(field,"var","invisible");
-	value=xmlnode_insert_tag(field,"value");
-	xmlnode_insert_cdata(value,"0",-1);
+	form_add_field(form,"boolean","friends_only",_("Friends only"),"1",1);
+	form_add_field(form,"boolean","invisible",_("Invisible"),"1",1);
 
 	return form;
 }
 
 
 xmlnode register_change_form(User *u){
-xmlnode form,tag,field,option,value;
+xmlnode form,tag,field;
 int i;
 
 	form=xmlnode_new_tag("x");
@@ -120,154 +86,41 @@ int i;
 				" public directory or unregister from the"
 				" transport."),-1);
 	
-	field=xmlnode_insert_tag(form,"field");
-	xmlnode_put_attrib(field,"type","list-single");
-	xmlnode_put_attrib(field,"label",_("Action"));
-	xmlnode_put_attrib(field,"var","action");
-	xmlnode_insert_tag(field,"required");
-	value=xmlnode_insert_tag(field,"value");
-	xmlnode_insert_cdata(value,"options",-1);
-	option=xmlnode_insert_tag(field,"option");
-	xmlnode_put_attrib(option,"label",_("Change account options"));
-	value=xmlnode_insert_tag(option,"value");
-	xmlnode_insert_cdata(value,"options",-1);
-	option=xmlnode_insert_tag(field,"option");
-	xmlnode_put_attrib(option,"label",_("Change password"));
-	value=xmlnode_insert_tag(option,"value");
-	xmlnode_insert_cdata(value,"passwd",-1);
-	option=xmlnode_insert_tag(field,"option");
-	xmlnode_put_attrib(option,"label",_("Change public directory information:"));
-	value=xmlnode_insert_tag(option,"value");
-	xmlnode_insert_cdata(value,"pubdir",-1);
-	option=xmlnode_insert_tag(field,"option");
-	xmlnode_put_attrib(option,"label",_("Unregister"));
-	value=xmlnode_insert_tag(option,"value");
-	xmlnode_insert_cdata(value,"unregister",-1);
+	field=form_add_field(form,"list-single","action",_("Action"),"options",1);
+	form_add_option(field,_("Change account options"),"options");
+	form_add_option(field,_("Change password"),"passwd");
+	form_add_option(field,_("Change public directory information"),"pubdir");
+	form_add_option(field,_("Unregister"),"unregister");
 	
 	
-	field=xmlnode_insert_tag(form,"field");
-	xmlnode_put_attrib(field,"type","fixed");
-	value=xmlnode_insert_tag(field,"value");
-	xmlnode_insert_cdata(value,_("Fill out this part only when changing account options:"),-1);
+	form_add_fixed(form,_("Fill out this part only when changing account options:"));
+	field=form_add_field(form,"list-single","locale",_("Language"),
+			(u->locale&&u->locale[0])?u->locale:"",0);
+	for(i=0;locale_mapping[i].locale!=NULL;i++)
+		form_add_option(field,locale_mapping[i].lang_name,locale_mapping[i].locale);
+	form_add_field(form,"boolean","friends_only",_("Friends only"),
+						u->friends_only?"1":"0",0);
+	form_add_field(form,"boolean","invisible",_("Invisible"),
+						u->invisible?"1":"0",0);
 
-	field=xmlnode_insert_tag(form,"field");
-	xmlnode_put_attrib(field,"type","list-single");
-	xmlnode_put_attrib(field,"label",_("Language"));
-	xmlnode_put_attrib(field,"var","locale");
-	value=xmlnode_insert_tag(field,"value");
-	if (u->locale && u->locale[0])
-		xmlnode_insert_cdata(value,u->locale,-1);
-	else 
-		xmlnode_insert_cdata(value,"",-1);
-	for(i=0;locale_mapping[i].locale!=NULL;i++){
-		option=xmlnode_insert_tag(field,"option");
-		xmlnode_put_attrib(option,"label",locale_mapping[i].lang_name);
-		value=xmlnode_insert_tag(option,"value");
-		xmlnode_insert_cdata(value,locale_mapping[i].locale,-1);
-	}
-	
-	field=xmlnode_insert_tag(form,"field");
-	xmlnode_put_attrib(field,"type","boolean");
-	xmlnode_put_attrib(field,"label",_("Friends only"));
-	xmlnode_put_attrib(field,"var","friends_only");
-	value=xmlnode_insert_tag(field,"value");
-	if (u->friends_only)
-		xmlnode_insert_cdata(value,"1",-1);
-	else
-		xmlnode_insert_cdata(value,"0",-1);
+	form_add_fixed(form,_("Fill out this part only when changing password:"));
+	form_add_field(form,"text-private","newpassword",_("New password"),NULL,0);
+	form_add_field(form,"text-private","newpassword2",_("Confirm new password"),NULL,0);
+	form_add_field(form,"text-single","question",_("Question"),NULL,0);
+	form_add_field(form,"text-single","answer",_("Answer"),NULL,0);
 
-	field=xmlnode_insert_tag(form,"field");
-	xmlnode_put_attrib(field,"type","boolean");
-	xmlnode_put_attrib(field,"label",_("Invisible"));
-	xmlnode_put_attrib(field,"var","invisible");
-	value=xmlnode_insert_tag(field,"value");
-	if (u->invisible)
-		xmlnode_insert_cdata(value,"1",-1);
-	else
-		xmlnode_insert_cdata(value,"0",-1);
-
-	field=xmlnode_insert_tag(form,"field");
-	xmlnode_put_attrib(field,"type","fixed");
-	value=xmlnode_insert_tag(field,"value");
-	xmlnode_insert_cdata(value,_("Fill out this part only when changing password:"),-1);
-
-	field=xmlnode_insert_tag(form,"field");
-	xmlnode_put_attrib(field,"type","text-private");
-	xmlnode_put_attrib(field,"var","newpassword");
-	xmlnode_put_attrib(field,"label",_("New password"));
-
-	field=xmlnode_insert_tag(form,"field");
-	xmlnode_put_attrib(field,"type","text-private");
-	xmlnode_put_attrib(field,"var","newpassword2");
-	xmlnode_put_attrib(field,"label",_("Confirm new password"));
-
-	field=xmlnode_insert_tag(form,"field");
-	xmlnode_put_attrib(field,"type","text-single");
-	xmlnode_put_attrib(field,"var","question");
-	xmlnode_put_attrib(field,"label",_("Question"));
-	
-	field=xmlnode_insert_tag(form,"field");
-	xmlnode_put_attrib(field,"type","text-single");
-	xmlnode_put_attrib(field,"var","answer");
-	xmlnode_put_attrib(field,"label",_("Answer"));
-
-	field=xmlnode_insert_tag(form,"field");
-	xmlnode_put_attrib(field,"type","fixed");
-	value=xmlnode_insert_tag(field,"value");
-	xmlnode_insert_cdata(value,_("Fill out this part only when changing public directory info:"),-1);
-
-	field=xmlnode_insert_tag(form,"field");
-	xmlnode_put_attrib(field,"type","text-single");
-	xmlnode_put_attrib(field,"var","firstname");
-	xmlnode_put_attrib(field,"label",_("First name"));
-
-	field=xmlnode_insert_tag(form,"field");
-	xmlnode_put_attrib(field,"type","text-single");
-	xmlnode_put_attrib(field,"var","lastname");
-	xmlnode_put_attrib(field,"label",_("Last name"));
-
-	field=xmlnode_insert_tag(form,"field");
-	xmlnode_put_attrib(field,"type","text-single");
-	xmlnode_put_attrib(field,"var","nick");
-	xmlnode_put_attrib(field,"label",_("Nick"));
-
-	field=xmlnode_insert_tag(form,"field");
-	xmlnode_put_attrib(field,"type","text-single");
-	xmlnode_put_attrib(field,"var","birthyear");
-	xmlnode_put_attrib(field,"label",_("Birth year"));
-
-	field=xmlnode_insert_tag(form,"field");
-	xmlnode_put_attrib(field,"type","text-single");
-	xmlnode_put_attrib(field,"var","city");
-	xmlnode_put_attrib(field,"label",_("City"));
-
-	field=xmlnode_insert_tag(form,"field");
-	xmlnode_put_attrib(field,"type","list-single");
-	xmlnode_put_attrib(field,"var","gender");
-	xmlnode_put_attrib(field,"label",_("Sex"));
-	value=xmlnode_insert_tag(field,"value");
-	option=xmlnode_insert_tag(field,"option");
-	xmlnode_put_attrib(option,"label","");
-	value=xmlnode_insert_tag(option,"value");
-	xmlnode_insert_cdata(value,"",-1);
-	option=xmlnode_insert_tag(field,"option");
-	xmlnode_put_attrib(option,"label","female");
-	value=xmlnode_insert_tag(option,"value");
-	xmlnode_insert_cdata(value,GG_PUBDIR50_GENDER_FEMALE,-1);
-	option=xmlnode_insert_tag(field,"option");
-	xmlnode_put_attrib(option,"label","male");
-	value=xmlnode_insert_tag(option,"value");
-	xmlnode_insert_cdata(value,GG_PUBDIR50_GENDER_MALE,-1);
-
-	field=xmlnode_insert_tag(form,"field");
-	xmlnode_put_attrib(field,"type","text-single");
-	xmlnode_put_attrib(field,"var","familyname");
-	xmlnode_put_attrib(field,"label",_("Family name"));
-
-	field=xmlnode_insert_tag(form,"field");
-	xmlnode_put_attrib(field,"type","text-single");
-	xmlnode_put_attrib(field,"var","familycity");
-	xmlnode_put_attrib(field,"label",_("Family city"));
+	form_add_fixed(form,_("Fill out this part only when changing public directory info:"));
+	form_add_field(form,"text-single","firstname",_("First name"),NULL,0);
+	form_add_field(form,"text-single","lastname",_("Last name"),NULL,0);
+	form_add_field(form,"text-single","nick",_("Nick"),NULL,0);
+	form_add_field(form,"text-single","birthyear",_("Birth year"),NULL,0);
+	form_add_field(form,"text-single","city",_("City"),NULL,0);
+	field=form_add_field(form,"list-single","gender",_("Sex"),NULL,0);
+	form_add_option(field,"","");
+	form_add_option(field,"female",GG_PUBDIR50_GENDER_FEMALE);
+	form_add_option(field,"male",GG_PUBDIR50_GENDER_MALE);
+	form_add_field(form,"text-single","familyname",_("Family name"),NULL,0);
+	form_add_field(form,"text-single","familycity",_("Family city"),NULL,0);
 	
 	return form;
 }
@@ -395,7 +248,7 @@ gg_pubdir50_t change;
 	change=gg_pubdir50_new(GG_PUBDIR50_WRITE);
 
 	FIELD_TO_PUBDIR("firstname",GG_PUBDIR50_FIRSTNAME);
-	FIELD_TO_PUBDIR("lastname",GG_PUBDIR50_FIRSTNAME);
+	FIELD_TO_PUBDIR("lastname",GG_PUBDIR50_LASTNAME);
 	FIELD_TO_PUBDIR("nick",GG_PUBDIR50_NICKNAME);
 	FIELD_TO_PUBDIR("city",GG_PUBDIR50_CITY);
 
@@ -406,9 +259,10 @@ gg_pubdir50_t change;
 	}
 	if (val!=NULL && val[0] && ( !strcmp(val,GG_PUBDIR50_GENDER_FEMALE) 
 					|| !strcmp(val,GG_PUBDIR50_GENDER_FEMALE)) )
-		gg_pubdir50_add(change, GG_PUBDIR50_NICKNAME, val);
+		gg_pubdir50_add(change, GG_PUBDIR50_GENDER, val);
 
-	field=xmlnode_get_tag(form,"field?var=gender");
+	val=NULL;
+	field=xmlnode_get_tag(form,"field?var=birthyear");
 	if (field!=NULL) {
 		value=xmlnode_get_tag(field,"value");
 		if (value!=NULL) val=xmlnode_get_data(value);
@@ -421,10 +275,8 @@ gg_pubdir50_t change;
 	FIELD_TO_PUBDIR("familyname",GG_PUBDIR50_FAMILYNAME);
 	FIELD_TO_PUBDIR("familycity",GG_PUBDIR50_FAMILYCITY);
 
-	gg_pubdir50(session->ggs, change);
+	r=add_request(RT_CHANGE,from,to,id,q,change,s);
 	gg_pubdir50_free(change);
-	
-	r=add_request(RT_CHANGE,from,to,id,q,(void*)change,s);
 	if (!r){
 		session_remove(session);
 		jabber_iq_send_error(s,from,to,id,500,_("Internal Server Error"));
@@ -807,10 +659,8 @@ Request *r;
 		g_free(born);
 	}
 
-	gg_pubdir50(session->ggs, change);
+	r=add_request(RT_CHANGE,from,to,id,NULL,change,s);
 	gg_pubdir50_free(change);
-	
-	r=add_request(RT_CHANGE,from,to,id,q,change,s);
 	if (!r){
 		session_remove(session);
 		jabber_iq_send_error(s,from,to,id,500,_("Internal Server Error"));
