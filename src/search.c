@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.30 2003/04/13 11:19:47 jajcus Exp $ */
+/* $Id: search.c,v 1.31 2003/04/13 14:18:03 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -36,6 +36,11 @@
 
 const char *search_instructions;
 
+struct search_req_s {
+	int start;
+	int maxgroups;
+};
+
 void jabber_iq_set_search_byform(Stream *s,const char *from,const char *to,
 				const char *id,xmlnode q,int maxgroups,int start);
 
@@ -64,25 +69,33 @@ xmlnode form,field;
 #define GG_SEARCH_FRIENDS_MASK	0x0080
 
 int search_byform_done(struct request_s *r, gg_pubdir50_t results){
-int maxgroups,i,next;
+int i,start,next,maxgroups;
 xmlnode q,form,item;
 char *jid;
 const char *val;
+struct search_req_s *sr;
 
-	maxgroups=GPOINTER_TO_INT(r->data)-1;
+	sr=(struct search_req_s *)r->data;
+	maxgroups=sr->maxgroups-1;
+	start=sr->start;
+	g_free(sr);
+	
 	q=xmlnode_new_tag("query");
 	xmlnode_put_attrib(q,"xmlns","jabber:iq:search");
 	form=form_new_result(_("GG public directory search results"));
 
-	form_add_result_field(form,"jid",_("JID"),"jid-single");
-	form_add_result_field(form,"status",_("Status"),"text-single");
-	form_add_result_field(form,"firstname",_("First name"),"text-single");
-	form_add_result_field(form,"lastname",_("Last name"),"text-single");
-	form_add_result_field(form,"city",_("City"),"text-single");
-	form_add_result_field(form,"gender",_("Sex"),"text-single");
-	form_add_result_field(form,"birthyear","Birth year","text-single");
-	form_add_result_field(form,"familyname",_("Family name"),"text-single");
-	form_add_result_field(form,"familycity",_("Family city"),"text-single");
+	if (start==0){
+		form_add_result_field(form,"jid",_("JID"),"jid-single");
+		form_add_result_field(form,"nick",_("Nick"),"text-single");
+		form_add_result_field(form,"status",_("Status"),"text-single");
+		form_add_result_field(form,"firstname",_("First name"),"text-single");
+		form_add_result_field(form,"lastname",_("Last name"),"text-single");
+		form_add_result_field(form,"city",_("City"),"text-single");
+		form_add_result_field(form,"gender",_("Sex"),"text-single");
+		form_add_result_field(form,"birthyear","Birth year","text-single");
+		form_add_result_field(form,"familyname",_("Family name"),"text-single");
+		form_add_result_field(form,"familycity",_("Family city"),"text-single");
+	}
 
 	for(i=0;i<gg_pubdir50_count(results);i++){
 		item=form_add_result_item(form);
@@ -91,6 +104,8 @@ const char *val;
 		jid=jid_build(atoi(val));
 		form_add_result_value(item,"jid",jid);
 		g_free(jid);
+		val=gg_pubdir50_get(results, i, GG_PUBDIR50_NICKNAME);
+		form_add_result_value(item,"nick",to_utf8(val));
 		val=gg_pubdir50_get(results, i, GG_PUBDIR50_STATUS);
 		switch((val)?(atoi(val) & ~GG_SEARCH_FRIENDS_MASK):-1){
 			case GG_STATUS_AVAIL:
@@ -127,7 +142,7 @@ const char *val;
 	xmlnode_free(q);
 	if (maxgroups>0){
 		next=gg_pubdir50_next(results);
-		if (next>0)
+		if (next>0 && next>start)
 			jabber_iq_set_search_byform(r->stream,r->from,r->to,r->id,
 						xmlnode_dup(r->query),maxgroups,next);
 	}
@@ -234,6 +249,7 @@ char *val;
 gg_pubdir50_t search;
 Session *sess;
 Request *r;
+struct search_req_s *sr;
 
 	form=xmlnode_get_tag(q,"x?xmlns=jabber:x:data");
 
@@ -292,7 +308,10 @@ Request *r;
 	}
 
 	r=add_request(RT_SEARCH,from,to,id,q,search,s);
-	r->data=GINT_TO_POINTER(maxgroups);
+	sr=g_new(struct search_req_s,1);
+	sr->maxgroups=maxgroups;
+	sr->start=start;
+	r->data=sr;
 	gg_pubdir50_free(search);
 }
 
