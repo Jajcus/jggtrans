@@ -38,6 +38,8 @@ ggtrans_HEADERS= \
 
 all: jggtrans
 
+.deps:	dep
+
 dep:
 	$(CC) $(INCLUDES) -MM *.c > .deps
 
