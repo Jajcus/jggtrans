@@ -145,6 +145,7 @@
 	ustawiony atrybut "port" zawierający numer portu na serwerze.
 	Jeżeli TLS jest dostępne (obsługiwane przez libgadu) i nie jest
 	ustawione tls="no", to połączenie z serwerem GG będzie szyfrowane.
+	Uwaga: nie każdy serwer przyjmie połączenie TLS.
 	Jggtrans będzie się próbował łączyć z podanymi serwerami w podanej
 	kolejności i użyje pierwszego działającego.
 	Rozsądna domyślna lista serwerów jest wkompilowana w jggtrans.
@@ -152,12 +153,9 @@
  <!--
  <servers>
 	<hub/>
-	<server>217.17.41.84</server>
-	<server>217.17.41.85</server>
-	<server port="8074">217.17.41.86</server>
-	<hub tls="no"/>
-	<server tls="no">217.17.41.84</server>
+	<server port="443">217.17.41.90</server>
 	<server tls="no">217.17.41.85</server>
+	<server tls="no">217.17.41.88</server>
  </servers>
  -->
 

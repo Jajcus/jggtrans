@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.79 2003/05/27 08:25:14 jajcus Exp $ */
+/* $Id: sessions.c,v 1.80 2003/05/27 08:52:02 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -129,7 +129,7 @@ GgServer *server;
 		server=g_new(GgServer, 1);
 		inet_aton("217.17.41.85", &server->addr);
 		server->port=8074;
-		server->tls=1;
+		server->tls=0;
 		gg_servers=g_list_append(gg_servers, server);
 	}
 

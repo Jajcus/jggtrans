@@ -130,7 +130,8 @@
  	<hub/> means "use GG hub to find server"
       	<server/> tag should contain server address and may contain "port"
 	attribute with port number. When TLS is available (supported by libgadu)
-	it will be used unless "tls" attribute is set to "no".
+	it will be used unless "tls" attribute is set to "no". Please notice,
+	that not all servers will accept TLS connections.
 	Servers (including hub) are tried in order as they appear in <servers/>
 	element.
 	A reasonable default server list is hardcoded in jggtrans.
@@ -138,12 +139,9 @@
  <!--
  <servers>
 	<hub/>
-	<server>217.17.41.84</server>
-	<server>217.17.41.85</server>
-	<server port="8074">217.17.41.86</server>
-	<hub tls="no"/>
-	<server tls="no">217.17.41.84</server>
+	<server port="443">217.17.41.90</server>
 	<server tls="no">217.17.41.85</server>
+	<server tls="no">217.17.41.88</server>
  </servers>
  -->
 
