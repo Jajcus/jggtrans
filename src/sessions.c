@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.92 2003/09/09 13:33:42 jajcus Exp $ */
+/* $Id: sessions.c,v 1.93 2003/09/10 07:25:38 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -631,6 +631,7 @@ int r;
 	login_params.password=from_utf8(s->user->password);
 	login_params.async=1;
 	login_params.last_sysmsg=s->user->last_sys_msg;
+	login_params.protocol_version=0x18;
 
 	r=session_make_status(s);
 	if (r!=-1){
@@ -647,10 +648,6 @@ int r;
 #ifdef __GG_LIBGADU_HAVE_OPENSSL
 	debug(N_("Turning TLS %s"), serv->tls?"on":"off");
 	login_params.tls=serv->tls;
-	if (serv->tls)
-		login_params.protocol_version=0x20;
-	else
-		login_params.protocol_version=0x18;
 #endif
 
 	if (s->ggs) gg_free_session(s->ggs);
