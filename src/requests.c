@@ -1,4 +1,4 @@
-/* $Id: requests.c,v 1.15 2003/01/15 08:04:56 jajcus Exp $ */
+/* $Id: requests.c,v 1.16 2003/01/15 15:17:28 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -60,6 +60,7 @@ GIOCondition cond;
 			r->io_watch=0;
 			remove_request(r);
 			return FALSE;
+#ifdef REMOTE_USERLIST
 		case RT_USERLIST_GET:
 			t=gg_userlist_get_watch_fd(r->gghttp);
 			if (t || r->gghttp->state==GG_STATE_ERROR) get_roster_error(r);
@@ -76,6 +77,7 @@ GIOCondition cond;
 			r->io_watch=0;
 			remove_request(r);
 			return FALSE;
+#endif /* REMOTE USERLIST */
 		default:
 			g_warning("Unknow gg_http session type: %i",r->gghttp->type);
 			gg_http_watch_fd(r->gghttp);

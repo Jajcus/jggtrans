@@ -62,13 +62,19 @@ AC_CHECK_LIB([gadu], [gg_change_info],[],AC_MSG_ERROR("You need libgadu (from ek
 
 AC_ARG_ENABLE([debug],AC_HELP_STRING([--disable-debug],[Disable debugging code]))
 
+AC_ARG_ENABLE([remote-userlist],AC_HELP_STRING([--enable-remote-userlist],[Enable support for contact lists on server]))
+
 AC_ARG_WITH([efence],AC_HELP_STRING([--with-efence],[Link against ElectricFence library]))
 
 if test "x$enable_debug" != "xno" ; then
 	AC_DEFINE(DEBUG,1,[Define to enable debugging code])
 fi
 
-if test "x$with_efence" == "xyes" ; then
+if test "x$enable_remote_userlist" = "xyes" ; then
+	AC_DEFINE(REMOTE_USERLIST,1,[Define to enable remote userlist support])
+fi
+
+if test "x$with_efence" = "xyes" ; then
 	AC_CHECK_LIB([efence], [malloc])
 fi
 

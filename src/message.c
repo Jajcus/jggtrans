@@ -1,4 +1,4 @@
-/* $Id: message.c,v 1.15 2003/01/15 08:04:56 jajcus Exp $ */
+/* $Id: message.c,v 1.16 2003/01/15 15:17:28 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -47,8 +47,10 @@ void message_invisible(struct stream_s *s,const char *from, const char *to,
 				const char *args, xmlnode msg);
 
 MsgCommand msg_commands[]={
+#ifdef REMOTE_USERLIST
 	{"get roster","gr",message_get_roster,1},
 	{"put roster","pr",message_put_roster,1},
+#endif
 	{"friends only","fo",message_friends_only,1},
 	{"invisible","iv",message_invisible,1},
 	{NULL,NULL,NULL,0},
@@ -108,7 +110,7 @@ char *s;
 	return 0;
 }
 
-
+#ifdef REMOTE_USERLIST
 void message_get_roster(struct stream_s *stream,const char *from, const char *to,
 				const char *args, xmlnode msg){
 struct gg_http *gghttp;
@@ -319,6 +321,7 @@ void put_roster_done(struct request_s *r){
 	gg_userlist_put_free(r->gghttp);
 	r->gghttp=NULL;
 }
+#endif /* REMOTE USERLIST */
 
 void message_friends_only(struct stream_s *stream,const char *from, const char *to,
 				const char *args, xmlnode msg){
