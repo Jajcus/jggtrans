@@ -1,4 +1,4 @@
-/* $Id: requests.c,v 1.27 2003/04/08 17:45:28 jajcus Exp $ */
+/* $Id: requests.c,v 1.28 2003/04/11 13:25:13 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -27,6 +27,7 @@
 #include "sessions.h"
 #include "stream.h"
 #include "register.h"
+#include "iq.h"
 #include "debug.h"
 
 static GList *requests=NULL;
@@ -70,6 +71,34 @@ Request *r;
 	}
 
 }
+
+void request_response_write(struct gg_event *data){
+int hash;
+Request *r;
+
+	hash=gg_pubdir50_seq(data->event.pubdir50);
+	debug("got public directory write response (id: %i)",hash);
+	r=g_hash_table_lookup(lookups, &hash);
+	if (r==NULL){
+		debug("no associated request found");
+		return;
+	}
+	g_hash_table_remove(lookups, &hash);
+
+	if (r->type!=RT_CHANGE) {
+		if (r->from!=NULL && r->to!=NULL && r->id!=NULL)
+			jabber_iq_send_error(r->stream,r->from,r->to,r->id,
+				500,_("Got public directory change result for unknown request type."));
+		return;
+	}
+	if (r->from!=NULL && r->to!=NULL && r->id!=NULL && r->query!=NULL) {
+		debug("Query defined in request - sending result.");
+		jabber_iq_send_result(r->stream,r->from,r->to,r->id,NULL);
+	}
+	else
+		debug("Query not defined in request - not sending result.");
+}
+
 
 void request_do_pubdir_update(Session *s){
 Request *r;
@@ -160,7 +189,7 @@ struct gg_http *gghttp;
 	else r->query=NULL;
 	r->stream=stream;
 
-	if(type==RT_VCARD || type==RT_SEARCH){
+	if(type==RT_VCARD || type==RT_SEARCH || type==RT_CHANGE){
 		s=session_get_by_jid(from, stream);
 		if (s==NULL) return NULL;
 
@@ -168,11 +197,6 @@ struct gg_http *gghttp;
 		gg_pubdir50_seq_set((gg_pubdir50_t)data, r->hash);
 		gg_pubdir50(s->ggs, (gg_pubdir50_t)data);
 		g_hash_table_insert(lookups, &r->hash, r);
-	}
-	else if(type==RT_CHANGE){
-		s=session_get_by_jid(from, stream);
-		r->ggchange=(gg_pubdir50_t)data;
-		g_hash_table_insert(changes, s, r);
 	}
 	else{
 		gghttp=(struct gg_http*)data;

@@ -1,4 +1,4 @@
-/* $Id: requests.h,v 1.13 2003/04/08 17:45:28 jajcus Exp $ */
+/* $Id: requests.h,v 1.14 2003/04/11 13:25:13 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -62,6 +62,7 @@ Request * add_request(RequestType type,const char *from,const char *to,
 int remove_request(Request *r);
 
 void request_response_search(struct gg_event *data);
+void request_response_write(struct gg_event *data);
 void request_do_pubdir_update(Session *s);
 int requests_init();
 
