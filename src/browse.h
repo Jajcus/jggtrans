@@ -1,4 +1,4 @@
-/* $Id: browse.h,v 1.1 2002/02/02 12:52:31 jajcus Exp $ */
+/* $Id$ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
