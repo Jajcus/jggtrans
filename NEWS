@@ -1,3 +1,20 @@
+Version 2.0.5
+-------------
+
+This is minor feature improvement release.
+
+Changes from 2.0.4:
+
+* Fixed one presence bug ("GG" resource was not used everywhere as it should).
+
+* All way of handling presence probes is back - no more errors instead
+  of unavailable users.
+
+* Jggtrans will now compile with TLS-enabled libgadu.
+
+* TLS support (only with TLS-enabled libgadu).
+
+
 Version 2.0.4
 -------------
 
