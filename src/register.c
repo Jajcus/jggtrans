@@ -1,4 +1,4 @@
-/* $Id: register.c,v 1.19 2003/02/03 20:28:19 mmazur Exp $ */
+/* $Id: register.c,v 1.20 2003/04/03 19:25:20 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -55,8 +55,9 @@ xmlnode instr;
 	xmlnode_insert_tag(query,"username");
 	xmlnode_insert_tag(query,"password");
 
-	/* needed to register new user */
-	xmlnode_insert_tag(query,"email");
+	/* needed to register new user - not supported until DataGathering gets
+	 * implemented */
+//	xmlnode_insert_tag(query,"email");
 
 	/* public directory info */
 	xmlnode_insert_tag(query,"first");
@@ -113,13 +114,12 @@ char *jid;
 
 void jabber_iq_set_register(Stream *s,const char *from,const char *to,const char *id,xmlnode q){
 xmlnode node;
-char *str,*password;
-struct gg_change_info_request change;
+char *username,*password,*first,*last,*nick,*city,*sex,*born;
 uin_t uin;
 User *user;
 Session *session=NULL;
-struct gg_http *gghttp;
-Request *r;
+gg_pubdir50_t change;
+username=password=first=last=nick=city=sex=born=NULL;
 
 	node=xmlnode_get_firstchild(q);
 	if (!node){
@@ -136,13 +136,12 @@ Request *r;
 	}
 
 	node=xmlnode_get_tag(q,"username");
-	if (node) str=xmlnode_get_data(node);
-	if (!node || !str) uin=0;
-	else uin=atoi(str);
+	if (node) username=xmlnode_get_data(node);
+	if (!node || !username) uin=0;
+	else uin=atoi(username);
 
 	node=xmlnode_get_tag(q,"password");
 	if (node) password=xmlnode_get_data(node);
-	else password=NULL;
 
 	user=user_get_by_jid(from);
 
@@ -169,41 +168,55 @@ Request *r;
 		}
 	}
 
-	memset(&change,0,sizeof(change));
-
+	change=gg_pubdir50_new(GG_PUBDIR50_WRITE);
+	
 	node=xmlnode_get_tag(q,"first");
-	if (node) change.first_name=xmlnode_get_data(node);
-	else change.first_name=NULL;
+	if (node) {
+		first=from_utf8(xmlnode_get_data(node));
+		gg_pubdir50_add(change, GG_PUBDIR50_FIRSTNAME, (const char *)first);
+	}
 
 	node=xmlnode_get_tag(q,"last");
-	if (node) change.last_name=xmlnode_get_data(node);
-	else change.last_name=NULL;
+	if (node) {
+		last=from_utf8(xmlnode_get_data(node));
+		gg_pubdir50_add(change, GG_PUBDIR50_LASTNAME, (const char *)last);
+	}
 
 	node=xmlnode_get_tag(q,"nick");
-	if (node) change.nickname=xmlnode_get_data(node);
-	else change.nickname=NULL;
+	if (node) {
+		nick=from_utf8(xmlnode_get_data(node));
+		gg_pubdir50_add(change, GG_PUBDIR50_NICKNAME, (const char *)nick);
+	}
 
-	node=xmlnode_get_tag(q,"email");
-	if (node) change.email=xmlnode_get_data(node);
-	else change.email=NULL;
+//	node=xmlnode_get_tag(q,"email");
+//	if (node) 
+//		gg_pubdir50_add(change, GG_PUBDIR50_email=xmlnode_get_data(node);
 
 	node=xmlnode_get_tag(q,"city");
-	if (node) change.city=xmlnode_get_data(node);
-	else change.city=NULL;
+	if (node) {
+		city=from_utf8(xmlnode_get_data(node));
+		gg_pubdir50_add(change, GG_PUBDIR50_CITY, (const char *)city);
+	}
 
 	node=xmlnode_get_tag(q,"gender");
-	if (node) str=xmlnode_get_data(node);
-	if (!node || !str || !str[0]) change.gender=GG_GENDER_NONE;
-	else if (str[0]=='k' || str[0]=='f' || str[0]=='K' || str[0]=='F') change.gender=GG_GENDER_FEMALE;
-	else change.gender=GG_GENDER_MALE;
+	if (node) {
+		sex=xmlnode_get_data(node);
+		if (sex[0]=='k' || sex[0]=='f' || sex[0]=='K' || sex[0]=='F') 
+			gg_pubdir50_add(change, GG_PUBDIR50_GENDER,
+					GG_PUBDIR50_GENDER_FEMALE);
+		else 
+			gg_pubdir50_add(change, GG_PUBDIR50_GENDER,
+					GG_PUBDIR50_GENDER_MALE);
+	}
 
 	node=xmlnode_get_tag(q,"born");
-	if (node) str=xmlnode_get_data(node);
-	if (!node || !str || !str[0]) change.born=0;
-	else change.born=atoi(str);
+	if (node) {
+		born=xmlnode_get_data(node);
+		gg_pubdir50_add(change, GG_PUBDIR50_BIRTHYEAR,
+			(const char *)born);
+	}
 
-	if (!change.first_name && !change.last_name && !change.nickname
-		&& !change.city && !change.email && !change.born && !change.gender){
+	if (!first && !last && !nick && !city && !born && !sex){
 			if (!uin && !password){
 				debug("Set query for jabber:iq:register empty: %s",xmlnode2str(q));
 				unregister(s,from,to,id,0);
@@ -217,8 +230,8 @@ Request *r;
 			return;
 	}
 
-	if (!change.email || !change.nickname){
-		debug("email or nickname not given for registration");
+	if (!nick){
+		debug("nickname not given for registration");
 		session_remove(session);
 		jabber_iq_send_error(s,from,to,id,406,"Not Acceptable");
 		return;
@@ -233,33 +246,18 @@ Request *r;
 	if (!password) password=user->password;
 	if (!uin) uin=user->uin;
 
-	debug("gg_change_pubdir()");
+	debug("gg_pubdir50()");
 
-	if (change.first_name) change.first_name=g_strdup(from_utf8(change.first_name));
-	if (change.last_name) change.last_name=g_strdup(from_utf8(change.last_name));
-	if (change.nickname) change.nickname=g_strdup(from_utf8(change.nickname));
-	if (change.email) change.email=g_strdup(from_utf8(change.email));
-	if (change.city) change.city=g_strdup(from_utf8(change.city));
+	gg_pubdir50(session->ggs, change);
+	gg_pubdir50_free(change);
 
-	gghttp=gg_change_info(uin,password,&change,1);
 
-	if (change.first_name) g_free(change.first_name);
-	if (change.last_name) g_free(change.last_name);
-	if (change.nickname) g_free(change.nickname);
-	if (change.email) g_free(change.email);
-	if (change.city) g_free(change.city);
-
-	if (!gghttp){
-		jabber_iq_send_error(s,from,to,id,502,"Remote Server Error");
-		session_remove(session);
-		return;
-	}
-
+/*
 	r=add_request(RT_CHANGE,from,to,id,q,(void*)gghttp,s);
 	if (!r){
 		session_remove(session);
 		jabber_iq_send_error(s,from,to,id,500,"Internal Server Error");
-	}
+	} */
 }
 
 int register_error(Request *r){
