@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.13 2002/12/09 09:55:52 jajcus Exp $ */
+/* $Id: search.c,v 1.14 2002/12/25 11:03:20 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -217,19 +217,34 @@ User *u;
 	xmlnode_put_attrib(vc,"xmlns","vcard-temp");
 	xmlnode_put_attrib(vc,"version","2.0");
 
-	name=g_strdup_printf("%s %s",results->results[0].first_name,results->results[0].last_name);
 	n=xmlnode_insert_tag(vc,"FN");
-	xmlnode_insert_cdata(n,to_utf8(name),-1);
+	if (results->results[0].first_name && results->results[0].last_name){
+		name=g_strdup_printf("%s %s",results->results[0].first_name,
+							results->results[0].last_name);
+		xmlnode_insert_cdata(n,to_utf8(name),-1);
+	}
+	else if (results->results[0].first_name){
+		xmlnode_insert_cdata(n,to_utf8(results->results[0].first_name),-1);
+	}
+	else if (results->results[0].last_name){
+		xmlnode_insert_cdata(n,to_utf8(results->results[0].last_name),-1);
+	}
 	g_free(name);
 
 	n1=xmlnode_insert_tag(vc,"N");
 	n=xmlnode_insert_tag(n1,"GIVEN");
-	xmlnode_insert_cdata(n,to_utf8(results->results[0].first_name),-1);
+	if (results->results[0].first_name){
+		xmlnode_insert_cdata(n,to_utf8(results->results[0].first_name),-1);
+	}
 	n=xmlnode_insert_tag(n1,"FAMILY");
-	xmlnode_insert_cdata(n,to_utf8(results->results[0].last_name),-1);
+	if (results->results[0].last_name){
+		xmlnode_insert_cdata(n,to_utf8(results->results[0].last_name),-1);
+	}
 
 	n=xmlnode_insert_tag(vc,"NICKNAME");
-	xmlnode_insert_cdata(n,to_utf8(results->results[0].nickname),-1);
+	if (results->results[0].nickname){
+		xmlnode_insert_cdata(n,to_utf8(results->results[0].nickname),-1);
+	}
 
 	if (results->results[0].born>0){
 		n=xmlnode_insert_tag(vc,"BDAY");
@@ -239,6 +254,7 @@ User *u;
 	}
 
 	n1=xmlnode_insert_tag(vc,"ADR");
+	xmlnode_insert_tag(n1,"HOME");
 	n=xmlnode_insert_tag(n1,"LOCALITY");
 	xmlnode_insert_cdata(n,to_utf8(results->results[0].city),-1);
 
