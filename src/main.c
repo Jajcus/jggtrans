@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.20 2002/12/30 09:52:18 jajcus Exp $ */
+/* $Id: main.c,v 1.21 2003/01/07 09:46:05 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -225,7 +225,7 @@ pid_t pid;
 pid_t sid;
 int fd;
 
-	debug("Daeminizing...");
+	debug("Daemonizing...");
 	pid=fork();
 	if (pid==-1) g_error("Failed to fork(): %s",g_strerror(errno));
 	if (pid){
