@@ -1,4 +1,4 @@
-/* $Id: users.c,v 1.20 2002/12/09 09:55:52 jajcus Exp $ */
+/* $Id: users.c,v 1.21 2002/12/29 18:05:10 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -210,6 +210,7 @@ char *p;
 					&& atoi(xmlnode_get_data(t)) ) {
 
 					c=g_new0(Contact,1);
+					c->status=GG_STATUS_NOT_AVAIL;
 					c->uin=atoi(xmlnode_get_data(t));	
 					contacts=g_list_append(contacts,c);
 			}
