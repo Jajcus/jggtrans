@@ -48,7 +48,6 @@ AC_HEADER_SYS_WAIT
 AC_CHECK_HEADERS([stdlib.h string.h])
 AC_CHECK_HEADERS([sys/socket.h netdb.h netinet/in.h])
 AC_CHECK_HEADERS([sys/time.h unistd.h errno.h fcntl.h])
-AC_NEED_STDINT_H
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -66,5 +65,5 @@ AC_CHECK_FUNCS([memset strchr],[],AC_MSG_ERROR("Some functions needed are missin
 
 AC_CONFIG_SUBDIRS([libxode])
 
-AC_CONFIG_FILES([Makefile src/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile intl/Makefile po/Makefile.in])
 AC_OUTPUT

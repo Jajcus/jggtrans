@@ -1,4 +1,4 @@
-/* $Id: ggtrans.h,v 1.6 2003/01/15 14:13:12 jajcus Exp $ */
+/* $Id: ggtrans.h,v 1.7 2003/04/04 17:59:32 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -21,8 +21,15 @@
 #define ggtrans_h
 
 #include <libxode.h>
+#include <libintl.h>
 #include <glib.h>
 #include "../config.h"
+
+/* gettext shortcut for translating messages */
+#define _(String) gettext (String)
+
+/* dummy gettext shortcut for translating error/debug messages after log handler is set */
+#define __(String) gettext (String)
 
 extern GMainLoop *main_loop;
 extern gboolean do_restart;

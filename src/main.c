@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.34 2003/03/24 14:43:37 jajcus Exp $ */
+/* $Id: main.c,v 1.35 2003/04/04 17:59:32 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -161,26 +161,26 @@ void log_handler_file(FILE *f,const gchar *log_domain, GLogLevelFlags log_level,
 	if (log_domain && log_domain[0]) fprintf(f,"%s: ",log_domain);
 	switch(log_level){
 		case G_LOG_LEVEL_ERROR:
-			fprintf(f,"Fatal error: %s\n",message);
+			fprintf(f,_("Fatal error: %s\n"),_(message));
 			break;
 		case G_LOG_LEVEL_CRITICAL:
-			fprintf(f,"Error: %s\n",message);
+			fprintf(f,_("Error: %s\n"),_(message));
 			break;
 		case G_LOG_LEVEL_WARNING:
-			fprintf(f,"Warning: %s\n",message);
+			fprintf(f,_("Warning: %s\n"),_(message));
 			break;
 		case G_LOG_LEVEL_MESSAGE:
 			if (debug_level<-1) break;
 		case G_LOG_LEVEL_INFO:
 			if (debug_level<0) break;
-			fprintf(f,"%s\n",message);
+			fprintf(f,"%s\n",_(message));
 			break;
 		case G_LOG_LEVEL_DEBUG:
 			if (debug_level>0)
-				fprintf(f,"Debug: %s\n",message);
+				fprintf(f,_("Debug: %s\n"),_(message));
 			break;
 		default:
-			fprintf(f,"Unknown: %s\n",message);
+			fprintf(f,_("Unknown: %s\n"),_(message));
 			break;
 	}
 }
@@ -190,28 +190,28 @@ void log_handler_syslog(const gchar *log_domain, GLogLevelFlags log_level,
 
 	switch(log_level){
 		case G_LOG_LEVEL_ERROR:
-			syslog(LOG_ERR,"Fatal error: %s",message);
+			syslog(LOG_ERR,_("Fatal error: %s"),_(message));
 			break;
 		case G_LOG_LEVEL_CRITICAL:
-			syslog(LOG_ERR,"Error: %s",message);
+			syslog(LOG_ERR,_("Error: %s"),_(message));
 			break;
 		case G_LOG_LEVEL_WARNING:
-			syslog(LOG_WARNING,"Warning: %s",message);
+			syslog(LOG_WARNING,_("Warning: %s"),_(message));
 			break;
 		case G_LOG_LEVEL_MESSAGE:
 			if (debug_level<-1) break;
-			syslog(LOG_NOTICE,"%s",message);
+			syslog(LOG_NOTICE,"%s",_(message));
 			break;
 		case G_LOG_LEVEL_INFO:
 			if (debug_level<0) break;
-			syslog(LOG_NOTICE,"%s",message);
+			syslog(LOG_NOTICE,"%s",_(message));
 			break;
 		case G_LOG_LEVEL_DEBUG:
 			if (debug_level>0)
-				syslog(LOG_DEBUG,"Debug: %s\n",message);
+				syslog(LOG_DEBUG,_("Debug: %s\n"),_(message));
 			break;
 		default:
-			syslog(LOG_NOTICE,"Unknown: %s\n",message);
+			syslog(LOG_NOTICE,_("Unknown: %s\n"),_(message));
 			break;
 	}
 }
@@ -219,10 +219,18 @@ void log_handler_syslog(const gchar *log_domain, GLogLevelFlags log_level,
 void log_handler(const gchar *log_domain, GLogLevelFlags log_level,
 			const gchar *message, gpointer user_data){
 
+char *lc_ctype,*lc_messages;
+
+	lc_ctype=setlocale(LC_CTYPE,NULL);
+	lc_messages=setlocale(LC_MESSAGES,NULL);
+	
 	log_level&=G_LOG_LEVEL_MASK;
 	if (foreground) log_handler_file(stderr,log_domain,log_level,message);
 	if (log_file) log_handler_file(log_file,log_domain,log_level,message);
 	if (use_syslog) log_handler_syslog(log_domain,log_level,message);
+	
+	setlocale(LC_CTYPE,lc_ctype);
+	setlocale(LC_MESSAGES,lc_ctype);
 }
 
 void daemonize(FILE *pidfile){
@@ -230,15 +238,15 @@ pid_t pid;
 pid_t sid;
 int fd;
 
-	debug("Daemonizing...");
+	debug(__("Daemonizing..."));
 	pid=fork();
-	if (pid==-1) g_error("Failed to fork(): %s",g_strerror(errno));
+	if (pid==-1) g_error(__("Failed to fork(): %s"),g_strerror(errno));
 	if (pid){
 		if (pidfile){
 			fprintf(pidfile,"%u",pid);
 			fclose(pidfile);
 		}
-		debug("Daemon born, pid %i.",pid);
+		debug(__("Daemon born, pid %i."),pid);
 		exit(0);
 	}
 
@@ -260,7 +268,7 @@ int fd;
 	sid=setsid();
 	if (sid==-1) abort();
 	foreground=FALSE;
-	debug("I am a daemon, I think.");
+	debug(__("I am a daemon, I think."));
 	return;
 }
 
@@ -269,17 +277,17 @@ char *p;
 
 	p=strrchr(name,'/');
 	if (p) name=p+1;
-	printf("\nJabber GaduGadu Transport %s\n",VERSION);
-	printf("\n");
-	printf("\tUsage: %s [OPTIONS]... [<config file>]\n",name);
-	printf("\nOptions:\n");
-	printf("\t-h	      This message\n");
-	printf("\t-f	      Run in foreground. Debug/error messages will be sent to stderr\n");
-	printf("\t-d <n>      Log level (0(default) - normal, >0 more, <0 less)\n");
-	printf("\t-D <n>      libgg debug level (enables also -f)\n");
-	printf("\t-u <user>   Switch to uid of <user> on startup\n");
-	printf("\t-g <group>  Switch to gid of <group> on startup\n");
-	printf("\n");
+	printf(_("\nJabber GaduGadu Transport %s\n"),VERSION);
+	printf(_("\n"));
+	printf(_("\tUsage: %s [OPTIONS]... [<config file>]\n"),name);
+	printf(_("\nOptions:\n"));
+	printf(_("\t-h	      This message\n"));
+	printf(_("\t-f	      Run in foreground. Debug/error messages will be sent to stderr\n"));
+	printf(_("\t-d <n>      Log level (0(default) - normal, >0 more, <0 less)\n"));
+	printf(_("\t-D <n>      libgg debug level (enables also -f)\n"));
+	printf(_("\t-u <user>   Switch to uid of <user> on startup\n"));
+	printf(_("\t-g <group>  Switch to gid of <group> on startup\n"));
+	printf(_("\n"));
 }
 
 int main(int argc,char *argv[]){
@@ -310,6 +318,11 @@ guint lh;
 	}
 	newgid=0; user=NULL; group=NULL;
 
+	/* use local locale for error and debug messages */
+	setlocale(LC_MESSAGES,"");
+	setlocale(LC_CTYPE,"");
+	textdomain(PACKAGE);
+	
 	saved_pwd=getcwd(saved_pwd_b,1024);
 	opterr=0;
 	while ((c = getopt (argc, argv, "Rhfd:D:u:g:")) != -1){
@@ -333,28 +346,28 @@ guint lh;
 				fg=TRUE;
 				break;
 			case 'u':
-				if (uid!=0) g_error("Cannot change user.");
+				if (uid!=0) g_error(_("Cannot change user."));
 				user=optarg;
 				break;
 			case 'g':
-				if (uid!=0) g_error("Cannot change group.");
+				if (uid!=0) g_error(_("Cannot change group."));
 				group=optarg;
 				break;
 			case '?':
 				if (isprint(optopt))
-					fprintf(stderr,"Unknown command-line option: -%c.\n",optopt);
+					fprintf(stderr,_("Unknown command-line option: -%c.\n"),optopt);
 				else
-					fprintf(stderr,"Unknown command-line option: -\\%03o.\n",optopt);
+					fprintf(stderr,_("Unknown command-line option: -\\%03o.\n"),optopt);
 				usage(argv[0]);
 				return 1;
 			default:
-				g_error("Error while processing command line options");
+				g_error(_("Error while processing command line options"));
 				break;
 		}
 	}
 
 	if (optind<argc-1){
-		fprintf(stderr,"Unexpected argument: %s\n",argv[optind]);
+		fprintf(stderr,_("Unexpected argument: %s\n"),argv[optind]);
 		usage(argv[0]);
 		return 1;
 	}
@@ -367,14 +380,18 @@ guint lh;
 				| G_LOG_LEVEL_MESSAGE | G_LOG_LEVEL_INFO
 				| G_LOG_LEVEL_DEBUG,log_handler,NULL);
 
+	/* now the log handlers worry about the right language */
+	setlocale(LC_MESSAGES,"C");
+	setlocale(LC_CTYPE,"C");
+
 	config=xmlnode_file(config_file);
 	if (!config){
-		g_error("Couldn't load config!");
+		g_error(__("Couldn't load config!"));
 		return 1;
 	}
 	str=xmlnode_get_name(config);
 	if (!str || strcmp(str,"jggtrans")){
-		g_error("%s doesn't look like jggtrans config file.",config_file);
+		g_error(__("%s doesn't look like jggtrans config file."),config_file);
 		return 1;
 	}
 	g_free(config_file);
@@ -385,7 +402,7 @@ guint lh;
 		log_type=xmlnode_get_attrib(tag,"type");
 		if (!strcmp(log_type,"syslog")){
 			if (log_facility!=-1){
-				g_warning("Multiple syslog configs specified. Using only one.");
+				g_warning(__("Multiple syslog configs specified. Using only one."));
 				continue;
 			}
 			str=xmlnode_get_attrib(tag,"facility");
@@ -396,17 +413,17 @@ guint lh;
 			for(log_facility=0;facilitynames[log_facility].name;log_facility++)
 				if (!strcmp(facilitynames[log_facility].name,str)) break;
 			if (!facilitynames[log_facility].name)
-				 g_error("Unknown syslog facility: %s",str);
+				 g_error(__("Unknown syslog facility: %s"),str);
 		}
 		else if (!strcmp(log_type,"file")){
-			if (log_filename) g_warning("Multiple log files specified. Using only one.");
+			if (log_filename) g_warning(__("Multiple log files specified. Using only one."));
 			else{
 				data=xmlnode_get_data(tag);
 				if (data!=NULL)
 					log_filename=g_strstrip(data);
 			}
 		}
-		else g_warning("Ignoring unknown log type: %s",xmlnode2str(tag));
+		else g_warning(__("Ignoring unknown log type: %s"),xmlnode2str(tag));
 	}
 
 	pid_filename=config_load_string("pidfile");
@@ -423,36 +440,36 @@ guint lh;
 			fclose(pidfile);
 			if (r==1 && pid>0){
 				r=kill(pid,0);
-				if (!r || (r && errno!=ESRCH)) g_error("jggtrans already running");
+				if (!r || (r && errno!=ESRCH)) g_error(__("jggtrans already running"));
 				if (r){
-					g_warning("Stale pid file. Removing.");
+					g_warning(__("Stale pid file. Removing."));
 					unlink(pid_filename);
 				}
 			}
-			else if (r!=EOF) g_error("Invalid pid file.");
+			else if (r!=EOF) g_error(__("Invalid pid file."));
 		}
 		pidfile=fopen(pid_filename,"w");
 		if (pidfile==NULL)
-			g_error("Couldn't open pidfile %s",pid_filename);
+			g_error(__("Couldn't open pidfile %s"),pid_filename);
 	}
 	else
 		pidfile=NULL;
 
 	if (group){
 		grp=getgrnam(group);
-		if (!grp) g_error("Couldn't find group %s",group);
+		if (!grp) g_error(__("Couldn't find group %s"),group);
 		newgid=grp->gr_gid;
 	}
 	if (user){
 		pwd=getpwnam(user);
-		if (!pwd) g_error("Couldn't find user %s",user);
+		if (!pwd) g_error(__("Couldn't find user %s"),user);
 		if (newgid<=0) newgid=pwd->pw_gid;
 		fchown(fileno(pidfile),pwd->pw_uid,newgid);
-		if (setgid(newgid)) g_error("Couldn't change group: %s",g_strerror(errno));
-		if (initgroups(user,newgid)) g_error("Couldn't init groups: %s",g_strerror(errno));
-		if (setuid(pwd->pw_uid)) g_error("Couldn't change user: %s",g_strerror(errno));
+		if (setgid(newgid)) g_error(__("Couldn't change group: %s"),g_strerror(errno));
+		if (initgroups(user,newgid)) g_error(__("Couldn't init groups: %s"),g_strerror(errno));
+		if (setuid(pwd->pw_uid)) g_error(__("Couldn't change user: %s"),g_strerror(errno));
 	}
-	else if (uid==0 && !restarting) g_error("Refusing to run with uid=0");
+	else if (uid==0 && !restarting) g_error(__("Refusing to run with uid=0"));
 
 	main_loop=g_main_new(0);
 
@@ -470,7 +487,7 @@ guint lh;
 
 	if (log_filename){
 		log_file=fopen(log_filename,"a");
-		if (!log_file) g_critical("Couldn't open log file '%s': %s",
+		if (!log_file) g_critical(__("Couldn't open log file '%s': %s"),
 						log_filename,g_strerror(errno));
 		if (log_file) setvbuf(log_file,NULL,_IOLBF,0);
 	}
@@ -502,7 +519,7 @@ guint lh;
 		char *newargv[10];
 		int n;
 
-		g_message("Restarting in %i seconds.\n",restart_timeout);
+		g_message(__("Restarting in %i seconds.\n"),restart_timeout);
 		if (restart_timeout>0) sleep(restart_timeout);
 		if (saved_pwd) chdir(saved_pwd);
 
@@ -523,7 +540,7 @@ guint lh;
 		return 1;
 	}
 
-	g_message("Exiting normally.\n");
+	g_message(__("Exiting normally.\n"));
 
 	g_log_remove_handler(NULL,lh);
 	if (log_file!=NULL){
