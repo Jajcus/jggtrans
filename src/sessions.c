@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.68 2003/04/28 07:22:53 jajcus Exp $ */
+/* $Id: sessions.c,v 1.69 2003/05/03 18:41:54 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -60,7 +60,7 @@ static void sessions_stream_destroyed(struct stream_s *stream){
 
 
 int sessions_init(){
-char *proxy_ip;
+char *proxy_ip,*proxy_username,*proxy_password,*proxy_http_only;
 char *p,*r;
 int port;
 int i;
@@ -124,11 +124,23 @@ GgServer *server;
 	if (!proxy_ip) return 0;
 	port=config_load_int("proxy/port",0);
 	if (port<=0) return 0;
+	proxy_username=config_load_string("proxy/username");
+	proxy_password=config_load_string("proxy/password");
+	
+	tag=xmlnode_get_tag(config,"proxy");
+	proxy_http_only=xmlnode_get_attrib(tag,"http_only");
 
 	g_message(L_("Using proxy: http://%s:%i"),proxy_ip,port);
 	gg_proxy_enabled=1;
 	gg_proxy_host=proxy_ip;
 	gg_proxy_port=port;
+	if (proxy_username && proxy_password){
+		gg_proxy_username=proxy_username;
+		gg_proxy_password=proxy_password;
+	}
+	if (proxy_http_only && strcmp(proxy_http_only,"no")){
+		gg_proxy_http_only=1;
+	}
 	return 0;
 }
 
