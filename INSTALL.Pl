@@ -8,7 +8,7 @@ Aby zbudowaæ jabber-gg-transport potrzeba:
 	
 	- libgg (czê¶æ EKG, http://dev.null.pl/ekg/)
 		Prawdopodobnie potrzebny bêdzie snapshot z CVS
-		Przetestowane ze snapshotem 20020223
+		Przetestowane ze snapshotem 20021205
 
 
 Kompilacja
