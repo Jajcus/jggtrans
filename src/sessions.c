@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.78 2003/05/27 07:45:35 jajcus Exp $ */
+/* $Id: sessions.c,v 1.79 2003/05/27 08:25:14 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -171,15 +171,14 @@ GList *it;
 	s=g_hash_table_size(sessions_jid);
 	debug(L_("%u sessions in hash table"),s);
 
+	g_hash_table_foreach_remove(sessions_jid,sessions_hash_remove_func,NULL);
+	g_hash_table_destroy(sessions_jid);
+
 	for(it=g_list_first(gg_servers);it;it=g_list_next(it))
 		g_free(it->data);
 	g_list_free(gg_servers);
 
-	g_hash_table_foreach_remove(sessions_jid,sessions_hash_remove_func,NULL);
-	g_hash_table_destroy(sessions_jid);
-
 	stream_del_destroy_handler(sessions_stream_destroyed);
-
 	return 0;
 }
 
@@ -532,6 +531,7 @@ static int session_destroy(Session *s){
 GList *it;
 
 	g_message(L_("Deleting session for '%s'"),s->jid);
+	if (s->io_watch) g_source_remove(s->io_watch);
 	if (s->ping_timeout_func) g_source_remove(s->ping_timeout_func);
 	if (s->timeout_func) g_source_remove(s->timeout_func);
 	if (s->ping_timer) g_timer_destroy(s->ping_timer);
@@ -570,7 +570,6 @@ char *njid;
 
 	if (s==NULL) return 1;
 	g_assert(sessions_jid!=NULL);
-	if (s->io_watch) g_source_remove(s->io_watch);
 	njid=jid_normalized(s->jid);
 	if (g_hash_table_lookup_extended(sessions_jid,(gpointer)njid,&key,&value)){
 		g_hash_table_remove(sessions_jid,(gpointer)njid);
@@ -656,7 +655,7 @@ int r;
 	s->timeout_func=g_timeout_add(conn_timeout*1000,session_timeout,s);
 
 
-	return 0;
+	return FALSE;
 }
 
 Session *session_create(User *user,const char *jid,const char *req_id,
