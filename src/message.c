@@ -1,4 +1,4 @@
-/* $Id: message.c,v 1.18 2003/02/03 20:28:19 mmazur Exp $ */
+/* $Id: message.c,v 1.19 2003/03/24 13:46:49 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -20,6 +20,7 @@
 #include "ggtrans.h"
 #include <stdio.h>
 #include <ctype.h>
+#include <time.h>
 #include "message.h"
 #include "presence.h"
 #include "jabber.h"
@@ -28,6 +29,7 @@
 #include "sessions.h"
 #include "requests.h"
 #include "encoding.h"
+#include "debug.h"
 
 typedef void (*MsgHandler)(struct stream_s *s,const char *from, const char *to,
 				const char *args, xmlnode msg);
@@ -58,9 +60,11 @@ MsgCommand msg_commands[]={
 };
 
 int message_send(struct stream_s *stream,const char *from,
-		const char *to,int chat,const char *message){
+		const char *to,int chat,const char *message,time_t timestamp){
 xmlnode msg;
 xmlnode n;
+struct tm *tm;
+char buf[101];
 
 	msg=xmlnode_new_tag("message");
 	if (from!=NULL)
@@ -75,6 +79,14 @@ xmlnode n;
 	if (chat) xmlnode_put_attrib(msg,"type","chat");
 	n=xmlnode_insert_tag(msg,"body");
 	xmlnode_insert_cdata(n,to_utf8(message),-1);
+	if (timestamp) {
+		n=xmlnode_insert_tag(msg,"x");
+		xmlnode_put_attrib(n,"xmlns","jabber:x:delay");
+		tm=gmtime(&timestamp);
+		strftime(buf,100,"%Y%m%dT%H:%M:%S",tm);
+		xmlnode_put_attrib(n,"stamp",buf);
+		xmlnode_insert_cdata(n,"Delayed message",-1);
+	}
 	stream_write(stream,msg);
 	xmlnode_free(msg);
 	return 0;
@@ -340,15 +352,15 @@ int on;
 	else on=!user->friends_only;
 
 	if (user->friends_only==on){
-		message_send(stream,to,from,1,"No change.");
+		message_send(stream,to,from,1,"No change.",0);
 		return;
 	}
 	user->friends_only=on;
 
 	if (on)
-		message_send(stream,to,from,1,"friends only: on");
+		message_send(stream,to,from,1,"friends only: on",0);
 	else
-		message_send(stream,to,from,1,"friends only: off");
+		message_send(stream,to,from,1,"friends only: off",0);
 
 	session_send_status(session);
 }
@@ -369,15 +381,15 @@ int on;
 	else on=!user->invisible;
 
 	if (user->invisible==on){
-		message_send(stream,to,from,1,"No change.");
+		message_send(stream,to,from,1,"No change.",0);
 		return;
 	}
 	user->invisible=on;
 
 	if (on)
-		message_send(stream,to,from,1,"invisible: on");
+		message_send(stream,to,from,1,"invisible: on",0);
 	else
-		message_send(stream,to,from,1,"invisible: off");
+		message_send(stream,to,from,1,"invisible: off",0);
 
 	session_send_status(session);
 }
@@ -391,7 +403,7 @@ User *user;
 
 	user=user_get_by_jid(from);
 	if (user==NULL){
-		message_send(stream,to,from,1,"I don't know you. Register first.");
+		message_send(stream,to,from,1,"I don't know you. Register first.",0);
 		return -1;
 	}
 
@@ -412,21 +424,21 @@ User *user;
 			return 0;
 		}
 	}
-	message_send(stream,to,from,1,"Available commands (and abbreviations):");
+	message_send(stream,to,from,1,"Available commands (and abbreviations):",0);
 	for(i=0;msg_commands[i].command;i++){
 		p=g_strdup_printf("  %s (%s)%s",
 				msg_commands[i].command,
 				msg_commands[i].abr,
 				msg_commands[i].experimental?" EXPERIMENTAL!":"");
-		message_send(stream,to,from,1,p);
+		message_send(stream,to,from,1,p,0);
 		g_free(p);
 	}
-	message_send(stream,to,from,1,"Current settings:");
+	message_send(stream,to,from,1,"Current settings:",0);
 	p=g_strdup_printf("  friends only: %s", user->friends_only?"on":"off");
-	message_send(stream,to,from,1,p);
+	message_send(stream,to,from,1,p,0);
 	g_free(p);
 	p=g_strdup_printf("  invisible: %s", user->invisible?"on":"off");
-	message_send(stream,to,from,1,p);
+	message_send(stream,to,from,1,p,0);
 	g_free(p);
 
 	return 0;

@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.47 2003/02/28 19:04:35 mmazur Exp $ */
+/* $Id: sessions.c,v 1.48 2003/03/24 13:46:49 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -293,6 +293,7 @@ char *jid;
 int chat;
 GIOCondition cond;
 Resource *r;
+time_t timestamp;
 
 	s=(Session *)data;
 	debug("Checking error conditions...");
@@ -406,6 +407,10 @@ Resource *r;
 					0,0,0,0);
 			break;
 		case GG_EVENT_MSG:
+			debug("Message: sender: %i class: %i time: %lu",
+							event->event.msg.sender,
+							event->event.msg.msgclass,
+							(unsigned long)event->event.msg.time);
 			if (event->event.msg.sender==0){
 				if (!user_sys_msg_received(s->user,event->event.msg.msgclass)) break;
 				jid=jid_my_registered();
@@ -413,10 +418,14 @@ Resource *r;
 			}
 			else{
 				jid=jid_build(event->event.msg.sender);
-				if (event->event.msg.msgclass==GG_CLASS_CHAT) chat=1;
+				if ((event->event.msg.msgclass&GG_CLASS_CHAT)!=0) chat=1;
 				else chat=0;
 			}
-			message_send(s->s,jid,s->user->jid,chat,event->event.msg.message);
+			if ((event->event.msg.msgclass&GG_CLASS_QUEUED)!=0){
+				timestamp=event->event.msg.time;
+			}
+			else timestamp=0;
+			message_send(s->s,jid,s->user->jid,chat,event->event.msg.message,timestamp);
 			g_free(jid);
 			break;
 		case GG_EVENT_PONG:

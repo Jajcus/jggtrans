@@ -1,4 +1,4 @@
-/* $Id: message.h,v 1.4 2003/01/15 15:17:28 jajcus Exp $ */
+/* $Id: message.h,v 1.5 2003/03/24 13:46:49 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -25,10 +25,10 @@
 struct stream_s;
 
 int message_send(struct stream_s *stream,const char *from,
-		const char *to,int chat,const char *message);
+		const char *to,int chat,const char *message, time_t timestamp);
 
 int message_error(struct stream_s *stream,const char *from,
-		const char *to,const char *body,int code);
+		const char *to,const char *body,int code, time_t timestamp);
 
 int jabber_message(struct stream_s *stream,xmlnode tag);
 
