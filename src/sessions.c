@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.63 2003/04/16 11:10:17 jajcus Exp $ */
+/* $Id: sessions.c,v 1.64 2003/04/17 13:51:42 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -440,6 +440,8 @@ time_t timestamp;
 				message_send_subject(s->s,jid,s->jid,str,
 						to_utf8(event->event.msg.message),timestamp);
 				g_free(str);
+				jid=jid_my_registered();
+				break;
 			}
 			else{
 				jid=jid_build(event->event.msg.sender);
