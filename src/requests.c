@@ -1,4 +1,4 @@
-/* $Id: requests.c,v 1.29 2003/04/13 11:19:47 jajcus Exp $ */
+/* $Id: requests.c,v 1.30 2003/04/13 21:50:48 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -22,6 +22,7 @@
 #include <libxode.h>
 #include <libgadu.h>
 #include <time.h>
+#include <message.h>
 #include "requests.h"
 #include "search.h"
 #include "sessions.h"
@@ -133,7 +134,6 @@ int res=0;
 	}
 
 	switch(r->type){
-#ifdef REMOTE_USERLIST
 		case RT_USERLIST_GET:
 			if (res || r->gghttp->state==GG_STATE_ERROR) get_roster_error(r);
 			else if (!res && r->gghttp->state==GG_STATE_DONE) get_roster_done(r);
@@ -141,14 +141,6 @@ int res=0;
 			r->io_watch=0;
 			remove_request(r);
 			return FALSE;
-		case RT_USERLIST_PUT:
-			if (res || r->gghttp->state==GG_STATE_ERROR) put_roster_error(r);
-			else if (!res && r->gghttp->state==GG_STATE_DONE) put_roster_done(r);
-			else break;
-			r->io_watch=0;
-			remove_request(r);
-			return FALSE;
-#endif /* REMOTE USERLIST */
 		case RT_PASSWD:
 			if (res || r->gghttp->state==GG_STATE_ERROR) change_password_error(r);
 			else if (!res && r->gghttp->state==GG_STATE_DONE) change_password_done(r);

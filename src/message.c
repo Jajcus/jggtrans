@@ -1,4 +1,4 @@
-/* $Id: message.c,v 1.26 2003/04/08 17:45:28 jajcus Exp $ */
+/* $Id: message.c,v 1.27 2003/04/13 21:50:48 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -43,8 +43,6 @@ typedef struct iq_namespace_s{
 
 void message_get_roster(struct stream_s *s,const char *from, const char *to,
 				const char *args, xmlnode msg);
-void message_put_roster(struct stream_s *s,const char *from, const char *to,
-				const char *args, xmlnode msg);
 void message_friends_only(struct stream_s *s,const char *from, const char *to,
 				const char *args, xmlnode msg);
 void message_invisible(struct stream_s *s,const char *from, const char *to,
@@ -53,10 +51,7 @@ void message_locale(struct stream_s *s,const char *from, const char *to,
 				const char *args, xmlnode msg);
 
 MsgCommand msg_commands[]={
-#ifdef REMOTE_USERLIST
 	{"get roster","gr",N_("Download user list from server"),message_get_roster,1},
-	{"put roster","pr",N_("Upload user list to server"),message_put_roster,1},
-#endif
 	{"friends only","fo",N_("\"Only for friends\" mode"),message_friends_only,1},
 	{"invisible","iv",N_("\"Invisible\" mode"),message_invisible,1},
 	{"locale","loc",N_("Set user locale (language)"),message_locale,1},
@@ -127,7 +122,6 @@ char *s;
 	return 0;
 }
 
-#ifdef REMOTE_USERLIST
 void message_get_roster(struct stream_s *stream,const char *from, const char *to,
 				const char *args, xmlnode msg){
 struct gg_http *gghttp;
@@ -136,7 +130,7 @@ Request *r;
 
 	user=user_get_by_jid(from);
 
-	message_send(stream,to,from,1,_("Receiving roster..."));
+	message_send(stream,to,from,1,_("Receiving roster..."),0);
 
 	gghttp=gg_userlist_get(user->uin,from_utf8(user->password),1);
 	r=add_request(RT_USERLIST_GET,from,to,"",msg,(void*)gghttp,stream);
@@ -162,7 +156,7 @@ xmlnode n;
 int i;
 
 
-	message_send(r->stream,r->to,r->from,1,_("Roster received."));
+	message_send(r->stream,r->to,r->from,1,_("Roster received."),0);
 
 	msg=xmlnode_new_tag("message");
 	if (r->to!=NULL)
@@ -186,6 +180,7 @@ int i;
 		char *name=NULL;
 		int j,uin;
 		xmlnode item,tag;
+		Session *s;
 
 		cinfo=g_strsplit(results[i],";",0);
 		for(j=0;cinfo[j];j++);
@@ -255,7 +250,10 @@ int i;
 			body=t;
 		}
 
+		s=session_get_by_jid(r->from, r->stream);
 		jid=jid_build(uin);
+		session_subscribe(s,uin);
+		presence_send_subscribed(r->stream,r->from,jid);
 		xmlnode_put_attrib(item,"jid",jid);
 		g_free(jid);
 		if (name==NULL) name=g_strdup_printf("%u",uin);
@@ -271,74 +269,6 @@ int i;
 	stream_write(r->stream,msg);
 	xmlnode_free(msg);
 }
-
-void message_put_roster(struct stream_s *stream,const char *from, const char *to,
-			const char *args, xmlnode msg){
-User *user;
-struct gg_http *gghttp;
-char *contacts=NULL,*cinfo,*t;
-Contact *c;
-GList *it;
-Request *r;
-
-
-	user=user_get_by_jid(from);
-
-	for(it=user->contacts;it;it=it->next){
-		c=(Contact *)it->data;
-		cinfo=g_strdup_printf("%s;%s;%s;%s;%s;%s;%u;%s;%s;%s;%s;\r\n",
-				c->first?c->first:"",
-				c->last?c->last:"",
-				c->nick?c->nick:"",
-				c->display?c->display:"",
-				c->phone?c->phone:"",
-				c->group?c->group:"",
-				c->uin,
-				c->email?c->email:"",
-				c->x1?c->x1:"0",
-				c->x2?c->x2:"",
-				c->x3?c->x3:"0");
-		if (contacts==NULL){
-			contacts=cinfo;
-		}
-		else{
-			t=g_strconcat(contacts,cinfo,NULL);
-			g_free(contacts);
-			contacts=t;
-			g_free(cinfo);
-		}
-	}
-
-	if (contacts==NULL){
-		message_send(stream,to,from,1,_("No contacts defined."));
-		return;
-	}
-
-	message_send(stream,to,from,1,_("Sending roster..."));
-	gghttp=gg_userlist_put(user->uin,from_utf8(user->password),contacts,1);
-	g_free(contacts);
-	r=add_request(RT_USERLIST_PUT,from,to,"",msg,(void*)gghttp,stream);
-	if (!r){
-		message_send_error(stream,to,from,NULL,
-					500,_("Internal Server Error"));
-	}
-}
-
-void put_roster_error(struct request_s *r){
-
-	message_send_error(r->stream,r->to,r->from,NULL,
-				500,_("Internal Server Error"));
-	gg_userlist_put_free(r->gghttp);
-	r->gghttp=NULL;
-}
-
-void put_roster_done(struct request_s *r){
-
-	message_send(r->stream,r->to,r->from,1,_("Roster sent."));
-	gg_userlist_put_free(r->gghttp);
-	r->gghttp=NULL;
-}
-#endif /* REMOTE USERLIST */
 
 void message_friends_only(struct stream_s *stream,const char *from, const char *to,
 				const char *args, xmlnode msg){
