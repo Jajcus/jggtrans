@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.32 2003/02/04 08:06:01 jajcus Exp $ */
+/* $Id: main.c,v 1.33 2003/02/06 14:25:35 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -499,10 +499,26 @@ guint lh;
 	g_main_destroy(main_loop);
 
 	if (do_restart && restart_timeout>=0){
+		char *newargv[10];
+		int n;
+		
 		g_message("Restarting in %i seconds.\n",restart_timeout);
 		if (restart_timeout>0) sleep(restart_timeout);
 		if (saved_pwd) chdir(saved_pwd);
-		execlp(argv[0],argv[0],"-R","-d",param_d,"-D",param_D,NULL);
+
+		n=0;
+		newargv[n++]=argv[0];
+		newargv[n++]="-R";
+		if (param_d) {
+			newargv[n++]="-d";
+			newargv[n++]=(char *)param_d;
+		}
+		if (param_D) {
+			newargv[n++]="-D";
+			newargv[n++]=(char *)param_D;
+		}
+		newargv[n]=NULL;
+		execvp(argv[0],newargv);
 		perror("exec");
 		return 1;
 	}
