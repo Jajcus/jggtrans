@@ -27,6 +27,10 @@
       <secret>secret</secret>
     </accept>
   </service>
+
+
+  For jabberd2 you don't need to (and should not) change anything in the server
+  configuration!
   -->
 
   <!-- this should match <service/> in <browse/> section of jabber.xml -->

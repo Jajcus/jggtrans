@@ -31,6 +31,9 @@
   Oczywiście gg.localhost należy zmienić na własną nazwę serwisu (musi być w DNS),
   127.0.0.1 oraz 5353 na adres/port używany do komunikacji między jggtrans a jabberd,
   a secret na jakiś dowolny ciąg znaków.
+
+  W przypadku użycia jabberd2 nie trzeba (i nie należy) zmieniać niczego
+  w konfiguracji serwera!
   -->
 
   <!-- Dla jabberd 1.4:
