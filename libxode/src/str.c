@@ -345,6 +345,7 @@ void str_b64decode(char* str)
     };
 
     phase = 0;
+    dlast = 0;
     for (cur = str; *cur != '\0'; ++cur )
     {
         d = table[(int)*cur];
