@@ -228,7 +228,7 @@ xmlnode query;
 
 	to=xmlnode_get_attrib(x,"to");
 	if (!to || g_strcasecmp(to,my_name)){
-		g_warning("Wrong 'to' (my name is %s) in query:  %s",to?to:"(null)",xmlnode2str(x));
+		g_warning("Wrong to=%s (my name is %s) in query:  %s",to?to:"(null)",my_name,xmlnode2str(x));
 		jabber_iq_send_error(s,from,to,id,400,"Bad Request");
 		return;
 	}
