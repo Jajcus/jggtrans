@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.19 2003/02/03 23:58:54 mmazur Exp $ */
+/* $Id: search.c,v 1.20 2003/02/04 07:56:26 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -160,10 +160,12 @@ char *data;
 	n=xmlnode_get_tag(q,"gender");
 	if (n){
 		data=xmlnode_get_data(n);
-		if (data[0]=='k' || data[0]=='f' || data[0]=='K' || data[0]=='F') 
-			gg_pubdir50_add(sr, GG_PUBDIR50_GENDER, GG_PUBDIR50_GENDER_FEMALE);
-		else if (data[0]=='m' || data[0]=='M') 
-			gg_pubdir50_add(sr, GG_PUBDIR50_GENDER, GG_PUBDIR50_GENDER_MALE);
+		if (data!=NULL) {
+			if (data[0]=='k' || data[0]=='f' || data[0]=='K' || data[0]=='F') 
+				gg_pubdir50_add(sr, GG_PUBDIR50_GENDER, GG_PUBDIR50_GENDER_FEMALE);
+			else if (data[0]=='m' || data[0]=='M') 
+				gg_pubdir50_add(sr, GG_PUBDIR50_GENDER, GG_PUBDIR50_GENDER_MALE);
+		}
 	}
 	n=xmlnode_get_tag(q,"born");
 	if (n){
