@@ -1,4 +1,4 @@
-/* $Id: requests.c,v 1.34 2003/04/16 10:09:05 jajcus Exp $ */
+/* $Id: requests.c,v 1.35 2003/04/25 13:25:36 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -117,6 +117,13 @@ int res=0;
 	}
 
 	switch(r->type){
+		case RT_USERLIST_IMPORT:
+			if (res || r->gghttp->state==GG_STATE_ERROR) get_roster_error(r);
+			else if (!res && r->gghttp->state==GG_STATE_DONE) import_roster_done(r);
+			else break;
+			r->io_watch=0;
+			remove_request(r);
+			return FALSE;
 		case RT_USERLIST_GET:
 			if (res || r->gghttp->state==GG_STATE_ERROR) get_roster_error(r);
 			else if (!res && r->gghttp->state==GG_STATE_DONE) get_roster_done(r);

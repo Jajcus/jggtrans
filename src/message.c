@@ -1,4 +1,4 @@
-/* $Id: message.c,v 1.34 2003/04/24 07:15:53 jajcus Exp $ */
+/* $Id: message.c,v 1.35 2003/04/25 13:25:35 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -44,6 +44,8 @@ typedef struct iq_namespace_s{
 
 void message_get_roster(struct stream_s *s,const char *from, const char *to,
 				const char *args, xmlnode msg);
+void message_import_roster(struct stream_s *s,const char *from, const char *to,
+				const char *args, xmlnode msg);
 void message_friends_only(struct stream_s *s,const char *from, const char *to,
 				const char *args, xmlnode msg);
 void message_invisible(struct stream_s *s,const char *from, const char *to,
@@ -53,6 +55,7 @@ void message_locale(struct stream_s *s,const char *from, const char *to,
 
 MsgCommand msg_commands[]={
 	{"get roster","gr",N_("Download user list from server"),message_get_roster,1},
+	{"import roster","ir",N_("Add users from the user list on server"),message_import_roster,1},
 	{"friends only","fo",N_("\"Only for friends\" mode"),message_friends_only,0},
 	{"invisible","iv",N_("\"Invisible\" mode"),message_invisible,0},
 	{"locale","loc",N_("Set user locale (language)"),message_locale,0},
@@ -175,6 +178,25 @@ Request *r;
 	}
 }
 
+void message_import_roster(struct stream_s *stream,const char *from, const char *to,
+				const char *args, xmlnode msg){
+struct gg_http *gghttp;
+User *user;
+Request *r;
+
+	user=user_get_by_jid(from);
+
+	message_send(stream,to,from,1,_("Importing roster..."),0);
+
+	gghttp=gg_userlist_get(user->uin,from_utf8(user->password),1);
+	r=add_request(RT_USERLIST_IMPORT,from,to,"",msg,(void*)gghttp,stream);
+	if (!r){
+		message_send_error(stream,to,from,NULL,
+					500,_("Internal Server Error"));
+	}
+}
+
+
 void get_roster_error(struct request_s *r){
 	message_send_error(r->stream,r->to,r->from,NULL,
 				500,_("Internal Server Error"));
@@ -190,7 +212,7 @@ xmlnode msg;
 xmlnode n;
 int i;
 
-	if (r->gghttp->data==NULL) {
+	if (r->gghttp->data==NULL){
 		message_send_error(r->stream,r->to,r->from,NULL, 502,_("No userlist received."));
 		return;
 	}
@@ -220,7 +242,6 @@ int i;
 		char *name=NULL;
 		int j,uin;
 		xmlnode item,tag;
-		Session *s;
 
 		cinfo=g_strsplit(results[i],";",0);
 		for(j=0;cinfo[j];j++);
@@ -282,10 +303,7 @@ int i;
 			body=t;
 		}
 
-		s=session_get_by_jid(r->from, r->stream);
 		jid=jid_build(uin);
-		session_subscribe(s,uin);
-		presence_send_subscribed(r->stream,r->from,jid);
 		xmlnode_put_attrib(item,"jid",jid);
 		g_free(jid);
 		if (name==NULL) name=g_strdup_printf("%u",uin);
@@ -300,6 +318,43 @@ int i;
 	r->gghttp=NULL;
 	stream_write(r->stream,msg);
 	xmlnode_free(msg);
+}
+
+void import_roster_done(struct request_s *r){
+char **results;
+int i;
+
+	if (r->gghttp->data==NULL){
+		message_send_error(r->stream,r->to,r->from,NULL, 502,_("No userlist received."));
+		return;
+	}
+
+	results=g_strsplit(r->gghttp->data,"\r\n",0);
+	for(i=0;results[i];i++){
+		char **cinfo;
+		char *jid;
+		int j,uin;
+		Session *s;
+
+		cinfo=g_strsplit(results[i],";",0);
+		for(j=0;cinfo[j];j++);
+		if (j<7){
+			g_strfreev(cinfo);
+			continue;
+		}
+
+		uin=atoi(cinfo[6]);
+		s=session_get_by_jid(r->from, r->stream);
+		jid=jid_build(uin);
+		session_subscribe(s,uin);
+		presence_send_subscribed(r->stream,r->from,jid);
+		g_strfreev(cinfo);
+	}
+	g_strfreev(results);
+
+	gg_userlist_put_free(r->gghttp);
+	r->gghttp=NULL;
+	message_send(r->stream,r->to,r->from,1,_("Roster received."),0);
 }
 
 void message_friends_only(struct stream_s *stream,const char *from, const char *to,

@@ -1,4 +1,4 @@
-/* $Id: message.h,v 1.7 2003/04/16 10:38:30 jajcus Exp $ */
+/* $Id: message.h,v 1.8 2003/04/25 13:25:36 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -39,5 +39,6 @@ struct request_s;
 
 void get_roster_error(struct request_s *r);
 void get_roster_done(struct request_s *r);
+void import_roster_done(struct request_s *r);
 
 #endif
