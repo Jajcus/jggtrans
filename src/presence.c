@@ -1,4 +1,4 @@
-/* $Id: presence.c,v 1.16 2002/01/30 16:52:03 jajcus Exp $ */
+/* $Id: presence.c,v 1.17 2002/02/03 16:25:53 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -26,6 +26,7 @@
 #include "sessions.h"
 #include "debug.h"
 #include "register.h"
+#include "status.h"
 #include <time.h>
 
 int presence_send_error(struct stream_s *stream,const char *from,const char *to,
@@ -194,10 +195,12 @@ xmlnode n;
 }
 
 int presence(struct stream_s *stream,const char *from,const char *to,
-		int available,const char *show,const char *status){
+		int available,const char *show,const char *status,int priority){
 Session *s;
 int r;
 char *jid;
+const char *resource;
+Resource *res;
 
 	s=session_get_by_jid(from,available?stream:NULL);
 	if (!s){
@@ -206,8 +209,12 @@ char *jid;
 		return -1;
 	}
 	jid=g_strdup(s->user->jid); /* session may be removed in the next step */
-	r=session_set_status(s,available,show,status);
-	if (available && s->connected && !r) presence_send(stream,NULL,jid,available,show,status,0);
+	resource=jid_get_resource(from);
+	r=session_set_status(s,resource,available,show,status,priority);
+	if (!r && s->connected){
+		res=session_get_cur_resource(s);
+		if (res) presence_send(stream,NULL,jid,res->available,res->show,res->status,0);
+	}
 	g_free(jid);
 }
 
@@ -275,7 +282,16 @@ GTime timestamp;
 
 	s=session_get_by_jid(from,NULL);
 	if (jid_is_me(to)){
-		if (s) presence_send(stream,NULL,s->user->jid,s->available,s->show,s->status,0);
+		if (s){
+			if (!s->connected){
+				presence_send(stream,to,from,0,NULL,"Disconnected",0);
+			}
+			else{
+				Resource *r=session_get_cur_resource(s);
+				if (r) presence_send(stream,NULL,s->user->jid,r->available,
+							r->show,r->status,0);
+			}
+		}
 		else presence_send(stream,to,from,0,NULL,"Not logged in",0);
 		return 0;
 	}
@@ -307,29 +323,8 @@ GTime timestamp;
 		presence_send_error(stream,to,from,404,"Not Found");
 		return -1;
 	}
-	
-	switch(status){
-		case GG_STATUS_NOT_AVAIL:
-			available=0;
-			show=NULL;
-			stat="Not available";
-			break;
-		case GG_STATUS_AVAIL:
-			available=1;
-			show=NULL;
-			stat="Available";
-			break;
-		case GG_STATUS_BUSY:
-			available=1;
-			show="dnd";
-			stat="Busy";
-			break;
-		default:
-			available=1;
-			show=NULL;
-			stat="Unknown";
-			break;
-	}
+
+	available=status_gg_to_jabber(status,&show,&stat);	
 
 	presence_send(s->s,to,u->jid,available,show,stat,timestamp);
 	if (s) session_send_notify(s);
@@ -374,9 +369,11 @@ int jabber_presence(struct stream_s *stream,xmlnode tag){
 char *type;
 char *from;
 char *to;
+xmlnode prio_n;
 xmlnode show_n;
 xmlnode status_n;
 char *show,*status;
+int priority;
 
 	type=xmlnode_get_attrib(tag,"type");
 	from=xmlnode_get_attrib(tag,"from");
@@ -389,6 +386,10 @@ char *show,*status;
 	status_n=xmlnode_get_tag(tag,"status");
 	if (status_n) status=xmlnode_get_data(status_n);
 	else status=NULL;
+	
+	prio_n=xmlnode_get_tag(tag,"priority");
+	if (prio_n) priority=atoi(xmlnode_get_data(prio_n));
+	else priority=-1;
 
 	if (!type) type="available";
 	
@@ -405,9 +406,9 @@ char *show,*status;
 	}
 	
 	if (!strcmp(type,"available"))
-		return presence(stream,from,to,1,show,status);
+		return presence(stream,from,to,1,show,status,priority);
 	else if (!strcmp(type,"unavailable"))
-		return presence(stream,from,to,0,show,status);
+		return presence(stream,from,to,0,show,status,priority);
 	else if (!strcmp(type,"subscribe"))
 		return presence_subscribe(stream,from,to);
 	else if (!strcmp(type,"unsubscribe"))

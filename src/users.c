@@ -1,4 +1,4 @@
-/* $Id: users.c,v 1.12 2002/02/02 19:49:54 jajcus Exp $ */
+/* $Id: users.c,v 1.13 2002/02/03 16:25:53 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -419,3 +419,29 @@ char *njid;
 
 	return r;	
 }
+
+void user_print(User *u,int indent){
+char *space,*space1;
+GList *it;
+Contact *c;
+
+	space=g_strnfill(indent*2,' ');
+	space1=g_strnfill((indent+1)*2,' ');
+	g_message("%sUser: %p",space,u);
+	g_message("%sJID: %s",space,u->jid);
+	g_message("%sUIN: %u",space,(unsigned)u->uin);
+	g_message("%sPassword: %p",space,u->password);
+	g_message("%sLast sys message: %i",space,u->last_sys_msg);
+	g_message("%sConfirmed: %i",space,u->confirmed);
+	g_message("%sContacts:",space);
+	for(it=g_list_first(u->contacts);it;it=it->next){
+		c=(Contact *)it->data;
+		g_message("%sContact: %p",space1,c);
+		g_message("%sUin: %u",space1,(unsigned)c->uin);
+		g_message("%sStatus: %i",space1,c->status);
+		g_message("%sLast update: %i",space1,ctime((time_t *)&c->last_update));
+	}	
+	g_free(space1);
+	g_free(space);
+}
+

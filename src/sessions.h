@@ -1,4 +1,4 @@
-/* $Id: sessions.h,v 1.8 2002/01/30 16:52:03 jajcus Exp $ */
+/* $Id: sessions.h,v 1.9 2002/02/03 16:25:53 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -21,6 +21,14 @@
 #define sessions_h
 
 #include "users.h"
+	
+typedef struct resource_s{
+	char *name;
+	int priority;
+	int available;
+	char *show;
+	char *status;
+}Resource;
 
 typedef struct sesion_s{
 	User *user;
@@ -30,14 +38,11 @@ typedef struct sesion_s{
 	GIOChannel *ioch; /* GG IO Channel */
 	guint io_watch;
 
-	
 	int connected;
 	
 	char *jid; 		/* users JID, with resource */
 	struct stream_s *s; 	/* Jabber stream */
-	int available;
-	char *show;
-	char *status;
+	GList *resources;
 	
 	char *req_id;  /* ID if user registration request (<iq/>) */
 	xmlnode query; /* The query */
@@ -53,7 +58,8 @@ extern GHashTable *sessions_jid;
 Session *session_create(User *user,const char *jid,const char *req_id,const xmlnode query,struct stream_s *stream);
 int session_remove(Session *s);
 	
-int session_set_status(Session *s,int available,const char *show,const char *status);
+int session_set_status(Session *s,const char *resource,int available,
+			const char *show,const char *status,int priority);
 int session_send_status(Session *s);
 
 int session_subscribe(Session *s,uin_t uin);
@@ -61,14 +67,19 @@ int session_unsubscribe(Session *s,uin_t uin);
 
 int session_send_message(Session *s,uin_t uin,int chat,const char *body);
 
+/* Finds resource representing current state, 
+ * probably the one with highest priority */
+Resource *session_get_cur_resource(Session *s);
+
 /*
  * Finds session associated with JID. 
  * If none exists and stream is given, new session is created
  */
 Session *session_get_by_jid(const char *jid,struct stream_s *stream);
 
+void session_print(Session *s,int indent);
+void sessions_print_all(int indent);
 int sessions_init();
 int sessions_done();
-int sessions_iter();
 
 #endif

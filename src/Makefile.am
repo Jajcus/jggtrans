@@ -2,11 +2,11 @@
 sbin_PROGRAMS=jggtrans
 
 jggtrans_SOURCES= \
-	debug.h \
-	browse.h \
 	browse.c \
-	conf.h \
+	browse.h \
 	conf.c \
+	conf.h \
+	debug.h \
 	encoding.c \
 	encoding.h \
 	ggtrans.h \
@@ -29,6 +29,8 @@ jggtrans_SOURCES= \
 	search.h \
 	sessions.c \
 	sessions.h \
+	status.c \
+	status.h \
 	stream.c \
 	stream.h \
 	users.c \

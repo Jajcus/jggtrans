@@ -1,10 +1,8 @@
 As soon as possible:
-- track user resources and disconnect when the last one goes unavailable
 
 Always:
 - bug fixes
 
 Some day:
-- changing uid/gid when run as root
 - invisible/"just for friends" modes (waiting for support in Jabber)
 - file transfer

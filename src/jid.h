@@ -1,4 +1,4 @@
-/* $Id: jid.h,v 1.3 2002/01/30 16:52:03 jajcus Exp $ */
+/* $Id: jid.h,v 1.4 2002/02/03 16:25:53 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -24,7 +24,7 @@ int jid_is_my(const char *jid);
 int jid_is_me(const char *jid);
 int jid_has_uin(const char *jid);
 int jid_get_uin(const char *jid);
-
+const char *jid_get_resource(const char *jid);
 
 /* Functions below return strings which must be freed */
 

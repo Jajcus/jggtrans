@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.18 2002/02/02 19:49:54 jajcus Exp $ */
+/* $Id: sessions.c,v 1.19 2002/02/03 16:25:53 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -28,8 +28,9 @@
 #include "users.h"
 #include "jid.h"
 #include "message.h"
-#include "debug.h"
 #include "conf.h"
+#include "status.h"
+#include "debug.h"
 
 static int conn_timeout=30;
 static int pong_timeout=30;
@@ -129,30 +130,9 @@ char *ujid;
 char *show,*stat;
 
 	user_set_contact_status(s->user,status,uin);
+	available=status_gg_to_jabber(status,&show,&stat);
 
 	ujid=jid_build(uin);
-	switch(status){
-		case GG_STATUS_NOT_AVAIL:
-			available=0;
-			show=NULL;
-			stat="Not available";
-			break;
-		case GG_STATUS_AVAIL:
-			available=1;
-			show=NULL;
-			stat="Available";
-			break;
-		case GG_STATUS_BUSY:
-			available=1;
-			show="dnd";
-			stat="Busy";
-			break;
-		default:
-			available=1;
-			show=NULL;
-			stat="Available";
-			break;
-	}
 	presence_send(s->s,ujid,s->user->jid,available,show,stat,0);
 	g_free(ujid);
 	return 0;
@@ -198,6 +178,7 @@ char *jid;
 int chat;
 GIOCondition cond;
 gdouble t;
+Resource *r;
 
 	if (condition&(G_IO_ERR|G_IO_NVAL)){
 		s=(Session *)data;
@@ -260,10 +241,14 @@ gdouble t;
 				s->user->confirmed=1;
 			}
 			s->connected=1;
-			s->available=1;
 			session_send_status(s);
 			if (s->user->contacts) session_send_notify(s);
-			presence_send(s->s,NULL,s->user->jid,1,NULL,"Online",0);
+			
+			r=session_get_cur_resource(s);
+			if (r)
+				presence_send(s->s,NULL,s->user->jid,r->available,r->show,r->status,0);
+			else
+				presence_send(s->s,NULL,s->user->jid,1,NULL,"Online",0);
 			if (s->timeout_func) g_source_remove(s->timeout_func);
 			s->ping_timeout_func=
 				g_timeout_add(ping_interval*1000,session_ping,s);
@@ -423,32 +408,91 @@ char *njid;
 	return session_create(u,jid,NULL,NULL,stream);
 }
 
+Resource *session_get_cur_resource(Session *s){
+GList *it;
+Resource *r=NULL;
+int maxprio;
+
+	maxprio=-1;
+	for(it=g_list_last(s->resources);it;it=it->prev){
+		Resource *r1=(Resource *)it->data;
+		if (r1->priority>maxprio){
+			r=r1;
+			maxprio=r1->priority;
+		}
+	}
+	return r;	
+}
+
 int session_send_status(Session *s){
 int status;
+Resource *r;
 
 	g_assert(s!=NULL && s->ggs!=NULL);
-	if (!s->available) status=GG_STATUS_NOT_AVAIL;
-	else if (!s->show) status=GG_STATUS_AVAIL;
-	else if (!strcmp(s->show,"away")) status=GG_STATUS_BUSY;
-	else if (!strcmp(s->show,"dnd")) status=GG_STATUS_BUSY;
-	else if (!strcmp(s->show,"xa")) status=GG_STATUS_BUSY;
-	else status=GG_STATUS_AVAIL;
+	r=session_get_cur_resource(s);
+	if (!r) return -1;
+	status=status_jabber_to_gg(r->available,r->show,r->status);
 	debug("Changing gg status to %i",status);
 	gg_change_status(s->ggs,status);
 	return 0;
 }
 
-int session_set_status(Session *s,int available,const char *show,const char *status){
+int session_set_status(Session *s,const char *resource,int available,
+			const char *show,const char *status,int priority){
+Resource *r;
+GList *it;
 
-	s->available=available;
-	if (s->show) g_free(s->show);
-	if (show) s->show=g_strdup(show);
-	else s->show=NULL;
-	if (s->status) g_free(s->status);
-	if (status) s->status=g_strdup(status);
-	else s->status=NULL;
-	if (!available) return session_remove(s);
-	if (s->connected) return session_send_status(s);
+	r=NULL;
+	for(it=g_list_first(s->resources);it;it=it->next){
+		Resource *r1=(Resource *)it->data;
+		if ( (!r1->name && !resource) || !strcmp(r1->name,resource) ){
+			r=r1;
+			break;
+		}
+	}
+	
+	if (!available){
+		if (r){
+			debug("Removing resource %s of %s",resource?resource:"NULL",s->jid);
+			if (r->name) g_free(r->name);
+			if (r->show) g_free(r->show);
+			if (r->status) g_free(r->status);
+			s->resources=g_list_remove(s->resources,r);
+			if (!s->resources){
+				session_remove(s);
+				return -1;
+			}
+		}
+		else{
+			g_warning("Unknown resource %s of %s",resource?resource:"NULL",s->jid);
+			return 0;
+		}	
+	}
+	else{		
+		
+		if ( r ) {
+			if (r->show){
+				g_free(r->show);
+				r->show=NULL;
+			}
+			if (r->status){
+				g_free(r->status);
+				r->status=NULL;
+			}
+		}
+		else {
+			debug("New resource %s of %s",resource?resource:"NULL",s->jid);
+			r=g_new0(Resource,1);
+			if (resource) r->name=g_strdup(resource);
+			s->resources=g_list_append(s->resources,r);
+		}
+		r->available=available;
+		if (show) r->show=g_strdup(show);
+		if (status) r->status=g_strdup(status);
+		if (priority>=0) r->priority=priority;
+	}
+
+	if (s->connected) session_send_status(s);
 	return 0;
 }
 
@@ -476,3 +520,54 @@ int session_send_message(Session *s,uin_t uin,int chat,const char *body){
 	gg_send_message(s->ggs,chat?GG_CLASS_CHAT:GG_CLASS_MSG,uin,(char *)body);
 	return 0; /* FIXME: check for errors */
 }
+
+
+void session_print(Session *s,int indent){
+char *space,*space1;
+GList *it;
+Resource *r,*cr;
+char *njid;
+
+	space=g_strnfill(indent*2,' ');
+	space1=g_strnfill((indent+1)*2,' ');
+	njid=jid_normalized(s->jid);
+	g_message("%sSession: %p",space,s);
+	g_message("%sJID: %s",space,s->jid);
+	g_message("%sUser:",space);
+	user_print(s->user,indent+1);
+	g_message("%sResources:",space);
+	cr=session_get_cur_resource(s);
+	for(it=g_list_first(s->resources);it;it=it->next){
+		r=(Resource *)it->data;
+		g_message("%sResource: %p%s",space1,r,(r==cr)?" (current)":"");
+		if (r->name) g_message("%sJID: %s/%s",space1,njid,r->name);
+		else g_message("%sJID: %s",space1,s->jid);
+		g_message("%sPriority: %i",space1,r->priority);
+		g_message("%sAvailable: %i",space1,r->available);
+		if (r->show)
+			g_message("%sShow: %s",space1,r->show);
+		if (r->status)
+			g_message("%sStatus: %s",space1,r->status);
+	}
+	g_message("%sGG session: %p",space,s->ggs);
+	g_message("%sIO Channel: %p",space,s->ioch);
+	g_message("%sStream: %p",space,s->s);
+	g_message("%sConnected: %p",space,s->connected);
+	g_message("%sRequest id: %s",space,s->req_id?s->req_id:"(null)");
+	g_message("%sRequest query: %s",space,s->query?xmlnode2str(s->query):"(null)");
+	g_message("%sWaiting for ping: %i",space,(int)s->waiting_for_pong);
+	g_free(njid);
+	g_free(space1);
+	g_free(space);
+}
+
+static void sessions_print_func(gpointer key,gpointer value,gpointer user_data){
+Session *s=(Session *)value;
+
+	session_print(s,GPOINTER_TO_INT(user_data));
+}
+
+void sessions_print_all(int indent){
+	g_hash_table_foreach(sessions_jid,sessions_print_func,GINT_TO_POINTER(indent));
+}
+

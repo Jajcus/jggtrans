@@ -1,4 +1,4 @@
-/* $Id: jid.c,v 1.5 2002/01/30 16:52:03 jajcus Exp $ */
+/* $Id: jid.c,v 1.6 2002/02/03 16:25:53 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -102,6 +102,14 @@ char *p;
 int jid_get_uin(const char *jid){
 
 	return atoi(jid);
+}
+
+const char *jid_get_resource(const char *jid){
+const char *p;
+
+	p=strchr(jid,'/');
+	if (p) p++;
+	return p;
 }
 
 char * jid_my_registered(){

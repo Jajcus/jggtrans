@@ -1,4 +1,4 @@
-/* $Id: users.h,v 1.8 2002/01/30 16:52:03 jajcus Exp $ */
+/* $Id: users.h,v 1.9 2002/02/03 16:25:53 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -55,6 +55,7 @@ int user_sys_msg_received(User *u,int nr);
 
 int user_set_contact_status(User *u,int status,unsigned int uin);
 
+void user_print(User *u,int indent);
 int users_probe_all();
 int users_init();
 int users_done();
