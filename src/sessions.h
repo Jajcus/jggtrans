@@ -1,4 +1,4 @@
-/* $Id: sessions.h,v 1.10 2002/12/09 09:55:52 jajcus Exp $ */
+/* $Id: sessions.h,v 1.11 2003/01/14 11:03:03 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>

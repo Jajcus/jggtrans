@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.33 2003/01/12 15:08:59 jajcus Exp $ */
+/* $Id: sessions.c,v 1.34 2003/01/14 11:03:03 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -532,6 +532,8 @@ Resource *r;
 	r=session_get_cur_resource(s);
 	if (!r) return -1;
 	status=status_jabber_to_gg(r->available,r->show,r->status);
+	if (s->user->invisible) status=GG_STATUS_INVISIBLE;
+	else if (s->user->friends_only) status|=GG_STATUS_FRIENDS_MASK;
 	debug("Changing gg status to %i",status);
 	if (r->status!=NULL)
 		gg_change_status_descr(s->ggs,status,r->status);

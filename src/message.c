@@ -1,4 +1,4 @@
-/* $Id: message.c,v 1.12 2003/01/13 18:44:34 jajcus Exp $ */
+/* $Id: message.c,v 1.13 2003/01/14 11:03:03 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -36,11 +36,13 @@ typedef struct iq_namespace_s{
 void message_get_roster(struct stream_s *s,const char *from, const char *to,const char *args);
 void message_put_roster(struct stream_s *s,const char *from, const char *to,const char *args);
 void message_friends_only(struct stream_s *s,const char *from, const char *to,const char *args);
+void message_invisible(struct stream_s *s,const char *from, const char *to,const char *args);
 
 MsgCommand msg_commands[]={
 	{"get roster","gr",message_get_roster},
 	{"put roster","pr",message_put_roster},
 	{"friends only","fo",message_friends_only},
+	{"invisible","iv",message_invisible},
 	{NULL,NULL,NULL},
 };
 
@@ -100,14 +102,73 @@ char *s;
 
 
 void message_get_roster(struct stream_s *stream,const char *from, const char *to,const char *args){
+User *user;
+
+	user=user_get_by_jid(from);
 	message_send(stream,to,from,1,"Receiving roster...");
 }
 
 void message_put_roster(struct stream_s *stream,const char *from, const char *to,const char *args){
+User *user;
+
+	user=user_get_by_jid(from);
 	message_send(stream,to,from,1,"Sending roster...");
 }
 
 void message_friends_only(struct stream_s *stream,const char *from, const char *to,const char *args){
+Session *session;
+User *user;
+int on;
+
+	session=session_get_by_jid(from,stream);
+	if (session!=NULL)
+		user=session->user;
+	else
+		user=user_get_by_jid(from);
+	if (args && g_strcasecmp(args,"on")==0) on=1;
+	else if (args && g_strcasecmp(args,"off")==0) on=0;
+	else on=!user->friends_only;
+
+	if (user->friends_only==on){
+		message_send(stream,to,from,1,"No change.");
+		return;
+	}
+	user->friends_only=on;
+
+	if (on)
+		message_send(stream,to,from,1,"friends only: on");
+	else
+		message_send(stream,to,from,1,"friends only: off");
+
+	session_send_status(session);
+}
+	
+void message_invisible(struct stream_s *stream,const char *from, const char *to,const char *args){
+Session *session;
+User *user;
+int on;
+
+	session=session_get_by_jid(from,stream);
+	if (session!=NULL)
+		user=session->user;
+	else
+		user=user_get_by_jid(from);
+	if (args && g_strcasecmp(args,"on")==0) on=1;
+	else if (args && g_strcasecmp(args,"off")==0) on=0;
+	else on=!user->invisible;
+
+	if (user->invisible==on){
+		message_send(stream,to,from,1,"No change.");
+		return;
+	}
+	user->invisible=on;
+
+	if (on)
+		message_send(stream,to,from,1,"invisible: on");
+	else
+		message_send(stream,to,from,1,"invisible: off");
+
+	session_send_status(session);
 }
 	
 int message_to_me(struct stream_s *stream,const char *from,
@@ -115,7 +176,13 @@ int message_to_me(struct stream_s *stream,const char *from,
 int i;
 const char *ce;
 char *args,*p;
+User *user;
 
+	user=user_get_by_jid(from);
+	if (user==NULL){
+		message_send(stream,to,from,1,"I don't know you. Register first.");
+		return;	
+	}
 	
 	if (body!=NULL){
 		for(i=0;msg_commands[i].command;i++){
@@ -140,6 +207,14 @@ char *args,*p;
 		message_send(stream,to,from,1,p);
 		g_free(p);
 	}
+	message_send(stream,to,from,1,"Current settings:");
+	p=g_strdup_printf("  friends only: %s", user->friends_only?"on":"off");
+	message_send(stream,to,from,1,p);
+	g_free(p);
+	p=g_strdup_printf("  invisible: %s", user->invisible?"on":"off");
+	message_send(stream,to,from,1,p);
+	g_free(p);
+	
 	return 0;
 }
 

@@ -1,4 +1,4 @@
-/* $Id: users.h,v 1.12 2002/12/06 15:04:31 jajcus Exp $ */
+/* $Id: users.h,v 1.13 2003/01/14 11:03:03 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -37,6 +37,8 @@ typedef struct user_s{
 	char * jid;
 	char * password;
 	int last_sys_msg;
+	int friends_only;
+	int invisible;
 
 	int confirmed;
 	GList *contacts;

@@ -1,4 +1,4 @@
-/* $Id: users.c,v 1.21 2002/12/29 18:05:10 jajcus Exp $ */
+/* $Id: users.c,v 1.22 2003/01/14 11:03:03 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -105,6 +105,9 @@ xmlnode xml,tag,userlist;
 		g_free(str);
 	}
 
+	if (u->invisible) tag=xmlnode_insert_tag(xml,"invisible");
+	if (u->friends_only) tag=xmlnode_insert_tag(xml,"friendsonly");
+
 	if (u->contacts){
 		GList *it;
 		Contact *c;
@@ -159,7 +162,7 @@ User *user_load(const char *jid){
 char *fn,*njid;
 xmlnode xml,tag,t;
 char *uin,*ujid,*name,*password,*email;
-int last_sys_msg=0;
+int last_sys_msg=0,invisible=0,friends_only=0;
 User *u;
 GList *contacts;
 char *p;
@@ -199,6 +202,10 @@ char *p;
 	if (tag) name=xmlnode_get_data(tag);
 	tag=xmlnode_get_tag(xml,"last_sys_msg");
 	if (tag) last_sys_msg=atoi(xmlnode_get_data(tag));
+	tag=xmlnode_get_tag(xml,"friendsonly");
+	if (tag) friends_only=1;
+	tag=xmlnode_get_tag(xml,"invisible");
+	if (tag) invisible=1;
 	tag=xmlnode_get_tag(xml,"userlist");
 	contacts=NULL;
 	if (tag){
@@ -222,6 +229,8 @@ char *p;
 	if (p) *p=0;
 	u->password=g_strdup(password);
 	u->last_sys_msg=last_sys_msg;
+	u->friends_only=friends_only;
+	u->invisible=invisible;
 	u->contacts=contacts;
 	xmlnode_free(xml);
 	g_assert(users_jid!=NULL);
@@ -318,6 +327,8 @@ char *p,*njid;
 	if (p) *p=0;
 	u->password=g_strdup(password);
 	u->confirmed=0;
+	u->invisible=0;
+	u->friends_only=1;
 	g_assert(users_jid!=NULL);
 	g_hash_table_insert(users_jid,(gpointer)njid,(gpointer)u);
 	return u;
