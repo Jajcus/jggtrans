@@ -1,4 +1,4 @@
-/* $Id: sessions.h,v 1.13 2003/01/15 08:04:56 jajcus Exp $ */
+/* $Id: sessions.h,v 1.14 2003/01/15 14:13:12 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -80,6 +80,7 @@ Session *session_get_by_jid(const char *jid,struct stream_s *stream);
 
 void session_print(Session *s,int indent);
 void sessions_print_all(int indent);
+
 int sessions_init();
 int sessions_done();
 

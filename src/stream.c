@@ -1,4 +1,4 @@
-/* $Id: stream.c,v 1.13 2003/01/15 08:04:56 jajcus Exp $ */
+/* $Id: stream.c,v 1.14 2003/01/15 14:13:12 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -33,6 +33,8 @@
 
 #define MAX_WRITE_BUF 102400
 #define MAX_READ_BUF 102400
+
+GList* destroy_handlers;
 
 int stream_io_error(GIOChannel *source,GIOCondition condition,gpointer data);
 int stream_io_connect(GIOChannel *source,GIOCondition condition,gpointer data);
@@ -162,6 +164,7 @@ Stream *s;
 		g_critical("Couldn't connect to jabber server");
 	else
 		g_critical("Connection to jabber server broken");
+	do_restart=TRUE;
 	return FALSE;
 }
 
@@ -200,7 +203,7 @@ guint br;
 		s->read_buf_len=1024;
 	}
 	err=g_io_channel_read(source,s->read_buf,s->read_buf_len,&br);
-	if (err==G_IO_ERROR_INVAL){
+	if (err==G_IO_ERROR_INVAL || br<1){
 		s->read_watch=0;
 		s->xs->f(XSTREAM_CLOSE,NULL,s);
 		return FALSE;
@@ -312,8 +315,14 @@ int stream_close(Stream *s){
 }
 
 int stream_destroy(Stream *s){
+GList *it;
 
 	g_assert(s!=NULL);
+	for(it=destroy_handlers;it;it=it->next){
+		stream_destroy_handler_t h=
+			(stream_destroy_handler_t)it->data; 
+		h(s);
+	}
 	if (!s->closing){
 		char goodbye[]="</stream:stream>";
 		guint i,l;
@@ -340,3 +349,12 @@ int stream_destroy(Stream *s){
 	return 0;
 }
 
+int stream_add_destroy_handler(stream_destroy_handler_t h){
+	
+	destroy_handlers=g_list_append(destroy_handlers,h);
+}
+
+int stream_del_destroy_handler(stream_destroy_handler_t h){
+	
+	destroy_handlers=g_list_remove(destroy_handlers,h);
+}

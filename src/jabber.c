@@ -1,4 +1,4 @@
-/* $Id: jabber.c,v 1.17 2003/01/15 08:04:56 jajcus Exp $ */
+/* $Id: jabber.c,v 1.18 2003/01/15 14:13:12 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -181,6 +181,11 @@ static GSourceFuncs jabber_source_funcs={
 		jabber_source_destroy
 		};
 
+void jabber_stream_destroyed(struct stream_s *s){
+
+	if (s==stream) stream=NULL;
+}
+
 int jabber_done(){
 
 	if (stream){
@@ -191,6 +196,7 @@ int jabber_done(){
 	g_free(search_instructions);
 	g_free(gateway_desc);
 	g_free(gateway_prompt);
+	stream_del_destroy_handler(jabber_stream_destroyed);
 	return 0;
 }
 
@@ -200,6 +206,7 @@ static int port;
 int jabber_init(){
 xmlnode node;
 
+	stream_add_destroy_handler(jabber_stream_destroyed);
 	node=xmlnode_get_tag(config,"service");
 	if (!node)
 		g_error("No <service/> found in config file");
@@ -212,7 +219,7 @@ xmlnode node;
 	if (!server)
 		g_error("Jabberd server not found in config file");
 
-	port=config_load_int("connect/port");
+	port=config_load_int("connect/port",0);
 	if (port<=0)
 		g_error("Connect port not found in config file");
 

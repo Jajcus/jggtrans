@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.35 2003/01/15 08:04:56 jajcus Exp $ */
+/* $Id: sessions.c,v 1.36 2003/01/15 14:13:12 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -42,6 +42,19 @@ static struct in_addr gg_server;
 static int gg_server_given=0;
 GHashTable *sessions_jid;
 
+static void session_stream_destroyed(gpointer key,gpointer value,gpointer user_data){
+Session *s=(Session *)value;
+Stream *stream=(Stream *)user_data;
+
+	if (s->s==stream) s->s=NULL;
+}
+
+static void sessions_stream_destroyed(struct stream_s *stream){
+
+	g_hash_table_foreach(sessions_jid,session_stream_destroyed,stream);
+}
+
+
 int sessions_init(){
 char *proxy_ip;
 char *p;
@@ -49,27 +62,29 @@ int port;
 int i;
 
 
+	stream_add_destroy_handler(sessions_stream_destroyed);
+
 	sessions_jid=g_hash_table_new(g_str_hash,g_str_equal);
 	if (!sessions_jid) return -1;
 
-	i=config_load_int("conn_timeout");
+	i=config_load_int("conn_timeout",0);
 	if (i>0) conn_timeout=i;
-	i=config_load_int("pong_timeout");
+	i=config_load_int("pong_timeout",0);
 	if (i>0) pong_timeout=i;
-	i=config_load_int("ping_interval");
+	i=config_load_int("ping_interval",0);
 	if (i>0) ping_interval=i;
-	i=config_load_int("reconnect");
+	i=config_load_int("reconnect",0);
 	if (i>0) reconnect=i;
 
 	p=config_load_string("gg_server");
 	if (p && inet_aton(p,&gg_server))
 		gg_server_given=1;
-	i=config_load_int("gg_port");
+	i=config_load_int("gg_port",0);
 	if (i>0) gg_port=i;
 
 	proxy_ip=config_load_string("proxy/ip");
 	if (!proxy_ip) return 0;
-	port=config_load_int("proxy/port");
+	port=config_load_int("proxy/port",0);
 	if (port<=0) return 0;
 
 	g_message("Using proxy: http://%s:%i",proxy_ip,port);
@@ -96,6 +111,9 @@ guint s;
 
 	g_hash_table_foreach_remove(sessions_jid,sessions_hash_remove_func,NULL);
 	g_hash_table_destroy(sessions_jid);
+	
+	stream_del_destroy_handler(sessions_stream_destroyed);
+
 	return 0;
 }
 
@@ -703,4 +721,5 @@ Session *s=(Session *)value;
 void sessions_print_all(int indent){
 	g_hash_table_foreach(sessions_jid,sessions_print_func,GINT_TO_POINTER(indent));
 }
+
 

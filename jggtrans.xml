@@ -133,6 +133,10 @@
  <!-- Where to store pid file. This tag is optional. -->
  <pidfile>/var/lib/jabber/ggtrans.pid</pidfile>
 
+ <!-- How long to wait before restart, after jabber server connection is broken
+      negative value means, that jggtrans should terminate --> 
+ <restart_timeout>60</restart_timeout>
+
 </jggtrans>
 <!--
  vi: encoding=utf-8

@@ -140,6 +140,11 @@
  <!-- Gdzie zapisywać/sprawdzać plik z pid procesu ggtrans. -->
  <pidfile>/var/lib/jabber/ggtrans.pid</pidfile>
 
+ <!-- Ile czekać po przerwaniu połączenia z serwerem jabbera, zanim jggtrans
+      się zrestartuje. Wartoś ujemna oznacza, że jggtrans ma w takim przypadku
+      przerwać pracę. -->
+ <restart_timeout>60</restart_timeout>
+ 
 </jggtrans>
 <!--
  vi: encoding=utf-8 syntax=xml

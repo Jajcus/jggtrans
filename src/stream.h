@@ -1,4 +1,4 @@
-/* $Id: stream.h,v 1.5 2003/01/15 08:04:56 jajcus Exp $ */
+/* $Id: stream.h,v 1.6 2003/01/15 14:13:12 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -46,5 +46,9 @@ int stream_close(Stream *s);
 int stream_write_str(Stream *s,const char *str);
 int stream_write(Stream *s,xmlnode xn);
 int stream_destroy(Stream *s);
+
+typedef void (*stream_destroy_handler_t)(Stream *s);
+int stream_add_destroy_handler(stream_destroy_handler_t h);
+int stream_del_destroy_handler(stream_destroy_handler_t h);
 
 #endif

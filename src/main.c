@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.23 2003/01/15 08:04:56 jajcus Exp $ */
+/* $Id: main.c,v 1.24 2003/01/15 14:13:12 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -42,6 +42,8 @@ GMainLoop *main_loop;
 
 static int signal_received=FALSE;
 static gboolean the_end=FALSE;
+gboolean do_restart=TRUE;
+static int restart_timeout=60;
 static gboolean foreground=TRUE;
 static int debug_level=0;
 
@@ -93,11 +95,13 @@ int pid, status, serrno;
 void signal_handler(int sig){
 
 	switch(sig){
+		case SIGHUP:
+			restart_timeout=0;
+			do_restart=TRUE;
 		case SIGINT:
 		case SIGTERM:
 			the_end=TRUE;
 			break;
-		case SIGHUP:
 		case SIGPIPE:
 			signal(sig,signal_handler);
 			break;
@@ -297,6 +301,9 @@ uid_t uid,euid,newgid;
 struct passwd *pwd;
 struct group *grp;
 char *user,*group;
+char saved_pwd_b[1024],*saved_pwd;
+const char *param_d,*param_D;
+int restarting=0;
 FILE *f;
 guint lh;
 
@@ -308,10 +315,13 @@ guint lh;
 	}
 	newgid=0; user=NULL; group=NULL;
 
+	saved_pwd=getcwd(saved_pwd_b,1024);
 	opterr=0;
-
-	while ((c = getopt (argc, argv, "hfd:D:u:g:")) != -1){
+	while ((c = getopt (argc, argv, "Rhfd:D:u:g:")) != -1){
 		switch(c){
+			case 'R':
+				restarting=1;
+				break;
 			case 'h':
 				usage(argv[0]);
 				return 0;
@@ -319,9 +329,11 @@ guint lh;
 				fg=TRUE;
 				break;
 			case 'd':
+				param_d=optarg;
 				debug_level=atoi(optarg);
 				break;
 			case 'D':
+				param_D=optarg;
 				gg_debug_level=atoi(optarg);
 				fg=TRUE;
 				break;
@@ -365,7 +377,7 @@ guint lh;
 		if (initgroups(user,newgid)) g_error("Couldn't init groups: %s",g_strerror(errno));
 		if (setuid(pwd->pw_uid)) g_error("Couldn't change user: %s",g_strerror(errno));
 	}
-	else if (uid==0) g_error("Refusing to run with uid=0");
+	else if (uid==0 && !restarting) g_error("Refusing to run with uid=0");
 
 	if (optind==argc-1) config_file=g_strdup(argv[optind]);
 	else config_file=g_strdup_printf("%s/%s",SYSCONFDIR,"jggtrans.xml");
@@ -414,8 +426,10 @@ guint lh;
 	}
 
 	pid_filename=config_load_string("pidfile");
+	
+	restart_timeout=config_load_int("restart_timeout",restart_timeout);
 
-	if (pid_filename){
+	if (pid_filename && !restarting){
 		f=fopen(pid_filename,"r");
 		if (f){
 			pid_t pid;
@@ -442,7 +456,7 @@ guint lh;
 	if (users_init()) return 1;
 	if (encoding_init()) return 1;
 
-	if (!fg) daemonize();
+	if (!fg && !restarting) daemonize();
 
 	if (log_filename){
 		log_file=fopen(log_filename,"a");
@@ -479,6 +493,15 @@ guint lh;
 		log_file=NULL;
 	}
 	xmlnode_free(config);
+	
+	if (do_restart && restart_timeout>=0){
+		fprintf(stderr,"Restarting in %i seconds.\n",restart_timeout);
+		if (restart_timeout>0) sleep(restart_timeout);
+		if (saved_pwd) chdir(saved_pwd);
+		execlp(argv[0],argv[0],"-R","-d",param_d,"-D",param_D,NULL);
+		perror("exec");
+		return 1;
+	}
 
 	fprintf(stderr,"Exiting normally.\n");
 	return 0;
