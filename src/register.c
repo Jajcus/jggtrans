@@ -1,4 +1,4 @@
-/* $Id: register.c,v 1.31 2003/04/11 15:59:38 jajcus Exp $ */
+/* $Id: register.c,v 1.32 2003/04/11 16:06:53 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -614,13 +614,6 @@ Request *r;
 				jabber_iq_send_error(s,from,to,id,406,_("Not Acceptable"));
 			}
 			return;
-	}
-
-	if (!nick){
-		debug(N_("nickname not given for registration"));
-		session_remove(session);
-		jabber_iq_send_error(s,from,to,id,406,_("Not Acceptable"));
-		return;
 	}
 
 	if (!user && (!password ||!uin)){
