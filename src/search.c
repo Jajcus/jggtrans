@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.16 2003/01/22 07:53:01 jajcus Exp $ */
+/* $Id: search.c,v 1.17 2003/01/22 08:09:36 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -44,13 +44,17 @@ xmlnode q,item,n;
 struct gg_search * results;
 char *jid,*name,*str;
 int i;
+unsigned uin;
 
 	results=(struct gg_search *)r->gghttp->data;
 	q=xmlnode_new_tag("query");
 	xmlnode_put_attrib(q,"xmlns","jabber:iq:search");
 	for(i=0;results && i<results->count;i++){
 		item=xmlnode_insert_tag(q,"item");
-		jid=jid_build(results->results[i].uin);
+		uin=results->results[i].uin;
+		if (uin<=0)
+			uin=jid_get_uin(r->to);
+		jid=jid_build(uin);
 		xmlnode_put_attrib(item,"jid",jid);
 		g_free(jid);
 		name=g_strdup_printf("%s %s",results->results[i].first_name,results->results[i].last_name);
@@ -229,6 +233,7 @@ char *jid,*name=NULL,*str;
 GList *it;
 Contact *c;
 User *u;
+unsigned uin;
 
 
 	results=(struct gg_search *)r->gghttp->data;
@@ -284,7 +289,10 @@ User *u;
 	n=xmlnode_insert_tag(n1,"LOCALITY");
 	xmlnode_insert_cdata(n,to_utf8(results->results[0].city),-1);
 
-	jid=jid_build(results->results[0].uin);
+	uin=results->results[0].uin;
+	if (uin<=0)
+		uin=jid_get_uin(r->to);
+	jid=jid_build(uin);
 	n=xmlnode_insert_tag(vc,"JABBERID");
 	xmlnode_insert_cdata(n,jid,-1);
 	g_free(jid);
