@@ -1,4 +1,4 @@
-/* $Id: message.c,v 1.45 2004/04/30 06:56:22 jajcus Exp $ */
+/* $Id: message.c,v 1.46 2004/10/27 20:50:14 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -186,7 +186,7 @@ int i;
 		return;
 	}
 
-	message_send(s->s,NULL,s->user->jid,1,_("Roster received."),0);
+	message_send(s->s,NULL,s->user->jid,0,_("Roster received."),0);
 
 	msg=xmlnode_new_tag("message");
 	jid=jid_my_registered();
