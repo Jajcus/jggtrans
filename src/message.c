@@ -1,4 +1,4 @@
-/* $Id: message.c,v 1.9 2002/01/30 16:52:03 jajcus Exp $ */
+/* $Id: message.c,v 1.10 2002/02/26 08:58:24 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -92,26 +92,6 @@ xmlnode subject_n;
 xmlnode body_n;
 Session *s;
 
-	from=xmlnode_get_attrib(tag,"from");
-	to=xmlnode_get_attrib(tag,"to");
-	if (!to || !jid_is_my(to) || !jid_has_uin(to)){
-		g_warning("Bad 'to' in: %s",xmlnode2str(tag));
-		message_send_error(stream,to,from,body,400,"Bad Request"); 
-		return -1;
-	}
-	
-	if (!jid_has_uin(to)){
-		g_warning("Bad 'to' in: %s",xmlnode2str(tag));
-		message_send_error(stream,to,from,body,404,"Not Found"); 
-		return -1;
-	}
-
-	if (!from){
-		g_warning("Anonymous message? %s",xmlnode2str(tag));
-		message_send_error(stream,to,from,body,400,"Bad Request"); 
-		return -1;
-	}
-	
 	body_n=xmlnode_get_tag(tag,"body");
 	if (body_n) body=xmlnode_get_data(body_n);
 	else body=NULL;
@@ -130,6 +110,26 @@ Session *s;
 	else {
 		g_warning("Unsupported message type");
 		message_send_error(stream,to,from,body,500,"Internal Server Error"); 
+		return -1;
+	}
+
+	from=xmlnode_get_attrib(tag,"from");
+	to=xmlnode_get_attrib(tag,"to");
+	if (!to || !jid_is_my(to) || !jid_has_uin(to)){
+		g_warning("Bad 'to' in: %s",xmlnode2str(tag));
+		message_send_error(stream,to,from,body,400,"Bad Request"); 
+		return -1;
+	}
+	
+	if (!jid_has_uin(to)){
+		g_warning("Bad 'to' in: %s",xmlnode2str(tag));
+		message_send_error(stream,to,from,body,404,"Not Found"); 
+		return -1;
+	}
+
+	if (!from){
+		g_warning("Anonymous message? %s",xmlnode2str(tag));
+		message_send_error(stream,to,from,body,400,"Bad Request"); 
 		return -1;
 	}
 	
