@@ -14,8 +14,6 @@ AM_PROG_LIBTOOL
 AM_PATH_GLIB([1.2.0],[],AC_MSG_ERROR("You need glib >= 1.2.0 to compile this."))
 
 # Checks for libraries.
-AC_CHECK_LIB([gadu], [gg_change_info],[],AC_MSG_ERROR("You need libgadu (from ekg>=20020807 package) to compile this."))
-
 AC_ARG_WITH(pthread,
   [  --with-pthread          Assume libgadu is compiled with pthread],[],[
 	AC_MSG_CHECKING([If libgadu is compiled with pthread support])
@@ -59,6 +57,8 @@ else
 	AC_MSG_WARN([jggtrans _will_not_ be compiled with pthread])
 fi
 AC_MSG_WARN([  if this doesn't match libgadu configuration jggtrans may crash])
+
+AC_CHECK_LIB([gadu], [gg_change_info],[],AC_MSG_ERROR("You need libgadu (from ekg>=20020807 package) to compile this."))
 
 AC_ARG_ENABLE([debug],AC_HELP_STRING([--disable-debug],[Disable debugging code]))
 
