@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.103 2004/04/13 17:44:07 jajcus Exp $ */
+/* $Id: sessions.c,v 1.104 2004/06/11 07:09:18 smoku Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -485,6 +485,7 @@ time_t timestamp;
 					event->event.status60.version);
 			break;
 		case GG_EVENT_MSG:
+			if (event->event.msg.recipients_count>1) break;
 			gg_messages_in++;
 			debug(L_("Message: sender: %i class: %i time: %lu"),
 							event->event.msg.sender,
