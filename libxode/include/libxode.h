@@ -420,11 +420,13 @@ char *xstream_header_char(xmlnode x);
  * GPL.
  */
 
+#include <stdint.h>
+
 typedef struct {
-  unsigned long H[5];
-  unsigned long W[80];
-  int lenW;
-  unsigned long sizeHi,sizeLo;
+  uint32_t H[5];
+  uint32_t W[80];
+  int32_t lenW;
+  uint32_t sizeHi,sizeLo;
 } LIBXODE_SHA_CTX;
 
 
