@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.15 2002/02/03 17:10:50 jajcus Exp $ */
+/* $Id: main.c,v 1.16 2002/12/06 15:05:45 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -17,6 +17,7 @@
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#include "ggtrans.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <signal.h>
@@ -26,7 +27,6 @@
 #include <errno.h>
 #include <pwd.h>
 #include <grp.h>
-#include "ggtrans.h"
 #include "jabber.h"
 #include "sessions.h"
 #include "encoding.h"

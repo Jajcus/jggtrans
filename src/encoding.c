@@ -1,4 +1,4 @@
-/* $Id: encoding.c,v 1.7 2002/06/10 17:57:46 jajcus Exp $ */
+/* $Id: encoding.c,v 1.8 2002/12/06 15:05:45 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -17,10 +17,10 @@
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#include "ggtrans.h"
 #include <iconv.h>
 #include <errno.h>
 #include <assert.h>
-#include "ggtrans.h"
 #include "encoding.h"
 
 #define ENCODING "windows-1250"

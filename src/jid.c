@@ -1,4 +1,4 @@
-/* $Id: jid.c,v 1.6 2002/02/03 16:25:53 jajcus Exp $ */
+/* $Id: jid.c,v 1.7 2002/12/06 15:05:45 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -17,8 +17,8 @@
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdio.h>
 #include "ggtrans.h"
+#include <stdio.h>
 #include "jid.h"
 #include "jabber.h"
 #include "ctype.h"

@@ -1,4 +1,4 @@
-/* $Id: status.c,v 1.3 2002/06/10 17:57:46 jajcus Exp $ */
+/* $Id: status.c,v 1.4 2002/12/06 15:05:45 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -17,8 +17,8 @@
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <libgadu.h>
 #include "ggtrans.h"
+#include <libgadu.h>
 #include "status.h"
 
 int status_jabber_to_gg(int available,const char *show,const char *status){

@@ -1,4 +1,4 @@
-/* $Id: presence.c,v 1.18 2002/06/10 17:57:46 jajcus Exp $ */
+/* $Id: presence.c,v 1.19 2002/12/06 15:05:45 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -17,8 +17,8 @@
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdio.h>
 #include "ggtrans.h"
+#include <stdio.h>
 #include "presence.h"
 #include "jabber.h"
 #include "jid.h"

@@ -1,4 +1,4 @@
-/* $Id: requests.h,v 1.6 2002/01/30 16:52:03 jajcus Exp $ */
+/* $Id: requests.h,v 1.7 2002/12/06 15:05:45 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -28,7 +28,9 @@ typedef enum request_type_e{
 	RT_NONE=0,
 	RT_SEARCH,
 	RT_VCARD,
-	RT_CHANGE
+	RT_CHANGE,
+	RT_USERLIST_GET,
+	RT_USERLIST_PUT
 }RequestType;
 
 typedef struct request_s{
@@ -37,8 +39,8 @@ typedef struct request_s{
 	char *id;  /* ID if user request (<iq/>) */
 	xmlnode query; /* The query */
 	RequestType type;
-	
-	struct gg_http* gghttp; 
+
+	struct gg_http* gghttp;
 	GIOChannel *ioch;
 	guint io_watch;
 
