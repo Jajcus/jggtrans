@@ -112,7 +112,7 @@
  <!-- Te wartości można zmieniać wedle własnych upodobań.
       Jak sesja niepotrzebnie dostaje timeout można to zwiększać 
       w nieskończoność :-) -->
- <conn_timeout>3000</conn_timeout>
+ <conn_timeout>60</conn_timeout>
  <ping_interval>10</ping_interval>
 
  <!-- Od jakiegoś czasu serwer GaduGadu nie odpowiada na pingi :-( 
