@@ -91,7 +91,7 @@
  <vCard>
      <FN>GaduGadu Transport</FN>
      <DESC>To jest bramka pomiędzy Jabberem, a GaduGadu.</DESC>
-     <URL>http://foo.bar/</URL>
+     <URL>http://www.jabberstudio.org/projects/jabber-gg-transport/project/view.php</URL>
  </vCard>
 
  <!-- domyślne locale (język) użytkownika. 

@@ -84,7 +84,7 @@
  <vCard>
      <FN>GaduGadu Transport</FN>
      <DESC>This is GaduGadu Transport</DESC>
-     <URL>http://foo.bar/</URL>
+	 <URL>http://www.jabberstudio.org/projects/jabber-gg-transport/project/view.php</URL>
  </vCard>
 
  <!-- Default user locale (language). 
