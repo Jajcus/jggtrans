@@ -108,6 +108,16 @@
         <port>8080</port>
  </proxy>
  -->
+ 
+ <!-- Te wartości można zmieniać wedle własnych upodobań.
+      Jak sesja niepotrzebnie dostaje timeout można to zwiększać 
+      w nieskończoność :-) -->
+ <conn_timeout>3000</conn_timeout>
+ <ping_interval>10</ping_interval>
+
+ <!-- Od jakiegoś czasu serwer GaduGadu nie odpowiada na pingi :-( 
+      Ale dajmy mu rok czasu na odpowiedź :-) -->
+ <pong_timeout>31536000</pong_timeout>
 
  <!-- Katalog z danymi użytkowników. -->
  <!-- Proszę uważać na uprawnienie - hasła użytkowników (do GG) będą tam przechowywane -->

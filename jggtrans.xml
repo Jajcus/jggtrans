@@ -103,6 +103,15 @@
  </proxy>
  -->
 
+  <!-- You can change this values according to your needs -->
+  <conn_timeout>3000</conn_timeout>
+  <ping_interval>10</ping_interval>
+
+  <!-- GaduGadu server doesn't seem to answer pings any more :-( 
+       So let's give it a year :-) -->
+  <pong_timeout>31536000</pong_timeout>
+		     
+
  <!-- Spool directory. This is the place, where user info will be stored. -->
  <!-- Be careful about permissions - users' GG passwords are stored there -->
  <spool>/var/lib/jabber/spool/gg.localhost/</spool>
