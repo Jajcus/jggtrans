@@ -1,4 +1,14 @@
 
+Version 1.0.0
+-------------
+This version fixes some more bugs. Probably still there are some, but it is
+high time to release another version and I don't want to add another ".9" :-)
+
+Changes from 0.9.9:
+
+* just bug fixes
+
+
 Version 0.9.9
 --------------
 This version fixes all fatal bugs known to me. If no bug report come this
