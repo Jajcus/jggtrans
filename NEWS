@@ -1,4 +1,21 @@
 
+Version 1.2.1
+-------------
+
+Changes from 1.2.0:
+
+* compilation on FreeBSD fixed
+
+* GG status change fixed when no reason string is given
+
+* fixed freeing already free  xmlnode query  while registering.
+  Patch by Tomasz Sterna <tomek@smoczy.net>
+
+* added jabber:iq:version jggtrans query support. Psi nicely shows it on
+  transport tooltip.
+  Patch by Tomasz Sterna <tomek@smoczy.net>
+
+
 Version 1.2.0
 -------------
 

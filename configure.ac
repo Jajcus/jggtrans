@@ -1,5 +1,5 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT([jabber-gg-transport], [1.2.0], [jajcus@pld.org.pl])
+AC_INIT([jabber-gg-transport], [1.2.1], [jajcus@pld.org.pl])
 AC_CONFIG_SRCDIR([src/ggtrans.h])
 AM_INIT_AUTOMAKE
 AM_CONFIG_HEADER([config.h])
@@ -14,7 +14,8 @@ AM_PROG_LIBTOOL
 AM_PATH_GLIB([1.2.0],[],AC_MSG_ERROR("You need glib >= 1.2.0 to compile this."))
 
 # Checks for libraries.
-AC_CHECK_LIB([gadu], [gg_change_info],[],AC_MSG_ERROR("You need libgadu (from ekg>=20020223 package) to compile this."))
+AC_CHECK_LIB([gadu], [gg_change_info],[],AC_MSG_ERROR("You need libgadu (from ekg>=20020807 package) to compile this."))
+AC_CHECK_LIB([iconv], [iconv_open])
 
 AC_ARG_WITH(pthread,
   [  --with-pthread          Assume libgadu is compiled with pthread],[],[
@@ -76,9 +77,10 @@ fi
 AC_HEADER_DIRENT
 AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
-AC_CHECK_HEADERS([stdlib.h string.h])
+AC_CHECK_HEADERS([stdlib.h string.h iconv.h])
 AC_CHECK_HEADERS([sys/socket.h netdb.h netinet/in.h])
 AC_CHECK_HEADERS([sys/time.h unistd.h errno.h fcntl.h])
+AC_NEED_STDINT_H
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -93,6 +95,8 @@ AC_FUNC_STAT
 AC_CHECK_FUNCS([gethostbyname isascii],[],AC_MSG_ERROR("Some functions needed are missing"))
 AC_CHECK_FUNCS([select socket],[],AC_MSG_ERROR("Some functions needed are missing"))
 AC_CHECK_FUNCS([memset strchr],[],AC_MSG_ERROR("Some functions needed are missing"))
+AC_CHECK_FUNCS([iconv_open],[],AC_MSG_ERROR("Some functions needed are missing"))
+AC_CHECK_LIB([gadu], [gg_event_free],[],AC_MSG_ERROR("You need libgadu>=20020807."))
 
 AC_CONFIG_SUBDIRS([libxode])
 
