@@ -1,4 +1,4 @@
-/* $Id: sessions.h,v 1.23 2003/05/09 10:32:01 jajcus Exp $ */
+/* $Id: sessions.h,v 1.24 2003/05/09 12:22:36 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -28,6 +28,8 @@ typedef struct resource_s{
 	int available;
 	char *show;
 	char *status;
+	struct session_s *session;
+	guint disconnect_delay_func;
 }Resource;
 
 typedef struct session_s{

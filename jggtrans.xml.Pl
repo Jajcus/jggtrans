@@ -126,6 +126,10 @@
  <!-- jak szybko ma transport spróbować się połączyć po rozłączeniu -->
  <reconnect>300</reconnect>
 
+ <!-- Opóźnienie pomiędzy otrzymaniem informacji o nieobecności użytkownika,
+      a wylogowaniem z GG. Służy to do poprawnej obsługi <presence type="invisible"/> -->
+ <disconnect_delay>5</disconnect_delay>
+
  <!-- Katalog z danymi użytkowników. -->
  <!-- Proszę uważać na uprawnienie - hasła użytkowników (do GG) będą tam przechowywane -->
  <spool>/var/lib/jabber/spool/gg.localhost/</spool>

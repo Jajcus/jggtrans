@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.70 2003/05/09 10:32:01 jajcus Exp $ */
+/* $Id: sessions.c,v 1.71 2003/05/09 12:22:36 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -38,6 +38,7 @@
 
 static int conn_timeout=30;
 static int pong_timeout=30;
+static int disconnect_delay=2;
 static int ping_interval=10;
 static int reconnect=0;
 static GList *gg_servers=NULL;
@@ -45,6 +46,7 @@ GHashTable *sessions_jid;
 
 static int session_try_login(Session *s);
 static int session_destroy(Session *s);
+static void resource_remove(Resource *r,int kill_session);
 
 static void session_stream_destroyed(gpointer key,gpointer value,gpointer user_data){
 Session *s=(Session *)value;
@@ -76,6 +78,8 @@ GgServer *server;
 	if (i>0) conn_timeout=i;
 	i=config_load_int("pong_timeout",0);
 	if (i>0) pong_timeout=i;
+	i=config_load_int("disconnect_delay",0);
+	if (i>0) disconnect_delay=i;
 	i=config_load_int("ping_interval",0);
 	if (i>0) ping_interval=i;
 	i=config_load_int("reconnect",0);
@@ -517,7 +521,6 @@ time_t timestamp;
 /* destroys Session object */
 static int session_destroy(Session *s){
 GList *it;
-Resource *r=NULL;
 
 	g_message(L_("Deleting session for '%s'"),s->jid);
 	if (s->ping_timeout_func) g_source_remove(s->ping_timeout_func);
@@ -544,20 +547,10 @@ Resource *r=NULL;
 		}
 		gg_free_session(s->ggs);
 	}
+	while(s->resources) resource_remove((Resource *)s->resources->data,0);
 	if (s->query) xmlnode_free(s->query);
 	if (s->user) user_remove(s->user);
-	for(it=g_list_first(s->resources);it;){
-		r=(Resource *)it->data;
-		if (r->name) g_free(r->name);
-		if (r->show) g_free(r->show);
-		if (r->status) g_free(r->status);
-		it=it->next;
-		g_free(r);
-	}
-	g_list_free(s->resources);
 	if (s->gg_status_descr) g_free(s->gg_status_descr);
-	s->resources=NULL;
-
 	g_free(s);
 	return 0;
 }
@@ -729,6 +722,37 @@ int r;
 	return 0;
 }
 
+static void resource_remove(Resource *r,int kill_session){
+Session *s=r->session;
+
+	debug(L_("Removing resource %s of %s"),r->name,s->jid);
+	if (r->name) g_free(r->name);
+	if (r->show) g_free(r->show);
+	if (r->status) g_free(r->status);
+	s->resources=g_list_remove(s->resources,r);
+	g_free(r);
+	if (!s->resources && kill_session){
+		session_remove(s);
+		return;
+	}
+	if (r->disconnect_delay_func){
+		r->disconnect_delay_func=0;
+		g_source_remove(r->disconnect_delay_func);
+	}
+}
+
+gboolean delayed_disconnect(gpointer data){
+Resource *r=(Resource *)data;
+
+	g_assert(r!=NULL);
+
+	debug(L_("Delayed removal of resource %s of %s"),r->name,r->session->jid);
+	r->disconnect_delay_func=0;
+	resource_remove(r,1);
+	return FALSE;
+}
+
+
 int session_set_status(Session *s,const char *resource,int available,
 			const char *show,const char *status,int priority){
 Resource *r;
@@ -744,26 +768,21 @@ GList *it;
 	}
 
 	if (!available){
-		if (r){
-			debug(L_("Removing resource %s of %s"),resource?resource:"NULL",s->jid);
-			if (r->name) g_free(r->name);
-			if (r->show) g_free(r->show);
-			if (r->status) g_free(r->status);
-			s->resources=g_list_remove(s->resources,r);
-			g_free(r);
-			if (!s->resources){
-				session_remove(s);
-				return -1;
-			}
-		}
-		else{
+		if (!r){
 			g_warning(N_("Unknown resource %s of %s"),resource?resource:"NULL",s->jid);
 			return 0;
 		}
+		if (disconnect_delay>0 && r->available){
+			r->available=0;
+			debug(L_("Delaying removal of resource %s of %s"),resource?resource:"NULL",s->jid);
+			r->disconnect_delay_func=g_timeout_add(disconnect_delay*1000,delayed_disconnect,r);
+		}
+		else resource_remove(r,1);
+		return 0;
 	}
 	else{
-
 		if ( r ){
+			if (r->disconnect_delay_func) g_source_remove(r->disconnect_delay_func);
 			if (r->show){
 				g_free(r->show);
 				r->show=NULL;
@@ -777,6 +796,7 @@ GList *it;
 			debug(L_("New resource %s of %s"),resource?resource:"NULL",s->jid);
 			r=g_new0(Resource,1);
 			if (resource) r->name=g_strdup(resource);
+			r->session=s;
 			s->resources=g_list_append(s->resources,r);
 		}
 		r->available=available;
