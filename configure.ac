@@ -57,7 +57,8 @@ AC_FUNC_ERROR_AT_LINE
 AC_TYPE_SIGNAL
 AC_FUNC_STAT
 
-AC_SEARCH_LIBS([gethostbyname],[resolve resolv],[],AC_MSG_ERROR("Some functions needed are missing"))
+AC_SEARCH_LIBS([gethostbyname],[resolv nsl],[],AC_MSG_ERROR("Some functions needed are missing"))
+AC_SEARCH_LIBS([inet_aton],[resolv nsl],[],AC_MSG_ERROR("Some functions needed are missing"))
 AC_SEARCH_LIBS([socket],[socket],[],AC_MSG_ERROR("Some functions needed are missing"))
 AC_CHECK_FUNCS([isascii],[],AC_MSG_ERROR("Some functions needed are missing"))
 AC_CHECK_FUNCS([select],[],AC_MSG_ERROR("Some functions needed are missing"))
