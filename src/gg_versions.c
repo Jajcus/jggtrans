@@ -1,4 +1,4 @@
-/* $Id: gg_versions.c,v 1.1 2003/03/25 07:43:45 jajcus Exp $ */
+/* $Id$ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
