@@ -1,4 +1,4 @@
-/* $Id: requests.c,v 1.19 2003/02/04 08:06:01 jajcus Exp $ */
+/* $Id: requests.c,v 1.19.2.1 2003/04/09 07:25:48 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -128,12 +128,12 @@ struct gg_http *gghttp;
 	r->stream=stream;
 
 	if(type==RT_VCARD || type==RT_SEARCH){
+		s=session_get_by_jid(from, stream);
+		if (s==NULL) return NULL;
+		
 		r->hash=time(NULL);
 		gg_pubdir50_seq_set((gg_pubdir50_t)data, r->hash);
-
-		s=session_get_by_jid(from, stream);
 		gg_pubdir50(s->ggs, (gg_pubdir50_t)data);
-
 		g_hash_table_insert(lookups, &r->hash, r);
 	}
 	else{
