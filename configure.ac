@@ -26,6 +26,9 @@ fi
 AC_SUBST(JK_LIBGADU_LIBS)
 AC_SUBST(JK_LIBGADU_CFLAGS)
 
+AC_SUBST(JK_LIBIDN_LIBS)
+AC_SUBST(JK_LIBIDN_CFLAGS)
+
 AC_ARG_ENABLE([debug],AC_HELP_STRING([--disable-debug],[Disable debugging code]))
 
 AC_ARG_WITH([efence],AC_HELP_STRING([--with-efence],[Link against ElectricFence library]))

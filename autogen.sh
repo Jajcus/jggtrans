@@ -4,6 +4,7 @@
 
 libtoolize --force
 rm -f po/ChangeLog
+touch po/Makefile.in m4/Makefile
 gettextize --force
 aclocal -I m4
 autoheader
