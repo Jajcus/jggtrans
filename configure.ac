@@ -4,8 +4,6 @@ AC_CONFIG_SRCDIR([src/ggtrans.h])
 AM_INIT_AUTOMAKE
 AM_CONFIG_HEADER([config.h])
 
-ALL_LINGUAS="pl"
-
 # Checks for programs.
 AC_PROG_CC
 AC_C_BIGENDIAN
