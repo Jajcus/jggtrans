@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.22 2002/02/04 08:26:35 jajcus Exp $ */
+/* $Id: sessions.c,v 1.23 2002/02/04 09:52:57 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -181,28 +181,25 @@ gdouble t;
 Resource *r;
 
 	s=(Session *)data;
-	if (condition&(G_IO_ERR|G_IO_HUP|G_IO_NVAL)){
+	debug("Checking error conditions...");
+	if (condition&(G_IO_ERR|G_IO_NVAL)){
 		if (condition&G_IO_ERR) g_warning("Error on connection for %s",s->jid);
 		if (condition&G_IO_HUP) g_warning("Hangup on connection for %s",s->jid);
 		if (condition&G_IO_NVAL) g_warning("Invalid channel on connection for %s",s->jid);
 
-		if (s->ggs && s->ggs->state==GG_STATE_CONNECTING_GG && !(condition&G_IO_NVAL)){
-			g_warning("Connection error, but continuing...");
+		if (s->req_id){
+			jabber_iq_send_error(s->s,s->jid,NULL,s->req_id,502,"Remote Server Error");
 		}
 		else{
-			if (s->req_id){
-				jabber_iq_send_error(s->s,s->jid,NULL,s->req_id,502,"Remote Server Error");
-			}
-			else{
-				presence_send(s->s,NULL,s->user->jid,0,NULL,"Connection broken",0);
-			}
-			s->connected=0;
-			s->io_watch=0;
-			session_remove(s);
-			return FALSE;
+			presence_send(s->s,NULL,s->user->jid,0,NULL,"Connection broken",0);
 		}
+		s->connected=0;
+		s->io_watch=0;
+		session_remove(s);
+		return FALSE;
 	}
 	
+	debug("watching fd (gg_debug_level=%i)...",gg_debug_level);
 	event=gg_watch_fd(s->ggs);
 	if (!event){
 		g_warning("Connection broken. Session of %s",s->jid);
@@ -304,6 +301,7 @@ Resource *r;
 	s->io_watch=g_io_add_watch(s->ioch,cond,session_io_handler,s);
 	
 	gg_free_event(event);
+	debug("io handler done...");
 	
 	return FALSE;
 }
