@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <unistd.h>
-#include "fds.h"
 #include "jabber.h"
 #include "ggtrans.h"
 #include "sessions.h"
@@ -9,9 +8,11 @@
 #include <signal.h>
 #include <sys/wait.h>
 
+xmlnode config;
+GMainLoop *main_loop;
 
-static int the_end=0;
 static int signal_received=0;
+static int the_end=0;
 
 void sigchld_handler (int signum) {
 int pid, status, serrno;
@@ -42,8 +43,45 @@ void signal_handler(int sig){
 	signal_received=sig;
 }
 
+gboolean signal_source_prepare(gpointer  source_data,
+				GTimeVal *current_time,
+				gint     *timeout,
+				gpointer  user_data){
 
-xmlnode config;
+	*timeout=1000;
+	if (signal_received) return TRUE;
+	return FALSE;
+}
+
+gboolean signal_source_check(gpointer  source_data,
+                        	GTimeVal *current_time,
+                        	gpointer  user_data){
+
+	if (signal_received) return TRUE;
+	return FALSE;
+}
+
+gboolean signal_source_dispatch(gpointer  source_data,
+                        GTimeVal *current_time,
+                        gpointer  user_data){
+	
+	psignal(signal_received,"signal received");
+	g_warning("Signal received: %s",g_strsignal(signal_received));
+	if (the_end) g_main_quit(main_loop);
+	signal_received=0;
+	return TRUE;
+}
+
+void signal_source_destroy(gpointer user_data){
+}
+
+static GSourceFuncs signal_source_funcs={
+		signal_source_prepare,
+		signal_source_check,
+		signal_source_dispatch,
+		signal_source_destroy
+		};
+
 
 int main(int argc,char *argv[]){
 
@@ -53,7 +91,8 @@ int main(int argc,char *argv[]){
 		return 1;
 	}
 
-	fd_init();
+	main_loop=g_main_new(0);
+	g_source_add(G_PRIORITY_HIGH,0,&signal_source_funcs,NULL,NULL,NULL);
 	
 	if (jabber_init()) return 1;
 	if (sessions_init()) return 1;
@@ -66,21 +105,13 @@ int main(int argc,char *argv[]){
 	signal(SIGTERM,signal_handler);		
 	signal(SIGCHLD,sigchld_handler);		
 
-	while(!the_end){
-		fd_watch(10);
-		if (signal_received){
-			psignal(signal_received,"signal received");
-			g_warning("Signal received: %s",g_strsignal(signal_received));
-			if (the_end) break;
-			signal_received=0;
-		}
-		if (jabber_iter()) break;
-		if (sessions_iter()) break;
-	}
+	g_main_run(main_loop);
 	
 	sessions_done();
 	users_done();
 	jabber_done();
+
+	g_main_destroy(main_loop);
 
 	return 0;
 }

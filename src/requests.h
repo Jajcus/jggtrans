@@ -5,6 +5,7 @@
 #include "users.h"
 
 #include <time.h>
+#include <glib.h>
 
 struct request_s;
 
@@ -22,7 +23,8 @@ typedef struct request_s{
 	RequestType type;
 	
 	struct gg_http* gghttp; 
-	struct fd_handler_s *fdh;
+	GIOChannel *ioch;
+	guint io_watch;
 
 	struct stream_s *stream;
 }Request;

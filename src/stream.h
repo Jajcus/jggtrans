@@ -2,12 +2,14 @@
 #define stream_h
 
 #include <libxode.h>
-
-struct fd_handler_s;
+#include <glib.h>
 
 typedef struct stream_s{
-	int fd;
-	struct fd_handler_s *h;	
+	GIOChannel *ioch;	
+	guint err_watch;
+	guint read_watch;
+	guint write_watch;
+	
 	struct sockaddr_in sa;
 	char *dest;
 	int listening;

@@ -5,12 +5,17 @@
 #include "users.h"
 
 #include <time.h>
+#include <glib.h>
 
 typedef struct sesion_s{
 	User *user;
 	
 	struct gg_session *ggs; /* GG session */
-	struct fd_handler_s *fdh; /* GG session fd handler */
+	
+	GIOChannel *ioch; /* GG IO Channel */
+	guint io_watch;
+
+	
 	int connected;
 	
 	char *jid; 		/* users JID, with resource */

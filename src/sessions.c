@@ -1,6 +1,5 @@
 #include "sessions.h"
 #include "iq.h"
-#include "fds.h"
 #include "ggtrans.h"
 #include "presence.h"
 #include "users.h"
@@ -134,13 +133,31 @@ int i;
 	return 0;
 }
 
-int session_fd_handler(FdHandler *h){
+int session_io_handler(GIOChannel *source,GIOCondition condition,gpointer data){
 Session *s;
 struct gg_event *event;
 char *jid;
 int chat;
+GIOCondition cond;
 
-	s=(Session *)h->extra;
+	if (condition&(G_IO_ERR|G_IO_NVAL)){
+		s=(Session *)data;
+		if (condition&G_IO_ERR) g_warning("Error on connection for %s",s->jid);
+		if (condition&G_IO_HUP) g_warning("Hangup on connection for %s",s->jid);
+		if (condition&G_IO_NVAL) g_warning("Invalid channel on connection for %s",s->jid);
+		if (s->req_id){
+			jabber_iq_send_error(s->s,s->jid,s->req_id,"Server connection broken");
+		}
+		else{
+			presence_send(s->s,NULL,s->user->jid,0,NULL,"Connection broken");
+		}
+		s->connected=0;
+		s->io_watch=0;
+		session_remove(s);
+		return FALSE;
+	}
+	
+	s=(Session *)data;
 	event=gg_watch_fd(s->ggs);
 	if (!event){
 		g_warning("Connection broken. Session of %s",s->jid);
@@ -151,17 +168,20 @@ int chat;
 			presence_send(s->s,NULL,s->user->jid,0,NULL,"Connection broken");
 		}
 		s->connected=0;
+		s->io_watch=0;
 		session_remove(s);
-		return -1;
+		return FALSE;
 	}
+	
 	switch(event->type){
 		case GG_EVENT_CONN_FAILED:
 			g_warning("Login failed for %s",s->jid);
 			if (s->req_id)
 				jabber_iq_send_error(s->s,s->jid,s->req_id,"Login failed");
 			else presence_send(s->s,NULL,s->user->jid,0,NULL,"Login failed");
+			s->io_watch=0;
 			session_remove(s);
-			return -1;
+			return FALSE;
 		case GG_EVENT_CONN_SUCCESS:
 			g_warning("Login succeed for %s",s->jid);
 			if (s->req_id)
@@ -214,11 +234,14 @@ int chat;
 			break;
 	}
 
-	h->read=(s->ggs->check&GG_CHECK_READ);
-	h->write=(s->ggs->check&GG_CHECK_WRITE);
+	cond=G_IO_ERR|G_IO_HUP|G_IO_NVAL;
+	if (s->ggs->check&GG_CHECK_READ) cond|=G_IO_IN;
+	if (s->ggs->check&GG_CHECK_WRITE) cond|=G_IO_OUT;
+	s->io_watch=g_io_add_watch(s->ioch,cond,session_io_handler,s);
+	
 	gg_free_event(event);
 	
-	return 0;
+	return FALSE;
 }
 
 /* destroys Session object */
@@ -227,7 +250,7 @@ static int session_destroy(Session *s){
 	g_message("Deleting session for '%s'",s->jid);
 	if (s->connected && s->s && s->jid)
 		presence_send(s->s,NULL,s->user->jid,0,NULL,"Offline");
-	if (s->fdh) fd_unregister_handler(s->fdh);
+	if (s->ioch) g_io_channel_close(s->ioch);
 	if (s->ggs){
 		if (s->connected) {
 			debug("gg_logoof(%p)",s->ggs);
@@ -246,6 +269,7 @@ gpointer key,value;
 char *njid;
 
 	g_assert(sessions_jid!=NULL);
+	if (s->io_watch) g_source_remove(s->io_watch);
 	njid=jid_normalized(s->jid);
 	if (g_hash_table_lookup_extended(sessions_jid,(gpointer)njid,&key,&value)){
 		g_hash_table_remove(sessions_jid,(gpointer)njid);
@@ -261,6 +285,7 @@ Session *session_create(User *user,const char *jid,const char *req_id,const xmln
 Session *s;
 int t;
 char *njid;
+GIOCondition cond;
 
 	g_message("Creating session for '%s'",jid);
 	g_assert(user!=NULL);
@@ -276,18 +301,16 @@ char *njid;
 		g_free(s);
 		return NULL;
 	}
-	s->fdh=(FdHandler *)g_malloc(sizeof(FdHandler));
-	memset(s->fdh,0,sizeof(FdHandler));
-	s->fdh->fd=s->ggs->fd;
-	s->fdh->read=(s->ggs->check & GG_CHECK_READ);
-	s->fdh->write=(s->ggs->check & GG_CHECK_WRITE);
-	s->fdh->extra=s;
-	s->fdh->func=session_fd_handler;
 	s->s=stream;
-	t=fd_register_handler(s->fdh);
+	
+	s->ioch=g_io_channel_unix_new(s->ggs->fd);
+	cond=G_IO_ERR|G_IO_HUP|G_IO_NVAL;
+	if (s->ggs->check&GG_CHECK_READ) cond|=G_IO_IN;
+	if (s->ggs->check&GG_CHECK_WRITE) cond|=G_IO_OUT;
+	s->io_watch=g_io_add_watch(s->ioch,cond,session_io_handler,s);
+	
 	s->last_ping=time(NULL);
 	s->last_pong=time(NULL)-1;
-	g_assert(t==0);
 	g_assert(sessions_jid!=NULL);
 	njid=jid_normalized(s->jid);
 	g_hash_table_insert(sessions_jid,(gpointer)njid,(gpointer)s);

@@ -116,6 +116,60 @@ char *str;
 	}
 }
 
+gboolean jabber_source_prepare(gpointer  source_data,
+				GTimeVal *current_time,
+				gint     *timeout,
+				gpointer  user_data){
+
+	*timeout=1000;
+	if (stop_it || stream==NULL) return TRUE;
+	return FALSE;
+}
+
+gboolean jabber_source_check(gpointer  source_data,
+                        	GTimeVal *current_time,
+                        	gpointer  user_data){
+
+	if (stop_it || stream==NULL) return TRUE;
+	return FALSE;
+}
+
+gboolean jabber_source_dispatch(gpointer  source_data,
+                        GTimeVal *current_time,
+                        gpointer  user_data){
+	
+	if (stop_it && stream){
+			if (stop_it>1){
+				stream_destroy(stream);
+				stream=NULL;
+				g_main_quit(main_loop);
+			}
+			stop_it++;
+	}
+	else if (stream==NULL) g_main_quit(main_loop);
+	
+	return TRUE;
+}
+
+void jabber_source_destroy(gpointer user_data){
+}
+
+static GSourceFuncs jabber_source_funcs={
+		jabber_source_prepare,
+		jabber_source_check,
+		jabber_source_dispatch,
+		jabber_source_destroy
+		};
+
+int jabber_done(){
+
+	if (stream){
+		stream_destroy(stream);
+		stream=NULL;
+	}
+	return 0;
+}
+
 int jabber_init(){
 char *server;
 char *str;
@@ -159,28 +213,7 @@ xmlnode node;
 	jabber_state=JS_NONE;
 	stream=stream_connect(server,port,1,jabber_event_cb);
 	g_assert(stream!=NULL);
+	g_source_add(G_PRIORITY_DEFAULT,0,&jabber_source_funcs,NULL,NULL,NULL);
 	return 0;
 }
 
-int jabber_done(){
-
-	if (stream){
-		stream_destroy(stream);
-		stream=NULL;
-	}
-	return 0;
-}
-
-int jabber_iter(){
-
-	if (stop_it && stream){
-			if (stop_it>1){
-				stream_destroy(stream);
-				stream=NULL;
-				return 1;
-			}
-			stop_it++;
-	}
-	else if (stream==NULL) return 1;
-	return 0;
-}

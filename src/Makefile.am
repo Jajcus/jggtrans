@@ -5,8 +5,6 @@ jggtrans_SOURCES= \
 	debug.h \
 	encoding.c \
 	encoding.h \
-	fds.c \
-	fds.h \
 	ggtrans.h \
 	iq.c \
 	iq.h \
