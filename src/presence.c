@@ -177,14 +177,16 @@ xmlnode n;
 int presence(struct stream_s *stream,const char *from,const char *to,
 		int available,const char *show,const char *status){
 Session *s;
+int r;
 
 	s=session_get_by_jid(from,available?stream:NULL);
 	if (!s){
 		debug("presence: No such session: %s",from);
-		presence_send(stream,NULL,from,0,NULL,"Not logged in",0);
+		presence_send(stream,to,from,0,NULL,"Not logged in",0);
 		return -1;
 	}
-	return session_set_status(s,available,show,status);
+	r=session_set_status(s,available,show,status);
+	if (!r) presence_send(stream,NULL,from,available,show,status,0);
 }
 
 int presence_subscribe(struct stream_s *stream,const char *from,const char *to){
