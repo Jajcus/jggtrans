@@ -1,4 +1,4 @@
-/* $Id: requests.h,v 1.11 2003/02/04 08:06:01 jajcus Exp $ */
+/* $Id: requests.h,v 1.12 2003/04/05 21:08:31 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -21,6 +21,7 @@
 #define requests_h
 
 #include "users.h"
+#include "sessions.h"
 
 struct request_s;
 
@@ -43,6 +44,7 @@ typedef struct request_s{
 	RequestType type;
 
 	struct gg_http* gghttp;
+	gg_pubdir50_t ggchange;
 	GIOChannel *ioch;
 	guint io_watch;
 
@@ -57,6 +59,7 @@ Request * add_request(RequestType type,const char *from,const char *to,
 int remove_request(Request *r);
 
 void request_response_search(struct gg_event *data);
+void request_do_pubdir_update(Session *s);
 int requests_init();
 
 #endif

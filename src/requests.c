@@ -1,4 +1,4 @@
-/* $Id: requests.c,v 1.23 2003/04/05 11:02:57 jajcus Exp $ */
+/* $Id: requests.c,v 1.24 2003/04/05 21:08:31 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -27,13 +27,18 @@
 #include "sessions.h"
 #include "stream.h"
 #include "register.h"
+#include "debug.h"
 
 static GList *requests=NULL;
 GHashTable *lookups=NULL;
+GHashTable *changes=NULL;
 
 int requests_init(){
 	lookups=g_hash_table_new(g_int_hash, g_int_equal);
 	if(!lookups)
+		return 1;
+	changes=g_hash_table_new(g_int_hash, g_int_equal);
+	if(!changes)
 		return 1;
 	return 0;
 }
@@ -63,6 +68,19 @@ Request *r;
 
 }
 
+void request_do_pubdir_update(Session *s){
+int hash;
+Request *r;
+	r=g_hash_table_lookup(changes, s);
+	if(!r) return;
+	g_hash_table_remove(changes, s);
+
+	debug("gg_pubdir50()");
+
+	gg_pubdir50(s->ggs, r->ggchange);
+	gg_pubdir50_free(r->ggchange);
+}
+
 int request_io_handler(GIOChannel *source,GIOCondition condition,gpointer data){
 Request *r;
 User *u;
@@ -76,14 +94,6 @@ GIOCondition cond;
 	user_load_locale(u);
 
 	switch(r->type){
-		case RT_CHANGE:
-			t=gg_search_watch_fd(r->gghttp);
-			if (t || r->gghttp->state==GG_STATE_ERROR) register_error(r);
-			else if (!t && r->gghttp->state==GG_STATE_DONE) register_done(r);
-			else break;
-			r->io_watch=0;
-			remove_request(r);
-			return FALSE;
 #ifdef REMOTE_USERLIST
 		case RT_USERLIST_GET:
 			t=gg_userlist_get_watch_fd(r->gghttp);
@@ -142,6 +152,11 @@ struct gg_http *gghttp;
 		gg_pubdir50_seq_set((gg_pubdir50_t)data, r->hash);
 		gg_pubdir50(s->ggs, (gg_pubdir50_t)data);
 		g_hash_table_insert(lookups, &r->hash, r);
+	}
+	else if(type==RT_CHANGE){
+		s=session_get_by_jid(from, stream);
+		r->ggchange=(gg_pubdir50_t)data;
+		g_hash_table_insert(changes, s, r);
 	}
 	else{
 		gghttp=(struct gg_http*)data;

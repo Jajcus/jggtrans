@@ -1,4 +1,4 @@
-/* $Id: register.c,v 1.22 2003/04/04 13:49:02 jajcus Exp $ */
+/* $Id: register.c,v 1.23 2003/04/05 21:08:31 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -119,6 +119,7 @@ uin_t uin;
 User *user;
 Session *session=NULL;
 gg_pubdir50_t change;
+Request *r;
 username=password=first=last=nick=city=sex=born=NULL;
 
 	node=xmlnode_get_firstchild(q);
@@ -246,18 +247,11 @@ username=password=first=last=nick=city=sex=born=NULL;
 	if (!password) password=user->password;
 	if (!uin) uin=user->uin;
 
-	debug("gg_pubdir50()");
-
-	gg_pubdir50(session->ggs, change);
-	gg_pubdir50_free(change);
-
-
-/*
-	r=add_request(RT_CHANGE,from,to,id,q,(void*)gghttp,s);
+	r=add_request(RT_CHANGE,from,to,id,q,(void*)change,s);
 	if (!r){
 		session_remove(session);
 		jabber_iq_send_error(s,from,to,id,500,"Internal Server Error");
-	} */
+	}
 }
 
 int register_error(Request *r){
