@@ -1,3 +1,7 @@
+2004-05-05  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* cosmetics.vim: s/tabwidth/tabstop/
+
 2004-04-30  Jacek Konieczny  <jajcus@bnet.pl>
 
 	* src/message.c:
