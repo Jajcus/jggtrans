@@ -1,4 +1,4 @@
-/* $Id: register.c,v 1.11 2002/01/30 16:52:03 jajcus Exp $ */
+/* $Id: register.c,v 1.12 2002/02/02 13:38:15 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -129,7 +129,7 @@ Request *r;
 	}
 	
 	node=xmlnode_get_tag(q,"remove");
-	if (!node){
+	if (node){
 		debug("<remove/> in jabber:iq:register set: %s",xmlnode2str(q));
 		unregister(s,from,to,id,0);
 		return;
