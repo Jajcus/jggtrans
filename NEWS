@@ -1,3 +1,16 @@
+Version 1.2.3
+-------------
+
+Changes from 1.2.2
+
+* new character conversion function (instead of sometimes broken
+  iconv()). Fixes crashes on invalid characters in GG input.
+  
+* fixes in contact status handling 
+
+Not a change in the program, but important: jabber-gg-project is now
+registered on JabberStudio (http://www.jabberstudio.org). This is the
+proper place for bug reports and feature requests now.
 
 Version 1.2.2
 -------------
@@ -120,3 +133,5 @@ Changes from 0.9:
 Version 0.9
 --------------
 This is the first released version.
+
+# vi: tw=72 fo=tcql1 
