@@ -1,4 +1,4 @@
-/* $Id: requests.c,v 1.32 2003/04/14 17:14:31 jajcus Exp $ */
+/* $Id: requests.c,v 1.33 2003/04/15 17:48:17 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -191,9 +191,9 @@ struct gg_http *gghttp;
 int remove_request(Request *r){
 
 	if (!r) return -1;
+	requests=g_list_remove(requests,r);
 	if (r->io_watch) g_source_remove(r->io_watch);
-	if(r->type!=RT_VCARD && r->type!=RT_SEARCH){
-		requests=g_list_remove(requests,r);
+	if (r->type!=RT_VCARD && r->type!=RT_SEARCH){
 		g_io_channel_close(r->ioch);
 	}
 	if (r->from) g_free(r->from);
