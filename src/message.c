@@ -1,4 +1,4 @@
-/* $Id: message.c,v 1.21 2003/03/24 14:05:55 jajcus Exp $ */
+/* $Id: message.c,v 1.22 2003/03/24 14:43:37 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -79,7 +79,7 @@ char buf[101];
 	if (chat) xmlnode_put_attrib(msg,"type","chat");
 	n=xmlnode_insert_tag(msg,"body");
 	xmlnode_insert_cdata(n,to_utf8(message),-1);
-	if (timestamp) {
+	if (timestamp){
 		n=xmlnode_insert_tag(msg,"x");
 		xmlnode_put_attrib(n,"xmlns","jabber:x:delay");
 		tm=gmtime(&timestamp);
@@ -363,7 +363,7 @@ int on;
 		message_send(stream,to,from,1,"friends only: off",0);
 
 	session_send_status(session);
-	
+
 	user_save(user);
 }
 

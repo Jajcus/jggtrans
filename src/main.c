@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.33 2003/02/06 14:25:35 jajcus Exp $ */
+/* $Id: main.c,v 1.34 2003/03/24 14:43:37 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -501,7 +501,7 @@ guint lh;
 	if (do_restart && restart_timeout>=0){
 		char *newargv[10];
 		int n;
-		
+
 		g_message("Restarting in %i seconds.\n",restart_timeout);
 		if (restart_timeout>0) sleep(restart_timeout);
 		if (saved_pwd) chdir(saved_pwd);
@@ -509,11 +509,11 @@ guint lh;
 		n=0;
 		newargv[n++]=argv[0];
 		newargv[n++]="-R";
-		if (param_d) {
+		if (param_d){
 			newargv[n++]="-d";
 			newargv[n++]=(char *)param_d;
 		}
-		if (param_D) {
+		if (param_D){
 			newargv[n++]="-D";
 			newargv[n++]=(char *)param_D;
 		}
