@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: jabber-gg-transport 1.4.1\n"
-"POT-Creation-Date: 2003-04-21 13:09+0200\n"
+"POT-Creation-Date: 2003-04-21 16:19+0200\n"
 "PO-Revision-Date: 2003-04-16 12:45+0200\n"
 "Last-Translator: Tomasz Sterna <tomek@smoczy.net>\n"
 "Language-Team: Polish <pl@li.org>\n"

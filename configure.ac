@@ -18,8 +18,13 @@ CFLAGS="$CFLAGS -Wall"
 
 AM_PATH_GLIB([1.2.0],[],AC_MSG_ERROR("You need glib >= 1.2.0 to compile this."))
 
-PKG_CHECK_MODULES(JK_LIBGADU, [libgadu >= 1.0 libgadu < 20000000], [],
-		[ PKG_CHECK_MODULES(JK_LIBGADU, [libgadu >= 20030130] )])
+AC_ARG_WITH([libgadu-snapshot],AC_HELP_STRING([--with-libgadu-snapshot],[Try to compile and link with some libgadu snapshot]))
+if test "x$with_libgadu_snapshot" = "xyes" ; then
+PKG_CHECK_MODULES(JK_LIBGADU, [libgadu >= 20030420])
+else
+PKG_CHECK_MODULES(JK_LIBGADU, [libgadu >= 1.0 libgadu < 20000000])
+fi
+
 AC_SUBST(JK_LIBGADU_LIBS)
 AC_SUBST(JK_LIBGADU_CFLAGS)
 
