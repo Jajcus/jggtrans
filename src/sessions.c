@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.97 2004/02/05 12:49:42 smoku Exp $ */
+/* $Id: sessions.c,v 1.98 2004/02/05 14:22:24 smoku Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -484,10 +484,7 @@ time_t timestamp;
 					event->event.status.status,
 					event->event.status.uin,
 					event->event.status.descr,
-					1,
-					event->event.status.remote_ip,
-					event->event.status.remote_port,
-					event->event.status.version);
+					0,0,0,0);
 			break;
 		case GG_EVENT_STATUS60:
 			session_event_status(s,
