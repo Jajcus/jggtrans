@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.23 2003/02/04 13:27:33 jajcus Exp $ */
+/* $Id: search.c,v 1.24 2003/03/17 15:41:58 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -105,7 +105,6 @@ Session *sess;
 	xmlnode_insert_tag(iq,"city");
 	xmlnode_insert_tag(iq,"gender");
 	xmlnode_insert_tag(iq,"born");
-	xmlnode_insert_tag(iq,"email");
 	xmlnode_insert_tag(iq,"phone");
 	xmlnode_insert_tag(iq,"username");
 
