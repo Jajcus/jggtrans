@@ -1,0 +1,108 @@
+<!--run: /home/jacek/CVS/bnet/src/jabber-gg-transport/src/jggtrans -->
+
+<ggtrans>
+
+  <!-- For this to work, you should also update /etc/jabber/jabber.xml
+       Add the following (changed to your needs):
+  <browse>
+    
+    ...
+    
+    <service type="gg" jid="gg.localhost" name="GaduGadu Transport">
+      <ns>jabber:iq:gateway</ns>
+      <ns>jabber:iq:register</ns>
+      <ns>jabber:iq:search</ns>
+    </service>
+
+    ...
+
+  </browse>
+
+
+  <service id="gglinker">
+    <host>gg.localhost</host>
+    <accept>
+      <ip>127.0.0.1</ip>
+      <port>5353</port>
+      <secret>secret</secret>
+    </accept>
+  </service>
+  -->
+   
+  <!-- this should match <service/> in <browse/> section of jabber.xml -->
+  <service type="gg" jid="gg.localhost" name="GaduGadu Transport"/>
+
+  <!-- This connects the GG-transport process to the master process -->
+  <connect id="gglinker">
+    <ip>127.0.0.1</ip>
+    <port>5353</port>
+    <secret>secret</secret>
+  </connect>
+
+  <register>
+  	<!-- This tag contains the message displayed to users at registration time. -->
+	<!-- You can use <p/> and/or <br/> to break lines. Multiple spaces and newlines
+	     are converted to just one, so formatting of config file doesn't really matter -->
+  	<instructions>
+		Please enter your GG number (in the "username" field) 
+		and password to register with agent.
+		<p/>To change your data in GaduGadu directory fill in the rest of fields.
+		<p/>To unregister leave the form empty.
+	</instructions>
+  </register>
+  
+ <search>
+  	<!-- This tag contains the message displayed to users at search time. -->
+ 	<instructions>
+		To search for people:<br/>
+		Enter first/last name, nick, city, birth year or range (eg. 1950-1960)
+		and gender (you may fill in one or more fields).<br/>
+		or<br/>
+		Enter email<br/>
+		or<br/>
+		Enter phone number<br/>
+		or<br/>
+		Enter the GG number of the person you search for.
+	</instructions>
+ </search>
+
+ <gateway>
+  	<!-- This is message, that may be displayed to user when adding gg contact. -->
+ 	<desc>
+		Please enter GaduGadu number of person you would like to contact.
+	</desc>
+  	<!-- And this is the prompt for GG number. -->
+	<prompt>
+		GG Number
+	</prompt>
+ </gateway>
+
+ <!-- Contains the vCard of this transport. -->
+ <vCard>
+     <FN>GaduGadu Transport</FN>
+     <DESC>This is GaduGadu Transport</DESC>
+     <URL>http://foo.bar/</URL>
+ </vCard>
+
+ <!-- Logger configuration. 
+      You may configure one logger of type "syslog" and/or one of type "file".
+      You may also not configure logging at all. -->
+ <log type="syslog" facility="local0"/>
+ <log type="file">/tmp/ggtrans.log</log>
+
+ <!-- Uncomment this, if you want proxy to be used for GG connection -->
+ <!--
+ <proxy>
+        <ip>127.0.0.1</ip>
+        <port>8080</port>
+ </proxy>
+ -->
+
+ <!-- Spool directory. This is the place, where user info will be stored. -->
+ <!-- Be careful about permissions - users' GG passwords are stored there -->
+ <spool>/var/lib/jabber/spool/gg.localhost/</spool>
+
+ <!-- Where to store pid file. This tag is optional. -->
+ <pidfile>/var/lib/jabber/ggtrans.pid</pidfile>
+
+</ggtrans>
