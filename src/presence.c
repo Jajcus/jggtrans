@@ -1,4 +1,4 @@
-/* $Id: presence.c,v 1.32 2003/04/14 12:46:03 jajcus Exp $ */
+/* $Id: presence.c,v 1.33 2003/04/16 09:38:43 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -391,7 +391,7 @@ User *u;
 			return -1;
 		}
 		if (!from) return -1;
-		presence_send_error(stream,from,to,405,_("Not allowed"));
+		presence_send_error(stream,to,from,405,_("Not allowed"));
 		return -1;
 	}
 	
