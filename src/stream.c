@@ -42,7 +42,6 @@ GList* destroy_handlers;
 int stream_io_error(GIOChannel *source,GIOCondition condition,gpointer data);
 int stream_io_connect(GIOChannel *source,GIOCondition condition,gpointer data);
 int stream_io_read(GIOChannel *source,GIOCondition condition,gpointer data);
-int stream_io_write(GIOChannel *source,GIOCondition condition,gpointer data);
 int stream_write_hello(Stream *s);
 
 int stream_set_nonblocking(Stream *s,int nonblock){
@@ -232,121 +231,44 @@ gsize br;
 	}
 }
 
-int stream_io_write(GIOChannel *source,GIOCondition condition,gpointer data){
-Stream *s;
-char * str;
+int stream_write_bytes(Stream *s,const char *buf,int l){
 GIOStatus st;
 GError *error=NULL;
+gsize written=0;
 gsize br;
+gchar *str;
 
-	s=(Stream *)data;
-	g_assert(s);
-
-	if (s->write_buf && s->write_pos>=0 && s->write_len>=0){
-		st=g_io_channel_write_chars(source,
-					s->write_buf+s->write_pos,
-					s->write_len-s->write_pos,
+	if (!l) return 0;
+	g_assert(buf!=NULL);
+	g_assert(l>=0);
+	while(written<l) {
+		st=g_io_channel_write_chars(s->ioch,
+					buf+written,
+					l-written,
 					&br,
 					&error);
 		if (st==G_IO_STATUS_ERROR){
 			g_warning("write error: %s",error?error->message:"unknwown");
-			s->write_watch=0;
 			s->xs->f(XSTREAM_CLOSE,NULL,s);
 			if (error) g_error_free(error);
-			return FALSE;
+			return -1;
 		}
-		if (st==G_IO_STATUS_AGAIN) return TRUE;
+		if (st==G_IO_STATUS_AGAIN) continue;
 		if (st!=G_IO_STATUS_NORMAL){
 			g_warning("write status: %i (%s)",st,error?error->message:"unknown");
 			if (error) g_error_free(error);
-			return TRUE;
+			return -1;
 		}
 		if (error) g_error_free(error);
 		error=NULL;
 		str=g_new(char,br+1);
 		g_assert(str!=NULL);
-		memcpy(str,s->write_buf+s->write_pos,br);
+		memcpy(str,buf+written,br);
 		str[br]=0;
 		debug("OUT: %s",str);
 		g_free(str);
-		s->write_pos+=br;
-		debug("write_pos: %i, write_len: %i, br: %i\n",s->write_pos,s->write_len,(int)br);
-		if (s->write_pos==s->write_len){
-			s->write_watch=0;
-			s->write_len=0;
-			s->write_pos=-1;
-			return FALSE;
-		}
+		written+=br;
 	}
-	return TRUE;
-}
-
-int stream_write_bytes(Stream *s,const char *buf,int l){
-time_t stream_flush_timeout;
-GIOStatus st;
-GError *error=NULL;
-
-	if (!l) return 0;
-	g_assert(buf!=NULL);
-	g_assert(l>=0);
-	if (s->write_len+l > MAX_WRITE_BUF){
-		stream_flush_timeout=time(NULL)+WRITE_BUF_FLUSH_TIMEOUT;
-		if (s->write_len){
-			debug("Flushing stream write buffer, as it is full (%i characters, %i to be added)",s->write_len,l);
-			/* block to flush the buffer */
-			while(time(NULL)<stream_flush_timeout){
-				if (!g_main_is_running(main_loop)) break;
-				stream_io_write(s->ioch,G_IO_OUT,(gpointer)s);
-				if (s->write_len==0) break;
-			}
-		}
-		if (!s->write_len && l>MAX_WRITE_BUF){
-			int pos=0;
-			gsize written;
-			char *str;
-			debug("Flushing data that don't fit into the write buffer.");
-			while(pos<l){
-				st=g_io_channel_write_chars(s->ioch,
-						(gchar *)buf+pos,
-						l-pos,
-						&written,
-						&error);
-				if (st!=G_IO_STATUS_AGAIN && st!=G_IO_STATUS_NORMAL){
-					g_warning("write: %i: %s",st,error?error->message:"unknown");
-					if (error) g_error_free(error);
-					return -2;
-				}
-				if (error) g_error_free(error);
-				error=NULL;
-				str=g_new(char,written+1);
-				g_assert(str!=NULL);
-				memcpy(str,buf+pos,written);
-				str[written]=0;
-				debug("OUT: %s",str);
-				g_free(str);
-				pos+=written;
-			}
-			return 0;
-		}
-		if (s->write_len+l > MAX_WRITE_BUF){
-			debug("Write buffer overflow!");
-			return -2;
-		}
-	}
-	if (!s->write_buf){
-		s->write_buf=g_new(char,1024);
-		g_assert(s->write_buf!=NULL);
-		s->write_buf_len=1024;
-	}
-	else if (s->write_len+l > s->write_buf_len){
-		s->write_buf_len+=1024*((l+1023)/1024);
-		s->write_buf=(char *)g_realloc(s->write_buf,s->write_buf_len);
-		g_assert(s->write_buf!=NULL);
-	}
-	memcpy(s->write_buf+s->write_len,buf,l);
-	s->write_len+=l;
-	if (s->write_pos<0) s->write_pos=0;
-	if (!s->write_watch) s->write_watch=g_io_add_watch(s->ioch,G_IO_OUT,stream_io_write,s);
 	return 0;
 }
 
@@ -409,9 +331,7 @@ GList *it;
 	}
 	if (s->err_watch) g_source_remove(s->err_watch);
 	if (s->read_watch) g_source_remove(s->read_watch);
-	if (s->write_watch) g_source_remove(s->write_watch);
 	if (s->read_buf) free(s->read_buf);
-	if (s->write_buf) free(s->write_buf);
 	pool_free(s->xs->p);
 	g_io_channel_close(s->ioch);
 	free(s);
