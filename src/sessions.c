@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.54 2003/04/10 14:59:00 mmazur Exp $ */
+/* $Id: sessions.c,v 1.55 2003/04/11 13:22:54 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -379,8 +379,8 @@ time_t timestamp;
 				s->query=NULL;
 			}
 			if (!s->user->confirmed){
-				user_save(s->user);
 				s->user->confirmed=1;
+				user_save(s->user);
 			}
 			s->connected=1;
 			session_send_status(s);
@@ -444,6 +444,7 @@ time_t timestamp;
 			request_response_search(event);
 			break;
 		case GG_EVENT_PUBDIR50_WRITE:
+			request_response_write(event);
 			break;
 		case GG_EVENT_ACK:
 			debug("GG_EVENT_ACK");
