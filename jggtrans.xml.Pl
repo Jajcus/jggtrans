@@ -122,29 +122,35 @@
  <!-- jak szybko ma transport spróbować się połączyć po rozłączeniu -->
  <reconnect>300</reconnect>
 
- <!-- adres serwera, gdy "autodetekcja" nie działa -->
- <!-- powinien to być adres IP, nie nazwa -->
- <!--
- <gg_server>192.168.0.0</gg_server>
- -->
-
- <!-- port serwera gdy "autodetekcja" nie działa -->
- <!--
- <gg_port>8074</gg_port>
- -->
-
  <!-- Katalog z danymi użytkowników. -->
  <!-- Proszę uważać na uprawnienie - hasła użytkowników (do GG) będą tam przechowywane -->
  <spool>/var/lib/jabber/spool/gg.localhost/</spool>
-
- <!-- Gdzie zapisywać/sprawdzać plik z pid procesu ggtrans. -->
- <pidfile>/var/lib/jabber/ggtrans.pid</pidfile>
 
  <!-- Ile czekać po przerwaniu połączenia z serwerem jabbera, zanim jggtrans
       się zrestartuje. Wartoś ujemna oznacza, że jggtrans ma w takim przypadku
       przerwać pracę. -->
  <restart_timeout>60</restart_timeout>
+
+ <!-- lista serwerów GG których jggtrans ma używać 
+ 	<hub/> oznacza "użyj huba GG aby znaleźć właściwy serwer" 
+      	Element <server/> powinien zawierać adres serwera. Może też mieć 
+	ustawiony atrybut "port" zawierający numer portu na serwerze.
+	Jggtrans będzie się próbował łączyć z podanymi serwerami w podanej
+	kolejności i użyje pierwszego działającego.
+	Rozsądna domyślna lista serwerów jest wkompilowana w jggtrans.
+      -->
+ <!--
+ <servers>
+	<hub/>
+	<server>217.17.41.84</server> 
+	<server>217.17.41.85</server> 
+	<server port="8074">217.17.41.86</server> 
+ </servers>
+ -->
  
+ <!-- Gdzie zapisywać/sprawdzać plik z pid procesu ggtrans. -->
+ <pidfile>/var/lib/jabber/ggtrans.pid</pidfile>
+
 </jggtrans>
 <!--
  vi: encoding=utf-8 syntax=xml
