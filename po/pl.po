@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: jabber-gg-transport 2.0.7\n"
+"Project-Id-Version: jabber-gg-transport 2.0.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-03-17 23:31+0100\n"
-"PO-Revision-Date: 2003-09-10 11:11+0200\n"
+"POT-Creation-Date: 2004-03-18 13:06+0100\n"
+"PO-Revision-Date: 2004-03-10 13:15+0200\n"
 "Last-Translator: Jacek Konieczny <jajcus@pld.org.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -62,7 +62,7 @@ msgid "No UIN given in 'to': %s"
 msgstr "Nie podany 'UIN' w 'do': %s"
 
 #: src/iq.c:197 src/iq.c:276 src/iq.c:281 src/iq.c:290 src/iq.c:297
-#: src/message.c:482 src/message.c:492
+#: src/message.c:480 src/message.c:490
 msgid "Bad Request"
 msgstr "Nieprawidłowe Żądanie"
 
@@ -128,7 +128,7 @@ msgstr "Błąd w otrzymanym iq: %s"
 msgid "unexpected <iq/> (not connected yet)"
 msgstr "nieoczekiwany <iq/> (brak połączenia)"
 
-#: src/iq.c:364 src/message.c:460 src/presence.c:398
+#: src/iq.c:364 src/message.c:458 src/presence.c:398
 msgid "Not allowed"
 msgstr "Nie wolno"
 
@@ -302,6 +302,7 @@ msgid "\tUsage: %s [OPTIONS]... [<config file>]\n"
 msgstr "\tUżycie: %s [OPCJE]... [<plik konfiguracyjny>]\n"
 
 #: src/main.c:345
+#, c-format
 msgid ""
 "\n"
 "Options:\n"
@@ -310,10 +311,12 @@ msgstr ""
 "Opcje:\n"
 
 #: src/main.c:346
+#, c-format
 msgid "\t-h\t      This message\n"
 msgstr "\t-h\t      Te informacje\n"
 
 #: src/main.c:347
+#, c-format
 msgid ""
 "\t-f\t      Run in foreground. Debug/error messages will be sent to stderr\n"
 msgstr ""
@@ -321,19 +324,23 @@ msgstr ""
 "stderr\n"
 
 #: src/main.c:348
+#, c-format
 msgid "\t-d <n>\tLog level (0(default) - normal, >0 more, <0 less)\n"
 msgstr ""
 "\t-d <n>\tPoziom logowania (0(domyślny) - normalny, >0 więcej, <0 mniej)\n"
 
 #: src/main.c:349
+#, c-format
 msgid "\t-D <n>\tlibgg debug level (enables also -f)\n"
 msgstr "\t-D <n>\tpoziom debugowania libgg (dodatkowo włącza -f)\n"
 
 #: src/main.c:350
+#, c-format
 msgid "\t-u <user>\tSwitch to uid of <user> on startup\n"
 msgstr "\t-u <user>\tPrzełączenie na uid <user>'a po starcie\n"
 
 #: src/main.c:351
+#, c-format
 msgid "\t-g <group>\tSwitch to gid of <group> on startup\n"
 msgstr "\t-g <group>\tPrzełączenie na gid <group>'y po starcie\n"
 
@@ -467,56 +474,56 @@ msgstr "\"Niewidzialność\""
 msgid "Set user locale (language)"
 msgstr "Ustaw lokale (język)"
 
-#: src/message.c:167
+#: src/message.c:166
 msgid "Log in first..."
 msgstr "Najpierw się zaloguj"
 
-#: src/message.c:171
+#: src/message.c:170
 msgid "Receiving roster..."
 msgstr "Pobieram roster..."
 
-#: src/message.c:187
+#: src/message.c:185
 msgid "Roster empty."
 msgstr "Roster pusty."
 
-#: src/message.c:191
+#: src/message.c:189
 msgid "Roster received."
 msgstr "Roster pobrany."
 
-#: src/message.c:304 src/message.c:335
+#: src/message.c:302 src/message.c:333
 msgid "No change."
 msgstr "Bez zmiany."
 
-#: src/message.c:310
+#: src/message.c:308
 msgid "friends only: on"
 msgstr "Tylko dla przyjaciół: włączony"
 
-#: src/message.c:312
+#: src/message.c:310
 msgid "friends only: off"
 msgstr "Tylko dla przyjaciół: wyłączony"
 
-#: src/message.c:341
+#: src/message.c:339
 msgid "invisible: on"
 msgstr "Niewidzialność: włączona"
 
-#: src/message.c:343
+#: src/message.c:341
 msgid "invisible: off"
 msgstr "Niewidzialność: wyłączona"
 
-#: src/message.c:367
+#: src/message.c:365
 #, c-format
 msgid "Locale set to: %s"
 msgstr "Lokane ustawione na: %s"
 
-#: src/message.c:367 src/message.c:421
+#: src/message.c:365 src/message.c:419
 msgid "_default_"
 msgstr "_domyślne_"
 
-#: src/message.c:389
+#: src/message.c:387
 msgid "I don't know you. Register first."
 msgstr "Nie znam Cię. Zarejestruj się."
 
-#: src/message.c:410
+#: src/message.c:408
 msgid ""
 "\n"
 "Available commands and abbreviations:"
@@ -524,11 +531,11 @@ msgstr ""
 "\n"
 "Dostępne komendy (i skróty):"
 
-#: src/message.c:416
+#: src/message.c:414
 msgid " EXPERIMENTAL!"
 msgstr " EKSPERYMENTALNE!"
 
-#: src/message.c:418
+#: src/message.c:416
 #, c-format
 msgid ""
 "%s\n"
@@ -539,7 +546,7 @@ msgstr ""
 "\n"
 "Obecne ustawienia:"
 
-#: src/message.c:419
+#: src/message.c:417
 #, c-format
 msgid ""
 "%s\n"
@@ -548,15 +555,15 @@ msgstr ""
 "%s\n"
 "  Tylko dla przyjaciół: %s"
 
-#: src/message.c:419 src/message.c:420
+#: src/message.c:417 src/message.c:418
 msgid "on"
 msgstr "włączone"
 
-#: src/message.c:419 src/message.c:420
+#: src/message.c:417 src/message.c:418
 msgid "off"
 msgstr "wyłączone"
 
-#: src/message.c:420
+#: src/message.c:418
 #, c-format
 msgid ""
 "%s\n"
@@ -565,7 +572,7 @@ msgstr ""
 "%s\n"
 "  Niewidzialność: %s"
 
-#: src/message.c:421
+#: src/message.c:419
 #, c-format
 msgid ""
 "%s\n"
@@ -574,7 +581,7 @@ msgstr ""
 "%s\n"
 "  Lokale: %s"
 
-#: src/message.c:422
+#: src/message.c:420
 #, c-format
 msgid ""
 "%s\n"
@@ -585,37 +592,37 @@ msgstr ""
 "\n"
 "Zarejestrowany jako: %u"
 
-#: src/message.c:471
+#: src/message.c:469
 #, c-format
 msgid "Error message received: %s"
 msgstr "Otrzymano błąd: %s"
 
-#: src/message.c:475
+#: src/message.c:473
 msgid "Unsupported message type"
 msgstr "Nieobsługiwany typ wiadomości"
 
-#: src/message.c:476 src/register.c:284 src/register.c:395 src/register.c:403
+#: src/message.c:474 src/register.c:284 src/register.c:395 src/register.c:403
 #: src/register.c:416 src/register.c:499 src/register.c:525 src/register.c:603
 #: src/register.c:611
 msgid "Internal Server Error"
 msgstr "Wewnętrzny błąd serwera"
 
-#: src/message.c:481
+#: src/message.c:479
 #, c-format
 msgid "Bad 'to' in: %s"
 msgstr "Zły 'do' w: %s"
 
-#: src/message.c:491
+#: src/message.c:489
 #, c-format
 msgid "Anonymous message? %s"
 msgstr "Anonimowa wiadomość? %s"
 
-#: src/message.c:498
+#: src/message.c:496
 #, c-format
 msgid "%s not logged in. While processing %s"
 msgstr "%s nie jest zalogowany. Podczas przetwarzania %s"
 
-#: src/message.c:499 src/presence.c:216 src/search.c:212 src/search.c:258
+#: src/message.c:497 src/presence.c:216 src/search.c:212 src/search.c:258
 #: src/search.c:330
 msgid "Not logged in"
 msgstr "Nie zalogowany"
@@ -1567,18 +1574,3 @@ msgstr "%sStatus: %i"
 msgid "%sLast update: %s"
 msgstr "%sOstatnia aktualizacja: %s"
 
-#~ msgid "Importing roster..."
-#~ msgstr "Importuję roster..."
-
-#~ msgid "No userlist received."
-#~ msgstr "Nie odebrałem listy użytkowników."
-
-#~ msgid "subscribe (not recommended)"
-#~ msgstr "zasubskrybuj (nie zalecane)"
-
-#~ msgid ""
-#~ "Add users from the user list on server (not recommended - nicknames are "
-#~ "not preserved)"
-#~ msgstr ""
-#~ "Dodaj użytkowników z listy na serwerze (nie polecane - nazwy nie są "
-#~ "zachowywane)"
