@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.38 2003/01/25 21:51:53 mmazur Exp $ */
+/* $Id: sessions.c,v 1.39 2003/01/27 11:15:32 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -33,13 +33,13 @@
 #include "status.h"
 #include "debug.h"
 
+
 static int conn_timeout=30;
 static int pong_timeout=30;
 static int ping_interval=10;
 static int reconnect=0;
 static int gg_port=0;
-static struct in_addr gg_server;
-static int gg_server_given=0;
+static server_t gg_server[20];	/* whois 217.17.41.80 to see why 20 */
 GHashTable *sessions_jid;
 
 static void session_stream_destroyed(gpointer key,gpointer value,gpointer user_data){
@@ -57,10 +57,10 @@ static void sessions_stream_destroyed(struct stream_s *stream){
 
 int sessions_init(){
 char *proxy_ip;
-char *p;
+char *p,*r;
 int port;
 int i;
-
+xmlnode parent,tag;
 
 	stream_add_destroy_handler(sessions_stream_destroyed);
 
@@ -76,11 +76,40 @@ int i;
 	i=config_load_int("reconnect",0);
 	if (i>0) reconnect=i;
 
-	p=config_load_string("gg_server");
-	if (p && inet_aton(p,&gg_server))
-		gg_server_given=1;
-	i=config_load_int("gg_port",0);
-	if (i>0) gg_port=i;
+	gg_server[0].port=1;
+	inet_aton("217.17.41.84", &gg_server[1].addr);
+	gg_server[1].port=8074;
+	gg_server[2].port=0;
+
+	parent=xmlnode_get_tag(config,"servers");
+	if (parent && xmlnode_has_children(parent)){
+		i=0;
+		for(tag=xmlnode_get_firstchild(parent); tag!=NULL;
+				tag=xmlnode_get_nextsibling(tag)){
+			if(xmlnode_get_type(tag) != NTYPE_TAG) continue;
+			p=xmlnode_get_name(tag);
+			printf("%s\n", p);
+			if (strcmp(p, "hub")==0){
+				gg_server[i].port=1;
+				gg_server[i+1].port=0;
+				i++;
+			}
+			else if (strcmp(p, "server")==0){
+				if((r=xmlnode_get_attrib(tag, "port")))
+					gg_server[i].port=atoi(r);
+				else
+					gg_server[i].port=8074;
+
+				r=xmlnode_get_data(tag);
+				if(inet_aton(r, &gg_server[i].addr)){
+					gg_server[i+1].port=0;
+					i++;
+				}
+			}
+		} 
+		
+
+	}	
 
 	proxy_ip=config_load_string("proxy/ip");
 	if (!proxy_ip) return 0;
@@ -140,6 +169,13 @@ Session *s;
 
 	g_assert(data!=NULL);
 	s=(Session *)data;
+
+	g_warning("Timeout for server %u", s->current_server-1);
+	
+	if(gg_server[s->current_server].port!=0)
+		if(!session_try_login(s))
+			return FALSE;
+		
 	s->timeout_func=0;
 	g_warning("Session timeout for %s",s->jid);
 
@@ -149,7 +185,8 @@ Session *s;
 	else{
 		presence_send(s->s,NULL,s->user->jid,0,NULL,"Connection Timeout",0);
 	}
-
+	
+	session_schedule_reconnect(s);
 	session_remove(s);
 	return FALSE;
 }
@@ -255,7 +292,13 @@ Resource *r;
 	debug("Checking error conditions...");
 	if (condition&(G_IO_ERR|G_IO_NVAL)){
 		if (condition&G_IO_ERR) g_warning("Error on connection for %s",s->jid);
-		if (condition&G_IO_HUP) g_warning("Hangup on connection for %s",s->jid);
+		if (condition&G_IO_HUP){
+			g_warning("Hangup on connection for %s",s->jid);
+			if(!s->connected && gg_server[s->current_server].port!=0){
+				session_try_login(s);
+				return FALSE;
+			}
+		}
 		if (condition&G_IO_NVAL) g_warning("Invalid channel on connection for %s",s->jid);
 
 		if (s->req_id){
@@ -314,6 +357,7 @@ Resource *r;
 			return FALSE;
 		case GG_EVENT_CONN_SUCCESS:
 			g_message("Login succeed for %s",s->jid);
+			s->current_server=0;
 			if (s->req_id)
 				jabber_iq_send_result(s->s,s->jid,NULL,s->req_id,NULL);
 			presence_send_subscribe(s->s,NULL,s->user->jid);
@@ -465,11 +509,47 @@ char *njid;
 	return 0;
 }
 
+int session_try_login(Session *s){
+struct gg_login_params login_params;
+GIOCondition cond;
+
+	g_warning("Trying to log in on server %u", s->current_server);
+
+	if (s->timeout_func) g_source_remove(s->timeout_func);
+	if (s->io_watch) g_source_remove(s->io_watch);
+	if (s->ioch) g_io_channel_close(s->ioch);
+
+	memset(&login_params,0,sizeof(login_params));
+	login_params.uin=s->user->uin;
+	login_params.password=s->user->password;
+	login_params.async=1;
+	if(login_params.server_port=gg_server[s->current_server].port!=1){
+		login_params.server_addr=gg_server[s->current_server].addr.s_addr;
+		login_params.server_port=gg_server[s->current_server].port;
+	}
+
+	s->ggs=gg_login(&login_params);
+	if (!s->ggs){
+		g_free(s);
+		return 1;
+	}
+	
+	s->ioch=g_io_channel_unix_new(s->ggs->fd);
+	cond=G_IO_ERR|G_IO_HUP|G_IO_NVAL;
+	if (s->ggs->check&GG_CHECK_READ) cond|=G_IO_IN;
+	if (s->ggs->check&GG_CHECK_WRITE) cond|=G_IO_OUT;
+	s->io_watch=g_io_add_watch(s->ioch,cond,session_io_handler,s);
+
+	s->timeout_func=g_timeout_add(conn_timeout*1000,session_timeout,s);
+
+	s->current_server++;
+	
+	return 0;
+}
+
 Session *session_create(User *user,const char *jid,const char *req_id,const xmlnode query,struct stream_s *stream){
 Session *s;
 char *njid;
-GIOCondition cond;
-struct gg_login_params login_params;
 
 	g_message("Creating session for '%s'",jid);
 	g_assert(user!=NULL);
@@ -478,28 +558,13 @@ struct gg_login_params login_params;
 	s->jid=g_strdup(jid);
 	if (req_id) s->req_id=g_strdup(req_id);
 	s->query=xmlnode_dup(query);
+	s->current_server=0;
 
-	memset(&login_params,0,sizeof(login_params));
-	login_params.uin=user->uin;
-	login_params.password=user->password;
-	login_params.async=1;
-	if (gg_server_given) login_params.server_addr=gg_server.s_addr;
-	if (gg_port>0) login_params.server_port=gg_port;
-
-	s->ggs=gg_login(&login_params);
-	if (!s->ggs){
-		g_free(s);
+	if(session_try_login(s))
 		return NULL;
-	}
+
 	s->s=stream;
 
-	s->ioch=g_io_channel_unix_new(s->ggs->fd);
-	cond=G_IO_ERR|G_IO_HUP|G_IO_NVAL;
-	if (s->ggs->check&GG_CHECK_READ) cond|=G_IO_IN;
-	if (s->ggs->check&GG_CHECK_WRITE) cond|=G_IO_OUT;
-	s->io_watch=g_io_add_watch(s->ioch,cond,session_io_handler,s);
-
-	s->timeout_func=g_timeout_add(conn_timeout*1000,session_timeout,s);
 	g_assert(sessions_jid!=NULL);
 	njid=jid_normalized(s->jid);
 	g_hash_table_insert(sessions_jid,(gpointer)njid,(gpointer)s);
