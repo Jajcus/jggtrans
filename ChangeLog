@@ -1,5 +1,7 @@
 2004-04-13  smoku  <smoku@jabber.org>
 
+	* autogen.sh, configure.ac: restored VERSION #define
+
 	* autogen.sh, configure.ac: fixes to the build system
 
 2004-04-13  Jacek Konieczny  <jajcus@bnet.pl>
