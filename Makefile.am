@@ -1,5 +1,5 @@
 
-SUBDIRS = m4 libxode src po
+SUBDIRS = libxode src po
 
 .PHONY: cosmetics ChangeLog
 

@@ -73,5 +73,5 @@ AC_CONFIG_SUBDIRS([libxode])
 MKINSTALLDIRS="${MKINSTALLDIRS} -m 755"
 XGETTEXT="${XGETTEXT} --keyword=L_"
 
-AC_CONFIG_FILES([Makefile src/Makefile m4/Makefile po/Makefile.in])
+AC_CONFIG_FILES([Makefile src/Makefile po/Makefile.in])
 AC_OUTPUT
