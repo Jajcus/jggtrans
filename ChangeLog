@@ -6,7 +6,7 @@
 	* INSTALL, INSTALL.Pl:
 	- requirements updated - glib2 and libidn
 
-2004-04-22  smoku  <smoku@jabber.org>
+2004-04-22  Tomasz Sterna  <smoku@chrome.pl>
 
 	* src/stream.c: checking return code of stream_eat()
 
@@ -15,7 +15,7 @@
 	* src/stream.c:
 	- ported to glib2
 
-2004-04-13  smoku  <smoku@jabber.org>
+2004-04-13  Tomasz Sterna  <smoku@chrome.pl>
 
 	* autogen.sh, configure.ac: restored VERSION #define
 
@@ -144,7 +144,7 @@
 	* INSTALL.Pl, INSTALL, NEWS:
 	- updated
 
-2004-02-05  smoku  <smoku@jabber.org>
+2004-02-05  Tomasz Sterna  <smoku@chrome.pl>
 
 	* po/Makevars:
 	- initial checkin
@@ -201,7 +201,7 @@
 	* src/presence.c:
 	- don't fail on empty <priority/> [teardrop]
 
-2003-10-16  smoku  <smoku@jabber.org>
+2003-10-16  Tomasz Sterna  <smoku@chrome.pl>
 
 	* src/register.c:
 	fixed infinite wait, when already registered user tries to reregister
@@ -260,7 +260,7 @@
 	* src/iq.c:
 	- don't panic when unknown user ask for GG client version
 
-2003-09-07  smoku  <smoku@jabber.org>
+2003-09-07  Tomasz Sterna  <smoku@chrome.pl>
 
 	* src/sessions.c:
 	- cutting GG-side status to allowed 70 characters
