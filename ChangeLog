@@ -1,3 +1,7 @@
+2004-04-22  smoku  <smoku@jabber.org>
+
+	* src/stream.c: checking return code of stream_eat()
+
 2004-04-14  Jacek Konieczny  <jajcus@bnet.pl>
 
 	* src/stream.c:
