@@ -1,4 +1,4 @@
-/* $Id: encoding.c,v 1.11 2002/12/29 17:17:30 jajcus Exp $ */
+/* $Id: encoding.c,v 1.12 2002/12/30 11:34:07 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -53,6 +53,16 @@ unsigned u;
 	}
 	for(i=0;str[i];i++){
 		c=(unsigned char)str[i];
+		if (c=='\t' || c=='\n' || c=='\r'){
+			buf[o++]=c;
+			continue;
+		}
+		if (c<32){
+			buf[o++]='\xef';
+			buf[o++]='\xbf';
+			buf[o++]='\xbd';
+			continue;
+		}
 		if (c<128){
 			buf[o++]=c;
 			continue;
