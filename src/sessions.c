@@ -1,5 +1,8 @@
 #include <libgg.h>
 #include "ggtrans.h"
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
 #include "sessions.h"
 #include "iq.h"
 #include "presence.h"
@@ -20,7 +23,9 @@ char *data;
 int port;
 xmlnode node;
 
-	gg_debug_level=255;
+#ifdef DEBUG
+	if (isatty(2)) gg_debug_level=255;
+#endif
 
 	sessions_jid=g_hash_table_new(g_str_hash,g_str_equal);
 	if (!sessions_jid) return -1;
@@ -78,7 +83,7 @@ Session *s;
 		jabber_iq_send_error(s->s,s->jid,s->req_id,504,"Remote Server Timeout");
 	}
 	else{
-		presence_send(s->s,NULL,s->user->jid,0,NULL,"Connection Timeout");
+		presence_send(s->s,NULL,s->user->jid,0,NULL,"Connection Timeout",0);
 	}
 
 	session_remove(s);
@@ -91,7 +96,16 @@ Session *s;
 	debug("Ping...");
 	g_assert(data!=NULL);
 	s=(Session *)data;
+	if (s->waiting_for_pong){
+		debug("Pong still not received :-( ...");
+		return TRUE;
+	}
+	
+	if (!s->ping_timer) s->ping_timer=g_timer_new();
+	else g_timer_reset(s->ping_timer);
+	g_timer_start(s->ping_timer);
 	gg_ping(s->ggs);
+	s->waiting_for_pong=TRUE;
 	return TRUE;
 }
 
@@ -125,7 +139,7 @@ char *show,*stat;
 			stat="Available";
 			break;
 	}
-	presence_send(s->s,ujid,s->user->jid,available,show,stat);
+	presence_send(s->s,ujid,s->user->jid,available,show,stat,0);
 	g_free(ujid);
 	return 0;
 }
@@ -180,7 +194,7 @@ gdouble t;
 			jabber_iq_send_error(s->s,s->jid,s->req_id,502,"Remote Server Error");
 		}
 		else{
-			presence_send(s->s,NULL,s->user->jid,0,NULL,"Connection broken");
+			presence_send(s->s,NULL,s->user->jid,0,NULL,"Connection broken",0);
 		}
 		s->connected=0;
 		s->io_watch=0;
@@ -196,7 +210,7 @@ gdouble t;
 			jabber_iq_send_error(s->s,s->jid,s->req_id,502,"Remote Server Error");
 		}
 		else{
-			presence_send(s->s,NULL,s->user->jid,0,NULL,"Connection broken");
+			presence_send(s->s,NULL,s->user->jid,0,NULL,"Connection broken",0);
 		}
 		s->connected=0;
 		s->io_watch=0;
@@ -209,12 +223,12 @@ gdouble t;
 			g_warning("Login failed for %s",s->jid);
 			if (s->req_id)
 				jabber_iq_send_error(s->s,s->jid,s->req_id,401,"Unauthorized");
-			else presence_send(s->s,NULL,s->user->jid,0,NULL,"Login failed");
+			else presence_send(s->s,NULL,s->user->jid,0,NULL,"Login failed",0);
 			s->io_watch=0;
 			session_remove(s);
 			return FALSE;
 		case GG_EVENT_CONN_SUCCESS:
-			g_warning("Login succeed for %s",s->jid);
+			g_message("Login succeed for %s",s->jid);
 			if (s->req_id)
 				jabber_iq_send_result(s->s,s->jid,s->req_id,NULL);
 			presence_send_subscribe(s->s,NULL,s->user->jid);
@@ -235,7 +249,7 @@ gdouble t;
 			s->available=1;
 			session_send_status(s);
 			if (s->user->contacts) session_send_notify(s);
-			presence_send(s->s,NULL,s->user->jid,1,NULL,"Online");
+			presence_send(s->s,NULL,s->user->jid,1,NULL,"Online",0);
 			s->ping_timeout_func=
 				g_timeout_add(ping_interval*1000,session_ping,s);
 			break;	
@@ -253,6 +267,7 @@ gdouble t;
 			g_free(jid);
 			break;
 		case GG_EVENT_PONG:
+			s->waiting_for_pong=FALSE;
 			if (s->ping_timer){
 				g_timer_stop(s->ping_timer);
 				debug("Pong! ping time: %fs",
@@ -291,14 +306,14 @@ GList *it;
 	if (s->timeout_func) g_source_remove(s->timeout_func);
 	if (s->ping_timer) g_timer_destroy(s->ping_timer);
 	if (s->connected && s->s && s->jid){
-		presence_send(s->s,NULL,s->user->jid,0,NULL,"Offline");
+		presence_send(s->s,NULL,s->user->jid,0,NULL,"Offline",0);
 		for(it=s->user->contacts;it;it=it->next){
 			Contact *c=(Contact *)it->data;
 
 			if (c->status!=GG_STATUS_NOT_AVAIL){
 				char *ujid;
 				ujid=jid_build(c->uin);
-				presence_send(s->s,ujid,s->user->jid,0,NULL,"Transport disconnected");
+				presence_send(s->s,ujid,s->user->jid,0,NULL,"Transport disconnected",0);
 				g_free(ujid);
 			}
 		}
@@ -407,8 +422,10 @@ int session_set_status(Session *s,int available,const char *show,const char *sta
 	s->available=available;
 	if (s->show) g_free(s->show);
 	if (show) s->show=g_strdup(show);
+	else s->show=NULL;
 	if (s->status) g_free(s->status);
 	if (status) s->status=g_strdup(status);
+	else s->status=NULL;
 	if (!available) return session_remove(s);
 	if (s->connected) return session_send_status(s);
 	return 0;

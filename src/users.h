@@ -6,6 +6,7 @@
 typedef struct contact_s{
 	uin_t uin;
 	int status;
+	GTime last_update;
 }Contact;
 
 typedef struct user_s{

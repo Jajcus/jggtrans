@@ -15,7 +15,7 @@ int presence_send_unsubscribed(struct stream_s *stream,const char *from,
 		const char *to);
 int presence_send(struct stream_s *stream,const char *from,
 		const char *to,int available,const char *show,
-		const char *status);
+		const char *status,GTime timestamp);
 int presence_send_probe(struct stream_s *stream,const char *to);
 
 int jabber_presence(struct stream_s *stream,xmlnode tag);

@@ -7,6 +7,40 @@
 #include "sessions.h"
 #include "debug.h"
 #include "register.h"
+#include <time.h>
+
+int presence_send_error(struct stream_s *stream,const char *to,const char *from,
+				int code,const char *string){
+xmlnode pres;
+xmlnode error;
+char *jid;
+char *str;
+
+	pres=xmlnode_new_tag("presence");
+	jid=jid_my_registered();
+	if (from!=NULL) 
+		xmlnode_put_attrib(pres,"from",from);
+	else{
+		char *jid;
+		jid=jid_my_registered();
+		xmlnode_put_attrib(pres,"from",jid);
+		g_free(jid);
+	}
+	g_free(jid);
+	xmlnode_put_attrib(pres,"to",to);
+	xmlnode_put_attrib(pres,"type","error");
+	error=xmlnode_insert_tag(pres,"error");
+	if (code>0) {
+		str=g_strdup_printf("%03u",(unsigned)code);
+		xmlnode_put_attrib(error,"code",str);
+		g_free(str);
+	}
+	xmlnode_insert_cdata(error,string,-1);
+
+	stream_write(stream,pres);
+	xmlnode_free(pres);
+	return 0;
+}
 
 
 int presence_send_probe(struct stream_s *stream,const char *to){
@@ -102,7 +136,7 @@ xmlnode pres;
 
 int presence_send(struct stream_s *stream,const char *from,
 		const char *to,int available,const char *show,
-		const char *status){
+		const char *status,GTime timestamp){
 xmlnode pres;
 xmlnode n;
 
@@ -125,6 +159,16 @@ xmlnode n;
 		n=xmlnode_insert_tag(pres,"status");
 		xmlnode_insert_cdata(n,status,-1);
 	}
+	if (timestamp){
+		struct tm *t;
+		char str[21];
+		
+		t=localtime((time_t *)&timestamp);
+		strftime(str,20,"%Y%m%dT%T",t);	
+		n=xmlnode_insert_tag(pres,"x");
+		xmlnode_put_attrib(n,"xmlns","jabber:x:delay");
+		xmlnode_put_attrib(n,"stamp",str);
+	}
 	stream_write(stream,pres);
 	xmlnode_free(pres);
 	return 0;
@@ -137,7 +181,7 @@ Session *s;
 	s=session_get_by_jid(from,available?stream:NULL);
 	if (!s){
 		debug("presence: No such session: %s",from);
-		presence_send(stream,NULL,from,0,NULL,"Not logged in");
+		presence_send(stream,NULL,from,0,NULL,"Not logged in",0);
 		return -1;
 	}
 	return session_set_status(s,available,show,status);
@@ -192,6 +236,76 @@ int presence_unsubscribed(struct stream_s *stream,const char *from,const char *t
 
 	unregister(stream,from,NULL,1);
 
+	return 0;
+}
+
+int presence_probe(struct stream_s *stream,const char *from,const char *to){
+Session *s;
+User *u;
+uin_t uin;
+int status;
+int available;
+char *show,*stat;
+GList *it;
+GTime timestamp;
+
+	s=session_get_by_jid(from,NULL);
+	if (jid_is_me(to)){
+		if (s) presence_send(stream,NULL,from,s->available,s->show,s->status,0);
+		else presence_send(stream,NULL,from,0,NULL,"Not logged in",0);
+		return 0;
+	}
+	
+	if (!jid_is_my(to)){
+		presence_send_error(stream,to,from,404,"Not Found");
+		return -1;
+	}
+
+	if (s) u=s->user;
+	else u=user_get_by_jid(from);	
+	
+	if (!u){
+		presence_send_error(stream,to,from,407,"Not logged in");
+		return -1;
+	}
+
+	uin=jid_get_uin(to);
+	status=0;
+	for(it=u->contacts;it;it=it->next){
+		Contact *c=(Contact *)it->data;
+	
+		if (c && c->uin==uin){
+			status=c->status;
+			timestamp=c->last_update;
+		}
+	}
+	if (!status) presence_send_error(stream,to,from,404,"Not Found");
+	
+	switch(status){
+		case GG_STATUS_NOT_AVAIL:
+			available=0;
+			show=NULL;
+			stat="Not available";
+			break;
+		case GG_STATUS_AVAIL:
+			available=1;
+			show=NULL;
+			stat="Available";
+			break;
+		case GG_STATUS_BUSY:
+			available=1;
+			show="dnd";
+			stat="Busy";
+			break;
+		default:
+			available=1;
+			show=NULL;
+			stat="Available";
+			break;
+	}
+
+	presence_send(s->s,to,u->jid,available,show,stat,timestamp);
+	if (s) session_send_notify(s);
 	return 0;
 }
 
@@ -273,8 +387,11 @@ char *show,*status;
 		return presence_subscribed(stream,from,to);
 	else if (!g_strcasecmp(type,"unsubscribed"))
 		return presence_unsubscribed(stream,from,to);
+	else if (!g_strcasecmp(type,"probe"))
+		return presence_probe(stream,from,to);
 	
 	g_warning("Unsupported type in %s",xmlnode2str(tag));
+	presence_send_error(stream,to,from,501,"Not Implemented");
 	return -1;
 }
 

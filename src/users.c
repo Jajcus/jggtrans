@@ -323,6 +323,7 @@ Contact *c;
 		c=(Contact *)it->data;
 		if (c->uin==uin){
 			c->status=status;
+			c->last_update=time(NULL);
 			return 0;
 		}
 	}

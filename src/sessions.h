@@ -26,6 +26,7 @@ typedef struct sesion_s{
 	guint ping_timeout_func;
 	guint timeout_func;
 	GTimer *ping_timer;
+	gboolean waiting_for_pong;
 }Session;
 
 extern GHashTable *sessions_jid;
