@@ -1,8 +1,8 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT(jabber-gg-transport, 1.1.0,jajcus@pld.org.pl)
-AM_INIT_AUTOMAKE(jabber-gg-transport, 1.1.0,jajcus@pld.org.pl)
+AC_INIT([jabber-gg-transport], [1.2.0-test1], [jajcus@pld.org.pl])
 AC_CONFIG_SRCDIR([src/ggtrans.h])
-AM_CONFIG_HEADER(config.h)
+AM_INIT_AUTOMAKE
+AM_CONFIG_HEADER([config.h])
 
 # Checks for programs.
 AC_PROG_CXX
@@ -11,18 +11,61 @@ AC_C_BIGENDIAN
 AC_PROG_MAKE_SET
 AM_PROG_LIBTOOL
 
-AM_PATH_GLIB(1.2.0,[],AC_MSG_ERROR("You need glib >= 1.2.0 to compile this."))
+AM_PATH_GLIB([1.2.0],[],AC_MSG_ERROR("You need glib >= 1.2.0 to compile this."))
 
 # Checks for libraries.
 AC_CHECK_LIB([gadu], [gg_change_info],[],AC_MSG_ERROR("You need libgadu (from ekg>=20020223 package) to compile this."))
 
-AC_ARG_ENABLE(debug,AC_HELP_STRING([--disable-debug],[Disable debugging code]))
+AC_ARG_WITH(pthread,
+  [  --with-pthread          Assume libgadu is compiled with pthread],[],[
+	AC_MSG_CHECKING([If libgadu is compiled with pthread support])
+	jk_gg_pthread=no
+	if test -x /usr/bin/ldd ; then
+		for l in /usr/lib/libgadu.so /usr/local/lib/libgadu.so ; do
+			if test -f $l ; then
+				if /usr/bin/ldd $l | grep -q "pthread" ; then	
+					jk_gg_pthread=yes
+				fi
+				break;
+			fi
+		done
+	fi
+	if test "x$jk_gg_pthread" = "xyes" ; then
+		AC_MSG_RESULT([yes])
+		with_pthread=yes
+	else	
+		with_pthread=no
+		AC_MSG_RESULT([no])
+	fi
+])
 
-AC_ARG_WITH(efence,AC_HELP_STRING([--with-efence],[Link against ElectricFence library]))
+if test "x$with_pthread" = "xyes"; then
+  AC_CHECK_HEADER(pthread.h, [
+    AC_CHECK_LIB(pthread, pthread_create, [
+      AC_DEFINE(HAVE_PTHREAD, 1, [Define if you want to use pthread in resolver])
+      LIBS="$LIBS -lpthread"
+      jk_use_pthread="yes"
+    ],[
+      jk_use_pthread="no"
+    ])
+  ])
+else
+	jk_use_pthread="no"
+fi
 
-AH_TEMPLATE([DEBUG],[Define to enable debugging code])
+if test "x$jk_use_pthread" = "xyes"; then
+	AC_MSG_WARN([Jggtrans _will_ be compiled with pthread])
+else
+	AC_MSG_WARN([jggtrans _will_not_ be compiled with pthread])
+fi
+AC_MSG_WARN([  if this doesn't match libgadu configuration jggtrans may crash])
+
+AC_ARG_ENABLE([debug],AC_HELP_STRING([--disable-debug],[Disable debugging code]))
+
+AC_ARG_WITH([efence],AC_HELP_STRING([--with-efence],[Link against ElectricFence library]))
+
 if test "x$enable_debug" != "xno" ; then
-	AC_DEFINE(DEBUG,1)
+	AC_DEFINE(DEBUG,1,[Define to enable debugging code])
 fi
 
 if test "x$with_efence" == "xyes" ; then
