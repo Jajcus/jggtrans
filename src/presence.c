@@ -1,4 +1,4 @@
-/* $Id: presence.c,v 1.34 2003/04/16 11:10:17 jajcus Exp $ */
+/* $Id: presence.c,v 1.35 2003/04/22 08:43:55 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -203,11 +203,14 @@ int r;
 char *jid;
 const char *resource;
 Resource *res;
+User *u;
 
 	s=session_get_by_jid(from,available?stream:NULL);
 	if (!s){
-		debug(N_("presence: No such session: %s"),from);
+		debug(L_("presence: No such session: %s"),from);
 		presence_send_error(stream,NULL,from,407,_("Not logged in"));
+		u=user_get_by_jid(from);
+		if (u==NULL) presence_send_unsubscribed(stream,to,from);
 		return -1;
 	}
 	jid=g_strdup(s->user->jid); /* session may be removed in the next step */
@@ -228,13 +231,14 @@ int r;
 
 	u=user_get_by_jid(from);
 	if (jid_is_me(to)){
-		debug(N_("Presence subscribe request sent to me"));
+		debug(L_("Presence subscribe request sent to me"));
 		if (!u) presence_send_unsubscribed(stream,to,from);
 		else presence_send_subscribed(stream,to,from);
 		return 0;
 	}
 	if (!u){
 		g_warning(N_("Presence subscription from unknown user (%s)"),from);
+		presence_send_unsubscribed(stream,to,from);
 		return -1;
 	}
 	if (!jid_has_uin(to) || !jid_is_my(to)){
@@ -246,10 +250,10 @@ int r;
 		g_warning(N_("Couldn't find or open session for '%s'"),from);
 		return -1;
 	}
-	debug(N_("Subscribing %s to %s..."),from,to);
+	debug(L_("Subscribing %s to %s..."),from,to);
 	r=session_subscribe(s,jid_get_uin(to));
 	if (!r){
-		debug(N_("Subscribed."));
+		debug(L_("Subscribed."));
 		presence_send_subscribed(stream,to,from);
 	}
 	else presence_send_error(stream,to,from,500,_("Subscription failed"));
@@ -261,7 +265,7 @@ int presence_unsubscribed(struct stream_s *stream,const char *from,const char *t
 
 	if (!jid_is_me(to)) return 0;
 
-	debug(N_("Presence unsubscribed sent to me."));
+	debug(L_("Presence unsubscribed sent to me."));
 
 	unregister(stream,from,NULL,NULL,1);
 
@@ -303,7 +307,8 @@ GTime timestamp;
 	else u=user_get_by_jid(from);
 
 	if (!u){
-		presence_send_error(stream,to,from,407,_("Not logged in"));
+		presence_send_error(stream,to,from,407,_("Not registered"));
+		presence_send_unsubscribed(stream,to,from);
 		return -1;
 	}
 
@@ -338,7 +343,7 @@ Session *s;
 int r;
 
 	if (jid_is_me(to)){
-		debug(N_("Presence unsubscribe request sent to me"));
+		debug(L_("Presence unsubscribe request sent to me"));
 		presence_send_unsubscribed(stream,to,from);
 		return 0;
 	}
@@ -356,10 +361,10 @@ int r;
 		g_warning(N_("Couldn't find or open session for '%s'"),from);
 		return -1;
 	}
-	debug(N_("Unsubscribing %s from %s..."),from,to);
+	debug(L_("Unsubscribing %s from %s..."),from,to);
 	r=session_unsubscribe(s,jid_get_uin(to));
 	if (!r){
-		debug(N_("Unsubscribed."));
+		debug(L_("Unsubscribed."));
 		presence_send_unsubscribed(stream,to,from);
 	}
 
