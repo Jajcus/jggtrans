@@ -384,7 +384,7 @@ FILE *f;
 		log_file=fopen(log_filename,"a");
 		if (!log_file) g_critical("Couldn't open log file '%s': %s",
 						log_filename,g_strerror(errno));
-		setvbuf(log_file,NULL,_IOLBF,0);
+		if (log_file) setvbuf(log_file,NULL,_IOLBF,0);
 	}
 	
 	if (log_facility!=-1){
