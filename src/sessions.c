@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.59 2003/04/14 17:01:18 jajcus Exp $ */
+/* $Id: sessions.c,v 1.60 2003/04/15 16:33:04 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -570,6 +570,7 @@ GgServer *serv;
 		login_params.server_port=serv->port;
 	}
 
+	if (s->ggs) gg_free_session(s->ggs);
 	s->ggs=gg_login(&login_params);
 	if (!s->ggs){
 		g_free(s);

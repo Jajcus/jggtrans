@@ -1,4 +1,4 @@
-/* $Id: stream.c,v 1.18 2003/04/14 10:18:47 jajcus Exp $ */
+/* $Id: stream.c,v 1.19 2003/04/15 16:33:04 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -158,6 +158,7 @@ Stream *s;
 
 	s=(Stream *)data;
 	g_assert(s);
+	if (s->err_watch) g_source_remove(s->err_watch);
 	s->err_watch=0;
 	s->xs->f(XSTREAM_CLOSE,NULL,s);
 	if (!s->connected)

@@ -1,4 +1,4 @@
-/* $Id: browse.c,v 1.10 2003/04/14 12:43:49 jajcus Exp $ */
+/* $Id: browse.c,v 1.11 2003/04/15 16:33:04 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -83,6 +83,7 @@ char *jid;
 	g_hash_table_foreach(sessions_jid,browse_session,result);
 
 	jabber_iq_send_result(s,from,to,id,result);
+	xmlnode_free(result);
 }
 
 void jabber_iq_get_server_browse(Stream *s,const char *from,const char * to,const char *id,xmlnode q){
@@ -126,6 +127,7 @@ int i;
 	}
 	g_free(jid);
 	jabber_iq_send_result(s,from,to,id,result);
+	xmlnode_free(result);
 }
 
 void jabber_iq_get_client_browse(Stream *s,const char *from,const char * to,const char *id,xmlnode q){
@@ -146,5 +148,6 @@ int i;
 		xmlnode_insert_cdata(n,client_iq_ns[i].ns,-1);
 	}
 	jabber_iq_send_result(s,from,to,id,result);
+	xmlnode_free(result);
 }
 

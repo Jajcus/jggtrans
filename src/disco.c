@@ -1,4 +1,4 @@
-/* $Id: disco.c,v 1.3 2003/04/14 12:43:49 jajcus Exp $ */
+/* $Id: disco.c,v 1.4 2003/04/15 16:33:04 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -80,6 +80,7 @@ char *jid;
 	g_hash_table_foreach(sessions_jid,disco_session,result);
 
 	jabber_iq_send_result(s,from,to,id,result);
+	xmlnode_free(result);
 }
 
 void jabber_iq_get_server_disco_items(Stream *s,const char *from,const char * to,const char *id,xmlnode q){
@@ -106,6 +107,7 @@ char *jid,*node;
 	else debug("%s not admin",jid);
 	g_free(jid);
 	jabber_iq_send_result(s,from,to,id,result);
+	xmlnode_free(result);
 }
 
 void jabber_iq_get_server_disco_info(Stream *s,const char *from,const char * to,const char *id,xmlnode q){
@@ -121,6 +123,7 @@ int i;
 			xmlnode_put_attrib(result,"xmlns","http://jabber.org/protocol/disco#info");
 			xmlnode_put_attrib(result,"node","online_users");
 			jabber_iq_send_result(s,from,to,id,result);
+			xmlnode_free(result);
 		}
 		jabber_iq_send_error(s,from,to,id,404,_("Disco request for unknown node"));
 		return;
@@ -145,6 +148,7 @@ int i;
 		xmlnode_put_attrib(n,"var",server_iq_ns[i].ns);
 	}
 	jabber_iq_send_result(s,from,to,id,result);
+	xmlnode_free(result);
 }
 
 void jabber_iq_get_client_disco_items(Stream *s,const char *from,const char * to,const char *id,xmlnode q){
@@ -153,6 +157,7 @@ xmlnode result;
 	result=xmlnode_new_tag("query");
 	xmlnode_put_attrib(result,"xmlns","http://jabber.org/protocol/disco#items");
 	jabber_iq_send_result(s,from,to,id,result);
+	xmlnode_free(result);
 }
 
 void jabber_iq_get_client_disco_info(Stream *s,const char *from,const char * to,const char *id,xmlnode q){
@@ -179,5 +184,6 @@ int i;
 		xmlnode_put_attrib(n,"var",client_iq_ns[i].ns);
 	}
 	jabber_iq_send_result(s,from,to,id,result);
+	xmlnode_free(result);
 }
 
