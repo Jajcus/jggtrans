@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.52 2003/06/28 14:04:16 jajcus Exp $ */
+/* $Id: main.c,v 1.53 2004/02/26 07:32:54 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -74,10 +74,14 @@ static struct {
 }facilitynames[] =
   {
     { "auth", LOG_AUTH },
+#ifdef LOG_AUTHPRIV
     { "authpriv", LOG_AUTHPRIV },
+#endif
     { "cron", LOG_CRON },
     { "daemon", LOG_DAEMON },
+#ifdef LOG_FTP
     { "ftp", LOG_FTP },
+#endif
     { "kern", LOG_KERN },
     { "lpr", LOG_LPR },
     { "mail", LOG_MAIL },
