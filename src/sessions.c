@@ -123,7 +123,7 @@ GgServer *server;
 	else{
 		server=g_new(GgServer, 1);
 		server->port=1;
-		server->tls=1;
+		server->tls=0;
 		gg_servers=g_list_append(gg_servers, server);
 
 		server=g_new(GgServer, 1);

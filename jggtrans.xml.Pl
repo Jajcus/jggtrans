@@ -150,13 +150,17 @@
 	Jggtrans będzie się próbował łączyć z podanymi serwerami w podanej
 	kolejności i użyje pierwszego działającego.
 	Rozsądna domyślna lista serwerów jest wkompilowana w jggtrans.
+	TLS działa nienajlepiej, więc nie jest zalecane jego włączanie.
       -->
  <!--
  <servers>
-	<hub/>
-	<server port="443">217.17.41.90</server>
-	<server tls="no">217.17.41.85</server>
-	<server tls="no">217.17.41.88</server>
+        <server tls="no">217.17.41.84</server>
+        <server tls="no">217.17.41.88</server>
+        <server tls="no">217.17.41.86</server>
+        <server tls="no">217.17.41.87</server>
+        <server tls="no">217.17.41.85</server>
+        <hub/>
+        <server port="443">217.17.41.90</server>
  </servers>
  -->
 
