@@ -57,8 +57,10 @@ AC_FUNC_ERROR_AT_LINE
 AC_TYPE_SIGNAL
 AC_FUNC_STAT
 
-AC_CHECK_FUNCS([gethostbyname isascii],[],AC_MSG_ERROR("Some functions needed are missing"))
-AC_CHECK_FUNCS([select socket],[],AC_MSG_ERROR("Some functions needed are missing"))
+AC_SEARCH_LIBS([gethostbyname],[resolve resolv],[],AC_MSG_ERROR("Some functions needed are missing"))
+AC_SEARCH_LIBS([socket],[socket],[],AC_MSG_ERROR("Some functions needed are missing"))
+AC_CHECK_FUNCS([isascii],[],AC_MSG_ERROR("Some functions needed are missing"))
+AC_CHECK_FUNCS([select],[],AC_MSG_ERROR("Some functions needed are missing"))
 AC_CHECK_FUNCS([memset strchr],[],AC_MSG_ERROR("Some functions needed are missing"))
 
 AC_CONFIG_SUBDIRS([libxode])
