@@ -34,10 +34,6 @@ typedef struct stream_s{
 	int closing;
 	char *read_buf;
 	int read_buf_len;
-	char *write_buf;
-	int write_pos;
-	int write_buf_len;
-	int write_len;
 	xstream xs;
 }Stream;
 

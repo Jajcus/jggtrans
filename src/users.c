@@ -118,6 +118,7 @@ xmlnode xml,tag,ctag,userlist;
 
 	if (u->invisible) tag=xmlnode_insert_tag(xml,"invisible");
 	if (u->friends_only) tag=xmlnode_insert_tag(xml,"friendsonly");
+	if (u->ignore_unknown) tag=xmlnode_insert_tag(xml,"ignore_unknown");
 	if (u->locale){
 		tag=xmlnode_insert_tag(xml,"locale");
 		xmlnode_insert_cdata(tag,u->locale,-1);
@@ -133,6 +134,24 @@ xmlnode xml,tag,ctag,userlist;
 			ctag=xmlnode_insert_tag(userlist,"contact");
 			str=g_strdup_printf("%lu",(unsigned long)c->uin);
 			xmlnode_put_attrib(ctag,"uin",str);
+			if (c->ignored) xmlnode_put_attrib(ctag,"ignored","ignored");
+			if (c->blocked) xmlnode_put_attrib(ctag,"blocked","blocked");
+			switch (c->subscribe){
+			case SUB_NONE:
+			       	xmlnode_put_attrib(ctag,"subscribe","none");
+				break;
+			case SUB_FROM:
+			       	xmlnode_put_attrib(ctag,"subscribe","from");
+				break;
+			case SUB_TO:
+			       	xmlnode_put_attrib(ctag,"subscribe","to");
+				break;
+			case SUB_BOTH:
+			       	xmlnode_put_attrib(ctag,"subscribe","both");
+				break;
+			default:
+				break;
+			}
 			g_free(str);
 		}
 	}
@@ -177,7 +196,8 @@ User *user_load(const char *jid){
 char *fn,*njid;
 xmlnode xml,tag,t;
 char *uin,*ujid,*name,*password,*email,*locale;
-int last_sys_msg=0,invisible=0,friends_only=0;
+char *status,*offline_status,*invisible_status;
+int last_sys_msg=0,invisible=0,friends_only=0,ignore_unknown=0;
 User *u;
 GList *contacts;
 char *p;
@@ -229,10 +249,27 @@ char *data;
 	tag=xmlnode_get_tag(xml,"friendsonly");
 	if (tag!=NULL) friends_only=1;
 	tag=xmlnode_get_tag(xml,"invisible");
-	if (tag!=NULL) invisible=1;
+	if (tag!=NULL) {
+	       	invisible=1;
+		invisible_status=xmlnode_get_data(tag);
+	}
+	tag=xmlnode_get_tag(xml,"ignore_unknown");
+	if (tag!=NULL) ignore_unknown=1;
 	tag=xmlnode_get_tag(xml,"locale");
 	if (tag!=NULL) locale=xmlnode_get_data(tag);
 	else locale=NULL;
+	tag=xmlnode_get_tag(xml,"status");
+	if (tag!=NULL) {
+		status=xmlnode_get_data(tag);
+		if (status==NULL) status="";
+	}
+	else status=NULL;
+	tag=xmlnode_get_tag(xml,"offline_status");
+	if (tag!=NULL){
+	       	offline_status=xmlnode_get_data(tag);
+		if (offline_status==NULL) offline_status="";
+	}
+	else offline_status=NULL;
 	tag=xmlnode_get_tag(xml,"userlist");
 	contacts=NULL;
 	if (tag!=NULL){
@@ -260,13 +297,38 @@ char *data;
 
 				d=xmlnode_get_attrib(t,"uin");
 				if (d==NULL) continue;
+				
 				uin=atoi(d);
 				if (uin<=0) continue;
 
 				c=g_new0(Contact,1);
 				c->status=-1;
 				c->uin=uin;
-
+				
+				d=xmlnode_get_attrib(t,"ignored");
+				if (d!=NULL && d[0]!='\000') c->ignored=1;
+				else c->ignored=0;
+				d=xmlnode_get_attrib(t,"blocked");
+				if (d!=NULL && d[0]!='\000') c->blocked=1;
+				else c->blocked=0;
+				d=xmlnode_get_attrib(t,"subscribe");
+				if (d) {
+					switch (d[0]) {
+						case 'f':
+							c->subscribe=SUB_FROM;
+							break;
+						case 't':
+							c->subscribe=SUB_TO;
+							break;
+						case 'b':
+							c->subscribe=SUB_BOTH;
+							break;
+						default:
+							c->subscribe=SUB_NONE;
+							break;
+					}
+				}
+				else c->subscribe=SUB_UNDEFINED;
 				contacts=g_list_append(contacts,c);
 			}
 		}
@@ -280,7 +342,11 @@ char *data;
 	u->last_sys_msg=last_sys_msg;
 	u->friends_only=friends_only;
 	u->invisible=invisible;
+	u->ignore_unknown=ignore_unknown;
 	u->locale=g_strdup(locale);
+	u->status=g_strdup(status);
+	u->offline_status=g_strdup(offline_status);
+	u->invisible_status=g_strdup(invisible_status);
 	u->contacts=contacts;
 	xmlnode_free(xml);
 	g_assert(users_jid!=NULL);
@@ -318,8 +384,12 @@ Contact *c;
 	g_list_free(u->contacts);
 	u->contacts=NULL;
 
-	if (u->jid) g_free(u->jid);
-	if (u->password) g_free(u->password);
+	g_free(u->jid);
+	g_free(u->password);
+	g_free(u->locale);
+	g_free(u->status);
+	g_free(u->offline_status);
+	g_free(u->invisible_status);
 	g_free(u);
 	return 0;
 }
@@ -392,40 +462,35 @@ char *p,*njid;
 	return u;
 }
 
-int user_subscribe(User *u,uin_t uin){
+Contact * user_get_contact(User *u,uin_t uin, gboolean create){
 Contact *c;
 GList *it;
 
 	g_assert(u!=NULL);
 	for(it=g_list_first(u->contacts);it;it=it->next){
 		c=(Contact *)it->data;
-		if (c->uin==uin) return -1;
+		if (c->uin==uin) return c;
 	}
+
+	if (!create) return NULL;
 
 	c=g_new0(Contact,1);
 
 	c->uin=uin;
 
 	u->contacts=g_list_append(u->contacts,c);
-	user_save(u);
-	return 0;
+	return c;
 }
 
-int user_unsubscribe(User *u,uin_t uin){
-Contact *c;
-GList *it;
+int user_check_contact(User *u,Contact *c){
 
-	for(it=g_list_first(u->contacts);it;it=it->next){
-		c=(Contact *)it->data;
-		if (c->uin==uin){
-			u->contacts=g_list_remove(u->contacts,c);
-			if (c->status_desc) free(c->status_desc);
-			g_free(c);
-			user_save(u);
-			return 0;
-		}
-	}
-	return -1;
+	if (c->ignored || c->got_online || c->blocked
+			|| c->got_probe || c->subscribe!=SUB_NONE) return 0;
+	u->contacts=g_list_remove(u->contacts,c);
+	if (c->status_desc) free(c->status_desc);
+	g_free(c);
+	user_save(u);
+	return 0;
 }
 
 int user_set_contact_status(User *u,int status,unsigned int uin,char *desc,
@@ -499,7 +564,8 @@ int r;
 			g_warning(L_("Couldn't stat '%s': %s"),de->d_name,g_strerror(errno));
 			continue;
 		}
-		if (S_ISREG(st.st_mode)) presence_send_probe(s,de->d_name);
+		if (S_ISREG(st.st_mode) && strchr(de->d_name,'@')) 
+			presence_send_probe(s,NULL,de->d_name);
 	}
 	closedir(dir);
 	return 0;

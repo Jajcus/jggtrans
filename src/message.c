@@ -50,12 +50,29 @@ void message_invisible(struct stream_s *s,const char *from, const char *to,
 				const char *args, xmlnode msg);
 void message_locale(struct stream_s *s,const char *from, const char *to,
 				const char *args, xmlnode msg);
+void message_ignore_unknown(struct stream_s *s,const char *from, const char *to,
+				const char *args, xmlnode msg);
+void message_ignore(struct stream_s *s,const char *from, const char *to,
+				const char *args, xmlnode msg);
+void message_unignore(struct stream_s *s,const char *from, const char *to,
+				const char *args, xmlnode msg);
+void message_status(struct stream_s *s,const char *from, const char *to,
+				const char *args, xmlnode msg);
+void message_offline_status(struct stream_s *s,const char *from, const char *to,
+				const char *args, xmlnode msg);
 
 MsgCommand msg_commands[]={
 	{"get roster","gr",N_("Download user list from server"),message_get_roster,0},
 	{"friends only","fo",N_("\"Only for friends\" mode"),message_friends_only,0},
-	{"invisible","iv",N_("\"Invisible\" mode"),message_invisible,0},
+	{"invisible","iv",N_("\"Invisible\" mode. As an argument"
+		" you should pass 'on', 'off' or a status message to be shown"
+		" when invisible."),message_invisible,0},
 	{"locale","loc",N_("Set user locale (language)"),message_locale,0},
+	{"ignore_unknown","iu",N_("Ignore messages from unknown users"),message_ignore_unknown,0},
+	{"ignore","ig",N_("Add a user to, or view the ignore list"),message_ignore,0},
+	{"unignore","ui",N_("Remove a user from, or view the ignore list"),message_unignore,0},
+	{"status","st",N_("Status message to show to GG users. Use 'off' to use Jabber status."),message_status,0},
+	{"offline_status","os",N_("Status message to show to GG users when not available. Use 'off' to use the one set with the command described above."),message_offline_status,0},
 	{NULL,NULL,NULL,0},
 };
 
@@ -287,15 +304,15 @@ void message_friends_only(struct stream_s *stream,const char *from, const char *
 				const char *args, xmlnode msg){
 Session *session;
 User *user;
-int on;
+gboolean on;
 
 	session=session_get_by_jid(from,stream,0);
 	if (session!=NULL)
 		user=session->user;
 	else
 		user=user_get_by_jid(from);
-	if (args && g_strcasecmp(args,"on")==0) on=1;
-	else if (args && g_strcasecmp(args,"off")==0) on=0;
+	if (args && g_strcasecmp(args,"on")==0) on=TRUE;
+	else if (args && g_strcasecmp(args,"off")==0) on=FALSE;
 	else on=!user->friends_only;
 
 	if (user->friends_only==on){
@@ -318,6 +335,7 @@ void message_invisible(struct stream_s *stream,const char *from, const char *to,
 				const char *args, xmlnode msg){
 Session *session;
 User *user;
+char *m;
 int on;
 
 	session=session_get_by_jid(from,stream,0);
@@ -325,23 +343,98 @@ int on;
 		user=session->user;
 	else
 		user=user_get_by_jid(from);
-	if (args && g_strcasecmp(args,"on")==0) on=1;
-	else if (args && g_strcasecmp(args,"off")==0) on=0;
+
+	if (args) {
+		if (g_strcasecmp(args,"on")==0) {
+		       	on=TRUE;
+			g_free(user->invisible_status);
+			user->invisible_status=NULL;
+		}
+		else if (g_strcasecmp(args,"off")==0) {
+		       	on=FALSE;
+			g_free(user->invisible_status);
+			user->invisible_status=NULL;
+		}
+		else {
+		       	on=TRUE;
+			g_free(user->invisible_status);
+			user->invisible_status=g_strndup(args,70);
+		}
+	}
 	else on=!user->invisible;
 
-	if (user->invisible==on){
-		message_send(stream,to,from,1,_("No change."),0);
-		return;
-	}
 	user->invisible=on;
 
-	if (on)
-		message_send(stream,to,from,1,_("invisible: on"),0);
-	else
-		message_send(stream,to,from,1,_("invisible: off"),0);
+	m=g_strdup_printf(_("invisible: %s status: %s%s%s"),
+			(on?_("on"):_("off")),
+			(user->invisible_status?"`":""),
+			(user->invisible_status?user->invisible_status:_("not set")),
+			(user->invisible_status?"'":""));
+	message_send(stream,to,from,1,m,0);
+	g_free(m);
 
 	if (session!=NULL) session_send_status(session);
 
+	user_save(user);
+}
+
+void message_status(struct stream_s *stream,const char *from, const char *to,
+				const char *args, xmlnode msg){
+Session *session;
+User *user;
+char *m;
+
+	session=session_get_by_jid(from,stream,0);
+	if (session!=NULL)
+		user=session->user;
+	else
+		user=user_get_by_jid(from);
+
+	g_free(user->status);
+	if (args) {
+		if (!g_strcasecmp(args,"off")) user->status=NULL;
+		else user->status=g_strndup(args,70);
+	}
+	else user->status=NULL;
+
+	m=g_strdup_printf(_("status: %s%s%s"),
+			(user->status?"`":""),
+			(user->status?user->status:_("not set")),
+			(user->status?"'":""));
+	message_send(stream,to,from,1,m,0);
+	g_free(m);
+
+	if (session!=NULL) session_send_status(session);
+	user_save(user);
+}
+
+void message_offline_status(struct stream_s *stream,const char *from, const char *to,
+				const char *args, xmlnode msg){
+Session *session;
+User *user;
+char *m;
+
+	session=session_get_by_jid(from,stream,0);
+	if (session!=NULL)
+		user=session->user;
+	else
+		user=user_get_by_jid(from);
+
+	g_free(user->offline_status);
+	if (args) {
+		if (!g_strcasecmp(args,"off")) user->offline_status=NULL;
+		else user->offline_status=g_strndup(args,70);
+	}
+	else user->offline_status=NULL;
+
+	m=g_strdup_printf(_("offline status: %s%s%s"),
+			(user->offline_status?"`":""),
+			(user->offline_status?user->offline_status:_("not set")),
+			(user->offline_status?"'":""));
+	message_send(stream,to,from,1,m,0);
+	g_free(m);
+
+	if (session!=NULL) session_send_status(session);
 	user_save(user);
 }
 
@@ -368,15 +461,124 @@ char *m;
 	user_save(user);
 }
 
+void message_ignore_unknown(struct stream_s *stream,const char *from, const char *to,
+				const char *args, xmlnode msg){
+Session *session;
+User *user;
+int on;
+
+	session=session_get_by_jid(from,stream,0);
+	if (session!=NULL)
+		user=session->user;
+	else
+		user=user_get_by_jid(from);
+	if (args && g_strcasecmp(args,"on")==0) on=TRUE;
+	else if (args && g_strcasecmp(args,"off")==0) on=FALSE;
+	else on=!user->ignore_unknown;
+
+	if (user->ignore_unknown==on){
+		message_send(stream,to,from,1,_("No change."),0);
+		return;
+	}
+	user->ignore_unknown=on;
+
+	if (on)
+		message_send(stream,to,from,1,_("ignore unknown: on"),0);
+	else
+		message_send(stream,to,from,1,_("ignore unknown: off"),0);
+
+	if (session!=NULL) session_send_status(session);
+
+	user_save(user);
+}
+
+
+void message_ignore(struct stream_s *stream,const char *from, const char *to,
+				const char *args, xmlnode msg){
+Session *session;
+User *user;
+uin_t uin;
+Contact *c;
+gchar *m;
+
+	session=session_get_by_jid(from,stream,0);
+	if (session!=NULL)
+		user=session->user;
+	else
+		user=user_get_by_jid(from);
+
+	if (args && *args) uin=atoi(args);
+	else uin=0;
+
+	if (uin<=0) {
+		GList *it;
+		m=g_strdup(_("\nMessages from the following GG numbers will be ignored:"));
+		for(it=user->contacts;it;it=it->next){
+			c=(Contact *)it->data;
+			if (!c->ignored) continue;
+			m=g_strdup_printf(_("%s\n  %li"),m,(long)c->uin);
+		}
+		message_send(stream,to,from,1,m,0);
+		g_free(m);
+		return;
+	}
+
+	c=user_get_contact(user,uin,TRUE);
+	c->ignored=TRUE;
+	if (session) session_update_contact(session,c);
+		
+	m=g_strdup_printf(_("\nMessages from GG number %li will be ignored."),(long)uin);
+	message_send(stream,to,from,1,m,0);
+	g_free(m);
+
+	user_save(user);
+}
+
+void message_unignore(struct stream_s *stream,const char *from, const char *to,
+				const char *args, xmlnode msg){
+Session *session;
+User *user;
+uin_t uin;
+Contact *c;
+gchar *m;
+
+	session=session_get_by_jid(from,stream,0);
+	if (session!=NULL)
+		user=session->user;
+	else
+		user=user_get_by_jid(from);
+
+	if (args && *args) uin=atoi(args);
+	else uin=0;
+
+	if (uin<=0) {
+		message_ignore(stream,from,to,NULL,msg);
+		return;
+	}
+
+	c=user_get_contact(user,uin,FALSE);
+	if (c) {
+		c->ignored=FALSE;
+		user_check_contact(user,c);
+		if (session) session_update_contact(session,c);
+	}
+		
+	m=g_strdup_printf(_("\nMessages from GG number %li will NOT be ignored."),(long)uin);
+	message_send(stream,to,from,1,m,0);
+	g_free(m);
+	
+	user_save(user);
+}
 
 int message_to_me(struct stream_s *stream,const char *from,
 		const char *to,const char *body,xmlnode tag){
-int i;
+int i,ignored;
 const char *ce;
 char *args,*p;
 User *user;
 Session *sess;
 char *msg;
+GList *it;
 
 	sess=session_get_by_jid(from,stream,1);
 	if (sess)
@@ -416,7 +618,14 @@ char *msg;
 	msg=g_strdup_printf(_("%s\n\nCurrent settings:"),msg);
 	msg=g_strdup_printf(_("%s\n  friends only: %s"),msg,user->friends_only?_("on"):_("off"));
 	msg=g_strdup_printf(_("%s\n  invisible: %s"),msg,user->invisible?_("on"):_("off"));
+	msg=g_strdup_printf(_("%s\n  ignore unknown: %s"),msg,user->ignore_unknown?_("on"):_("off"));
 	msg=g_strdup_printf(_("%s\n  locale: %s"),msg,user->locale?user->locale:_("_default_"));
+	ignored=0;
+	for(it=user->contacts;it;it=it->next){
+		Contact * c=(Contact *)it->data;
+		if (c->ignored) ignored++;
+	}
+	msg=g_strdup_printf(_("%s\n  number of ignored users: %i"),msg,ignored);
 	msg=g_strdup_printf(_("%s\n\nRegistered as: %u"),msg,user->uin);
 	if (sess->ggs) msg=g_strdup_printf("%s\n  %s",msg,session_get_info_string(sess));
 	message_send(stream,to,from,1,msg,0);

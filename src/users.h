@@ -22,9 +22,25 @@
 
 #include <libgadu.h>
 
+typedef enum subscription_type_e {
+	SUB_UNDEFINED=0,
+	SUB_NONE,
+	SUB_FROM,
+	SUB_TO,
+	SUB_BOTH
+}SubscriptionType;
+
 typedef struct contact_s{
 	uin_t uin;
+	gboolean ignored;
+	gboolean blocked;
+	SubscriptionType subscribe;
 
+	gboolean got_online;
+	gboolean got_probe;
+
+	int gg_notify_type;
+	
 	int status;
 	GTime last_update;
 	char *status_desc;
@@ -38,9 +54,13 @@ typedef struct user_s{
 	char * jid;
 	char * password;
 	int last_sys_msg;
-	int friends_only;
-	int invisible;
+	gboolean friends_only;
+	gboolean invisible;
+	gboolean ignore_unknown;
 	char *locale;
+	char * status;
+	char * offline_status;
+	char * invisible_status;
 
 	int confirmed;
 	GList *contacts;
@@ -57,8 +77,10 @@ int user_save(User *u);
 
 User *user_get_by_jid(const char *jid);
 
-int user_subscribe(User *u,uin_t uin);
-int user_unsubscribe(User *u,uin_t uin);
+Contact * user_get_contact(User *u, uin_t uin, gboolean create);
+
+/* check if the contact is still needed, and if not, then remove it */
+int user_check_contact(User *u, Contact *c); 
 
 int user_sys_msg_received(User *u,int nr);
 

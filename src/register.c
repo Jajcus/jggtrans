@@ -222,11 +222,10 @@ Request *r;
 	gghttp=gg_change_passwd3(u->uin,from_utf8(u->password),newpasswdW,qaW,1);
 	g_free(newpasswdW);
 	g_free(qaW);
-	if (gghttp!=NULL){
+	if (gghttp!=NULL) {
 		r=add_request(RT_PASSWD,from,to,id,form,gghttp,s);
 		r->data=g_strdup(newpasswd);
 	}
-	
 	return 0;
 }
 

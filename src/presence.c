@@ -65,14 +65,18 @@ char *str;
 }
 
 
-int presence_send_probe(struct stream_s *stream,const char *to){
+int presence_send_probe(struct stream_s *stream,const char *from,const char *to){
 xmlnode pres;
-char *jid;
 
 	pres=xmlnode_new_tag("presence");
-	jid=jid_my_registered();
-	xmlnode_put_attrib(pres,"from",jid);
-	g_free(jid);
+	if (from!=NULL)
+		xmlnode_put_attrib(pres,"from",from);
+	else{
+		char *jid;
+		jid=jid_my_registered();
+		xmlnode_put_attrib(pres,"from",jid);
+		g_free(jid);
+	}
 	xmlnode_put_attrib(pres,"to",to);
 	xmlnode_put_attrib(pres,"type","probe");
 	stream_write(stream,pres);
@@ -228,7 +232,9 @@ User *u;
 int presence_subscribe(struct stream_s *stream,const char *from,const char *to){
 User *u;
 Session *s;
-int r;
+char *bare;
+uin_t uin;
+Contact *c;
 
 	u=user_get_by_jid(from);
 	if (jid_is_me(to)){
@@ -247,32 +253,147 @@ int r;
 		return -1;
 	}
 	s=session_get_by_jid(from,stream,0);
-	if (!s){
-		g_warning(N_("Couldn't find or open session for '%s'"),from);
+	debug(L_("Subscribing %s to %s..."),from,to);
+	uin=jid_get_uin(to);
+	c=user_get_contact(u,uin,TRUE);
+	if (!c) {
+		presence_send_error(stream,to,from,500,_("Subscription failed"));
+	       	return -1;
+	}
+	if (c->subscribe==SUB_UNDEFINED || c->subscribe==SUB_NONE) c->subscribe=SUB_TO;
+	else if (c->subscribe==SUB_FROM) c->subscribe=SUB_BOTH;
+	user_save(u);
+
+	if (s) session_update_contact(s,c);	
+	debug(L_("Subscribed."));
+	presence_send_subscribed(stream,to,from);
+	bare=jid_normalized(from,FALSE);
+	presence_send_subscribe(stream,to,bare);
+	g_free(bare);
+	return 0;
+}
+
+int presence_subscribed(struct stream_s *stream,const char *from,const char *to){
+User *u;
+Session *s;
+Contact *c;
+uin_t uin;
+
+	u=user_get_by_jid(from);
+	if (!u){
+		g_warning(N_("Presence subscription from unknown user (%s)"),from);
+		presence_send_unsubscribe(stream,to,from);
 		return -1;
 	}
-	debug(L_("Subscribing %s to %s..."),from,to);
-	r=session_subscribe(s,jid_get_uin(to));
-	if (!r){
-		debug(L_("Subscribed."));
-		presence_send_subscribed(stream,to,from);
+	if (jid_is_me(to)){
+		debug(L_("Presence 'subscribed' sent to me"));
+		return 0;
 	}
-	else presence_send_error(stream,to,from,500,_("Subscription failed"));
+	if (!jid_has_uin(to) || !jid_is_my(to)){
+		g_warning(N_("Bad 'to': %s"),to);
+		return -1;
+	}
+	s=session_get_by_jid(from,stream,0);
+	debug(L_("%s accepted %s's subscription..."),from,to);
+	uin=jid_get_uin(to);
+	c=user_get_contact(u,uin,TRUE);
+	if (!c) {
+	       	return -1;
+	}
+	if (c->subscribe==SUB_UNDEFINED) c->subscribe=SUB_BOTH;
+	else if (c->subscribe==SUB_NONE) c->subscribe=SUB_FROM;
+	else if (c->subscribe==SUB_TO) c->subscribe=SUB_BOTH;
+	user_save(u);
 
+	if (s) session_update_contact(s,c);	
 	return 0;
 }
 
 int presence_unsubscribed(struct stream_s *stream,const char *from,const char *to){
+User *u;
+Session *s;
+Contact *c;
+uin_t uin;
 
-	if (!jid_is_me(to)) return 0;
+	u=user_get_by_jid(from);
+	if (!u){
+		g_warning(N_("Presence 'unsubscribed' from unknown user (%s)"),from);
+		return -1;
+	}
+	if (jid_is_me(to)){
+		debug(L_("Presence 'unsubscribed' sent to me"));
+		return 0;
+	}
+	if (!jid_has_uin(to) || !jid_is_my(to)){
+		g_warning(N_("Bad 'to': %s"),to);
+		return -1;
+	}
+	s=session_get_by_jid(from,stream,0);
+	debug(L_("%s denied/canceled %s's subscription..."),from,to);
+	uin=jid_get_uin(to);
+	c=user_get_contact(u,uin,TRUE);
+	if (!c) {
+	       	return -1;
+	}
+	if (c->subscribe==SUB_FROM||c->subscribe==SUB_UNDEFINED) c->subscribe=SUB_NONE;
+	else if (c->subscribe==SUB_BOTH) c->subscribe=SUB_TO;
+	user_save(u);
 
-	debug(L_("Presence unsubscribed sent to me."));
+	if (s) session_update_contact(s,c);	
+	return 0;
+}
+
+int presence_unsubscribe(struct stream_s *stream,const char *from,const char *to){
+User *u;
+Session *s;
+Contact *c;
+uin_t uin;
+
+	if (jid_is_me(to)){
+		debug(L_("Presence unsubscribe request sent to me"));
+		presence_send_unsubscribed(stream,to,from);
+		return 0;
+	}
+	u=user_get_by_jid(from);
+	if (!u){
+		g_warning(N_("Presence subscription from unknown user (%s)"),from);
+		return -1;
+	}
+	if (!jid_has_uin(to) || !jid_is_my(to)){
+		g_warning(N_("Bad 'to': %s"),to);
+		return -1;
+	}
+	s=session_get_by_jid(from,stream,0);
+	debug(L_("Unsubscribing %s from %s..."),from,to);
+	
+	uin=jid_get_uin(to);
+	c=user_get_contact(u,uin,FALSE);
+	if (!c) {
+		presence_send_unsubscribed(stream,to,from);
+	       	return -1;
+	}
+	if (c->subscribe==SUB_TO) c->subscribe=SUB_NONE;
+	else if (c->subscribe==SUB_BOTH) c->subscribe=SUB_FROM;
+	user_save(u);
+
+	if (s) session_update_contact(s,c);
+	
+	
+	debug(L_("Unsubscribed."));
+	presence_send_unsubscribed(stream,to,from);
+	if (!GG_S_NA(c->status) && c->status!=-1){
+		char *ujid;
+		ujid=jid_build_full(uin);
+		presence_send(stream,ujid,u->jid,0,NULL,"Unsubscribed",0);
+		g_free(ujid);
+	}
 	return 0;
 }
 
 int presence_probe(struct stream_s *stream,const char *from,const char *to){
 Session *s;
 User *u;
+Contact *c;
 uin_t uin;
 int status;
 int available;
@@ -311,6 +432,17 @@ GTime timestamp;
 	}
 
 	uin=jid_get_uin(to);
+
+	c=user_get_contact(u,uin,TRUE);
+	if (!c) {
+	       	return -1;
+	}
+	if (c->subscribe==SUB_FROM) c->subscribe=SUB_NONE;
+	else if (c->subscribe==SUB_BOTH) c->subscribe=SUB_TO;
+	user_save(u);
+
+	if (s) session_update_contact(s,c);	
+
 	status=0;
 	stat=NULL;
 	timestamp=0;
@@ -332,42 +464,51 @@ GTime timestamp;
 	available=status_gg_to_jabber(status,&show,&stat);
 	if (available) presence_send(stream,jid_build_full(uin),u->jid,available,show,stat,timestamp);
 	else presence_send(stream,jid_build(uin),u->jid,available,show,stat,timestamp);
-	/* more XMPP-like, but it doesn't work well with legacy clients
-	else presence_send_error(stream,to,from,404,_("Not Found"));*/
+	
 	return 0;
 }
 
-int presence_unsubscribe(struct stream_s *stream,const char *from,const char *to){
-User *u;
+
+int presence_direct_available(struct stream_s *stream,const char *from,const char *to){
+uin_t uin;
+Contact *c;
 Session *s;
-int r;
 
-	if (jid_is_me(to)){
-		debug(L_("Presence unsubscribe request sent to me"));
-		presence_send_unsubscribed(stream,to,from);
-		return 0;
-	}
-	u=user_get_by_jid(from);
-	if (!u){
-		g_warning(N_("Presence subscription from unknown user (%s)"),from);
-		return -1;
-	}
-	if (!jid_has_uin(to) || !jid_is_my(to)){
-		g_warning(N_("Bad 'to': %s"),to);
-		return -1;
-	}
-	s=session_get_by_jid(from,stream,0);
+	uin=jid_get_uin(to);
+	if (uin<=0) return -1;
+
+	s=session_get_by_jid(from,NULL,0);
 	if (!s){
-		g_warning(N_("Couldn't find or open session for '%s'"),from);
+		g_warning(N_("Couldn't find session for '%s'"),from);
 		return -1;
 	}
-	debug(L_("Unsubscribing %s from %s..."),from,to);
-	r=session_unsubscribe(s,jid_get_uin(to));
-	if (!r){
-		debug(L_("Unsubscribed."));
-		presence_send_unsubscribed(stream,to,from);
+
+	c=user_get_contact(s->user,uin,TRUE);
+	if (!c) return -1;
+	c->got_online=TRUE;
+	session_update_contact(s,c);
+	return 0;
+}
+
+int presence_direct_unavailable(struct stream_s *stream,const char *from,const char *to){
+uin_t uin;
+Contact *c;
+Session *s;
+
+	uin=jid_get_uin(to);
+	if (uin<=0) return -1;
+
+	s=session_get_by_jid(from,NULL,0);
+	if (!s){
+		g_warning(N_("Couldn't find session for '%s'"),from);
+		return -1;
 	}
 
+	c=user_get_contact(s->user,uin,FALSE);
+	if (!c) return -1;
+	c->got_online=FALSE;
+	user_check_contact(s->user,c);
+	session_update_contact(s,c);
 	return 0;
 }
 
@@ -435,19 +576,19 @@ User *u;
 
 	if (!strcmp(type,"available")){
 		if (jid_has_uin(to))
-			return 0;
+			return presence_direct_available(stream,from,to);
 		else
 			return presence(stream,from,to,1,show,status,priority);
 	}
 	else if (!strcmp(type,"unavailable")){
 		if (jid_has_uin(to))
-			return 0;
+			return presence_direct_unavailable(stream,from,to);
 		else
 			return presence(stream,from,to,0,show,status,priority);
 	}
 	if (!strcmp(type,"invisible")){
 		if (jid_has_uin(to))
-			return 0;
+			return presence_direct_unavailable(stream,from,to);
 		else
 			return presence(stream,from,to,-1,show,status,priority);
 	}
@@ -456,7 +597,7 @@ User *u;
 	else if (!strcmp(type,"unsubscribe"))
 		return presence_unsubscribe(stream,from,to);
 	else if (!strcmp(type,"subscribed"))
-		return presence_subscribe(stream,from,to);
+		return presence_subscribed(stream,from,to);
 	else if (!strcmp(type,"unsubscribed"))
 		return presence_unsubscribed(stream,from,to);
 	else if (!strcmp(type,"probe"))

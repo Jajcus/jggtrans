@@ -186,7 +186,7 @@ gboolean sessions_reconnect(gpointer data){
 char *jid;
 
 	jid=(char *)data;
-	presence_send_probe(jabber_stream(),jid);
+	presence_send_probe(jabber_stream(),NULL,jid);
 	g_free(jid);
 	return FALSE;
 }
@@ -259,6 +259,17 @@ int oldstat;
 int available;
 char *ujid;
 char *show;
+Contact *c;
+
+	c=user_get_contact(s->user,uin,FALSE);
+	if (c==NULL) {
+		debug(L_("%s got notification from unknown contact %i, ignoring.."),s->user->jid,uin);
+	       	return 0;
+	}
+	if (!c->got_probe && c->subscribe!=SUB_TO && c->subscribe!=SUB_BOTH) {
+		debug(L_("%s got notification from contact %i whose presence was not requested, ignoring.."),s->user->jid,uin);
+	       	return 0;
+	}
 
 	available=status_gg_to_jabber(status,&show,&desc);
 	oldstat=user_get_contact_status(s->user,uin);
@@ -271,29 +282,6 @@ char *show;
 
 	presence_send(s->s,ujid,s->user->jid,available,show,desc,0);
 	g_free(ujid);
-	return 0;
-}
-
-int session_send_notify(Session *s){
-GList *it;
-uin_t *userlist;
-int userlist_len;
-int i;
-
-	g_assert(s!=NULL);
-	userlist_len=g_list_length(s->user->contacts);
-	userlist=g_new(uin_t,userlist_len+1);
-
-	i=0;
-	for(it=g_list_first(s->user->contacts);it;it=it->next)
-		userlist[i++]=((Contact *)it->data)->uin;
-
-	userlist[i]=0;
-
-	debug("gg_notify(%p,%p,%i)",s->ggs,userlist,userlist_len);
-	gg_notify(s->ggs,userlist,userlist_len);
-
-	g_free(userlist);
 	return 0;
 }
 
@@ -372,7 +360,6 @@ struct gg_event *event;
 char *jid,*str;
 int chat;
 GIOCondition cond;
-Resource *r;
 time_t timestamp;
 
 	s=(Session *)data;
@@ -440,11 +427,7 @@ time_t timestamp;
 			session_send_status(s);
 			if (s->user->contacts) session_send_notify(s);
 
-			r=session_get_cur_resource(s);
-			if (r)
-				presence_send(s->s,NULL,s->user->jid,r->available,r->show,r->status,0);
-			else
-				presence_send(s->s,NULL,s->user->jid,1,NULL,"Online",0);
+
 			if (s->timeout_func) g_source_remove(s->timeout_func);
 			s->ping_timeout_func=
 				g_timeout_add(ping_interval*1000,session_ping,s);
@@ -497,6 +480,7 @@ time_t timestamp;
 							event->event.msg.sender,
 							event->event.msg.msgclass,
 							(unsigned long)event->event.msg.time);
+			
 			if (event->event.msg.sender==0){
 				if (!user_sys_msg_received(s->user,event->event.msg.msgclass)) break;
 				jid=jid_my_registered();
@@ -510,6 +494,13 @@ time_t timestamp;
 				break;
 			}
 			else{
+				Contact *c=user_get_contact(s->user,
+						event->event.msg.sender,0);
+				if ((!c && s->user->ignore_unknown) 
+						|| (c && c->ignored)) {
+					debug(L_("Ignoring the message."));
+				       	break;
+				}
 				jid=jid_build_full(event->event.msg.sender);
 				if ((event->event.msg.msgclass&GG_CLASS_CHAT)!=0) chat=1;
 				else chat=0;
@@ -622,26 +613,62 @@ char *njid;
 }
 
 /* returns: -1 on error, 1 on status change, 0 on no change */
-int session_make_status(Session *s){
+static int session_do_make_status(Session *s, Resource *r, gboolean send_presence){
 int status;
-Resource *r;
+char *status_descr;
 
-	r=session_get_cur_resource(s);
-	if (!r) return -1;
+	if (!r) {
+		if (send_presence) presence_send(s->s,NULL,s->user->jid,1,NULL,s->gg_status_descr,0);
+		return -1;
+	}
 	status=status_jabber_to_gg(r->available,r->show,r->status);
-	if (s->user->invisible || r->available==-1) status=GG_STATUS_INVISIBLE;
+	status_descr=r->status;
+	if (!r->available && s->user->offline_status) status_descr=s->user->offline_status;
+	else if (s->user->status) status_descr=s->user->status;
+	if (s->user->invisible || r->available==-1){
+	       	status=GG_STATUS_INVISIBLE;
+		if (s->user->invisible_status) status_descr=s->user->invisible_status;
+	}
 	else if (s->user->friends_only) status|=GG_STATUS_FRIENDS_MASK;
 
 	if (status==s->gg_status){
 		if (r->status!=NULL && s->gg_status_descr!=NULL
-				&& !strcmp(r->status,s->gg_status_descr)) return 0;
+				&& !strcmp(status_descr,s->gg_status_descr)) return 0;
 		if (r->status==NULL && s->gg_status_descr==NULL) return 0;
 	}
 	g_free(s->gg_status_descr);
-	s->gg_status_descr=g_strdup(r->status);
+	s->gg_status_descr=g_strdup(status_descr);
 	s->gg_status=status;
+	if (send_presence) {
+		presence_send(s->s,NULL,s->user->jid,r->available,r->show,s->gg_status_descr,0);
+	}
 	return 1;
 }
+
+Resource *session_get_cur_resource(Session *s){
+GList *it;
+Resource *r=NULL;
+int maxprio;
+
+	maxprio=-129;
+	for(it=g_list_last(s->resources);it;it=it->prev){
+		Resource *r1=(Resource *)it->data;
+		if (r1->priority>maxprio){
+			r=r1;
+			maxprio=r1->priority;
+		}
+	}
+	return r;
+}
+
+/* returns: -1 on error, 1 on status change, 0 on no change */
+int session_make_status(Session *s, gboolean send_presence){
+Resource *r;
+
+	r=session_get_cur_resource(s);
+	return session_do_make_status(s,r,send_presence);
+}
+
 
 static int session_try_login(Session *s){
 struct gg_login_params login_params;
@@ -663,7 +690,7 @@ int r;
 	login_params.last_sysmsg=s->user->last_sys_msg;
 	login_params.protocol_version=GG_DEFAULT_PROTOCOL_VERSION;
 
-	r=session_make_status(s);
+	r=session_make_status(s, FALSE);
 	if (r!=-1){
 		debug(L_("Setting gg status to %i (%s)"),s->gg_status,s->gg_status_descr);
 		login_params.status=s->gg_status;
@@ -733,6 +760,7 @@ Session *session_get_by_jid(const char *jid,Stream *stream,int delay_login){
 Session *s;
 User *u;
 char *njid;
+GList *it;
 
 	g_assert(sessions_jid!=NULL);
 	debug(L_("Looking up session for '%s'"),jid);
@@ -750,24 +778,25 @@ char *njid;
 	if (!stream) return NULL;
 	u=user_get_by_jid(jid);
 	if (!u) return NULL;
-	debug(L_("Creating new session"));
-	return session_create(u,jid,NULL,NULL,stream,delay_login);
-}
 
-Resource *session_get_cur_resource(Session *s){
-GList *it;
-Resource *r=NULL;
-int maxprio;
-
-	maxprio=-129;
-	for(it=g_list_last(s->resources);it;it=it->prev){
-		Resource *r1=(Resource *)it->data;
-		if (r1->priority>maxprio){
-			r=r1;
-			maxprio=r1->priority;
+	debug(L_("User loaded processing his subscriptions."));
+	for(it=u->contacts;it;it=it->next){
+		Contact *c;
+		char *c_jid;
+		c=(Contact *)it->data;
+		if (c->subscribe == SUB_UNDEFINED) {
+			c_jid=jid_build(c->uin);
+			presence_send_subscribe(stream,c_jid,u->jid);
+			g_free(c_jid);
+		}
+		else if (c->subscribe == SUB_FROM || c->subscribe == SUB_BOTH){
+			c_jid=jid_build(c->uin);
+			presence_send_probe(stream,c_jid,u->jid);
+			g_free(c_jid);
 		}
 	}
-	return r;
+	debug(L_("Creating new session"));
+	return session_create(u,jid,NULL,NULL,stream,delay_login);
 }
 
 int session_send_status(Session *s){
@@ -775,7 +804,7 @@ int r;
 
 	g_assert(s!=NULL);
 	if (s->ggs==NULL) return -1;
-	r=session_make_status(s);
+	r=session_make_status(s, s->connected);
 	if (r==-1) return -1;
 	if (r==0) return 0;
 	debug(L_("Changing gg status to %i"),s->gg_status);
@@ -803,8 +832,7 @@ Session *s=r->session;
 		session_remove(s);
 		return;
 	}
-	r=session_get_cur_resource(s);
-	if (r) presence_send(s->s,NULL,s->jid,r->available,r->show,r->status,0);
+	session_send_status(s);
 }
 
 gboolean delayed_disconnect(gpointer data){
@@ -821,7 +849,7 @@ Resource *r=(Resource *)data;
 
 int session_set_status(Session *s,const char *resource,int available,
 			const char *show,const char *status,int priority){
-Resource *r,*cr;
+Resource *r;
 GList *it;
 int num_resources=0;
 
@@ -870,8 +898,7 @@ int num_resources=0;
 		if (show) r->show=g_strdup(show);
 		if (status) r->status=g_strndup(status, 70);
 		if (priority>=0) r->priority=priority;
-		cr=session_get_cur_resource(s);
-		if (s->connected) presence_send(s->s,NULL,s->user->jid,cr->available,cr->show,cr->status,0);
+		session_send_status(s);
 	}
 
 	if (s->connected) session_send_status(s);
@@ -880,20 +907,64 @@ int num_resources=0;
 	return 0;
 }
 
-int session_subscribe(Session *s,uin_t uin){
-int r;
+static int compute_notify_type(Contact *c){
+int notify_type=0;
 
-	r=user_subscribe(s->user,uin);
-	if (r) return 0; /* already subscribed, that is not an error */
-	if (s->connected) gg_add_notify(s->ggs,uin);
+	if (c->blocked) return GG_USER_BLOCKED;
+	if (c->got_online) notify_type|=GG_USER_NORMAL-GG_USER_OFFLINE;
+	if (c->got_probe || c->subscribe==SUB_TO || c->subscribe==SUB_BOTH) notify_type|=GG_USER_OFFLINE;
+
+	return notify_type;
+}
+
+int session_update_contact(Session *s,Contact *c){
+int new_notify_type=0;
+int del,add;
+
+	if (!s->connected) return 0;
+
+	new_notify_type=compute_notify_type(c);
+
+	del=c->gg_notify_type&(~new_notify_type);
+	add=new_notify_type&(~c->gg_notify_type);
+	
+	if (del) gg_remove_notify_ex(s->ggs,c->uin,del);
+	if (add) gg_add_notify_ex(s->ggs,c->uin,add);
+
+	c->gg_notify_type=new_notify_type;
+	
 	return 0;
 }
 
-int session_unsubscribe(Session *s,uin_t uin){
+int session_send_notify(Session *s){
+GList *it;
+uin_t *userlist;
+char *types;
+int userlist_len;
+int i;
 
-	user_unsubscribe(s->user,uin);
-	if (s->connected)
-		gg_remove_notify(s->ggs,uin);
+	g_assert(s!=NULL);
+	userlist_len=g_list_length(s->user->contacts);
+	userlist=g_new(uin_t,userlist_len+1);
+	types=g_new(char,userlist_len+1);
+
+	i=0;
+	for(it=g_list_first(s->user->contacts);it;it=it->next){
+		Contact *c=(Contact *)it->data;
+		userlist[i]=c->uin;
+		c->gg_notify_type=compute_notify_type(c);
+		types[i]=c->gg_notify_type;
+		i++;	
+	}
+
+	userlist[i]=0;
+	types[i]=0;
+
+	debug("gg_notify_ex(%p,%p,%p,%i)",s->ggs,userlist,types,userlist_len);
+	gg_notify_ex(s->ggs,userlist,types,userlist_len);
+
+	g_free(userlist);
+	g_free(types);
 	return 0;
 }
 

@@ -48,7 +48,7 @@ typedef struct session_s{
 	char *jid;		/* users JID, with resource */
 	struct stream_s *s;	/* Jabber stream */
 	GList *resources;
-
+	
 	char *req_id;  /* ID if user registration request (<iq/>) */
 
 	xmlnode query; /* The query */
@@ -77,8 +77,7 @@ int session_set_status(Session *s,const char *resource,int available,
 			const char *show,const char *status,int priority);
 int session_send_status(Session *s);
 
-int session_subscribe(Session *s,uin_t uin);
-int session_unsubscribe(Session *s,uin_t uin);
+int session_update_contact(Session *s, Contact *c);
 
 int session_send_message(Session *s,uin_t uin,int chat,const char *body);
 int session_send_notify(Session *s);
