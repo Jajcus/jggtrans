@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.37 2003/04/05 11:02:57 jajcus Exp $ */
+/* $Id: main.c,v 1.38 2003/04/13 15:55:43 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -51,6 +51,7 @@ static int debug_level=0;
 static FILE *log_file=NULL;
 static gboolean use_syslog=FALSE;
 static char *pid_filename=NULL;
+GList *admins=NULL;
 
 static struct {
 	const char *name;
@@ -401,7 +402,12 @@ guint lh;
 
 	for(tag=xmlnode_get_firstchild(config);tag;tag=xmlnode_get_nextsibling(tag)){
 		str=xmlnode_get_name(tag);
-		if (!str || strcmp(str,"log")) continue;
+		if (!str) continue;
+		if (!strcmp(str,"admin")) {
+			data=xmlnode_get_data(tag);
+			admins=g_list_append(admins,data);
+		}
+		if (strcmp(str,"log")) continue;
 		log_type=xmlnode_get_attrib(tag,"type");
 		if (!strcmp(log_type,"syslog")){
 			if (log_facility!=-1){

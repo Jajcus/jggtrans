@@ -1,4 +1,4 @@
-/* $Id: ggtrans.h,v 1.9 2003/04/06 07:51:37 jajcus Exp $ */
+/* $Id: ggtrans.h,v 1.10 2003/04/13 15:55:43 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -33,5 +33,6 @@
 
 extern GMainLoop *main_loop;
 extern gboolean do_restart;
+extern GList *admins;
 
 #endif

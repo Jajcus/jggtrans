@@ -1,4 +1,4 @@
-/* $Id: sessions.h,v 1.17 2003/02/04 08:09:21 jajcus Exp $ */
+/* $Id: sessions.h,v 1.18 2003/04/13 15:55:43 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -30,7 +30,7 @@ typedef struct resource_s{
 	char *status;
 }Resource;
 
-typedef struct sesion_s{
+typedef struct session_s{
 	User *user;
 
 	struct gg_session *ggs; /* GG session */
