@@ -1,2 +1,34 @@
 
-Version 0.9 is the first released verion.
+Version 0.9.8
+--------------
+This will be (hopefully) the last one before jabber-gg-transport-1.0.0
+It has changed a lot, so don't believe that your old config files will
+work :-)
+
+
+Changes from 0.9:
+
+* Support for <remove/> in registration
+
+* Many bug fixes 
+
+* Don't panic when PONG is not received. It seems GG server doesn't send
+  them any more
+
+* Support for system message. They are sent from the agent, not user "0"
+  now. And each message is sent only once
+
+* Workarounds for WinJab bugs with child elements of <iq/> 
+  (eg. VCARD instead of vCard)
+
+* Browse support
+
+* Changing of uid/gid when started as root (good for init scripts)
+
+* Support for multiple user resources
+
+
+
+Version 0.9
+--------------
+This is the first released version.
