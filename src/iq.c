@@ -1,4 +1,4 @@
-/* $Id: iq.c,v 1.24 2002/12/09 09:55:52 jajcus Exp $ */
+/* $Id: iq.c,v 1.25 2002/12/10 07:42:09 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -26,6 +26,7 @@
 #include "browse.h"
 #include "debug.h"
 #include "conf.h"
+#include <sys/utsname.h>
 
 char *gateway_desc;
 char *gateway_prompt;
@@ -34,6 +35,7 @@ void jabber_iq_get_agent(Stream *s,const char *from,const char * to,const char *
 void jabber_iq_get_server_vcard(Stream *s,const char *from,const char * to,const char *id,xmlnode q);
 void jabber_iq_get_gateway(Stream *s,const char *from,const char * to,const char *id,xmlnode q);
 void jabber_iq_set_gateway(Stream *s,const char *from,const char * to,const char *id,xmlnode q);
+void jabber_iq_get_server_version(Stream *s,const char *from,const char * to,const char *id,xmlnode q);
 	
 IqNamespace server_iq_ns[]={
 	{"jabber:iq:register","query",jabber_iq_get_register,jabber_iq_set_register},
@@ -42,6 +44,7 @@ IqNamespace server_iq_ns[]={
 	{"jabber:iq:gateway","query",jabber_iq_get_gateway,jabber_iq_set_gateway},
 	{"jabber:iq:browse","item",jabber_iq_get_server_browse,NULL},
 	{"jabber:iq:browse","query",jabber_iq_get_server_browse,NULL},/* WinJab bug (?) workaround */
+	{"jabber:iq:version","query",jabber_iq_get_server_version,NULL},
 	{"vcard-temp","vCard",jabber_iq_get_server_vcard,NULL},
 	{"vcard-temp","VCARD",jabber_iq_get_server_vcard,NULL}, /* WinJab bug workaround */
 	{NULL,NULL,NULL,NULL}
@@ -120,6 +123,23 @@ xmlnode query;
 	xmlnode_put_attrib(query,"xmlns","jabber:iq:gateway");
 	xmlnode_insert_cdata(xmlnode_insert_tag(query,"desc"),gateway_desc,-1);
 	xmlnode_insert_cdata(xmlnode_insert_tag(query,"prompt"),gateway_prompt,-1);
+	jabber_iq_send_result(s,from,to,id,query);
+}
+
+void jabber_iq_get_server_version(Stream *s,const char *from,const char * to,const char *id,xmlnode q){
+xmlnode query;
+xmlnode os;
+struct utsname un;
+
+	query=xmlnode_new_tag("query");
+	xmlnode_put_attrib(query,"xmlns","jabber:iq:version");
+	xmlnode_insert_cdata(xmlnode_insert_tag(query,"name"),"Gadu-Gadu Transport",-1);
+	xmlnode_insert_cdata(xmlnode_insert_tag(query,"version"),VERSION,-1);
+	uname(&un);
+	os = xmlnode_insert_tag(query,"os");
+	xmlnode_insert_cdata(os,un.sysname,-1);
+	xmlnode_insert_cdata(os," ",1);
+	xmlnode_insert_cdata(os,un.release,-1);
 	jabber_iq_send_result(s,from,to,id,query);
 }
 
