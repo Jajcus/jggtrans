@@ -1,4 +1,4 @@
-/* $Id: register.c,v 1.49 2004/01/24 21:07:59 jajcus Exp $ */
+/* $Id: register.c,v 1.50 2004/01/30 09:47:11 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -649,8 +649,7 @@ Request *r;
 				jabber_iq_send_error(s,from,to,id,406,_("Not Acceptable"));
 				return;
 			}
-			jabber_iq_send_error(s,from,to,id,406,_("Not Acceptable"));
-			presence_send_subscribe(s,from,to);
+			presence_send_subscribe(s,NULL,to);
 			return;
 	}
 
