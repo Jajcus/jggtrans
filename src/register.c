@@ -1,4 +1,4 @@
-/* $Id: register.c,v 1.38 2003/04/22 08:44:29 jajcus Exp $ */
+/* $Id: register.c,v 1.39 2003/04/22 09:34:52 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -60,7 +60,7 @@ int i;
 		form_add_option(field,locale_mapping[i].lang_name,locale_mapping[i].locale);
 
 	form_add_field(form,"boolean","friends_only",_("Friends only"),"1",1);
-	form_add_field(form,"boolean","invisible",_("Invisible"),"1",1);
+	form_add_field(form,"boolean","invisible",_("Invisible"),"0",1);
 
 	return form;
 }
