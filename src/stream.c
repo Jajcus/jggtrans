@@ -1,4 +1,4 @@
-/* $Id: stream.c,v 1.9 2002/02/02 15:04:36 jajcus Exp $ */
+/* $Id: stream.c,v 1.10 2002/12/08 15:35:41 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -330,13 +330,13 @@ int stream_destroy(Stream *s){
 		}while(err==G_IO_ERROR_AGAIN||(err=G_IO_ERROR_NONE && l>0));
 		s->closing=1;
 	}
-	g_io_channel_close(s->ioch);
 	if (s->err_watch) g_source_remove(s->err_watch);
 	if (s->read_watch) g_source_remove(s->read_watch);
 	if (s->write_watch) g_source_remove(s->write_watch);
 	if (s->read_buf) free(s->read_buf);
 	if (s->write_buf) free(s->write_buf);
 	pool_free(s->xs->p);
+	g_io_channel_close(s->ioch);
 	free(s);
 	return 0;
 }

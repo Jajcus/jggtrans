@@ -1,4 +1,4 @@
-/* $Id: iq.c,v 1.22 2002/02/06 17:24:54 jajcus Exp $ */
+/* $Id: iq.c,v 1.23 2002/12/08 15:35:41 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -27,8 +27,8 @@
 #include "debug.h"
 #include "conf.h"
 
-const char *gateway_desc;
-const char *gateway_prompt;
+char *gateway_desc;
+char *gateway_prompt;
 
 void jabber_iq_get_agent(Stream *s,const char *from,const char * to,const char *id,xmlnode q);
 void jabber_iq_get_server_vcard(Stream *s,const char *from,const char * to,const char *id,xmlnode q);

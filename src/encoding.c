@@ -1,4 +1,4 @@
-/* $Id: encoding.c,v 1.8 2002/12/06 15:05:45 jajcus Exp $ */
+/* $Id: encoding.c,v 1.9 2002/12/08 15:35:41 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -44,6 +44,12 @@ int encoding_init(){
 	return 0;
 }
 
+void encoding_done(){
+
+	iconv_close(to_utf8_c);
+	iconv_close(from_utf8_c);
+	g_free(buf);
+}
 
 static char *convert(iconv_t conv,const char *str){
 char *inbuf;

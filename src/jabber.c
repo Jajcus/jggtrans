@@ -1,4 +1,4 @@
-/* $Id: jabber.c,v 1.13 2002/02/02 19:49:54 jajcus Exp $ */
+/* $Id: jabber.c,v 1.14 2002/12/08 15:35:41 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -95,6 +95,7 @@ char *name;
 	else if (strcmp(name,"message")==0)
 		jabber_message(s,x);
 	else g_warning("Unsupported tag: %s",xmlnode2str(x));
+	xmlnode_free(x);
 }
 
 void jabber_event_cb(int type,xmlnode x,void *arg){
@@ -186,6 +187,10 @@ int jabber_done(){
 		stream_destroy(stream);
 		stream=NULL;
 	}
+	g_free(register_instructions);
+	g_free(search_instructions);
+	g_free(gateway_desc);
+	g_free(gateway_prompt);
 	return 0;
 }
 

@@ -1,4 +1,4 @@
-/* $Id: jabber.h,v 1.8 2002/01/30 16:52:03 jajcus Exp $ */
+/* $Id: jabber.h,v 1.9 2002/12/08 15:35:41 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -38,9 +38,9 @@ extern enum jabber_state_e jabber_state;
 
 
 extern const char *my_name;
-extern const char *register_instructions;
-extern const char *search_instructions;
-extern const char *gateway_desc;
-extern const char *gateway_prompt;
+extern char *register_instructions;
+extern char *search_instructions;
+extern char *gateway_desc;
+extern char *gateway_prompt;
 
 #endif

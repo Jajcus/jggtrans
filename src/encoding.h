@@ -1,4 +1,4 @@
-/* $Id: encoding.h,v 1.2 2002/01/30 16:52:03 jajcus Exp $ */
+/* $Id: encoding.h,v 1.3 2002/12/08 15:35:41 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -23,5 +23,6 @@
 char *to_utf8(const char *str);
 char *from_utf8(const char *str);
 int encoding_init();
+void encoding_done();
 
 #endif

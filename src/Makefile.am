@@ -41,5 +41,12 @@ INCLUDES=$(GLIB_CFLAGS) -I$(top_srcdir)/libxode/include
 jggtrans_CFLAGS=-DVERSION="\"$(VERSION)\"" -DSYSCONFDIR=\"$(sysconfdir)\"
 jggtrans_LDADD=$(GLIB_LIBS) $(top_builddir)/libxode/src/libxode.la
 
+
 tags: 
 	ctags -R . ../libxode/
+
+.PHONY: valgrind
+
+valgrind:
+	valgrind --num-callers=20 --leak-check=yes --show-reachable=yes --logfile-fd=3 -v \
+		--trace-children=no ./jggtrans -f 3>jggtrans.valgrind

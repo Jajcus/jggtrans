@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.16 2002/12/06 15:05:45 jajcus Exp $ */
+/* $Id: main.c,v 1.17 2002/12/08 15:35:41 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -297,6 +297,7 @@ struct passwd *pwd;
 struct group *grp;
 char *user,*group;
 FILE *f;
+guint lh;
 
 	uid=getuid();
 	euid=geteuid();
@@ -365,10 +366,10 @@ FILE *f;
 	}
 	else if (uid==0) g_error("Refusing to run with uid=0");
 	
-	if (optind==argc-1) config_file=argv[optind];
+	if (optind==argc-1) config_file=g_strdup(argv[optind]);
 	else config_file=g_strdup_printf("%s/%s",SYSCONFDIR,"jggtrans.xml");
 
-	g_log_set_handler(NULL,G_LOG_FLAG_FATAL | G_LOG_LEVEL_ERROR
+	lh=g_log_set_handler(NULL,G_LOG_FLAG_FATAL | G_LOG_LEVEL_ERROR
 				| G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING 
 				| G_LOG_LEVEL_MESSAGE | G_LOG_LEVEL_INFO
 				| G_LOG_LEVEL_DEBUG,log_handler,NULL);
@@ -383,6 +384,7 @@ FILE *f;
 		g_error("%s doesn't look like jggtrans config file.",config_file);
 		return 1;
 	}
+	g_free(config_file);
 	
 	for(tag=xmlnode_get_firstchild(config);tag;tag=xmlnode_get_nextsibling(tag)){
 		str=xmlnode_get_name(tag);
@@ -468,8 +470,14 @@ FILE *f;
 	sessions_done();
 	users_done();
 	jabber_done();
-
+	encoding_done();
 	g_main_destroy(main_loop);
+	g_log_remove_handler(NULL,lh);
+	if (log_file!=NULL){
+		fclose(log_file);
+		log_file=NULL;
+	}
+	xmlnode_free(config);
 
 	return 0;
 }
