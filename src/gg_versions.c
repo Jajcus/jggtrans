@@ -1,4 +1,4 @@
-/* $Id: gg_versions.c,v 1.3 2003/09/07 11:40:10 smoku Exp $ */
+/* $Id: gg_versions.c,v 1.4 2004/06/11 07:31:04 smoku Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -44,5 +44,6 @@ char *gg_version[]={
 	NULL,					/* 0x1f */
 	"6.0",					/* 0x20 */
 	"6.0 (build 133)",			/* 0x21 */
-	NULL,NULL,NULL,NULL,NULL,NULL		/* 0x22 - 0x27 */
+	"6.0 (build 136,142)",			/* 0x22 */
+	NULL,NULL,NULL,NULL,NULL		/* 0x23 - 0x27 */
 };
