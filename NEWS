@@ -1,3 +1,26 @@
+Version 2.0.8
+-------------
+
+This is another bugfix release.
+
+Changes from 2.0.7:
+
+* Disable roster import - it crashed with libgadu >= 1.0 (possible DoS)
+  and the protocol has changed so it doesn't work anyway 
+
+* Jabberd 2.0 compatibility fixes
+
+* infinite loop on user re-regitration fixed (possible DoS)
+
+* failure on empty <priority/> fixed (another possible DoS)
+
+* presence subscribe/subscribe stanzas sent fixed
+
+* 64-bit fixes in libxode SHA computation (for AMD64)
+
+* other minor bugfixes
+
+
 Version 2.0.7
 -------------
 

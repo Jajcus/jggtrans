@@ -6,8 +6,8 @@ To build GaduGadu transport you need:
 	- glib >= 1.2.0 (http://www.gtk.org/)
 		Tested with glib-1.2.10
 
-	- libgadu >= 20030130 or 1.0 (http://dev.null.pl/ekg/)
-		Tested with libgadu-1.0 and 1.1
+	- libgadu >= 1.0 (http://dev.null.pl/ekg/)
+		Tested with libgadu-1.4
 		You will need libgadu>=1.1 for TLS support
 	
 	- pkgconfig (http://www.freedesktop.org/software/pkgconfig/)
@@ -27,6 +27,10 @@ On FreeBSD and other systems it might be necessary to run configure as:
 	./configure CPPFLAGS="-I/usr/local/include" LDFLAGS="-L/usr/local/lib"
 
 otherwise configure will not properly detect gettext or other needed library.
+
+If you really want to compile jggtrans with a snapshot of libgadu use:
+
+	./configure --with-libgadu-snapshot
 
 
 --------------------------------------------------------------------

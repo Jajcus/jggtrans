@@ -6,8 +6,8 @@ Aby zbudowaæ jabber-gg-transport potrzeba:
 	- glib >= 1.2.0 (http://www.gtk.org/)
 		Przetestowane z glib-1.2.10
 	
-	- libgadu >= 20030130 lub 1.0 (czê¶æ EKG, http://dev.null.pl/ekg/)
-		Przetestowane z libgadu-1.0 i 1.1
+	- libgadu >= 1.0 (czê¶æ EKG, http://dev.null.pl/ekg/)
+		Przetestowane z libgadu-1.4
 		Aby u¿ywaæ TLS (szyfrowane po³±czenia do serwera GG) potrzebne
 		jest libgadu >= 1.1
 
@@ -29,3 +29,8 @@ Na FreeBSD i w innych systemach mo¿e okazaæ siê konieczne takie wywo³anie config
 
 inaczej skrypt configure mo¿e poprawnie nie wykryæ zainstalowanych w systemie
 bibliotek, takich jak gettext.
+
+Je¶li naprawdê chcesz skompilowaæ jggtrans ze snapshotem libgadu u¿yj:
+
+	./configure --with-libgadu-snapshot
+
