@@ -1,4 +1,4 @@
-/* $Id: register.c,v 1.14 2002/12/08 15:35:41 jajcus Exp $ */
+/* $Id: register.c,v 1.15 2003/01/13 17:34:02 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -162,6 +162,7 @@ Request *r;
 	
 		session=session_create(user,from,id,q,s);
 		if (!session){
+			user_remove(user);
 			g_warning("Couldn't create session for %s",from);
 			jabber_iq_send_error(s,from,to,id,500,"Internal Server Error");
 			return;
@@ -210,6 +211,7 @@ Request *r;
 			}
 			if (!uin || !password){
 				g_warning("Nothing to change");
+				session_remove(session);
 				jabber_iq_send_error(s,from,to,id,406,"Not Acceptable");
 			}
 			return;
@@ -217,12 +219,14 @@ Request *r;
 
 	if (!change.email || !change.nickname){
 		debug("email or nickname not given for registration");
+		session_remove(session);
 		jabber_iq_send_error(s,from,to,id,406,"Not Acceptable");
 		return;
 	}
 	
 	if (!user && (!password ||!uin)){
 		g_warning("Not registered, and no password gived for public directory change.");
+		session_remove(session);
 		jabber_iq_send_error(s,from,to,id,406,"Not Acceptable");
 		return;
 	}
@@ -247,11 +251,15 @@ Request *r;
 	
 	if (!gghttp){
 		jabber_iq_send_error(s,from,to,id,502,"Remote Server Error");
+		session_remove(session);
 		return;
 	}
 
 	r=add_request(RT_CHANGE,from,to,id,q,gghttp,s);
-	if (!r) jabber_iq_send_error(s,from,to,id,500,"Internal Server Error");
+	if (!r){
+		session_remove(session);
+		jabber_iq_send_error(s,from,to,id,500,"Internal Server Error");
+	}
 }
 
 int register_error(Request *r){
