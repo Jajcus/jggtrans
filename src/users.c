@@ -1,4 +1,4 @@
-/* $Id: users.c,v 1.16 2002/02/23 15:39:42 jajcus Exp $ */
+/* $Id: users.c,v 1.17 2002/02/23 15:46:40 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -244,7 +244,7 @@ char *njid;
 
 static int user_destroy(User *u){
 
-	g_message("Removing user '%s'",u->jid);
+	g_message("Destroying user '%s'",u->jid);
 	if (u->jid) g_free(u->jid);
 	if (u->password) g_free(u->password);
 	g_free(u);
@@ -261,9 +261,10 @@ char *njid;
 	njid=jid_normalized(u->jid);
 	if (g_hash_table_lookup_extended(users_jid,(gpointer)njid,&key,&value)){
 		g_assert(u==value);
-		g_hash_table_remove(users_jid,(gpointer)u->jid);
+		g_hash_table_remove(users_jid,(gpointer)njid);
 		g_free(key);
 	}
+	else debug("user_remove: user '%s' not found in hash table",njid);
 	g_free(njid);
 	return user_destroy(u);
 }
