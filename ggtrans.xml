@@ -1,5 +1,3 @@
-<!--run: /home/jacek/CVS/bnet/src/jabber-gg-transport/src/jggtrans -->
-
 <ggtrans>
 
   <!-- For this to work, you should also update /etc/jabber/jabber.xml

@@ -7,8 +7,17 @@ This is external component for Jabber (http://www.jabber.org) server
 providing gateway to GaduGadu instant messaging services. GaduGadu is IM
 system very popular in Poland.
 
+Sources include example config file (ggtrans.xml), which contains all
+configuration instructions. It should be installed in the $sysconfdir
+directory (defined by configure script, default: /usr/local/etc). 
 
+To start GaduGadu transport run "jggtrans" binary _after_ starting
+jabber server.
 
+Note: you should never run jggtrans as root.
 
+Please report any bugs to me: 
+		Jacek Konieczny <jajcus@pld.org.pl>
 
+		
 # vi: tw=72 fo=tcql1 

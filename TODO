@@ -1,0 +1,4 @@
+- bug fixes
+- invisible/"just for friends" modes
+- file transfer
+- changing uid/gid when run as root

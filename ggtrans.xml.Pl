@@ -4,8 +4,6 @@
        Proszę pamiętać, że w XMLu obowiązującym kodowaniem jest UTF-8
 -->
 
-<!--run: /home/jacek/CVS/bnet/src/jabber-gg-transport/src/jggtrans -->
-
 <ggtrans>
 
   <!-- Żeby to zadziałało także plik jabber.xml musi być uaktualniony.
