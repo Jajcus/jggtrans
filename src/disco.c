@@ -113,6 +113,10 @@ int i;
 			result=xmlnode_new_tag("query");
 			xmlnode_put_attrib(result,"xmlns","http://jabber.org/protocol/disco#info");
 			xmlnode_put_attrib(result,"node","online_users");
+			n=xmlnode_insert_tag(result,"identity");
+			xmlnode_put_attrib(n,"category","hierarchy");
+			xmlnode_put_attrib(n,"type","branch");
+			xmlnode_put_attrib(n,"name",_("Online users"));
 			jabber_iq_send_result(s,from,to,id,result);
 			xmlnode_free(result);
 		}
@@ -123,7 +127,7 @@ int i;
 	xmlnode_put_attrib(result,"xmlns","http://jabber.org/protocol/disco#info");
 	n=xmlnode_insert_tag(result,"identity");
 	xmlnode_put_attrib(n,"category","gateway");
-	xmlnode_put_attrib(n,"type","x-gadugadu");
+	xmlnode_put_attrib(n,"type","gadu-gadu");
 	n1=xmlnode_get_tag(config,"vCard/FN");
 	if (n1){
 		str=xmlnode_get_data(n1);
@@ -149,6 +153,13 @@ int i;
 
 void jabber_iq_get_client_disco_items(Stream *s,const char *from,const char * to,const char *id,xmlnode q){
 xmlnode result;
+char *node;
+
+	node=xmlnode_get_attrib(q,"node");
+	if (node && node[0]){
+		jabber_iq_send_error(s,from,to,id,404,_("Disco request for unknown node"));
+		return;
+	}
 
 	result=xmlnode_new_tag("query");
 	xmlnode_put_attrib(result,"xmlns","http://jabber.org/protocol/disco#items");
@@ -159,14 +170,20 @@ xmlnode result;
 void jabber_iq_get_client_disco_info(Stream *s,const char *from,const char * to,const char *id,xmlnode q){
 xmlnode result;
 xmlnode n;
-char *str;
+char *str, *node;
 int i;
+
+	node=xmlnode_get_attrib(q,"node");
+	if (node && node[0]){
+		jabber_iq_send_error(s,from,to,id,404,_("Disco request for unknown node"));
+		return;
+	}
 
 	result=xmlnode_new_tag("query");
 	xmlnode_put_attrib(result,"xmlns","http://jabber.org/protocol/disco#info");
 	n=xmlnode_insert_tag(result,"identity");
-	xmlnode_put_attrib(n,"category","user");
-	xmlnode_put_attrib(n,"type","client");
+	xmlnode_put_attrib(n,"category","client");
+	xmlnode_put_attrib(n,"type","pc");
 	str=g_strdup_printf("GG user #%u",jid_get_uin(to));
 	xmlnode_put_attrib(n,"name",str);
 	g_free(str);
