@@ -4,6 +4,7 @@
 #include "stream.h"
 	
 int jabber_init();
+int jabber_connect();
 int jabber_done();
 int jabber_iter();
 

@@ -32,4 +32,5 @@ jggtrans_SOURCES= \
 
 INCLUDES=$(GLIB_CFLAGS) -I../libxode/include
 
+jggtrans_CFLAGS=-DVERSION="\"$(VERSION)\""
 jggtrans_LDADD=$(GLIB_LIBS) ../libxode/src/libxode.la

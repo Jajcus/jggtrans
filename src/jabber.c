@@ -228,10 +228,11 @@ int i,j,sp;
 	return out;
 }
 
+static char *server;
+static int port;
+
 int jabber_init(){
-char *server;
 char *str;
-int port;
 xmlnode node;
 
 	node=xmlnode_get_tag(config,"service");
@@ -275,6 +276,10 @@ xmlnode node;
 		g_error("Gateway prompt not found in config file");
 
 	jabber_state=JS_NONE;
+	return 0;
+}
+
+int jabber_connect(){
 	stream=stream_connect(server,port,1,jabber_event_cb);
 	g_assert(stream!=NULL);
 	g_source_add(G_PRIORITY_DEFAULT,0,&jabber_source_funcs,NULL,NULL,NULL);

@@ -23,9 +23,6 @@ char *data;
 int port;
 xmlnode node;
 
-#ifdef DEBUG
-	if (isatty(2)) gg_debug_level=255;
-#endif
 
 	sessions_jid=g_hash_table_new(g_str_hash,g_str_equal);
 	if (!sessions_jid) return -1;
