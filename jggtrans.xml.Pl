@@ -9,13 +9,13 @@
   <!-- Żeby to zadziałało także plik jabber.xml musi być uaktualniony.
        Należy dodać następujące linie w sekcji <browse/>:
 
-    <service type="x-gadugadu" jid="gg.localhost" name="GaduGadu Transport">
+    <item category="service" type="x-gadugadu" jid="gg.localhost" name="GaduGadu Transport">
       <ns>jabber:iq:gateway</ns>
       <ns>jabber:iq:register</ns>
       <ns>jabber:iq:search</ns>
       <ns>jabber:iq:agent</ns>
       <ns>jabber:iq:browse</ns>
-    </service>
+    </item>
 
   Oraz następujące, pod koniec pliku jabber.xml (poza <browse/>):
 
