@@ -1,4 +1,4 @@
-/* $Id: requests.c,v 1.31 2003/04/14 17:01:18 jajcus Exp $ */
+/* $Id: requests.c,v 1.32 2003/04/14 17:14:31 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -183,9 +183,8 @@ struct gg_http *gghttp;
 		if (r->gghttp->check&GG_CHECK_READ) cond|=G_IO_IN;
 		if (r->gghttp->check&GG_CHECK_WRITE) cond|=G_IO_OUT;
 		r->io_watch=g_io_add_watch(r->ioch,cond,request_io_handler,r);
-
-		requests=g_list_append(requests,r);
 	}
+	requests=g_list_append(requests,r);
 	return r;
 }
 
@@ -209,4 +208,10 @@ int remove_request(Request *r){
 
 	g_free(r);
 	return 0;
+}
+
+void requests_done(){
+
+	while(requests) remove_request((Request *)requests->data);
+	g_hash_table_destroy(lookups);
 }

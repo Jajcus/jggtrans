@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.42 2003/04/14 16:30:38 jajcus Exp $ */
+/* $Id: main.c,v 1.43 2003/04/14 17:14:31 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -114,11 +114,11 @@ void signal_handler(int sig){
 			the_end=TRUE;
 			break;
 		case SIGPIPE:
-			signal(sig,signal_handler);
 			break;
 		default:
 			break;
 	}
+	signal(sig,signal_handler);
 	signal_received=sig;
 }
 
@@ -535,6 +535,7 @@ guint lh;
 
 	sessions_done();
 	users_done();
+	requests_done();
 	jabber_done();
 	encoding_done();
 	acl_done();
@@ -560,9 +561,11 @@ guint lh;
 			newargv[n++]=(char *)param_D;
 		}
 		newargv[n]=NULL;
-		execvp(argv[0],newargv);
-		perror("exec");
-		return 1;
+		if (!the_end) {
+			execvp(argv[0],newargv);
+			perror("exec");
+			return 1;
+		}
 	}
 
 	g_message(N_("Exiting normally.\n"));
