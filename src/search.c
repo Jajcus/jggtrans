@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.11 2002/03/04 16:51:21 jajcus Exp $ */
+/* $Id: search.c,v 1.12 2002/12/06 15:05:27 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -17,8 +17,8 @@
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <libgadu.h>
 #include "ggtrans.h"
+#include <libgadu.h>
 #include "search.h"
 #include "requests.h"
 #include "stream.h"
@@ -26,6 +26,10 @@
 #include "jid.h"
 #include "encoding.h"
 #include "debug.h"
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
 
 const char *search_instructions;
 
@@ -40,7 +44,7 @@ xmlnode q,item,n;
 struct gg_search * results;
 char *jid,*name,*str;
 int i;
-	
+
 	results=(struct gg_search *)r->gghttp->data;
 	q=xmlnode_new_tag("query");
 	xmlnode_put_attrib(q,"xmlns","jabber:iq:search");
@@ -49,7 +53,7 @@ int i;
 		jid=jid_build(results->results[i].uin);
 		xmlnode_put_attrib(item,"jid",jid);
 		g_free(jid);
-		name=g_strdup_printf("%s %s",results->results[i].first_name,results->results[i].last_name);	
+		name=g_strdup_printf("%s %s",results->results[i].first_name,results->results[i].last_name);
 		n=xmlnode_insert_tag(item,"name");
 		xmlnode_insert_cdata(n,to_utf8(name),-1);
 		g_free(name);
@@ -104,7 +108,7 @@ struct gg_search_request sr;
 xmlnode n;
 struct gg_http *gghttp;
 Request *r;
-char *p,*str;
+char *str;
 
 	q=xmlnode_dup(q);
 	memset(&sr,0,sizeof(sr));
@@ -146,7 +150,8 @@ char *p,*str;
 	if (n) sr.phone=g_strdup(from_utf8(xmlnode_get_data(n)));
 	else sr.phone=NULL;
 	n=xmlnode_get_tag(q,"username");
-	if (n) sr.uin=atoi(xmlnode_get_data(n));
+	if (n) str=xmlnode_get_data(n);
+	if (n && str) sr.uin=atoi(str);
 	else sr.uin=0;
 
 	debug("gg_search()");
@@ -158,7 +163,7 @@ char *p,*str;
 	if (sr.city) g_free(sr.city);
 	if (sr.email) g_free(sr.email);
 	if (sr.phone) g_free(sr.phone);
-	
+
 	if (!gghttp){
 		jabber_iq_send_error(s,from,to,id,500,"Internal Server Error");
 		return;
@@ -172,7 +177,7 @@ void jabber_iq_get_user_vcard(Stream *s,const char *from,const char * to,const c
 struct gg_search_request sr;
 struct gg_http *gghttp;
 Request *r;
-	
+
 	q=xmlnode_dup(q);
 	memset(&sr,0,sizeof(sr));
 	sr.uin=jid_get_uin(to);
@@ -191,28 +196,32 @@ int vcard_done(struct request_s *r){
 xmlnode vc,n,n1;
 struct gg_search * results;
 char *jid,*name,*str;
-	
+GList *it;
+Contact *c;
+User *u;
+
+
 	results=(struct gg_search *)r->gghttp->data;
 	if (!results || !results->count){
 		jabber_iq_send_error(r->stream,r->from,r->to,r->id,404,"Not Found");
 		return 1;
 	}
-	
+
 	vc=xmlnode_new_tag("vCard");
 	xmlnode_put_attrib(vc,"xmlns","vcard-temp");
 	xmlnode_put_attrib(vc,"version","2.0");
-	
-	name=g_strdup_printf("%s %s",results->results[0].first_name,results->results[0].last_name);	
+
+	name=g_strdup_printf("%s %s",results->results[0].first_name,results->results[0].last_name);
 	n=xmlnode_insert_tag(vc,"FN");
 	xmlnode_insert_cdata(n,to_utf8(name),-1);
 	g_free(name);
-	
+
 	n1=xmlnode_insert_tag(vc,"N");
 	n=xmlnode_insert_tag(n1,"GIVEN");
 	xmlnode_insert_cdata(n,to_utf8(results->results[0].first_name),-1);
 	n=xmlnode_insert_tag(n1,"FAMILY");
 	xmlnode_insert_cdata(n,to_utf8(results->results[0].last_name),-1);
-	
+
 	n=xmlnode_insert_tag(vc,"NICKNAME");
 	xmlnode_insert_cdata(n,to_utf8(results->results[0].nickname),-1);
 
@@ -220,18 +229,44 @@ char *jid,*name,*str;
 		n=xmlnode_insert_tag(vc,"BDAY");
 		str=g_strdup_printf("%04i-00-00",results->results[0].born);
 		xmlnode_insert_cdata(n,str,-1);
-		g_free(str);	
+		g_free(str);
 	}
-		
+
 	n1=xmlnode_insert_tag(vc,"ADR");
 	n=xmlnode_insert_tag(n1,"LOCALITY");
 	xmlnode_insert_cdata(n,to_utf8(results->results[0].city),-1);
-	
+
 	jid=jid_build(results->results[0].uin);
 	n=xmlnode_insert_tag(vc,"JABBERID");
 	xmlnode_insert_cdata(n,jid,-1);
 	g_free(jid);
-	
+
+	c=NULL;
+	u=user_get_by_jid(r->from);
+	if (u){
+		for(it=g_list_first(u->contacts);it;it=it->next){
+			c=(Contact *)it->data;
+			if (c->uin==results->results[0].uin) break;
+		}
+		if (it==NULL) c=NULL;
+	}
+
+	n=xmlnode_insert_tag(vc,"DESC");
+	xmlnode_insert_cdata(n,"GG user\n",-1);
+	if (c!=NULL){
+		struct in_addr a;
+		a.s_addr=c->ip;
+		str=g_strdup_printf("Client version: 0x%x\n",c->version);
+		xmlnode_insert_cdata(n,str,-1);
+		g_free(str);
+		str=g_strdup_printf("User IP: %s\n",inet_ntoa(a));
+		xmlnode_insert_cdata(n,str,-1);
+		g_free(str);
+		str=g_strdup_printf("User port: %u\n",(unsigned)c->port);
+		xmlnode_insert_cdata(n,str,-1);
+		g_free(str);
+	}
+
 	jabber_iq_send_result(r->stream,r->from,r->to,r->id,vc);
 	return 0;
 }
