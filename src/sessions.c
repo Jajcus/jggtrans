@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.37 2003/01/15 14:17:08 jajcus Exp $ */
+/* $Id: sessions.c,v 1.38 2003/01/25 21:51:53 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -131,7 +131,7 @@ int t;
 
 	if (!reconnect) return;
 	t=(int)((reconnect*9.0/10.0)+(2.0*reconnect/10.0*rand()/(RAND_MAX+1.0)));
-	debug("Sheduling reconnect in reconnect %u seconds",t);
+	debug("Sheduling reconnect in %u seconds",t);
 	g_timeout_add(t*1000,sessions_reconnect,g_strdup(s->jid));
 }
 
