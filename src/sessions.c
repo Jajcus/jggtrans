@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.66 2003/04/27 19:18:44 jajcus Exp $ */
+/* $Id: sessions.c,v 1.67 2003/04/27 19:28:21 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -534,6 +534,7 @@ Resource *r=NULL;
 		g_free(r);
 	}
 	g_list_free(s->resources);
+	if (s->gg_status_descr) g_free(s->gg_status_descr);
 	s->resources=NULL;
 
 	g_free(s);
@@ -569,8 +570,11 @@ Resource *r;
 	if (s->user->invisible) status=GG_STATUS_INVISIBLE;
 	else if (s->user->friends_only) status|=GG_STATUS_FRIENDS_MASK;
 
-	if (status==s->gg_status && !strcmp(r->status,s->gg_status_descr))
-		return 0;
+	if (status==s->gg_status){
+		if (r->status!=NULL && s->gg_status_descr!=NULL 
+				&& !strcmp(r->status,s->gg_status_descr)) return 0;
+		if (r->status==NULL && s->gg_status_descr==NULL) return 0;
+	}
 	g_free(s->gg_status_descr);
 	s->gg_status_descr=g_strdup(r->status);
 	s->gg_status=status;
