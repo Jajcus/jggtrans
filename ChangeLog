@@ -1,0 +1,1850 @@
+2004-06-16  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* .cvslog:
+	- reports for the CIA ( http://cia.navi.cx )
+
+2004-06-11  Tomasz Sterna  <smoku@chrome.pl>
+
+	* src/gg_versions.c: protocol 0x22 added
+
+	* src/sessions.c: conference disabling cleanup
+
+	* src/sessions.c:
+	disabled GG conference messages - it's not supported yet
+
+2004-05-05  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* cosmetics.vim: s/tabwidth/tabstop/
+
+2004-04-30  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/message.c:
+	- don't set type='chat' on jabber:x:roster messages
+
+	* INSTALL, INSTALL.Pl:
+	- requirements updated - glib2 and libidn
+
+2004-04-22  Tomasz Sterna  <smoku@chrome.pl>
+
+	* src/stream.c: checking return code of stream_eat()
+
+2004-04-14  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/stream.c:
+	- ported to glib2
+
+2004-04-13  Tomasz Sterna  <smoku@chrome.pl>
+
+	* autogen.sh, configure.ac: restored VERSION #define
+
+	* autogen.sh, configure.ac: fixes to the build system
+
+2004-04-13  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* configure.ac:
+	- glib2 minimum version string fixed
+
+	* src/Makefile.am, src/acl.c, src/browse.c, src/disco.c, src/jabber.c, src/jid.c, src/jid.h, src/main.c, src/presence.c, src/sessions.c, src/users.c, po/nl.po, po/pl.po, configure.ac:
+	- ported to GLib 2
+	- use libidn for proper JID normalization (stringprep,IDNA)
+
+2004-04-06  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* po/nl.po:
+	- translation revised by Ben Branders
+
+2004-03-28  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/register.c:
+	- s/Dutch/Nederlands/
+
+	* src/register.c:
+	- Dutch in locale mapping (to be updated)
+
+	* po/nl.po, po/pl.po:
+	- cleanup
+
+	* po/LINGUAS, po/nl.po:
+	- Dutch translation
+
+2004-03-18  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* configure.ac: *** Version: 2.0.9 ***
+
+	* po/pl.po:
+	- updated
+
+	* AUTHORS, README, README.Pl:
+	- got rid of the @pld.org.pl e-mail address
+
+	* NEWS:
+	- updated
+
+	* INSTALL, INSTALL.Pl:
+	- update: libgadu-1.4 required, pthread support not recommended
+
+	* .cvsignore:
+	- more ignores
+
+	* src/Makefile.am:
+	- interactive 'valgrind-int' target with --gen-suppressions=yes option passed to valgrind
+
+2004-03-17  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* po/LINGUAS, configure.ac:
+	- LINGUAS file instead of obsolete ALL_LINGUAS configure.ac variable
+
+	* src/main.c, src/message.c, src/stream.c:
+	- cosmetics
+
+	* po/pl.po:
+	- updated
+
+	* src/stream.c:
+	- don't break on write buffer overflow - just block to send the data
+
+	* src/main.c:
+	- make jggtrans interruptable when not connected to jabber server - workaround for a bug I couldn't find: do only 100 iterations instead of infinite loop
+
+	* src/presence.c:
+	- do not send presence errors in response to presence errors
+
+2004-03-16  Mariusz Mazur  <mmazur@kernel.pl>
+
+	* src/message.c, src/message.h, src/register.c, src/requests.c, src/requests.h, src/sessions.c, src/sessions.h:
+	- get roster works again
+
+2004-03-15  Mariusz Mazur  <mmazur@kernel.pl>
+
+	* configure.ac:
+	- require new ekg. Old versions stoped working yesterday
+
+2004-03-05  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/ggtrans.h, src/main.c:
+	- configure --disable-nls should work now
+
+2004-03-01  Mariusz Mazur  <mmazur@kernel.pl>
+
+	* src/sessions.c, src/sessions.h:
+	- Jajcus says ping is important
+
+	* src/sessions.c, src/sessions.h:
+	- removed ping support. Not used and only makes a lot of noise when debugging
+
+2004-02-26  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* configure.ac:
+	- solaris library test improved (?)
+
+	* configure.ac:
+	- search for gethostbyname and socket in specific libraries (should partialy fix solaris build)
+
+	* src/main.c:
+	- LOG_FTP and LOG_AUTHPRIV are not available on Solaris - use them only when defined
+
+2004-02-20  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* configure.ac: *** Version 2.0.8 ***
+
+	* po/.cvsignore:
+	- fixed last change
+
+	* po/.cvsignore, po/pl.po:
+	- updated
+
+	* src/iq.c, src/presence.c, src/sessions.c:
+	- cosmetics
+
+	* Makefile.am, configure.ac:
+	- updates by gettextize
+
+	* INSTALL.Pl, INSTALL, NEWS:
+	- updated
+
+2004-02-05  Tomasz Sterna  <smoku@chrome.pl>
+
+	* po/Makevars:
+	- initial checkin
+
+	* src/sessions.c:
+	- reverted misfix
+
+	* configure.ac:
+	- fix for autogen.sh's `gettextize --force'
+
+	* src/sessions.c:
+	- we now log in with GG_DEFAULT_PROTOCOL_VERSION  [teardrop]
+
+	* src/sessions.c:
+	- disabled roster import even more ;-)
+
+	* src/sessions.c:
+	- support for protocol 6.0 notifies and statuses
+
+2004-02-04  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* .cvsignore, Makefile.am, autogen.sh, configure.ac, po/.cvsignore:
+	- updates for latest auto*-tools and gettext: autoconf-2.59-2, automake-1.8.2-1, libtool-1.5-14, gettext-0.13.1-1
+
+	* libxode/src/sha.c, libxode/src/str.c, libxode/include/libxode.h:
+	- 64-bit fixes (without them this won't work on AMD64 or Alpha)
+
+	* po/pl.po:
+	- s/Fatalny blad/Blad krytyczny/; format string fixed
+
+2004-02-02  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* jggtrans.xml.Pl:
+	- typos fixed: no ',' before 'a' (bug #3287)
+
+2004-01-30  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/register.c:
+	- always send presence_subscribe from /registered jid
+
+	* src/sessions.c:
+	- don't sent <presence type='subscribed'/> when not asked to
+
+2004-01-26  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/disco.c:
+	- obsolete disco features removed
+
+2004-01-24  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/message.c, src/register.c:
+	- get/import roster disabled. It is not ported to new protocol/API and causes SIGSEGV
+
+	* src/presence.c:
+	- don't fail on empty <priority/> [teardrop]
+
+2003-10-16  Tomasz Sterna  <smoku@chrome.pl>
+
+	* src/register.c:
+	fixed infinite wait, when already registered user tries to reregister
+	after deleting transport-contact from roster
+
+2003-10-03  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* jggtrans.8:
+	- man page by Robert Olejnik
+
+2003-09-14  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* jggtrans.xml, jggtrans.xml.Pl:
+	- jabberd 2.0 configuration comments updates
+
+	* src/stream.c:
+	- jabberd 2.0 compatibility fix
+
+2003-09-10  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* configure.ac: *** Version: 2.0.7 ***
+
+	* po/pl.po, INSTALL, INSTALL.Pl, NEWS, README.Pl:
+	- updated for 2.0.7
+
+	* src/sessions.c:
+	- reverted last change (protocol version)
+
+2003-09-09  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/sessions.c:
+	- introduce yourself as GG 6.0 when using TLS
+
+2003-09-08  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* README:
+	- info about mailing list added
+
+	* po/pl.po:
+	- polish translation updated
+
+	* src/presence.c:
+	- when invisible send own presence as 'away' with '(invisible)' in status
+
+	* src/sessions.c:
+	- do nothing in session_set_status() when session is not connected
+
+	* src/message.c:
+	- do not call session_set status when session is not available
+
+	* src/sessions.c:
+	- set presence of all contacts to unavailable when disconnected from server
+
+2003-09-07  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/iq.c:
+	- don't panic when unknown user ask for GG client version
+
+2003-09-07  Tomasz Sterna  <smoku@chrome.pl>
+
+	* src/sessions.c:
+	- cutting GG-side status to allowed 70 characters
+
+	* src/sessions.c:
+	- loging in with protocol 0x18 (GG 5.0)
+
+	* src/gg_versions.c, src/gg_versions.h:
+	- Gadu-Gadu protocol to version mapping updated
+
+	* src/sessions.c:
+	- segv while empty client resource fixed
+
+2003-08-08  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/encoding.c:
+	- newline conversion
+
+2003-06-28  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* configure.ac: *** Version: 2.0.6 ***
+
+	* src/main.c, src/presence.c, src/register.c, src/sessions.c:
+	- cosmetics
+
+	* po/pl.po, INSTALL, NEWS:
+	- updated for 2.0.6
+
+2003-06-27  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/acl.c, src/browse.c, src/disco.c, src/iq.c, src/presence.c, src/register.c, src/search.c, src/sessions.c, src/stats.c, src/users.c:
+	- include debug.h last - it contains macros that may break other headers
+
+	* po/pl.po:
+	- updated
+
+	* src/sessions.c:
+	- "not available with descrition" is also not available
+
+	* src/sessions.c:
+	- return unavailable contact presence from bare jid unless this contact was active during current session
+	- support both "get roster" and "import roster" requested in registration form
+	- react to presence changes of the resource with the highest priority only
+	- disconnect only when the last resource becomes unavailable
+
+	* src/register.c:
+	- "import roster" is not recommended
+	- unsubscribe user from all contacts presence when unregistering
+
+	* src/presence.c:
+	- unsubscribe != unregister
+	- do not reply to probes if contact status is not yet known
+	- send "unavailable" presence probe responses from bare jid
+
+	* src/users.c, src/users.h:
+	- 'unknown' user status support (before GG server returns notifications)
+
+	* src/message.c:
+	- "import roster" is not recommended
+	- "menu" reformated
+
+	* src/message.c, src/presence.c, src/sessions.c:
+	- segmentation fault, when message from unknown user is received, fixed
+
+2003-05-27  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* configure.ac: *** Version 2.0.5 ***
+
+	* INSTALL: updated
+
+	* NEWS:
+	- updated for 2.0.5
+
+	* po/pl.po:
+	- updated
+
+	* src/browse.c, src/disco.c, src/disco.h, src/message.c, src/sessions.c, src/sessions.h:
+	- show connection information to user
+
+	* src/sessions.c, jggtrans.xml, jggtrans.xml.Pl:
+	- some servers don't accept TLS
+
+	* INSTALL:
+	- info about TLS
+
+	* po/pl.po:
+	- updated
+
+	* src/main.c, src/sessions.c:
+	- clean shutdown - let all <presence type="unavailable"/> be written to Jabber stream
+
+	* src/presence.c:
+	- return unavailable presence on probe instead of error when user is not available (again)
+
+	* src/browse.c, src/disco.c, src/disco.h:
+	- use one function to generate user session info both for browse and disco
+
+	* src/browse.c, src/sessions.c, src/sessions.h, libxode/src/sha.c, libxode/include/libxode.h, jggtrans.xml, jggtrans.xml.Pl:
+	- support for TLS-enabled libgadu and TLS
+
+2003-05-20  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/presence.c:
+	- use full jid in presence probe replies
+
+2003-05-19  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* configure.ac: *** Version: 2.0.4 ***
+
+	* po/pl.po:
+	- have I said "for 2.0.4"? :)
+
+	* po/pl.po:
+	- updated for 2.0.4
+
+	* src/presence.c, src/register.c, src/sessions.c, NEWS:
+	- cosmetics
+
+	* NEWS:
+	- updated for 2.0.4
+
+	* src/jid.c, src/presence.c, src/sessions.c:
+	- presence cleanups:
+	- all GG users use a "GG" resource
+	- send only one transport presence on login
+	- update transport presence on user presence change
+
+2003-05-16  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/stats.c:
+	- process all stats in a get query
+
+2003-05-16  Mariusz Mazur  <mmazur@kernel.pl>
+
+	* src/sessions.c:
+	- mental blocks rock; most likely this is the fix for the mysterious
+	  delay_disconnect crash :)
+
+2003-05-16  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/main.c:
+	- do not touch pid-file if not configured to do so
+
+2003-05-14  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/sessions.c:
+	- NULL dereference bug fixed
+
+2003-05-13  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/presence.c, src/sessions.c:
+	- do not try to use invalid session
+
+2003-05-12  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/sessions.c:
+	- free Resource object _after_ its last use, not earlier :)
+
+2003-05-09  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/sessions.c, src/sessions.h, jggtrans.xml, jggtrans.xml.Pl:
+	- wait before disconnecting after <presence type="unavailable"> is received.
+	  <presence type="invisible"> may come just after that
+
+	* src/disco.c, src/presence.c:
+	- presence-invisible support
+
+	* src/jid.c, src/jid.h:
+	- a function to build user's full jid
+
+	* src/sessions.c, src/sessions.h:
+	- presence-invisible support
+	- use full jids (with resource) for user messages/presence
+
+	* src/register.c, src/search.c:
+	- more JEP-4 compatibility "fixes"
+
+2003-05-07  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* po/pl.po:
+	- updated
+
+	* NEWS:
+	- typo
+
+	* configure.ac: *** Version: 2.0.3 ***
+
+	* NEWS:
+	- updates for 2.0.3
+
+	* src/register.c:
+	- include default options in the lists of available options
+
+	* jggtrans.xml, jggtrans.xml.Pl:
+	- proper <browse/> config for jabberd (copatible with active JEP-11 version)
+
+	* src/iq.c:
+	- the WinJab bug is also a Psi bug
+
+	* src/browse.c:
+	- implementation of the active version of JEP-11 (<item/> elements instead of
+	  <service/> and <user/>)
+	- version attribute added the service item
+
+2003-05-03  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/sessions.c:
+	- more proxy settings
+
+2003-04-28  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* INSTALL, INSTALL.Pl:
+	- hint about compilation on FreeBSD
+
+	* po/pl.po:
+	- autoupdated
+
+	* configure.ac: *** Version: 2.0.2 ***
+
+	* NEWS:
+	- updated for 2.0.2
+
+	* src/presence.c:
+	- do not send notification request to GG server when presence type=probe is
+	  received (this caused annoying status changes for GG users in roster)
+
+	* po/pl.po:
+	- translations updated
+
+	* src/Makefile.am:
+	- link jggtrans with $(INTLLIBS) (needed for some OSes, like FreeBSD)
+
+	* po/pl.po:
+	- updated from .pot (319 translated messages, 3 fuzzy translations, 1 untranslated message.)
+
+	* src/message.c, src/register.c, src/sessions.c, src/sessions.h:
+	- "import roster" option in regitration form
+
+2003-04-27  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/presence.c:
+	- only process presece packets sent to the transport itself. Presence
+	  cannot be different for different GG users anyway
+
+	* src/sessions.c:
+	- fixes for memory leak and possible NULL dereference, introduced by last changes
+
+	* src/message.c, src/presence.c, src/register.c, src/requests.c, src/search.c, src/sessions.c, src/sessions.h:
+	- set GG status on login
+	- change GG status only when this is really needed
+	- sens last_sys_msg to GG server on login
+
+2003-04-25  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/message.h, src/requests.c, src/requests.h, src/message.c:
+	- "get roster" command doesn't automaticaly subscribe users any more
+	- new "import roster" command, that subscribes users
+
+2003-04-24  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* INSTALL, INSTALL.Pl:
+	- tested with libgadu-1.0
+
+	* po/pl.po:
+	- autoupdated
+
+	* configure.ac: *** Version: 2.0.1 ***
+
+	* NEWS:
+	- updated for 2.0.1
+
+	* src/disco.c:
+	- do not announce "presence-invisible" feature until it is really supported
+
+	* po/pl.po:
+	- updated
+
+	* po/POTFILES.in:
+	- more source files
+
+	* src/message.c:
+	- show the GG number used to register in transport with current settings
+
+2003-04-22  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* po/pl.po, configure.ac:
+	- require libgadu >= 1.0. If you want to use a snapshot add
+	  --with-libgadu-snapshot to configure command line
+
+	* src/gg_versions.c:
+	- new GG version: 5.0.5 build 111 [smoku]
+
+	* src/message.c:
+	- large memleak removed
+
+	* src/main.c:
+	- fixes for locale switching code
+
+	* src/register.c:
+	- "invisible" should not be enabled by default in jabber:x:data registration form
+
+	* src/message.c:
+	- convert the message body to utf-8 (probably disconnetion fixed)
+	- fail when data received is NULL (segfault fixed)
+
+	* src/acl.c, src/ggtrans.h, src/jabber.c, src/jid.c, src/main.c, src/register.c, src/stream.c, configure.ac:
+	- new log translation handling
+
+	* src/presence.c:
+	- send <presence type="unsubscribed"> to aliens
+	- new log translation handling
+
+	* src/sessions.c:
+	- _do_ send <presence type="subscribed"/> after successfull registration
+
+	* src/users.c:
+	- mesages about loading users and its failure are debug now
+	- new log translation handling
+
+	* src/Makefile.am, src/main.c:
+	- pass localedir to gettext
+
+	* configure.ac:
+	- use "-m 755" to make sure install dirs ($localedir in particular) will be
+	  accessible and readable for jggtrans
+
+2003-04-21  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* .cvslog:
+	- where the commit logs should be sent
+
+	* AUTHORS:
+	- I would forget about the great translation
+
+	* configure.ac: *** Version: 2.0.0 ***
+
+	* INSTALL, INSTALL.Pl:
+	- updated for 2.0.0
+
+	* po/pl.po:
+	- small updates
+
+	* src/Makefile.am:
+	- pass libgadu-specific CFLAGS to linker (needed for libgadu-1.0rcX)
+
+	* NEWS:
+	- updated for 2.0.0
+
+	* src/message.c:
+	- only "get roster" command is experimental now
+
+	* po/pl.po:
+	- small updates
+
+	* po/pl.po:
+	- polish translations [smoku]
+
+2003-04-20  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/register.c:
+	- s/gived/given/
+
+2003-04-19  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/main.c:
+	- do not gettext-translate bare newlines
+
+2003-04-17  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/sessions.c:
+	- do not send system messages twice
+
+	* src/disco.c:
+	- announce also some non-namespace features
+
+2003-04-16  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/users.c:
+	- do not treat directories in spool_dir as registered users
+
+	* src/acl.c, src/browse.c, src/disco.c, src/forms.c, src/iq.c, src/main.c, src/message.c, src/presence.c, src/search.c, src/sessions.c, src/sessions.h, src/stats.c:
+	- cosmetics
+
+	* configure.ac:
+	- version 2.0.0-test1
+
+	* po/pl.po:
+	- updated to current sources (still most translation are missing)
+
+	* src/message.c, src/message.h, src/sessions.c:
+	- send_message() argument should be UTF-8 encoded, conversion moved to sessions.c
+	- system messages are sent as regular message (not chat) with msg. number in topic
+
+	* src/forms.c, src/forms.h, src/register.c, src/search.c:
+	- parent parameter added to form creating functions so less memory copying is done
+
+	* src/requests.c, src/search.c:
+	- some more memleaks removed
+
+	* src/sessions.c, src/stats.c:
+	- some memleaks removed
+
+	* src/acl.c:
+	- ACL bugfixes
+
+	* src/presence.c:
+	- do not send presence errors to self
+
+	* src/main.c, src/users.c:
+	- #include <locale.h> was missing.
+
+	* src/Makefile.am:
+	- project-local suppressions don't make sens, so removed
+
+2003-04-15  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/requests.c:
+	- all requests should be removed from list when destroyed
+
+	* src/Makefile.am, src/browse.c, src/disco.c, src/sessions.c, src/stream.c:
+	- memleaks hunting
+
+2003-04-14  Mariusz Mazur  <mmazur@kernel.pl>
+
+	* configure.ac:
+	- remote-userlist is no more
+
+2003-04-14  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/main.c, src/requests.c, src/requests.h:
+	- requests cleanup
+
+	* src/stats.c:
+	- compiler warning removed
+
+	* src/register.c, src/requests.c, src/requests.h, src/sessions.c, src/sessions.h:
+	- pubdir change on registration cleanup
+
+	* src/Makefile.am, src/main.c, src/sessions.c:
+	- some memleaks and uninitialized data usage fixed (thanks to valgrind)
+
+	* src/main.c:
+	- include acl.h
+
+	* jggtrans.xml, jggtrans.xml.Pl:
+	- ACL examples
+
+	* src/stats.c:
+	- do not limit use of statistics to admins only, ACL may be used for better access control
+
+	* src/Makefile.am, src/acl.c, src/acl.h, src/iq.c, src/main.c, src/message.c, src/presence.c:
+	- ACLe
+
+	* src/browse.c, src/disco.c, src/stats.c:
+	- header comments
+
+	* src/stats.c:
+	- admins are those _allowed_, not disallowed :-)
+
+	* src/jabber.c, src/sessions.c, src/stream.c, src/users.c, src/users.h:
+	- packet/message statistics gathering
+
+	* src/stats.c:
+	- user counting fixed
+	- allow statistics gathering only to admins (it takes quite a lot of resources,
+	  when queried periodically)
+
+	* src/disco.c:
+	- fixes for online user browsing using disco
+
+	* src/Makefile.am, src/disco.c, src/disco.h, src/iq.c:
+	- JEP-0030: service discovery
+
+	* src/Makefile.am, src/ggtrans.h, src/iq.c, src/main.c, src/stats.c, src/stats.h:
+	- JEP-0039 (statistics gathering) implementation NFY
+
+	* src/users.c, src/users.h:
+	- detailed info about contacts (names,city etc.) removed
+
+	* src/browse.c:
+	- show server address for hub-driven connections too
+
+2003-04-13  Mariusz Mazur  <mmazur@kernel.pl>
+
+	* src/message.c, src/message.h, src/requests.c, src/requests.h:
+	- ooops... almost forgot to commit this: killed put_roster code, and
+	  made get_roster subscribe new contacts automaticaly... nice :)
+
+2003-04-13  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/browse.c:
+	- some fixes
+
+	* src/sessions.c:
+	- store current, not next, server info in server_info. This is much more useful for browsing
+
+	* src/browse.c:
+	- show server address where user is connected or connecting
+
+	* src/browse.c, src/ggtrans.h, src/main.c, src/sessions.h:
+	- browsing of online user (only for admin)
+
+2003-04-13  Mariusz Mazur  <mmazur@kernel.pl>
+
+	* src/presence.c:
+	- cosmetics
+
+2003-04-13  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* jggtrans.xml, jggtrans.xml.Pl:
+	- <admin/> element
+
+	* src/presence.c, src/presence.h:
+	- send presence error when subscription fails (which will never occur)
+
+	* src/search.c:
+	- put <reported/> only in the first stanza of search results
+
+	* src/iq.c, src/register.c, src/requests.c, src/requests.h, src/search.c, src/users.c, src/forms.c, src/forms.h:
+	- cosmetics
+
+	* src/forms.c, src/forms.h, src/search.c:
+	- searching with jabber:x:data, seems to work
+
+	* src/register.c:
+	- cleanups
+
+2003-04-12  Mariusz Mazur  <mmazur@kernel.pl>
+
+	* src/presence.c:
+	- sending authorization to a contact results in receiving an authorization
+	  from that contact... it's more idiot proof now
+
+	* src/presence.c:
+	- "typo" in debug message
+
+	* src/presence.c:
+	- when removing authorization from a contact transport logged off; fixed
+
+2003-04-11  Mariusz Mazur  <mmazur@kernel.pl>
+
+	* src/users.c:
+	- reverted last change - the core of the problem is elsewhere
+
+	* src/users.c:
+	- errormessage stating that a configuration file for an account wasn't
+	  found is now displayed via debug() and not g_warning() because
+	  this error is triggered on almost every occasion so it just
+	  floods the logs without any good reason
+
+	* src/register.c:
+	- some cleaning in the legacy register code
+
+2003-04-11  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/forms.c, src/forms.h, src/register.c:
+	- more simplifications: a function to create empty form
+
+	* src/register.c:
+	- form creation simplified (using functions from forms.h)
+	- public directory change via jabber:x:data finished
+	- some other cleanups
+
+	* src/requests.c, src/requests.h:
+	- properly handle RT_CHANGE (public tirectory write result)
+
+	* src/sessions.c:
+	- save user after confirming, because unconfirmed user will not be saved
+	- process GG_EVENT_PUBDIR50_WRITE. The fact that it cannot be handled properly
+	  for legacy jabber:x:register doesn't mean that it shouldn't be handled at all
+
+	* src/Makefile.am, src/forms.c, src/forms.h:
+	- files with functions for creating jabber:x:data forms added
+
+2003-04-10  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/register.c:
+	- public directory change using jabber:x:data implemented (NFY)
+	- some fixes for legacy pubdir change code
+
+2003-04-10  Mariusz Mazur  <mmazur@kernel.pl>
+
+	* src/sessions.c:
+	- we ignore GG_PUBDIR50_WRITE since it's of no use to us
+
+	* src/register.c:
+	- fixed segfault
+
+2003-04-09  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/iq.c:
+	- do not reveal full OS version
+
+2003-04-08  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/message.c, src/register.c, src/register.h, src/requests.c, src/requests.h, src/sessions.c, src/users.c:
+	- GG password change. After the password is changed the annoying message
+	  doesn't show any more :-)
+
+	* src/sessions.c:
+	- send messages to full jid (with resource)
+
+2003-04-06  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/jabber.c, src/register.c, src/register.h, src/users.c, src/users.h:
+	- user registration via jabber:x:data
+
+2003-04-06  Mariusz Mazur  <mmazur@kernel.pl>
+
+	* src/jabber.c, src/jid.c, src/message.c, src/presence.c, src/register.c, src/requests.c, src/search.c, src/sessions.c, src/stream.c, src/users.c:
+	- gettext support finished in 95% anything else should come up while
+	  using jggtrans
+
+2003-04-06  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/message.c:
+	- legacy interface to locale changing
+
+	* src/users.c:
+	- user locale setting loading fixed
+
+2003-04-06  Mariusz Mazur  <mmazur@kernel.pl>
+
+	* src/iq.c:
+	- finished gettext
+
+	* src/iq.c:
+	- gettext support
+
+2003-04-06  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/register.c:
+	- use data gathering to change account options
+	- fixed segfault when pubdir data are empty in registration form
+
+2003-04-06  Mariusz Mazur  <mmazur@kernel.pl>
+
+	* jggtrans.xml, jggtrans.xml.Pl:
+	- switched URL to jggtrans' project homepage
+
+2003-04-06  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/requests.c:
+	- request "hash" must be unique so counter is used instead of time
+
+2003-04-06  Mariusz Mazur  <mmazur@kernel.pl>
+
+	* src/.cvsignore:
+	- I guess neither .patch nor .diff will be commited and I often have them
+	  inside this dir
+
+2003-04-06  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* libxode/src/str.c, libxode/src/xmltok_impl.c, libxode/src/xstream.c:
+	- some compiler warnings removed
+
+	* src/ggtrans.h:
+	- _() is not the same as N_()
+
+2003-04-05  Mariusz Mazur  <mmazur@kernel.pl>
+
+	* src/register.c, src/requests.c, src/requests.h, src/sessions.c:
+	- update-ggpubdir-when-registering works... the thing is hackish, ugly
+	  and it smells, but it *works* and I'll redesign it later
+
+2003-04-05  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/ggtrans.h, src/iq.c, src/main.c, src/message.c, src/presence.c, src/requests.c, src/sessions.c, src/users.c, src/users.h, po/pl.po, jggtrans.xml, jggtrans.xml.Pl:
+	- i18n infrastructure seems complete. Now only testing, bugfixing and translations are needed.
+
+	* src/main.c, cosmetics.sh:
+	- cosmetics
+
+2003-04-04  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/ggtrans.h, src/main.c, po/.cvsignore, po/POTFILES.in, po/pl.po, .cvsignore, Makefile.am, autogen.sh, configure.ac:
+	- perliminary gettext support
+
+	* configure.ac:
+	- gettext support
+	- support for non-snapshot libgadu versions
+
+	* src/register.c, src/requests.c, src/search.c:
+	- cosmetics
+
+	* src/requests.c:
+	- another NULL dereference fixed (bug found by [venglin])
+
+	* src/search.c:
+	- another NULL pointer dereference fixed [venglin]
+
+	* src/requests.c:
+	- segfault caused by NULL pointer dereference fixed [venglin]
+
+	* AUTHORS:
+	- another patcher :-)
+
+	* src/register.c:
+	- possible NULL-dereference problem removed
+
+2003-04-03  Mariusz Mazur  <mmazur@kernel.pl>
+
+	* src/register.c:
+	- finished pubdir-update-when-registering code... only to find out it has One
+	  Big Synchronization Issue that needs addressing :( Going to sleep;
+	  will finish it tomorrow
+
+	* jggtrans.xml.Pl:
+	- typo
+	- no email
+
+2003-03-25  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/Makefile.am, src/gg_versions.c, src/gg_versions.h, src/iq.c, src/search.c:
+	- GG client version number in vcard [smoku]
+
+2003-03-24  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* configure.ac: *** Version: 1.4.1 ***
+
+	* src/main.c, src/message.c:
+	- cosmetics
+
+	* NEWS, configure.ac:
+	- updates for 1.4.1
+
+	* src/message.c:
+	- send "help" as one message. It may be messed by multithreaded servers otherwise.
+
+	* src/iq.c:
+	- GG version detection: 5.0.3 - 5.0.5 [smoku]
+
+	* src/message.c:
+	- saving of user settings (invisible/friends-only) [smoku]
+
+	* src/message.c, src/message.h, src/sessions.c:
+	- timestamps for delayed messages added
+	- handling of delayed chat messages fixed
+
+	* jggtrans.xml, jggtrans.xml.Pl:
+	- searching people by email is not supported
+
+2003-03-17  Mariusz Mazur  <mmazur@kernel.pl>
+
+	* src/search.c:
+	- searching people by email is not supported
+
+2003-02-28  Mariusz Mazur  <mmazur@kernel.pl>
+
+	* src/sessions.c:
+	- small fix for multiple servers support
+
+2003-02-06  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/main.c:
+	- autorestart (which worked only when -D and -d where given) fixed
+
+2003-02-05  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* configure.ac: *** Version: 1.4.0 ***
+
+2003-02-05  Mariusz Mazur  <mmazur@kernel.pl>
+
+	* jggtrans.xml.Pl:
+	- <conn_timeout/> set to 60
+
+2003-02-05  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* NEWS:
+	- updates for 1.4.0
+
+	* INSTALL, INSTALL.Pl:
+	- updates
+
+	* AUTHORS:
+	- mmazur is a regular developer now, not just a patch author :-)
+
+	* jggtrans.xml.Pl, jggtrans.xml:
+	- description of <servers/> element
+
+2003-02-04  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/search.c:
+	- fixed segfault on empty search result
+
+	* src/sessions.c:
+	- fixed segfault on bad registration input
+
+	* configure.ac:
+	- version: 1.4.0-test1
+	- required libgadu version: 20030130
+
+	* src/sessions.c, src/sessions.h:
+	- s/gg_server/gg_servers/, s/Server/GgServer/
+
+	* src/main.c, src/requests.c, src/requests.h, src/search.c, src/sessions.c:
+	- compiler warnings removed
+
+	* src/requests.c, src/search.c, src/sessions.c:
+	- cosmetics
+
+	* src/search.c:
+	- segfault, when no "active" seqrch key is given, fixed
+
+2003-02-03  Mariusz Mazur  <mmazur@kernel.pl>
+
+	* src/search.c:
+	- fixed sending errors
+
+	* src/main.c, src/message.c, src/register.c, src/requests.c, src/requests.h, src/search.c, src/search.h, src/sessions.c:
+	- implemented the new libgadu search api
+
+2003-01-29  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/sessions.c:
+	- s/gg_server/g_list_first(gg_server)/ where the first server is needed
+
+2003-01-28  Mariusz Mazur  <mmazur@kernel.pl>
+
+	* src/sessions.c, src/sessions.h:
+	- switched from static table to GList in the multiple servers support code;
+	  needs testing
+
+2003-01-27  Mariusz Mazur  <mmazur@kernel.pl>
+
+	* src/sessions.c, src/sessions.h:
+	- server list support (if connection to first server failed, try connecting
+	  to the next one)
+
+2003-01-25  Mariusz Mazur  <mmazur@kernel.pl>
+
+	* src/sessions.c:
+	- typo
+
+2003-01-22  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* configure.ac: *** Version: 1.3.1 ***
+
+	* AUTHORS:
+	- Swiergot added
+
+	* NEWS:
+	- updates for 1.3.1
+
+	* src/main.c:
+	- cosmetics
+
+	* src/main.c:
+	- remove pid file on exit (suggested by [swiergot])
+	- write the pid file before dropping privilages, so it may be placed in /var/run
+	- clear pid file on exit if it cannot be removed
+
+	* src/search.c:
+	- return proper jabberid in vCard and search result
+
+	* configure.ac:
+	- add "-Wall" to CFLAGS
+
+	* src/conf.c, src/encoding.c, src/iq.c, src/jabber.c, src/main.c, src/message.c, src/presence.c, src/register.c, src/search.c, src/stream.c, src/stream.h, src/users.c:
+	- crash caused by <presence> messages with empty <priority/> fixed [smoku]
+	- similar, usually buggy, code rewritten
+	- code cleanup
+
+2003-01-16  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* configure.ac: *** Version: 1.3.0 ***
+
+	* INSTALL, INSTALL.Pl:
+	- updates
+
+	* NEWS:
+	- updates for 1.3.0
+
+	* src/Makefile.am, configure.ac:
+	- pkg-config support for libgadu detection
+
+	* src/main.c:
+	- log information about restart/exit
+
+2003-01-15  Mariusz Mazur  <mmazur@kernel.pl>
+
+	* src/.cvsignore:
+	- vim temp files
+
+2003-01-15  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* configure.ac:
+	- 1.2.4-test3
+
+	* src/message.c, src/message.h, src/requests.c, src/requests.h, configure.ac:
+	- disable broken "get roster"/"put roster" commands
+
+	* src/iq.c:
+	- updated GG client version table [smoku]
+
+	* src/main.c:
+	- restart only when connection is broken or SIGHUP received
+
+	* AUTHORS:
+	- include patch authors nicknames for use in ChangeLog entries
+
+	* configure.ac:
+	- check libgadu after pthreads [smoku]
+
+	* src/iq.c:
+	- jabber:iq:version client query support. [smoku]
+
+	* cosmetics.vim:
+	- write files only if modified (this doesn't work anyway :-( )
+
+	* configure.ac:
+	- 1.2.4-test2
+
+	* src/main.c, src/sessions.c, src/stream.c:
+	- cosmetics
+
+	* src/ggtrans.h, src/jabber.c, src/main.c, src/sessions.c, src/sessions.h, src/stream.c, src/stream.h, configure.ac, jggtrans.xml, jggtrans.xml.Pl:
+	- restart after jabber connection is broken
+
+	* src/conf.c, src/conf.h:
+	- default value parameter added to config_load_int()
+
+	* src/browse.c, src/conf.c, src/enc_uni2win.h, src/enc_win2uni.h, src/encoding.c, src/iq.c, src/iq.h, src/jabber.c, src/jabber.h, src/jid.c, src/main.c, src/message.c, src/presence.c, src/register.c, src/requests.c, src/sessions.c, src/sessions.h, src/status.c, src/stream.c, src/stream.h, src/users.c, src/users.h, cosmetics.vim, src/debug.h, src/encoding.h, src/requests.h, src/search.c, cosmetics.sh:
+	- cosmetics
+
+2003-01-14  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/users.h, src/message.c, src/message.h, src/requests.c, src/users.c:
+	- support (experimental) for userlist stored on GG server
+
+	* src/message.c, src/sessions.c, src/sessions.h, src/users.c, src/users.h:
+	- "friends only" and "invisible" commands
+
+	* libxode/src/Makefile.am:
+	- automake update
+
+2003-01-13  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/message.c:
+	- working on message-commands
+
+	* src/presence.c:
+	- in presence_probe() take stream from argument, not from session (which may be
+	  undefined)
+
+	* src/iq.c:
+	- stop processing jabber:iq:gateway after sending an error
+
+	* src/register.c:
+	- drop user session, when registration form is rejected (patch by mmazur)
+
+	* .cvsignore:
+	- typo
+
+	* src/iq.c:
+	- don't complain about jabber:iq:version
+
+2003-01-12  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/iq.c:
+	- unused functions removed
+
+	* src/sessions.c:
+	- typo (patch by mmazur)
+
+2003-01-07  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/main.c:
+	- typo
+
+2002-12-30  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* NEWS, configure.ac:
+	- Version: 1.2.3
+
+	* src/encoding.c:
+	- don't allow control characters
+
+	* .cvsignore, INSTALL, configure.ac:
+	- missing INSTALL file added
+
+	* NEWS:
+	- updates for 1.2.3
+
+	* src/status.c:
+	- GG_STATUS_BUSY (which is "zaraz wracam" in GG) translated to "XA" instead of "DND"
+
+	* src/main.c, README, README.Pl:
+	- typos
+
+2002-12-29  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/Makefile.am:
+	- missing files added to SOURCES
+
+	* AUTHORS, BUGS, README, README.Pl, TODO, configure.ac:
+	- updates for 1.2.3
+
+	* src/status.c:
+	- do not set status string if not given by GG user
+
+	* src/users.c:
+	- initialize status for user contacts (patch by mmazur)
+
+	* src/main.c:
+	- -g and -u command line options descriptions fixed (thanks to mmazur)
+
+2002-12-29  cvs-jajcus  <cvs-jajcus@jabber.org>
+
+	* src/.cvsignore:
+	- use custom character conversion function instead of iconv() which is broken
+	in some implementations (at least in glibc 2.2)
+
+2002-12-29  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/Makefile.am, src/enc_test.out, src/enc_test.txt, src/enc_uni2win.h, src/enc_win2uni.h, src/encoding.c, configure.ac:
+	- use custom character conversion function instead of iconv() which is broken
+	in some implementations (at least in glibc 2.2)
+
+2002-12-25  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* configure.ac:
+	- Version: 1.2.2
+
+	* NEWS:
+	- Updates for 1.2.2
+
+	* src/encoding.c:
+	- poprawiona kowersja pustych stringów
+
+	* src/search.c:
+	- tag <HOME/> w <ADDR/>
+	- dodatkowe (pewnie niepotrzebne) zabezpieczenia, przed null-dereference
+
+2002-12-10  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* INSTALL.Pl:
+	- uaktualnienie
+
+	* NEWS, acinclude.m4, configure.ac:
+	- Version: 1.2.1
+	- fixes for compilation on FreeBSD
+
+	* AUTHORS:
+	- Tomasz Sterna added as the first "patcher" :-)
+
+	* src/iq.c:
+	- transport version query support
+
+	* src/requests.c:
+	- copy user query for request. Original query will be freed when its processing ends.
+
+	* src/sessions.c:
+	- proper GG status change when no reason is given
+
+2002-12-09  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* BUGS, NEWS, configure.ac:
+	- Version: 1.2.0
+
+	* src/browse.c, src/conf.c, src/iq.c, src/jabber.c, src/main.c, src/presence.c, src/requests.c, src/search.c, src/sessions.c, src/sessions.h, src/stream.c, src/users.c:
+	- more memleaks removed
+
+2002-12-08  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* BUGS, NEWS:
+	- prepare to for 1.2.0
+
+2002-12-08  cvs-jajcus  <cvs-jajcus@jabber.org>
+
+	* src/.cvsignore:
+	- some memory leaks removed
+
+2002-12-08  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/Makefile.am, src/encoding.c, src/encoding.h, src/iq.c, src/jabber.c, src/jabber.h, src/main.c, src/register.c, src/stream.c:
+	- some memory leaks removed
+
+2002-12-07  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* libxode/src/xmlparse.c, libxode/src/xmltok.c, libxode/src/xstream.c:
+	- compiler warnings removed
+
+	* libxode/src/Makefile.am, src/Makefile.am:
+	- poprawki dla `make distcheck`
+
+	* libxode/acconfig.h, libxode/autogen.sh, libxode/configure.ac, libxode/configure.in:
+	- updates for new autoconf/automake
+
+2002-12-06  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/encoding.c, src/jid.c, src/main.c, src/presence.c, src/requests.c, src/requests.h, src/status.c:
+	- cleanup and small fixes
+
+	* src/search.c:
+	- contact IP/port/version info
+
+	* src/sessions.c, src/users.c, src/users.h:
+	- Contact IP/port/version info support
+
+	* src/message.c:
+	- prepare for userlist import
+
+	* configure.ac:
+	- workaroud for threded/non-threaded libgadu versions incompabilities
+
+	* autogen.sh:
+	- simplified
+
+2002-12-06  cvs-jajcus  <cvs-jajcus@jabber.org>
+
+	* libxode/.cvsignore, src/.cvsignore:
+	- more ignores
+
+2002-12-06  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* .cvsignore:
+	- more ignores
+
+2002-06-11  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* TODO:
+	-1
+
+	* NEWS, configure.ac:
+	- Version: 1.1.0
+
+2002-06-10  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/encoding.c, src/presence.c, src/sessions.c, src/status.c, src/users.c, src/users.h:
+	- presence change reason support
+
+2002-06-06  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* TODO: +1
+
+2002-06-05  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* NEWS, configure.ac:
+	- version 1.0.1
+
+	* src/sessions.c, jggtrans.xml, jggtrans.xml.Pl:
+	- allow to configure server address and port for gg_login()
+
+2002-05-04  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/sessions.c:
+	- updates for new libgadu
+
+2002-04-13  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* NEWS:
+	- 1.0.0 changes
+
+	* configure.ac:
+	- Version: 1.0.0
+
+2002-03-24  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/.cvsignore, src/Makefile.am, .cvsignore, Makefile.am:
+	- ctags support
+
+2002-03-04  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/search.c:
+	- fixed crash when user is not found on vCard lookup
+
+2002-02-26  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/message.c:
+	- fix for crash on bad jid in message
+
+2002-02-24  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/requests.c:
+	- fixed bug causing hang on some searches
+
+	* BUGS, INSTALL.Pl, NEWS, README.Pl, TODO, configure.ac:
+	- updates for 0.9.9 release
+
+	* src/register.c:
+	- updates for latest libgadu
+
+2002-02-23  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/sessions.c:
+	- support for large messages
+
+	* src/encoding.c:
+	- fix for bug on unconvertable characters
+
+	* src/users.c:
+	- more fixes
+
+	* src/users.c:
+	- more fixes
+
+	* src/users.c:
+	- hopefully fixed shutdown crash and some related crashes
+
+	* TODO:
+	- updates
+
+2002-02-22  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* jggtrans.xml.Pl, src/sessions.c, jggtrans.xml:
+	- auto reconnect (to gg server) support
+
+	* src/users.c:
+	- do not free() users on exit, there should be none. If they are any left print warning.
+
+2002-02-11  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* jggtrans.xml, jggtrans.xml.Pl:
+	- added timeout/interval settings (I thought they are already there)
+
+2002-02-08  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* configure.ac:
+	- Version: 0.9.8
+
+2002-02-06  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* NEWS, README, README.Pl:
+	- docs updates
+
+	* jggtrans.xml, jggtrans.xml.Pl:
+	- more namespaces for jabber.xml <browse/> section
+
+	* jggtrans.xml, jggtrans.xml.Pl, src/browse.c, src/iq.c:
+	- s/x-gg/x-gadugadu/
+
+	* src/search.c, src/sessions.c, src/status.c, src/users.h, configure.ac, src/requests.c:
+	- s/libgg/libgadu/
+
+2002-02-04  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/sessions.c:
+	- back to old error handling
+
+	* src/sessions.c:
+	- more changes with error handling
+
+	* src/sessions.c:
+	- HUP also to libgg
+
+	* src/sessions.c:
+	- let libgg handle errors
+
+2002-02-03  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* jggtrans.xml, jggtrans.xml.Pl:
+	- jggtrans in config root
+
+	* Makefile.am:
+	- config file name changes
+
+	* ggtrans.xml, ggtrans.xml.Pl, jggtrans.xml, jggtrans.xml.Pl:
+	- config file name changes
+
+	* src/main.c:
+	- s/\<ggtrans\>/jggtrans/ (mainly config file name)
+
+	* src/jid.c, src/jid.h, src/presence.c, src/sessions.c, src/sessions.h, src/users.c, src/users.h, TODO, src/Makefile.am:
+	- support for multiple user resources and their priorities
+
+	* src/main.c:
+	- functions to change uid/gid
+	- print active session status on SIGUSR
+
+	* src/status.c, src/status.h:
+	- fuctions for converting users status information between GG and Jabber
+
+2002-02-02  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* TODO: +1
+
+	* src/conf.c, src/conf.h:
+	- missing files added
+
+	* TODO, src/Makefile.am, src/browse.c, src/ggtrans.h, src/iq.c, src/jabber.c, src/main.c, src/sessions.c, src/users.c:
+	- strip whitespaces from configuration files entries
+
+	* TODO, src/stream.c:
+	- Error message, when cannot connect to Jabber server
+
+	* src/register.c:
+	- fixed register bug
+
+	* src/iq.c:
+	- another WinJab bug workaround
+
+	* src/Makefile.am, src/browse.c, src/browse.h, src/iq.c, src/iq.h, TODO:
+	- browse support, seems to work
+
+	* ggtrans.xml, ggtrans.xml.Pl, src/iq.c:
+	- Use "x-gg" as service type (until gg is registered)
+
+	* src/iq.c, src/iq.h:
+	- improved/simplified <iq/> and namespace support, preparation for browsing
+
+	* TODO: +1
+
+2002-02-01  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/iq.c:
+	- WinJab workaround fix
+
+	* src/iq.c:
+	- WinJab "VCARD" bug workaround
+
+2002-01-30  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/debug.h, src/encoding.c, src/encoding.h, src/ggtrans.h, src/iq.c, src/iq.h, src/jabber.c, src/jabber.h, src/jid.c, src/jid.h, src/main.c, src/message.c, src/message.h, src/presence.c, src/presence.h, src/register.c, src/register.h, src/requests.c, src/requests.h, src/search.c, src/search.h, src/sessions.c, src/sessions.h, src/stream.c, src/stream.h, src/users.c, src/users.h:
+	- info about licensing and RCS Id tag in header of each source file
+
+	* ggtrans.xml, ggtrans.xml.Pl:
+	- info about sending user data to sms-express.com Sp. z o.o. in registration instructions
+
+	* TODO:
+	- 2 less
+
+	* src/sessions.c, src/users.c, src/users.h:
+	- support for system messages --- now sent only once and from the transport,
+	  not UIN=0
+
+	* autogen.sh, configure.ac:
+	- debug code enabled by default (without this users cannot send usefull bug reports)
+
+2002-01-25  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* BUGS:
+	- +1 bug
+
+2002-01-24  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/sessions.c:
+	- display "Pong not received" beafore sending next ping
+
+	* src/sessions.c:
+	- send ping, even if GG server doesn't respond
+
+2002-01-23  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/sessions.c:
+	- make ping_timeout work for all pings. Don't hardcode the timeout value.
+
+	* TODO:
+	- +1
+
+	* src/iq.c:
+	- fix for segfault on bad <iq type="set"/>
+
+2002-01-22  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/iq.c, src/message.c, src/presence.c:
+	- support for type="error" in <presence/>, <iq/> and message (fix for nasty DoS)
+
+2002-01-21  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* TODO:
+	- three new entries
+
+	* src/search.c:
+	- fix for crash when querying uin=0 for vcard
+
+2002-01-16  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/iq.c, src/jabber.c, src/message.c, src/presence.c, src/sessions.c, src/users.c:
+	- changed most g_strcasecmp to strcmp
+
+	* src/register.c:
+	- support for <remove/> in jabber:iq:register requests
+
+2002-01-15  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* configure.ac:
+	- version up (0.9 is already released)
+
+	* src/presence.c:
+	- don't confirm presence when not connected or not available
+
+	* libxode/Makefile.am, libxode/include/Makefile.am:
+	- do not install anything
+
+	* Makefile.am:
+	- s/pl/Pl/
+
+	* BUGS, INSTALL.Pl, Makefile.am, NEWS, README, README.Pl, TODO, ggtrans.xml, ggtrans.xml.Pl, ggtrans.xml.pl:
+	- dokumentacja
+
+	* src/Makefile.am:
+	- moved to sbindir
+
+	* src/main.c:
+	- help message fixed
+
+	* ggtrans.xml, ggtrans.xml.pl:
+	- sample config files
+
+	* src/presence.c:
+	- fixed two presence bugs:
+		- sending "show" instead of "status"
+		- crash on <presence type="unavailable"/>
+
+	* src/iq.c:
+	- fixed "wrong 'to'" message
+
+2002-01-14  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/main.c:
+	- fixed SEGV caused by not accessible log file
+
+	* src/main.c:
+	- pid file support
+
+	* README:
+	- updates
+
+	* src/main.c:
+	- logging (to syslog and/or file)
+	- config file set by configure script or command line
+
+	* src/Makefile.am:
+	- set config directory
+
+	* src/presence.c:
+	- confirm user presence, sending it back
+
+2002-01-13  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/Makefile.am, src/jabber.c, src/jabber.h, src/main.c, src/sessions.c:
+	- log handler
+	- command-line options
+	- daemon mode
+
+2002-01-12  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/iq.c, src/jabber.c, src/jabber.h:
+	- support for jabber:iq:gateway namespace
+
+	* src/presence.c:
+	- <presence type="probe"\> fixes
+
+2002-01-11  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/iq.h, src/presence.c, src/register.c, src/register.h, src/requests.c, src/requests.h, src/search.c, src/search.h, src/sessions.c:
+	- remember "to" of <iq/>, so we have proper "from" in result
+
+	* src/iq.c:
+	- xmlns="jabber:iq:agent" support
+
+	* src/presence.c, src/presence.h, src/sessions.c, src/sessions.h, src/users.c, src/users.h:
+	- support for <presence type="probe"/>
+
+	* autogen.sh:
+	- --enable-debug for configure
+
+	* libxode/src/Makefile.am:
+	- don't install libxode
+
+	* src/users.h, src/debug.h, src/encoding.c, src/ggtrans.h, src/iq.c, src/jabber.c, src/jabber.h, src/jid.c, src/main.c, src/message.c, src/presence.c, src/register.c, src/search.c, src/search.h, src/sessions.c, src/sessions.h, src/stream.c, src/stream.h, src/users.c:
+	- headers cleanup
+
+	* src/requests.c, src/requests.h:
+	- header cleanup
+	- support for pinging and timeout
+
+2002-01-09  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/encoding.c, src/iq.c, src/iq.h, src/message.c, src/register.c, src/requests.c, src/search.c, src/sessions.c, src/stream.c, src/users.c:
+	- better error handling
+	- memory allocation cleanup
+
+	* src/jabber.h:
+	- s/instructions/register_instructions/
+
+	* src/jabber.c:
+	- formating of strings in config file (eg. instructions). Minor config file format changes
+
+2002-01-07  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/Makefile.am, src/fds.c, src/fds.h, src/ggtrans.h, src/jabber.c, src/main.c, src/requests.c, src/requests.h, src/sessions.c, src/sessions.h, src/stream.c, src/stream.h:
+	- use g_lib_main and GIOChannel instead of select() and own FdHandler
+
+	* configure.ac:
+	- big endian check
+
+	* configure.ac:
+	- improvements
+
+	* README, NEWS:
+	- basic info
+
+	* libxode/configure.in:
+	- make it really build only static library
+
+	* libxode/autogen.sh:
+	- ./configure script is executed from ../configure
+
+	* src/.cvsignore, src/Makefile, src/Makefile.am, libxode/.cvsignore, libxode/COPYING, .cvsignore, AUTHORS, COPYING, Makefile.am, NEWS, README, autogen.sh, configure.ac:
+	- autoconf/automake/libtool support
+
+	* libxode/configure.in:
+	- make only static libraries
+
+2002-01-05  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/search.c:
+	- search fixed. Now searching using several fields should work.
+
+	* src/presence.c, src/register.c, src/register.h, src/sessions.h:
+	- fixes in registration/unregitration/change functions
+
+2002-01-04  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/iq.c, src/presence.c, src/presence.h, src/register.c, src/register.h, src/requests.c, src/requests.h, src/search.c, src/sessions.c, src/users.c, src/users.h:
+	- some work on registration: unregitration, changing user data (not finished)
+
+	* src/debug.h:
+	- debug() macro
+
+	* src/Makefile, src/encoding.c, src/fds.c, src/iq.c, src/jabber.c, src/jabber.h, src/jid.c, src/main.c, src/message.c, src/presence.c, src/register.c, src/requests.c, src/search.c, src/sessions.c, src/stream.c, src/users.c:
+	- debuging and other messages output using glib. Some debugging cleanups
+
+2002-01-03  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/message.c:
+	- fix to charset convertion when sending messages to GG
+
+	* src/Makefile:
+	- "make dep" fixed
+
+	* src/.deps, src/Makefile, src/encoding.c, src/encoding.h, src/fds.c, src/fds.h, src/iq.c, src/jabber.c, src/jabber.h, src/main.c, src/message.c, src/presence.c, src/presence.h, src/register.c, src/requests.c, src/requests.h, src/search.c, src/search.h, src/sessions.c, src/sessions.h, src/stream.c, src/users.c, src/users.h:
+	- UTF8 support
+	- search support
+	- user vCard fetch support
+
+	* src/.cvsignore:
+	- ignore .deps
+
+	* libxode/include/.cvsignore, libxode/.cvsignore:
+	- more ignores
+
+	* src/.cvsignore:
+	- some ignores
+
+2002-01-01  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/users.c, src/users.h, src/Makefile, src/iq.c, src/iq.h, src/jabber.c, src/jid.c, src/jid.h, src/main.c, src/message.c, src/message.h, src/presence.c, src/register.c, src/sessions.c, src/sessions.h:
+	- Wreszcie co¶ dzia³a:
+		- Rejestracja
+		- Powiadamianie o obecno¶ci w sieci
+		- Wiadomo¶ci, chat
+
+2001-12-31  Jacek Konieczny  <jajcus@bnet.pl>
+
+	* src/jabber.c, src/stream.c:
+	- proper handshake
+
+	* libxode/src/xmlparse.c, libxode/src/xmlrole.c, libxode/src/xmltok.c, libxode/src/xmltok_impl.c, libxode/src/xmltok_ns.c, libxode/src/xstream.c, libxode/src/xstream_test.c:
+	New file.
+
+	* libxode/src/.cvsignore:
+	- imported
+
+	* libxode/AUTHORS, libxode/ChangeLog, libxode/Makefile.am, libxode/NEWS, libxode/README, libxode/acconfig.h, libxode/autogen.sh, libxode/configure.in, libxode/include/.cvsignore, libxode/include/Makefile.am, libxode/include/asciitab.h, libxode/include/hashtable.h, libxode/include/iasciitab.h, libxode/include/latin1tab.h, libxode/include/libxode.h, libxode/include/nametab.h, libxode/include/stamp-h.in, libxode/include/utf8tab.h, libxode/include/xmldef.h, libxode/include/xmlparse.h, libxode/include/xmlrole.h, libxode/include/xmltok.h, libxode/include/xmltok_impl.h, libxode/libxode-config.in, libxode/solaris.autogen, libxode/src/Makefile.am, libxode/src/expat.c, libxode/src/genhash.c, libxode/src/hashtable.c, libxode/src/pool.c, libxode/src/sha.c, libxode/src/snprintf.c, libxode/src/socket.c, libxode/src/str.c, libxode/src/xmlnode.c, src/jid.c, src/jid.h, src/presence.c, src/presence.h, src/sessions.h, src/.deps, src/Makefile, src/fds.c, src/fds.h, src/ggtrans.h, src/iq.c, src/iq.h, src/jabber.c, src/jabber.h, src/main.c, src/register.c, src/register.h, src/sessions.c, src/stream.c, src/stream.h, src/users.c, src/users.h:
+	New file.
+
