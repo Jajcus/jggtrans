@@ -1,4 +1,4 @@
-/* $Id: ggtrans.h,v 1.4 2002/01/30 16:52:03 jajcus Exp $ */
+/* $Id: ggtrans.h,v 1.5 2002/02/02 19:49:54 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -24,7 +24,6 @@
 #include <glib.h>
 #include "../config.h"
 
-extern xmlnode config;
 extern GMainLoop *main_loop;
 
 #endif

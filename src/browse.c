@@ -3,7 +3,7 @@
 #include "iq.h"
 #include "browse.h"
 #include "debug.h"
-
+#include "conf.h"
 
 void jabber_iq_get_server_browse(Stream *s,const char *from,const char * to,const char *id,xmlnode q){
 xmlnode result;

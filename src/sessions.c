@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.17 2002/01/30 16:52:03 jajcus Exp $ */
+/* $Id: sessions.c,v 1.18 2002/02/02 19:49:54 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -29,6 +29,7 @@
 #include "jid.h"
 #include "message.h"
 #include "debug.h"
+#include "conf.h"
 
 static int conn_timeout=30;
 static int pong_timeout=30;
@@ -37,39 +38,27 @@ GHashTable *sessions_jid;
 
 int sessions_init(){
 char *proxy_ip;
-char *proxy_port;
 char *data;
 int port;
+int i;
 xmlnode node;
 
 
 	sessions_jid=g_hash_table_new(g_str_hash,g_str_equal);
 	if (!sessions_jid) return -1;
 	
-	node=xmlnode_get_tag(config,"conn_timeout");
-	if (node){
-		data=xmlnode_get_data(node);
-		if (data) conn_timeout=atoi(data);
-	}
-	node=xmlnode_get_tag(config,"pong_timeout");
-	if (node){
-		data=xmlnode_get_data(node);
-		if (data) pong_timeout=atoi(data);
-	}
-	node=xmlnode_get_tag(config,"ping_interval");
-	if (node){
-		data=xmlnode_get_data(node);
-		if (data) ping_interval=atoi(data);
-	}
+	i=config_load_int("conn_timeout");
+	if (i>0) conn_timeout=i;
+	i=config_load_int("pong_timeout");
+	if (i>0) pong_timeout=i;
+	i=config_load_int("ping_interval");
+	if (i>0) ping_interval=i;
 	
-	node=xmlnode_get_tag(config,"proxy/ip");
-	if (node) proxy_ip=xmlnode_get_data(node);
-	if (!node || !proxy_ip) return 0;
-	node=xmlnode_get_tag(config,"proxy/port");
-	if (node) proxy_port=xmlnode_get_data(node);
+	proxy_ip=config_load_string("proxy/ip");
+	if (!proxy_ip) return 0;
+	port=config_load_int("proxy/port");
+	if (port<=0) return 0;
 	
-	if (!node || !proxy_port) return 0;
-	port=atoi(proxy_port);
 	g_message("Using proxy: http://%s:%i",proxy_ip,port);
 	gg_http_use_proxy=1;
 	gg_http_proxy_host=proxy_ip;

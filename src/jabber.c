@@ -1,4 +1,4 @@
-/* $Id: jabber.c,v 1.12 2002/01/30 16:52:03 jajcus Exp $ */
+/* $Id: jabber.c,v 1.13 2002/02/02 19:49:54 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -24,6 +24,7 @@
 #include "presence.h"
 #include "message.h"
 #include "users.h"
+#include "conf.h"
 
 Stream *stream=NULL;
 char *stream_id=NULL;
@@ -188,65 +189,6 @@ int jabber_done(){
 	return 0;
 }
 
-static char *load_config_string(const char *tag){
-xmlnode node,child;
-char *out,*tmp,*add,*name;
-int t;
-int i,j,sp;	
-
-	node=xmlnode_get_tag(config,tag);
-	if (!node) return NULL;
-	out=g_strdup("");	
-	child=xmlnode_get_firstchild(node);
-	while(child){
-		t=xmlnode_get_type(child);
-		add=NULL;
-		switch(t){
-			case NTYPE_TAG:
-				name=xmlnode_get_name(child);
-				if (!g_strcasecmp(name,"p")){
-					if (out[0]) add="\n";
-				}
-				else if (!g_strcasecmp(name,"br"))
-					add="\n";
-				else g_warning("Unknown formatting '%s' in '%s'",
-						xmlnode2str(child),xmlnode2str(node));
-				break;
-			case NTYPE_CDATA:
-				tmp=xmlnode_get_data(child);
-				add=g_new(char,strlen(tmp)+1);
-				sp=1;
-				for(i=j=0;tmp[i];i++){
-					if (!isspace(tmp[i])){
-						sp=0;
-						add[j++]=tmp[i];
-					}
-					else if (!sp){
-						add[j++]=' ';
-						sp=1;
-					}
-				}
-				if (j && sp) j--;
-				add[j]=0;
-				break;
-			case NTYPE_ATTRIB:
-				g_error("Unexpected attribute");
-				break;
-			default:
-				g_error("Unknown node type: %i",t);
-				break;
-		}
-		if (add){
-			tmp=out;
-			out=g_strconcat(out,add,NULL);
-			g_free(tmp);
-		}
-		child=xmlnode_get_nextsibling(child);
-	}
-	
-	return out;
-}
-
 static char *server;
 static int port;
 
@@ -262,35 +204,32 @@ xmlnode node;
 	if (!my_name) 
 		g_error("<service/> without \"jid\" in config file");
 	
-	node=xmlnode_get_tag(config,"connect/ip");
-	if (node) server=xmlnode_get_data(node);
-	if (!node || !server)
+	server=config_load_string("connect/ip");
+	if (!server)
 		g_error("Jabberd server not found in config file");
 	
-	node=xmlnode_get_tag(config,"connect/port");
-	if (node) str=xmlnode_get_data(node);
-	if (!node || !str) 
+	port=config_load_int("connect/port");
+	if (port<=0) 
 		g_error("Connect port not found in config file");
-	port=atoi(str);
 	
 	node=xmlnode_get_tag(config,"connect/secret");
 	if (node) secret=xmlnode_get_data(node);
 	if (!node || !secret) 
 		g_error("Connect secret not found in config file");
 	
-	register_instructions=load_config_string("register/instructions");
+	register_instructions=config_load_formatted_string("register/instructions");
 	if (!register_instructions) 
 		g_error("Registration instructions not not found in config file");
 
-	search_instructions=load_config_string("search/instructions");
+	search_instructions=config_load_formatted_string("search/instructions");
 	if (!search_instructions)
 		g_error("Search instructions not found in config file");
 
-	gateway_desc=load_config_string("gateway/desc");
+	gateway_desc=config_load_formatted_string("gateway/desc");
 	if (!gateway_desc)
 		g_error("Gateway instructions not found in config file");
 
-	gateway_prompt=load_config_string("gateway/prompt");
+	gateway_prompt=config_load_formatted_string("gateway/prompt");
 	if (!gateway_prompt)
 		g_error("Gateway prompt not found in config file");
 

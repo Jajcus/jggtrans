@@ -1,6 +1,9 @@
-- strip whitespaces from pidfile and possibly other settings read from ggtrans.xml
+As soon as possible:
 
+Always:
 - bug fixes
-- invisible/"just for friends" modes
-- file transfer
+
+Some day:
 - changing uid/gid when run as root
+- invisible/"just for friends" modes (waiting for support in Jabber)
+- file transfer

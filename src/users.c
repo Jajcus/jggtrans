@@ -1,4 +1,4 @@
-/* $Id: users.c,v 1.11 2002/01/30 16:52:03 jajcus Exp $ */
+/* $Id: users.c,v 1.12 2002/02/02 19:49:54 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -26,6 +26,7 @@
 #include "jid.h"
 #include "presence.h"
 #include "debug.h"
+#include "conf.h"
 
 GHashTable *users_jid=NULL;
 static char *spool_dir;
@@ -34,9 +35,8 @@ int users_init(){
 xmlnode node;
 int r;
 
-	node=xmlnode_get_tag(config,"spool");
-	if (node) spool_dir=xmlnode_get_data(node);
-	if (!node || !spool_dir)
+	spool_dir=config_load_string("spool");
+	if (!spool_dir)
 		g_error("No <spool/> defined in config file");
 
 	r=chdir(spool_dir);

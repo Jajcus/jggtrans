@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.12 2002/01/30 16:52:03 jajcus Exp $ */
+/* $Id: main.c,v 1.13 2002/02/02 19:49:54 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -27,13 +27,13 @@
 #include "jabber.h"
 #include "sessions.h"
 #include "encoding.h"
+#include "conf.h"
 #include "debug.h"
 
 #ifndef OPEN_MAX
 #define OPEN_MAX 255
 #endif
 
-xmlnode config;
 GMainLoop *main_loop;
 
 static int signal_received=FALSE;
@@ -360,13 +360,12 @@ FILE *f;
 		}
 		else if (!strcmp(log_type,"file")){
 			if (log_filename) g_warning("Multiple log files specified. Using only one.");
-			else log_filename=xmlnode_get_data(tag);
+			else log_filename=g_strstrip(xmlnode_get_data(tag));
 		}
 		else g_warning("Ignoring unknown log type: %s",xmlnode2str(tag));
 	}
 
-	tag=xmlnode_get_tag(config,"pidfile");
-	if (tag) pid_filename=xmlnode_get_data(tag);
+	pid_filename=config_load_string("pidfile");
 
 	if (pid_filename){
 		f=fopen(pid_filename,"r");

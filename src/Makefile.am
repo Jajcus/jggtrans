@@ -5,6 +5,8 @@ jggtrans_SOURCES= \
 	debug.h \
 	browse.h \
 	browse.c \
+	conf.h \
+	conf.c \
 	encoding.c \
 	encoding.h \
 	ggtrans.h \

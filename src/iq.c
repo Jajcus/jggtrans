@@ -1,4 +1,4 @@
-/* $Id: iq.c,v 1.20 2002/02/02 13:35:06 jajcus Exp $ */
+/* $Id: iq.c,v 1.21 2002/02/02 19:49:54 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -25,6 +25,7 @@
 #include "iq.h"
 #include "browse.h"
 #include "debug.h"
+#include "conf.h"
 
 const char *gateway_desc;
 const char *gateway_prompt;
