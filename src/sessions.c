@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.20 2002/02/04 08:17:16 jajcus Exp $ */
+/* $Id: sessions.c,v 1.21 2002/02/04 08:18:28 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -180,7 +180,7 @@ GIOCondition cond;
 gdouble t;
 Resource *r;
 
-	if (condition&(G_IO_HUP|G_IO_NVAL)){
+	if (condition&(G_IO_NVAL)){
 		s=(Session *)data;
 		if (condition&G_IO_ERR) g_warning("Error on connection for %s",s->jid);
 		if (condition&G_IO_HUP) g_warning("Hangup on connection for %s",s->jid);
