@@ -1,4 +1,4 @@
-/* $Id: encoding.c,v 1.5 2002/01/30 16:52:03 jajcus Exp $ */
+/* $Id: encoding.c,v 1.6 2002/02/23 16:28:19 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -70,6 +70,7 @@ int r;
 				inbuf++;
 				*(outbuf++)='?';
 				outbytesleft--;
+				inbytesleft--;
 				if (outbytesleft>0) break;
 			case E2BIG:
 				buf_len+=1024;
