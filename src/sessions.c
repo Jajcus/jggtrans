@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.89 2003/09/07 11:45:49 smoku Exp $ */
+/* $Id: sessions.c,v 1.90 2003/09/08 07:57:31 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -324,6 +324,31 @@ int i;
 	return 0;
 }
 
+void session_broken(Session *s){
+	
+	if (s->req_id){
+		jabber_iq_send_error(s->s,s->jid,NULL,s->req_id,502,_("Remote Server Error"));
+	}
+	else{
+		GList *it;
+		presence_send(s->s,NULL,s->user->jid,0,NULL,"Connection broken",0);
+		for(it=s->user->contacts;it;it=it->next){
+			Contact *c=(Contact *)it->data;
+
+			if (!GG_S_NA(c->status) && c->status!=-1){
+				char *ujid;
+				ujid=jid_build_full(c->uin);
+				presence_send(s->s,ujid,s->user->jid,0,NULL,"Transport disconnected",0);
+				g_free(ujid);
+			}
+		}
+	}
+	s->connected=0;
+	s->io_watch=0;
+	session_schedule_reconnect(s);
+	session_remove(s);
+}
+
 
 int session_io_handler(GIOChannel *source,GIOCondition condition,gpointer data){
 Session *s;
@@ -349,16 +374,7 @@ time_t timestamp;
 		}
 		if (condition&G_IO_NVAL) g_warning(N_("Invalid channel on connection for %s"),s->jid);
 
-		if (s->req_id){
-			jabber_iq_send_error(s->s,s->jid,NULL,s->req_id,502,_("Remote Server Error"));
-		}
-		else{
-			presence_send(s->s,NULL,s->user->jid,0,NULL,"Connection broken",0);
-		}
-		s->connected=0;
-		s->io_watch=0;
-		session_schedule_reconnect(s);
-		session_remove(s);
+		session_broken(s);
 		return FALSE;
 	}
 
@@ -366,32 +382,14 @@ time_t timestamp;
 	event=gg_watch_fd(s->ggs);
 	if (!event){
 		g_warning(N_("Connection broken. Session of %s"),s->jid);
-		if (s->req_id){
-			jabber_iq_send_error(s->s,s->jid,NULL,s->req_id,502,_("Remote Server Error"));
-		}
-		else{
-			presence_send(s->s,NULL,s->user->jid,0,NULL,"Connection broken",0);
-		}
-		s->connected=0;
-		s->io_watch=0;
-		session_schedule_reconnect(s);
-		session_remove(s);
+		session_broken(s);
 		return FALSE;
 	}
 
 	switch(event->type){
 		case GG_EVENT_DISCONNECT:
 			g_warning(N_("Server closed connection of %s"),s->jid);
-			if (s->req_id){
-				jabber_iq_send_error(s->s,s->jid,NULL,s->req_id,502,_("Remote Server Error"));
-			}
-			else{
-				presence_send(s->s,NULL,s->user->jid,0,NULL,"Connection broken",0);
-			}
-			s->connected=0;
-			s->io_watch=0;
-			session_schedule_reconnect(s);
-			session_remove(s);
+			session_broken(s);
 			gg_event_free(event);
 			return FALSE;
 		case GG_EVENT_CONN_FAILED:
