@@ -1,4 +1,4 @@
-/* $Id: browse.c,v 1.12 2003/04/16 11:10:17 jajcus Exp $ */
+/* $Id: browse.c,v 1.13 2003/05/07 08:29:01 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -35,7 +35,8 @@ xmlnode n;
 char *str;
 GgServer *server;
 
-	n=xmlnode_insert_tag(result,"user");
+	n=xmlnode_insert_tag(result,"item");
+	xmlnode_put_attrib(n,"category","user");
 	xmlnode_put_attrib(n,"type","client");
 	xmlnode_put_attrib(n,"jid",jid);
 
@@ -100,10 +101,12 @@ int i;
 		else jabber_iq_send_error(s,from,to,id,404,_("Browse request for unknown resource"));
 		return;
 	}
-	result=xmlnode_new_tag("service");
+	result=xmlnode_new_tag("item");
 	xmlnode_put_attrib(result,"xmlns","jabber:iq:browse");
+	xmlnode_put_attrib(result,"category","service");
 	xmlnode_put_attrib(result,"type","x-gadugadu");
 	xmlnode_put_attrib(result,"jid",my_name);
+	xmlnode_put_attrib(result,"version",VERSION);
 	n=xmlnode_get_tag(config,"vCard/FN");
 	if (n){
 		str=xmlnode_get_data(n);
@@ -135,8 +138,9 @@ xmlnode result;
 xmlnode n;
 int i;
 
-	result=xmlnode_new_tag("user");
+	result=xmlnode_new_tag("item");
 	xmlnode_put_attrib(result,"xmlns","jabber:iq:browse");
+	xmlnode_put_attrib(result,"category","user");
 	xmlnode_put_attrib(result,"type","client");
 	xmlnode_put_attrib(result,"jid",to);
 	for(i=0;client_iq_ns[i].ns;i++){
