@@ -1,4 +1,4 @@
-/* $Id: stats.h,v 1.1 2003/04/14 09:07:29 jajcus Exp $ */
+/* $Id$ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>

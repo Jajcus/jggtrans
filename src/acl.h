@@ -1,4 +1,4 @@
-/* $Id: acl.h,v 1.1 2003/04/14 12:46:03 jajcus Exp $ */
+/* $Id$ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
