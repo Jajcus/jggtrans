@@ -1,4 +1,4 @@
-/* $Id: encoding.c,v 1.10 2002/12/25 11:03:48 jajcus Exp $ */
+/* $Id: encoding.c,v 1.11 2002/12/29 17:17:30 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -18,27 +18,17 @@
  */
 
 #include "ggtrans.h"
-#include <iconv.h>
 #include <errno.h>
 #include <assert.h>
 #include "encoding.h"
+#include "enc_win2uni.h"
+#include "enc_uni2win.h"
 
-#define ENCODING "windows-1250"
-
-static iconv_t to_utf8_c;
-static iconv_t from_utf8_c;
-static char *buf;
+static unsigned char *buf;
 static int buf_len;
-
 
 int encoding_init(){
 
-	to_utf8_c=iconv_open("utf-8",ENCODING);
-	if (to_utf8_c==(iconv_t)-1)
-		g_error("Couldn't open 'to Unicode' converter (%s)",g_strerror(errno));
-	from_utf8_c=iconv_open(ENCODING,"utf-8");
-	if (from_utf8_c==(iconv_t)-1)
-		g_error("Couldn't open 'from Unicode' converter (%s)",g_strerror(errno));
 	buf_len=16;
 	buf=g_new(char,buf_len);
 	return 0;
@@ -46,67 +36,149 @@ int encoding_init(){
 
 void encoding_done(){
 
-	iconv_close(to_utf8_c);
-	iconv_close(from_utf8_c);
 	g_free(buf);
 }
 
-static char *convert(iconv_t conv,const char *str){
-char *inbuf;
-size_t inbytesleft;
-char *outbuf;
-char *oldbuf;
-size_t outbytesleft;
-int r;
+char *to_utf8(const char *str){
+int o=0;
+int i;
+unsigned char c;
+unsigned u;
 
 	if (str==NULL) return NULL;
-	*buf=0;
-	inbuf=(char *)str;
-	inbytesleft=strlen(str);
-	outbuf=buf;
-	outbytesleft=buf_len-1;
-	iconv(conv,NULL,&inbytesleft,&outbuf,&outbytesleft);
-	while(inbytesleft>0){
-		r=iconv(conv,&inbuf,&inbytesleft,&outbuf,&outbytesleft);
-		if (r>=0){
-			*outbuf=0;
-			break;
+	if (buf_len<(3*strlen(str)+1)){
+		buf_len=3*strlen(str)+1; /* this should always be enough */
+		buf=(char *)g_realloc(buf,buf_len);
+		assert(buf!=NULL);
+	}
+	for(i=0;str[i];i++){
+		c=(unsigned char)str[i];
+		if (c<128){
+			buf[o++]=c;
+			continue;
 		}
-		switch(errno){
-			case EILSEQ:
-				if (!*inbuf) break;
-				inbuf++;
-				*(outbuf++)='?';
-				outbytesleft--;
-				inbytesleft--;
-				if (outbytesleft>0) break;
-			case E2BIG:
-				buf_len+=1024;
-				oldbuf=buf;
-				buf=(char *)g_realloc(oldbuf,buf_len);
-				assert(buf!=NULL);
-				outbytesleft+=1024;
-				outbuf=buf+(outbuf-oldbuf);
-				break;
-			case EINVAL:
-				inbytesleft=0;
-				break;
-			default:
-				*buf=0;
-				inbytesleft=0;
-				break;
+		u=win1250_to_unicode[c-128];
+		if (u==0||u>0x10000){ /* we don't need character > U+0x10000 */
+			buf[o++]='\xef';
+			buf[o++]='\xbf';
+			buf[o++]='\xbd';
+		}
+		else if (u<0x800){
+			buf[o++]=0xc0|(u>>6);
+			buf[o++]=0x80|(u&0x3f);
+		}
+		else {
+			buf[o++]=0xe0|(u>>12);
+			buf[o++]=0x80|((u>>6)&0x3f);
+			buf[o++]=0x80|(u&0x3f);
 		}
 	}
-	return buf;
-}
-
-char *to_utf8(const char *str){
-
-	return convert(to_utf8_c,str);
+	buf[o]=0;
+	return (char *)buf;
 }
 
 char *from_utf8(const char *str){
-
-	return convert(from_utf8_c,str);
+unsigned char b,c;
+unsigned u;
+int o=0;
+int i;
+	
+	if (str==NULL) return NULL;
+	if (buf_len<(strlen(str)+1)){
+		buf_len=strlen(str)+1; /* this should always be enough */
+		buf=(char *)g_realloc(buf,buf_len);
+		assert(buf!=NULL);
+	}
+	for(i=0;str[i];i++){
+		b=(unsigned char)str[i];
+		if ((b&0x80)==0) { /* ASCII */
+			buf[o++]=b;
+			continue;
+		}
+		if ((b&0xc0)==0x80) { /* middle of UTF-8 char */
+			continue;
+		}
+		if ((b&0xe0)==0xc0) {
+			u=b&0x1f;
+			i++;
+			b=(unsigned char)str[i];
+			if (b==0){
+				buf[o++]='?';
+				break;
+			}
+			if ((b&0xc0)!=0x80){ 
+				buf[o++]='?';
+				continue;
+			}
+			u=(u<<6)|(b&0x3f);
+		}
+		else if ((b&0xf0)==0xe0) {
+			u=b&0x0f;
+			b=(unsigned char)str[++i];
+			if (b==0){
+				buf[o++]='?';
+				break;
+			}
+			if ((b&0xc0)!=0x80){ 
+				buf[o++]='?';
+				continue;
+			}
+			u=(u<<6)|(b&0x3f);
+			b=(unsigned char)str[++i];
+			if (b==0){
+				buf[o++]='?';
+				break;
+			}
+			if ((b&0xc0)!=0x80){ 
+				buf[o++]='?';
+				continue;
+			}
+			u=(u<<6)|(b&0x3f);
+		}
+		else{
+			buf[o++]='?';
+			continue;
+		}
+		if (u<0x00a0) 
+			buf[o++]='?';
+		else if (u<0x0180) 
+			buf[o++]=unicode_to_win1250_a0_17f[u-0x00a0];
+		else if (u==0x02c7)
+			buf[o++]=0xa1;
+		else if (u<0x02d8)
+			buf[o++]='?';
+		else if (u<0x02de)
+			buf[o++]=unicode_to_win1250_2d8_2dd[u-0x02d8];
+		else if (u<0x2013)
+			buf[o++]='?';
+		else if (u<0x203b)
+			buf[o++]=unicode_to_win1250_2013_203a[u-0x2013];
+		else if (u==0x20ac)
+			buf[o++]=0x80;
+		else if (u==0x2122)
+			buf[o++]=0x99;
+		else
+			buf[o++]='?';
+	}
+	buf[o]=0;
+	return buf;
 }
 
+#ifdef ENCODINGTEST
+#include <stdio.h>
+
+int main(int argc,char *argv[]){
+char buf[1024],*p;
+
+	encoding_init();
+	while(1){
+		p=fgets(buf,1024,stdin);
+		if (p==NULL || buf[0]=='\n') break;
+		printf("To UTF8: %s",to_utf8(buf));
+		printf("From UTF8: %s",from_utf8(buf));
+	}
+	encoding_done();
+	return 0;
+}
+
+#endif

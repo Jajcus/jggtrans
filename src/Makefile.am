@@ -36,6 +36,13 @@ jggtrans_SOURCES= \
 	users.c \
 	users.h 
 
+check_PROGRAMS = encodingtest
+encodingtest_SOURCES = \
+	encoding.c \
+	encoding.h 
+encodingtest_CFLAGS=-DENCODINGTEST
+encodingtest_LDADD=$(GLIB_LIBS)
+
 INCLUDES=$(GLIB_CFLAGS) -I$(top_srcdir)/libxode/include
 
 jggtrans_CFLAGS=-DVERSION="\"$(VERSION)\"" -DSYSCONFDIR=\"$(sysconfdir)\"
