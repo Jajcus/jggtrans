@@ -6,9 +6,8 @@ To build GaduGadu transport you need:
 	- glib >= 1.2.0 (http://www.gtk.org/)
 		Tested with glib-1.2.10
 
-	- libgadu >= 20030130 (http://dev.null.pl/ekg/)
-		You will probably need some CVS snapshot
-		Tested with snapshot 20030130
+	- libgadu >= 20030130 or 1.0 (http://dev.null.pl/ekg/)
+		Tested with libgadu-1.0rc3
 	
 	- pkgconfig (http://www.freedesktop.org/software/pkgconfig/)
 
