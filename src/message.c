@@ -1,4 +1,4 @@
-/* $Id: message.c,v 1.44 2004/03/17 22:40:02 jajcus Exp $ */
+/* $Id: message.c,v 1.45 2004/04/30 06:56:22 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -194,7 +194,6 @@ int i;
 	g_free(jid);
 
 	xmlnode_put_attrib(msg,"to",s->user->jid);
-	xmlnode_put_attrib(msg,"type","chat");
 	n=xmlnode_insert_tag(msg,"body");
 	roster=xmlnode_insert_tag(msg,"x");
 	xmlnode_put_attrib(roster,"xmlns","jabber:x:roster");
@@ -248,7 +247,8 @@ int i;
 			t=g_strdup_printf("%sDisplay: %s\n",body,cinfo[3]);
 			g_free(body);
 			body=t;
-			if (name==NULL) name=g_strdup(cinfo[3]);
+			if (name) g_free(name);
+			name=g_strdup(cinfo[3]);
 		}
 		if (cinfo[4] && cinfo[4][0]){
 			t=g_strdup_printf("%sPhone: %s\n",body,cinfo[4]);
