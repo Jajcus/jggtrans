@@ -1,4 +1,4 @@
-/* $Id: acl.c,v 1.1 2003/04/14 12:46:03 jajcus Exp $ */
+/* $Id: acl.c,v 1.2 2003/04/16 09:41:25 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -52,8 +52,8 @@ struct acl_s *acl_e;
 		who=xmlnode_get_attrib(node,"who");
 		if (!who || who[0]=='\000' || !strcmp(who,"*")) who=NULL;
 		acl_e=g_new0(struct acl_s,1);
-		if (what) acl_e->what=what;
-		if (who) acl_e->who=who;
+		if (what) acl_e->what=g_strdup(what);
+		if (who) acl_e->who=g_strdup(who);
 		acl_e->allow=allow;
 		acl=g_list_append(acl,acl_e);
 	}
@@ -89,8 +89,7 @@ int result=0;
 		if (acl_e->who && jid) {
 			if (fnmatch(acl_e->who,jid,0)) continue; /* no match */
 		}
-		if (!acl_e->what) break; /* all match */
-		if (!xmlnode_get_tag(x,acl_e->what)) continue; /* no match */
+		if (acl_e && !xmlnode_get_tag(x,acl_e->what)) continue; /* no match */
 		result=acl_e->allow;
 		break;
 	}
