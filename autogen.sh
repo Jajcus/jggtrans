@@ -68,7 +68,7 @@ aclocal $ACLOCAL_FLAGS
 automake -a $am_opt
 autoconf
 
-./configure "$@"
+./configure --enable-debug "$@"
 
 echo 
 echo "Now type 'make' to compile $PROJECT."
