@@ -103,39 +103,45 @@
  </proxy>
  -->
 
-  <!-- You can change this values according to your needs -->
-  <conn_timeout>3000</conn_timeout>
-  <ping_interval>10</ping_interval>
+ <!-- You can change this values according to your needs -->
+ <conn_timeout>60</conn_timeout>
+ <ping_interval>10</ping_interval>
 
-  <!-- GaduGadu server doesn't seem to answer pings any more :-( 
-       So let's give it a year :-) -->
-  <pong_timeout>31536000</pong_timeout>
+ <!-- GaduGadu server doesn't seem to answer pings any more :-( 
+      So let's give it a year :-) -->
+ <pong_timeout>31536000</pong_timeout>
 
  <!-- this time after disconnection from gg server the transport
       will try to connect again -->
  <reconnect>300</reconnect>
 
- <!-- you can set gg server address here if the "autodetection" doesn't work -->
- <!-- this should be dotted-quad format, not the hostname -->
- <!--
- <gg_server>192.168.0.0</gg_server>
- -->
+ <!-- How long to wait before restart, after jabber server connection is broken
+      negative value means, that jggtrans should terminate --> 
+ <restart_timeout>60</restart_timeout>
 
- <!-- you can set gg server port here if the "autodetection" doesn't work -->
+ <!-- list of gg servers to use. 
+ 	<hub/> means "use GG hub to find server" 
+      	<server/> tag should contain server address and may contain "port"
+      	attribute with port number.
+	Servers (including hub) are tried in order as they appear in <servers/>
+	element.
+	A reasonable default server list is hardcoded in jggtrans.
+      -->
  <!--
- <gg_port>8074</gg_port>
+ <servers>
+	<hub/>
+	<server>217.17.41.84</server> 
+	<server>217.17.41.85</server> 
+	<server port="8074">217.17.41.86</server> 
+ </servers>
  -->
-
+ 
  <!-- Spool directory. This is the place, where user info will be stored. -->
  <!-- Be careful about permissions - users' GG passwords are stored there -->
  <spool>/var/lib/jabber/spool/gg.localhost/</spool>
 
  <!-- Where to store pid file. This tag is optional. -->
  <pidfile>/var/lib/jabber/ggtrans.pid</pidfile>
-
- <!-- How long to wait before restart, after jabber server connection is broken
-      negative value means, that jggtrans should terminate --> 
- <restart_timeout>60</restart_timeout>
 
 </jggtrans>
 <!--
