@@ -1,3 +1,22 @@
+Version 2.0.1
+-------------
+
+This is mainly bugfix release.
+
+Changes from 2.0.0:
+
+* GG number used to register in transport is displayed with the "menu"
+  and current settings
+
+* Translation of local messages (log, --help) rewritten so it should
+  really work now
+
+* Fixes for bugs in "get roster" code, which caused transport crash or
+  disconnection
+
+* Other (minor) bugfixes
+
+
 Version 2.0.0
 -------------
 
