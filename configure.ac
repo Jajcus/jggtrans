@@ -16,14 +16,17 @@ AM_PATH_GLIB(1.2.0,[],AC_MSG_ERROR("You need glib >= 1.2.0 to compile this."))
 # Checks for libraries.
 AC_CHECK_LIB([gg], [gg_login],[],AC_MSG_ERROR("You need libgg (from ekg package) to compile this."))
 
-AC_ARG_ENABLE(debug,
-		AC_HELP_STRING([--enable-debug],[Enable debugging code]),
-		[DEBUG=yes],[DEBUG=no])
+AC_ARG_ENABLE(debug,AC_HELP_STRING([--disable-debug],[Disable debugging code]))
+
+AC_ARG_WITH(efence,AC_HELP_STRING([--with-efence],[Link against ElectricFence library]))
 
 AH_TEMPLATE([DEBUG],[Define to enable debugging code])
-if test "x$DEBUG" = "xyes" ; then
-AC_DEFINE(DEBUG)
-AC_CHECK_LIB([efence], [malloc])
+if test "x$enable_debug" != "xno" ; then
+	AC_DEFINE(DEBUG,1)
+fi
+
+if test "x$with_efence" != "xno" ; then
+	AC_CHECK_LIB([efence], [malloc])
 fi
 
 # Checks for header files.
