@@ -1,4 +1,4 @@
-/* $Id: users.c,v 1.22 2003/01/14 11:03:03 jajcus Exp $ */
+/* $Id: users.c,v 1.23 2003/01/14 14:25:24 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -72,7 +72,7 @@ char *fn;
 char *str;
 char *njid;
 int r;	
-xmlnode xml,tag,userlist;
+xmlnode xml,tag,ctag,userlist;
 
 	g_assert(u!=NULL);
 	str=strchr(u->jid,'/');
@@ -115,10 +115,50 @@ xmlnode xml,tag,userlist;
 		userlist=xmlnode_insert_tag(xml,"userlist");
 		for(it=g_list_first(u->contacts);it;it=it->next){
 			c=(Contact *)it->data;
-			tag=xmlnode_insert_tag(userlist,"uin");
+			ctag=xmlnode_insert_tag(userlist,"contact");
 			str=g_strdup_printf("%lu",(unsigned long)c->uin);
-			xmlnode_insert_cdata(tag,str,-1);
+			xmlnode_put_attrib(ctag,"uin",str);
 			g_free(str);
+			if (c->first){
+				tag=xmlnode_insert_tag(ctag,"first");
+				xmlnode_insert_cdata(tag,c->first,-1);
+			}
+			if (c->last){
+				tag=xmlnode_insert_tag(ctag,"last");
+				xmlnode_insert_cdata(tag,c->last,-1);
+			}
+			if (c->nick){
+				tag=xmlnode_insert_tag(ctag,"nick");
+				xmlnode_insert_cdata(tag,c->nick,-1);
+			}
+			if (c->display){
+				tag=xmlnode_insert_tag(ctag,"display");
+				xmlnode_insert_cdata(tag,c->display,-1);
+			}
+			if (c->phone){
+				tag=xmlnode_insert_tag(ctag,"phone");
+				xmlnode_insert_cdata(tag,c->phone,-1);
+			}
+			if (c->group){
+				tag=xmlnode_insert_tag(ctag,"group");
+				xmlnode_insert_cdata(tag,c->group,-1);
+			}
+			if (c->email){
+				tag=xmlnode_insert_tag(ctag,"email");
+				xmlnode_insert_cdata(tag,c->email,-1);
+			}
+			if (c->x1 && strcmp(c->x1,"0")!=0){
+				tag=xmlnode_insert_tag(ctag,"x1");
+				xmlnode_insert_cdata(tag,c->x1,-1);
+			}
+			if (c->x2 && c->x2[0]){
+				tag=xmlnode_insert_tag(ctag,"x2");
+				xmlnode_insert_cdata(tag,c->x2,-1);
+			}
+			if (c->x3 && strcmp(c->x3,"0")!=0){
+				tag=xmlnode_insert_tag(ctag,"x3");
+				xmlnode_insert_cdata(tag,c->x3,-1);
+			}
 		}
 	}
 
@@ -211,16 +251,99 @@ char *p;
 	if (tag){
 		Contact *c;
 		
-		for(t=xmlnode_get_firstchild(tag);t;t=xmlnode_get_nextsibling(t))
-			if (!strcmp(xmlnode_get_name(t),"uin")
-					&& xmlnode_get_data(t)
-					&& atoi(xmlnode_get_data(t)) ) {
+		for(t=xmlnode_get_firstchild(tag);t;t=xmlnode_get_nextsibling(t)){
+			if (!strcmp(xmlnode_get_name(t),"uin")){
+				char *d;
+				int uin;
 
-					c=g_new0(Contact,1);
-					c->status=GG_STATUS_NOT_AVAIL;
-					c->uin=atoi(xmlnode_get_data(t));	
-					contacts=g_list_append(contacts,c);
+				d=xmlnode_get_data(t);
+				if (d==NULL) continue;
+				uin=atoi(d);
+				if (uin<=0) continue;
+
+				c=g_new0(Contact,1);
+				c->status=GG_STATUS_NOT_AVAIL;
+				c->uin=uin;	
+				contacts=g_list_append(contacts,c);
+				continue;
 			}
+			if (!strcmp(xmlnode_get_name(t),"contact")){
+				char *d;
+				int uin;
+
+				d=xmlnode_get_attrib(t,"uin");
+				if (d==NULL) continue;
+				uin=atoi(d);
+				if (uin<=0) continue;
+
+				c=g_new0(Contact,1);
+				c->status=GG_STATUS_NOT_AVAIL;
+				c->uin=uin;	
+
+				tag=xmlnode_get_tag(xml,"first");
+				if (tag){
+					d=xmlnode_get_data(tag);
+					if (d==NULL) d="";
+					c->first=g_strdup(d);
+				}
+				tag=xmlnode_get_tag(xml,"last");
+				if (tag){
+					d=xmlnode_get_data(tag);
+					if (d==NULL) d="";
+					c->last=g_strdup(d);
+				}
+				tag=xmlnode_get_tag(xml,"nick");
+				if (tag){
+					d=xmlnode_get_data(tag);
+					if (d==NULL) d="";
+					c->nick=g_strdup(d);
+				}
+				tag=xmlnode_get_tag(xml,"display");
+				if (tag){
+					d=xmlnode_get_data(tag);
+					if (d==NULL) d="";
+					c->display=g_strdup(d);
+				}
+				tag=xmlnode_get_tag(xml,"phone");
+				if (tag){
+					d=xmlnode_get_data(tag);
+					if (d==NULL) d="";
+					c->phone=g_strdup(d);
+				}
+				tag=xmlnode_get_tag(xml,"group");
+				if (tag){
+					d=xmlnode_get_data(tag);
+					if (d==NULL) d="";
+					c->group=g_strdup(d);
+				}
+				tag=xmlnode_get_tag(xml,"email");
+				if (tag){
+					d=xmlnode_get_data(tag);
+					if (d==NULL) d="";
+					c->email=g_strdup(d);
+				}
+				tag=xmlnode_get_tag(xml,"x1");
+				if (tag){
+					d=xmlnode_get_data(tag);
+					if (d==NULL) d="";
+					c->x1=g_strdup(d);
+				}
+				tag=xmlnode_get_tag(xml,"x2");
+				if (tag){
+					d=xmlnode_get_data(tag);
+					if (d==NULL) d="";
+					c->x2=g_strdup(d);
+				}
+				tag=xmlnode_get_tag(xml,"x3");
+				if (tag){
+					d=xmlnode_get_data(tag);
+					if (d==NULL) d="";
+					c->x3=g_strdup(d);
+				}
+
+				contacts=g_list_append(contacts,c);
+			}
+		}
 	}
 	u=g_new0(User,1);
 	u->uin=atoi(uin);
@@ -260,6 +383,16 @@ Contact *c;
 	g_assert(u!=NULL);
 	for(it=u->contacts;it;it=it->next){
 		c=(Contact *)it->data;
+		g_free(c->first);
+		g_free(c->last);
+		g_free(c->nick);
+		g_free(c->display);
+		g_free(c->phone);
+		g_free(c->group);
+		g_free(c->email);
+		g_free(c->x1);
+		g_free(c->x2);
+		g_free(c->x3);
 		g_free(c->status_desc);
 		g_free(c);
 	}

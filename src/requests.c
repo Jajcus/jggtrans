@@ -1,4 +1,4 @@
-/* $Id: requests.c,v 1.13 2002/12/10 07:41:15 jajcus Exp $ */
+/* $Id: requests.c,v 1.14 2003/01/14 14:25:24 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -56,6 +56,22 @@ GIOCondition cond;
 			t=gg_search_watch_fd(r->gghttp);
 			if (t || r->gghttp->state==GG_STATE_ERROR) register_error(r);
 			else if (!t && r->gghttp->state==GG_STATE_DONE) register_done(r);
+			else break;
+			r->io_watch=0;
+			remove_request(r);
+			return FALSE;
+		case RT_USERLIST_GET:
+			t=gg_userlist_get_watch_fd(r->gghttp);
+			if (t || r->gghttp->state==GG_STATE_ERROR) get_roster_error(r);
+			else if (!t && r->gghttp->state==GG_STATE_DONE) get_roster_done(r);
+			else break;
+			r->io_watch=0;
+			remove_request(r);
+			return FALSE;
+		case RT_USERLIST_PUT:
+			t=gg_userlist_put_watch_fd(r->gghttp);
+			if (t || r->gghttp->state==GG_STATE_ERROR) put_roster_error(r);
+			else if (!t && r->gghttp->state==GG_STATE_DONE) put_roster_done(r);
 			else break;
 			r->io_watch=0;
 			remove_request(r);

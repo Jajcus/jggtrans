@@ -1,4 +1,4 @@
-/* $Id: message.c,v 1.13 2003/01/14 11:03:03 jajcus Exp $ */
+/* $Id: message.c,v 1.14 2003/01/14 14:25:24 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -19,31 +19,39 @@
 
 #include "ggtrans.h"
 #include <stdio.h>
+#include "message.h"
 #include "presence.h"
 #include "jabber.h"
 #include "jid.h"
 #include "users.h"
 #include "sessions.h"
+#include "requests.h"
 #include "encoding.h"
 
-typedef void (*MsgHandler)(struct stream_s *s,const char *from, const char *to,const char *args); 
+typedef void (*MsgHandler)(struct stream_s *s,const char *from, const char *to,
+				const char *args, xmlnode msg); 
 typedef struct iq_namespace_s{
 	const char *command;
 	const char *abr;
 	MsgHandler handler;
+	int experimental;
 }MsgCommand;
 
-void message_get_roster(struct stream_s *s,const char *from, const char *to,const char *args);
-void message_put_roster(struct stream_s *s,const char *from, const char *to,const char *args);
-void message_friends_only(struct stream_s *s,const char *from, const char *to,const char *args);
-void message_invisible(struct stream_s *s,const char *from, const char *to,const char *args);
+void message_get_roster(struct stream_s *s,const char *from, const char *to,
+				const char *args, xmlnode msg);
+void message_put_roster(struct stream_s *s,const char *from, const char *to,
+				const char *args, xmlnode msg);
+void message_friends_only(struct stream_s *s,const char *from, const char *to,
+				const char *args, xmlnode msg);
+void message_invisible(struct stream_s *s,const char *from, const char *to,
+				const char *args, xmlnode msg);
 
 MsgCommand msg_commands[]={
-	{"get roster","gr",message_get_roster},
-	{"put roster","pr",message_put_roster},
-	{"friends only","fo",message_friends_only},
-	{"invisible","iv",message_invisible},
-	{NULL,NULL,NULL},
+	{"get roster","gr",message_get_roster,1},
+	{"put roster","pr",message_put_roster,1},
+	{"friends only","fo",message_friends_only,1},
+	{"invisible","iv",message_invisible,1},
+	{NULL,NULL,NULL,0},
 };
 
 int message_send(struct stream_s *stream,const char *from,
@@ -101,21 +109,219 @@ char *s;
 }
 
 
-void message_get_roster(struct stream_s *stream,const char *from, const char *to,const char *args){
+void message_get_roster(struct stream_s *stream,const char *from, const char *to,
+				const char *args, xmlnode msg){
+struct gg_http *gghttp;
 User *user;
+Request *r;
 
 	user=user_get_by_jid(from);
+	
 	message_send(stream,to,from,1,"Receiving roster...");
+	
+	gghttp=gg_userlist_get(user->uin,user->password,1);
+	r=add_request(RT_USERLIST_GET,from,to,"",msg,gghttp,stream);
+	if (!r){
+		message_send_error(stream,to,from,NULL,
+					500,"Internal Server Error"); 
+	}
 }
 
-void message_put_roster(struct stream_s *stream,const char *from, const char *to,const char *args){
+void get_roster_error(struct request_s *r){
+	message_send_error(r->stream,r->to,r->from,NULL,
+				500,"Internal Server Error"); 
+	gg_userlist_get_free(r->gghttp);
+	r->gghttp=NULL;
+}
+
+void get_roster_done(struct request_s *r){
+char **results;
+char *body=NULL;
+xmlnode roster;
+xmlnode msg;
+xmlnode n;
+int i;
+	
+
+	message_send(r->stream,r->to,r->from,1,"Roster received.");
+	
+	msg=xmlnode_new_tag("message");
+	if (r->to!=NULL) 
+		xmlnode_put_attrib(msg,"from",r->to);
+	else{
+		char *jid;
+		jid=jid_my_registered();
+		xmlnode_put_attrib(msg,"from",jid);
+		g_free(jid);
+	}
+	xmlnode_put_attrib(msg,"to",r->from);
+	xmlnode_put_attrib(msg,"type","chat");
+	n=xmlnode_insert_tag(msg,"body");
+	roster=xmlnode_insert_tag(msg,"x");
+	xmlnode_put_attrib(roster,"xmlns","jabber:x:roster");
+	
+	results=g_strsplit(r->gghttp->data,"\r\n",0);
+	for(i=0;results[i];i++){
+		char **cinfo;
+		char *line,*t,*jid;
+		char *name=NULL;
+		int j,uin;
+		xmlnode item,tag;
+		
+		cinfo=g_strsplit(results[i],";",0);
+		for(j=0;cinfo[j];j++);
+		if (j<7){
+			g_strfreev(cinfo);
+			continue;
+		}
+
+		uin=atoi(cinfo[6]);
+		item=xmlnode_insert_tag(roster,"item");
+		
+		t=g_strconcat(body,"\n",NULL);
+		g_free(body);
+		body=t;
+
+		line=g_strdup_printf("Uin: %u\n",uin);
+		t=g_strconcat(body,line,NULL);
+		g_free(body);
+		body=t;
+	
+		if (cinfo[2] && cinfo[2][0]){
+			line=g_strdup_printf("Nick: %s\n",cinfo[2]);
+			t=g_strconcat(body,line,NULL);
+			g_free(body);
+			body=t;
+			if (name==NULL) name=g_strdup(cinfo[2]);
+		}
+		if (cinfo[0] && cinfo[0][0]){
+			line=g_strdup_printf("First name: %s\n",cinfo[0]);
+			t=g_strconcat(body,line,NULL);
+			g_free(body);
+			body=t;
+			if (name==NULL) name=g_strdup(cinfo[0]);
+		}
+		if (cinfo[1] && cinfo[1][0]){
+			line=g_strdup_printf("Last name: %s\n",cinfo[1]);
+			t=g_strconcat(body,line,NULL);
+			g_free(body);
+			body=t;
+			if (name==NULL) name=g_strdup(cinfo[1]);
+		}
+		if (cinfo[3] && cinfo[3][0]){
+			line=g_strdup_printf("Display: %s\n",cinfo[3]);
+			t=g_strconcat(body,line,NULL);
+			g_free(body);
+			body=t;
+			/* if (name==NULL) name=g_strdup(cinfo[3]); */
+		}
+		if (cinfo[4] && cinfo[4][0]){
+			line=g_strdup_printf("Phone: %s\n",cinfo[4]);
+			t=g_strconcat(body,line,NULL);
+			g_free(body);
+			body=t;
+		}
+		if (cinfo[5] && cinfo[5][0]){
+			line=g_strdup_printf("Group: %s\n",cinfo[5]);
+			t=g_strconcat(body,line,NULL);
+			g_free(body);
+			body=t;
+			tag=xmlnode_insert_tag(item,"group");
+			xmlnode_insert_cdata(n,to_utf8(cinfo[5]),-1);
+		}
+		if (cinfo[7] && cinfo[7][0]){
+			line=g_strdup_printf("E-mail: %s\n",cinfo[7]);
+			t=g_strconcat(body,line,NULL);
+			g_free(body);
+			body=t;
+		}
+
+		jid=jid_build(uin);
+		xmlnode_put_attrib(item,"jid",jid);
+		g_free(jid);
+		if (name==NULL) name=g_strdup_printf("%u",uin);
+		xmlnode_put_attrib(item,"name",name);
+		g_free(name);
+		g_strfreev(cinfo);
+	}
+	g_strfreev(results);
+	xmlnode_insert_cdata(n,to_utf8(body),-1);
+	
+	gg_userlist_put_free(r->gghttp);
+	r->gghttp=NULL;
+	stream_write(r->stream,msg);
+	xmlnode_free(msg);
+}
+
+void message_put_roster(struct stream_s *stream,const char *from, const char *to,
+			const char *args, xmlnode msg){
 User *user;
+struct gg_http *gghttp;
+char *contacts=NULL,*cinfo,*t;
+Contact *c;
+GList *it;
+Request *r;
+	
 
 	user=user_get_by_jid(from);
+
+	for(it=user->contacts;it;it=it->next){
+		c=(Contact *)it->data;
+		cinfo=g_strdup_printf("%s;%s;%s;%s;%s;%s;%u;%s;%s;%s;%s;\r\n",
+				c->first?c->first:"",
+				c->last?c->last:"",
+				c->nick?c->nick:"",
+				c->display?c->display:"",
+				c->phone?c->phone:"",
+				c->group?c->group:"",
+				c->uin,
+				c->email?c->email:"",
+				c->x1?c->x1:"0",
+				c->x2?c->x2:"",
+				c->x3?c->x3:"0");
+		if (contacts==NULL) {
+			contacts=cinfo;
+		}
+		else {
+			t=g_strconcat(contacts,cinfo,NULL);
+			g_free(contacts);
+			contacts=t;
+			g_free(cinfo);
+		}
+	}
+	
+	if (contacts==NULL){
+		message_send(stream,to,from,1,"No contacts defined.");
+		return;
+	}
+	
 	message_send(stream,to,from,1,"Sending roster...");
+	gghttp=gg_userlist_put(user->uin,user->password,contacts,1);
+	g_free(contacts);
+	r=add_request(RT_USERLIST_PUT,from,to,"",msg,gghttp,stream);
+	if (!r){
+		message_send_error(stream,to,from,NULL,
+					500,"Internal Server Error"); 
+	}
 }
 
-void message_friends_only(struct stream_s *stream,const char *from, const char *to,const char *args){
+void put_roster_error(struct request_s *r){
+
+	message_send_error(r->stream,r->to,r->from,NULL,
+				500,"Internal Server Error"); 
+	gg_userlist_put_free(r->gghttp);
+	r->gghttp=NULL;
+}
+
+void put_roster_done(struct request_s *r){
+
+	message_send(r->stream,r->to,r->from,1,"Roster sent.");
+	gg_userlist_put_free(r->gghttp);
+	r->gghttp=NULL;
+}
+
+void message_friends_only(struct stream_s *stream,const char *from, const char *to,
+				const char *args, xmlnode msg){
 Session *session;
 User *user;
 int on;
@@ -143,7 +349,8 @@ int on;
 	session_send_status(session);
 }
 	
-void message_invisible(struct stream_s *stream,const char *from, const char *to,const char *args){
+void message_invisible(struct stream_s *stream,const char *from, const char *to,
+				const char *args, xmlnode msg){
 Session *session;
 User *user;
 int on;
@@ -196,14 +403,17 @@ User *user;
 			if (ce[0]!='\000' && !isspace(ce[0])) continue;
 			p=g_strdup(ce);
 			args=g_strstrip(p);
-			msg_commands[i].handler(stream,from,to,args);
+			msg_commands[i].handler(stream,from,to,args,tag);
 			g_free(p);
 			return;
 		}
 	}
 	message_send(stream,to,from,1,"Available commands (and abbreviations):");
 	for(i=0;msg_commands[i].command;i++){
-		p=g_strdup_printf("  %s (%s)", msg_commands[i].command, msg_commands[i].abr);
+		p=g_strdup_printf("  %s (%s)%s", 
+				msg_commands[i].command, 
+				msg_commands[i].abr,
+				msg_commands[i].experimental?" EXPERIMENTAL!":"");
 		message_send(stream,to,from,1,p);
 		g_free(p);
 	}
