@@ -4,14 +4,17 @@ Version 1.2.0
 
 Changes from 1.1.0:
 
-* updated to new libgadu (works with libgadu-20021205)
+* updated to new libgadu (works with libgadu-20021205).
 
-* searching works again
+* searching works again.
 
-* IP address of active GG user in roster is provided in "About" field of user's
-  vCard
+* IP address of active GG user in roster is provided in "About" field of
+  user's vCard.
 
-* several memory leaks fixed
+* several memory leaks fixed.
+
+* workaround for buggy support for jabber:iq:gateway in some clients.
+  This fixes contact addition problems.
 
 
 Version 1.1.0
