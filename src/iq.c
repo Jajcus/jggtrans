@@ -1,4 +1,4 @@
-/* $Id: iq.c,v 1.18 2002/02/02 12:01:45 jajcus Exp $ */
+/* $Id: iq.c,v 1.19 2002/02/02 12:52:31 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -23,38 +23,32 @@
 #include "jid.h"
 #include "search.h"
 #include "iq.h"
+#include "browse.h"
 #include "debug.h"
 
 const char *gateway_desc;
 const char *gateway_prompt;
-
-typedef void (*IqHandler)(Stream *s,const char *from, const char *to,const char *id,xmlnode n); 
-
-typedef struct iq_namespace_s{
-	const char *ns;
-	const char *node_name;
-	IqHandler get_handler;
-	IqHandler set_handler;
-}IqNamespace;
 
 void jabber_iq_get_agent(Stream *s,const char *from,const char * to,const char *id,xmlnode q);
 void jabber_iq_get_server_vcard(Stream *s,const char *from,const char * to,const char *id,xmlnode q);
 void jabber_iq_get_gateway(Stream *s,const char *from,const char * to,const char *id,xmlnode q);
 void jabber_iq_set_gateway(Stream *s,const char *from,const char * to,const char *id,xmlnode q);
 	
-IqNamespace server_ns[]={
+IqNamespace server_iq_ns[]={
 	{"jabber:iq:register","query",jabber_iq_get_register,jabber_iq_set_register},
 	{"jabber:iq:search","query",jabber_iq_get_search,jabber_iq_set_search},
 	{"jabber:iq:agent","query",jabber_iq_get_agent,NULL},
 	{"jabber:iq:gateway","query",jabber_iq_get_gateway,jabber_iq_set_gateway},
+	{"jabber:iq:browse","item",jabber_iq_get_server_browse,NULL},
 	{"vcard-temp","vCard",jabber_iq_get_server_vcard,NULL},
 	{"vcard-temp","VCARD",jabber_iq_get_server_vcard,NULL}, /* WinJab workaround */
 	{NULL,NULL,NULL,NULL}
 };
 
-IqNamespace client_ns[]={
+IqNamespace client_iq_ns[]={
 	{"vcard-temp","vCard",jabber_iq_get_user_vcard,NULL},
 	{"vcard-temp","VCARD",jabber_iq_get_user_vcard,NULL}, /* WinJab workaround */
+	{"jabber:iq:browse","item",jabber_iq_get_client_browse,NULL},
 	{NULL,NULL,NULL,NULL}
 };
 
@@ -67,9 +61,9 @@ char *str;
 	iq=xmlnode_new_tag("iq");
 	xmlnode_put_attrib(iq,"type","error");
 	if (id) xmlnode_put_attrib(iq,"id",id);
-	xmlnode_put_attrib(iq,"was_to",was_from);
-	if (was_to) xmlnode_put_attrib(iq,"was_from",was_to);
-	else xmlnode_put_attrib(iq,"was_from",my_name);
+	xmlnode_put_attrib(iq,"to",was_from);
+	if (was_to) xmlnode_put_attrib(iq,"from",was_to);
+	else xmlnode_put_attrib(iq,"from",my_name);
 	error=xmlnode_insert_tag(iq,"error");
 	if (code>0) {
 		str=g_strdup_printf("%03u",(unsigned)code);
@@ -81,15 +75,15 @@ char *str;
 	xmlnode_free(iq);
 }
 
-void jabber_iq_send_result(Stream *s,const char *from,const char *to,const char *id,xmlnode content){
+void jabber_iq_send_result(Stream *s,const char *was_from,const char *was_to,const char *id,xmlnode content){
 xmlnode iq;
 
-	if (from==NULL) from=my_name;
+	if (was_from==NULL) was_from=my_name;
 	iq=xmlnode_new_tag("iq");
 	xmlnode_put_attrib(iq,"type","result");
 	if (id) xmlnode_put_attrib(iq,"id",id);
-	xmlnode_put_attrib(iq,"to",from);
-	if (to) xmlnode_put_attrib(iq,"from",to);
+	xmlnode_put_attrib(iq,"to",was_from);
+	if (was_to) xmlnode_put_attrib(iq,"from",was_to);
 	else xmlnode_put_attrib(iq,"from",my_name);
 	if (content) xmlnode_insert_tag_node(iq,content);
 	stream_write(s,iq);
@@ -252,8 +246,8 @@ int i;
 		return;
 	}
 
-	if (jid_is_me(to)) table=server_ns;
-	else table=client_ns;
+	if (jid_is_me(to)) table=server_iq_ns;
+	else table=client_iq_ns;
 
 	for(i=0;table[i].ns;i++)
 		if (!strcmp(table[i].ns,ns) && !strcmp(table[i].node_name,name)){

@@ -3,6 +3,8 @@ sbin_PROGRAMS=jggtrans
 
 jggtrans_SOURCES= \
 	debug.h \
+	browse.h \
+	browse.c \
 	encoding.c \
 	encoding.h \
 	ggtrans.h \
