@@ -1,4 +1,4 @@
-/* $Id: browse.c,v 1.14 2003/05/27 07:45:35 jajcus Exp $ */
+/* $Id: browse.c,v 1.15 2003/05/27 07:52:36 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -25,6 +25,7 @@
 #include "conf.h"
 #include "jid.h"
 #include "sessions.h"
+#include "disco.h"
 
 
 void browse_session(gpointer key,gpointer value,gpointer data){
@@ -33,38 +34,12 @@ const Session *sess=(Session *)value;
 xmlnode result=(xmlnode)data;
 xmlnode n;
 char *str;
-GgServer *server;
-char *using_tls="";
 
 	n=xmlnode_insert_tag(result,"item");
 	xmlnode_put_attrib(n,"category","user");
 	xmlnode_put_attrib(n,"type","client");
 	xmlnode_put_attrib(n,"jid",jid);
-
-	if (sess->current_server){
-		server=(GgServer *)sess->current_server->data;
-#ifdef __GG_LIBGADU_HAVE_OPENSSL
-		if (server->tls) using_tls=" with TLS";
-#endif
-		if (!server || server->port==1){
-			if (sess->connected){
-				str=g_strdup_printf(_("%s (Connected via hub to %s:%i%s)"),jid,
-						inet_ntoa(*(struct in_addr*)&sess->ggs->server_addr),
-						sess->ggs->port,
-						using_tls);
-			}
-			else{
-				str=g_strdup_printf(_("%s (Connecting via hub%s)"),jid,using_tls);
-			}
-		}
-		else
-			str=g_strdup_printf(_("%s (%s to %s:%u%s)"),jid,
-					sess->connected?_("Connected"):_("Connecting"),
-					inet_ntoa(server->addr),server->port,using_tls);
-	}
-	else
-		str=g_strdup_printf("%s (%s)",jid,
-				sess->connected?_("Connected"):_("Connecting"));
+	str=get_user_disco_string(sess);
 	xmlnode_put_attrib(n,"name",str);
 	g_free(str);
 }

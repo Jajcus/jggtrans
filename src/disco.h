@@ -1,4 +1,4 @@
-/* $Id: disco.h,v 1.1 2003/04/14 09:52:40 jajcus Exp $ */
+/* $Id: disco.h,v 1.2 2003/05/27 07:52:36 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -24,5 +24,8 @@ void jabber_iq_get_server_disco_items(Stream *s,const char *from,const char * to
 void jabber_iq_get_server_disco_info(Stream *s,const char *from,const char * to,const char *id,xmlnode q);
 void jabber_iq_get_client_disco_items(Stream *s,const char *from,const char * to,const char *id,xmlnode q);
 void jabber_iq_get_client_disco_info(Stream *s,const char *from,const char * to,const char *id,xmlnode q);
+
+struct session_s *sess;
+char * get_user_disco_string(const struct session_s *sess);
 
 #endif

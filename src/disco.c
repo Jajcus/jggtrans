@@ -1,4 +1,4 @@
-/* $Id: disco.c,v 1.8 2003/05/09 10:33:50 jajcus Exp $ */
+/* $Id: disco.c,v 1.9 2003/05/27 07:52:36 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -28,37 +28,56 @@
 
 static const char *extra_features[]={"iq","message","presence","presence-invisible",NULL};
 
+char * get_user_disco_string(const Session *sess){
+char *str;
+GgServer *server;
+char *using_tls="";
+
+	if (sess->current_server){
+		server=(GgServer *)sess->current_server->data;
+#ifdef __GG_LIBGADU_HAVE_OPENSSL
+		if (server->tls) using_tls=" with TLS";
+#endif
+		if (!server || server->port==1){
+			if (sess->connected){
+				str=g_strdup_printf(_("%s (Connected via hub to %s:%i%s)"),
+						sess->jid,
+						inet_ntoa(*(struct in_addr*)&sess->ggs->server_addr),
+						sess->ggs->port,
+						using_tls);
+			}
+			else{
+				str=g_strdup_printf(_("%s (Connecting via hub%s)"),
+						sess->jid,
+						using_tls);
+			}
+		}
+		else
+			str=g_strdup_printf(_("%s (%s to %s:%u%s)"),
+					sess->jid,
+					sess->connected?_("Connected"):_("Connecting"),
+					inet_ntoa(server->addr),
+					server->port,
+					using_tls);
+	}
+	else
+		str=g_strdup_printf("%s (%s)",
+				sess->jid,
+				sess->connected?_("Connected"):_("Connecting"));
+
+	return str;
+}
+
 static void disco_session(gpointer key,gpointer value,gpointer data){
 const char *jid=(char *)key;
 const Session *sess=(Session *)value;
 xmlnode result=(xmlnode)data;
 xmlnode n;
 char *str;
-GgServer *server;
 
 	n=xmlnode_insert_tag(result,"item");
 	xmlnode_put_attrib(n,"jid",jid);
-
-	if (sess->current_server){
-		server=(GgServer *)sess->current_server->data;
-		if (!server || server->port==1){
-			if (sess->connected){
-				str=g_strdup_printf(_("%s (Connected via hub to %s:%i)"),jid,
-						inet_ntoa(*(struct in_addr*)&sess->ggs->server_addr),
-						sess->ggs->port);
-			}
-			else{
-				str=g_strdup_printf(_("%s (Connecting via hub)"),jid);
-			}
-		}
-		else
-			str=g_strdup_printf(_("%s (%s to %s:%u)"),jid,
-					sess->connected?_("Connected"):_("Connecting"),
-					inet_ntoa(server->addr),server->port);
-	}
-	else
-		str=g_strdup_printf("%s (%s)",jid,
-				sess->connected?_("Connected"):_("Connecting"));
+	str=get_user_disco_string(sess);
 	xmlnode_put_attrib(n,"name",str);
 	g_free(str);
 }
