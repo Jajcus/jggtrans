@@ -1,4 +1,4 @@
-/* $Id: iq.c,v 1.41 2003/04/14 09:07:29 jajcus Exp $ */
+/* $Id: iq.c,v 1.42 2003/04/14 09:52:40 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -25,6 +25,7 @@
 #include "search.h"
 #include "iq.h"
 #include "browse.h"
+#include "disco.h"
 #include "stats.h"
 #include "debug.h"
 #include "conf.h"
@@ -53,6 +54,8 @@ IqNamespace server_iq_ns[]={
 	{"vcard-temp","vCard",jabber_iq_get_server_vcard,NULL},
 	{"vcard-temp","VCARD",jabber_iq_get_server_vcard,NULL}, /* WinJab bug workaround */
 	{"http://jabber.org/protocol/stats","query",jabber_iq_get_server_stats,NULL},
+	{"http://jabber.org/protocol/disco#items","query",jabber_iq_get_server_disco_items,NULL},
+	{"http://jabber.org/protocol/disco#info","query",jabber_iq_get_server_disco_info,NULL},
 	{NULL,NULL,NULL,NULL}
 };
 
@@ -62,6 +65,8 @@ IqNamespace client_iq_ns[]={
 	{"jabber:iq:browse","item",jabber_iq_get_client_browse,NULL},
 	{"jabber:iq:browse","query",jabber_iq_get_client_browse,NULL},/* WinJab bug (?) workaround */
 	{"jabber:iq:version","query",jabber_iq_get_client_version,NULL},
+	{"http://jabber.org/protocol/disco#items","query",jabber_iq_get_client_disco_items,NULL},
+	{"http://jabber.org/protocol/disco#info","query",jabber_iq_get_client_disco_info,NULL},
 	{NULL,NULL,NULL,NULL}
 };
 

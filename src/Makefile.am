@@ -7,6 +7,8 @@ jggtrans_SOURCES= \
 	conf.c \
 	conf.h \
 	debug.h \
+	disco.c \
+	disco.h \
 	enc_uni2win.h \
 	enc_win2uni.h \
 	encoding.c \
