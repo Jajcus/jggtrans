@@ -1,4 +1,4 @@
-/* $Id: iq.c,v 1.36 2003/04/05 11:02:57 jajcus Exp $ */
+/* $Id: iq.c,v 1.37 2003/04/06 10:50:58 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -161,7 +161,7 @@ int uin;
 User *u;
 GList *it;
 Contact *c;
-char verstring[20] = "- unknown -"; /* let it be a bit longer */
+char verstring[20] = _("- unknown -"); /* let it be a bit longer */
 char *ver;
 int version;
 
@@ -170,7 +170,7 @@ int version;
 	xmlnode_insert_cdata(xmlnode_insert_tag(query,"name"),"Gadu-Gadu(tm)",-1);
 	if (!jid_has_uin(to)){
 		g_warning("No UIN given in 'to': %s",to);
-		jabber_iq_send_error(s,from,to,id,400,"Bad Request");
+		jabber_iq_send_error(s,from,to,id,400,_("Bad Request"));
 		return;
 	}
 	uin=jid_get_uin(to);
@@ -201,17 +201,17 @@ xmlnode query;
 
 	n=xmlnode_get_tag(q,"prompt");
 	if (n==NULL){
-		jabber_iq_send_error(s,from,to,id,406,"Not Acceptable");
+		jabber_iq_send_error(s,from,to,id,406,_("Not Acceptable"));
 		return;
 	}
 	str=xmlnode_get_data(n);
 	if (str==NULL){
-		jabber_iq_send_error(s,from,to,id,406,"Not Acceptable");
+		jabber_iq_send_error(s,from,to,id,406,_("Not Acceptable"));
 		return;
 	}
 	uin=atoi(str);
 	if (uin<=0){
-		jabber_iq_send_error(s,from,to,id,406,"Not Acceptable");
+		jabber_iq_send_error(s,from,to,id,406,_("Not Acceptable"));
 		return;
 	}
 
@@ -229,7 +229,7 @@ xmlnode n;
 
 	n=xmlnode_get_tag(config,"vCard");
 	if (!n){
-		jabber_iq_send_error(s,from,to,id,503,"Service Unavailable");
+		jabber_iq_send_error(s,from,to,id,503,_("Service Unavailable"));
 		g_warning("No vcard for server defined");
 		return;
 	}
@@ -250,12 +250,12 @@ int i;
 	from=xmlnode_get_attrib(x,"from");
 	if (!to || !jid_is_my(to) ){
 		g_warning("Wrong to=%s (my name is %s)",to?to:"(null)",my_name);
-		jabber_iq_send_error(s,from,to,id,400,"Bad Request");
+		jabber_iq_send_error(s,from,to,id,400,_("Bad Request"));
 		return;
 	}
 	if (!from){
 		g_warning("No from in query: %s",xmlnode2str(x));
-		jabber_iq_send_error(s,from,to,id,400,"Bad Request");
+		jabber_iq_send_error(s,from,to,id,400,_("Bad Request"));
 		return;
 	}
 
@@ -264,14 +264,14 @@ int i;
 
 	if (!query){
 		g_warning("No subelement in <iq type='get'> in query: %s",xmlnode2str(x));
-		jabber_iq_send_error(s,from,to,id,400,"Bad Request");
+		jabber_iq_send_error(s,from,to,id,400,_("Bad Request"));
 		return;
 	}
 	name=xmlnode_get_name(query);
 	ns=xmlnode_get_attrib(query,"xmlns");
 	if (!ns){
 		g_warning("No namespace defined for <iq/> subelement: %s",xmlnode2str(query));
-		jabber_iq_send_error(s,from,to,id,400,"Bad Request");
+		jabber_iq_send_error(s,from,to,id,400,_("Bad Request"));
 		return;
 	}
 
@@ -284,7 +284,7 @@ int i;
 				if (table[i].set_handler) table[i].set_handler(s,from,to,id,query);
 				else{
 					g_warning("No <iq type='set'/> implemented for %s",ns);
-					jabber_iq_send_error(s,from,to,id,501,"Not implemented");
+					jabber_iq_send_error(s,from,to,id,501,_("Not implemented"));
 					return;
 				}
 			}
@@ -292,7 +292,7 @@ int i;
 				if (table[i].get_handler) table[i].get_handler(s,from,to,id,query);
 				else{
 					g_warning("No <iq type='get'/> implemented for %s",ns);
-					jabber_iq_send_error(s,from,to,id,501,"Not implemented");
+					jabber_iq_send_error(s,from,to,id,501,_("Not implemented"));
 					return;
 				}
 			}
@@ -300,12 +300,12 @@ int i;
 		}
 
 	g_warning("No known content in iq: %s",xmlnode2str(x));
-	jabber_iq_send_error(s,from,to,id,501,"Not implemented");
+	jabber_iq_send_error(s,from,to,id,501,_("Not implemented"));
 }
 
 void jabber_iq_not_implemented(Stream *s,const char *from,const char * to,const char *id,xmlnode q){
 
-	jabber_iq_send_error(s,from,to,id,501,"Not implemented");
+	jabber_iq_send_error(s,from,to,id,501,_("Not implemented"));
 }
 
 
