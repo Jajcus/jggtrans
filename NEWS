@@ -1,3 +1,13 @@
+Version 1.3.1
+-------------
+
+Changes from 1.3.0
+
+* crash caused by empty presence priority (sometimes sent by Exodus) fixed
+
+* pid file is written before privileges are dropped and is removed on exit
+
+
 Version 1.3.0
 -------------
 
