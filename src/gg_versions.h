@@ -1,4 +1,4 @@
-/* $Id: gg_versions.h,v 1.1 2003/03/25 07:43:45 jajcus Exp $ */
+/* $Id: gg_versions.h,v 1.1.2.1 2003/04/09 07:17:08 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
