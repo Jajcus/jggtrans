@@ -32,6 +32,11 @@ xmlnode node;
 		data=xmlnode_get_data(node);
 		if (data) conn_timeout=atoi(data);
 	}
+	node=xmlnode_get_tag(config,"pong_timeout");
+	if (node){
+		data=xmlnode_get_data(node);
+		if (data) pong_timeout=atoi(data);
+	}
 	node=xmlnode_get_tag(config,"ping_interval");
 	if (node){
 		data=xmlnode_get_data(node);
@@ -103,6 +108,8 @@ Session *s;
 	g_timer_start(s->ping_timer);
 	gg_ping(s->ggs);
 	s->waiting_for_pong=TRUE;
+	if (s->timeout_func) g_source_remove(s->timeout_func);
+	s->timeout_func=g_timeout_add(pong_timeout*1000,session_timeout,s);
 	return TRUE;
 }
 
@@ -247,6 +254,7 @@ gdouble t;
 			session_send_status(s);
 			if (s->user->contacts) session_send_notify(s);
 			presence_send(s->s,NULL,s->user->jid,1,NULL,"Online",0);
+			if (s->timeout_func) g_source_remove(s->timeout_func);
 			s->ping_timeout_func=
 				g_timeout_add(ping_interval*1000,session_ping,s);
 			break;	
@@ -271,7 +279,6 @@ gdouble t;
 						g_timer_elapsed(s->ping_timer,NULL));
 			}
 			if (s->timeout_func) g_source_remove(s->timeout_func);
-			s->timeout_func=g_timeout_add(pong_timeout*1000,session_timeout,s);
 			break;
 		case GG_EVENT_ACK:
 			debug("GG_EVENT_ACK");
