@@ -1,4 +1,4 @@
-/* $Id: register.c,v 1.28 2003/04/10 13:58:51 mmazur Exp $ */
+/* $Id: register.c,v 1.29 2003/04/10 17:19:18 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -50,7 +50,9 @@ int i;
 	tag=xmlnode_insert_tag(form,"title");
 	xmlnode_insert_cdata(tag,_("Jabber GG transport registration form"),-1);
 	tag=xmlnode_insert_tag(form,"instructions");
-	xmlnode_insert_cdata(tag,_("Fill in this form to regiser in the transport"),-1);
+	xmlnode_insert_cdata(tag,_("Fill in this form to regiser in the transport.\n"
+				"You may use registration later to change your settings,"
+				" password, public directory information or to unregister."),-1);
 	
 	field=xmlnode_insert_tag(form,"field");
 	xmlnode_put_attrib(field,"type","text-single");
@@ -98,18 +100,6 @@ int i;
 	xmlnode_put_attrib(field,"var","invisible");
 	value=xmlnode_insert_tag(field,"value");
 	xmlnode_insert_cdata(value,"0",-1);
-
-	field=xmlnode_insert_tag(form,"field");
-	xmlnode_put_attrib(field,"type","boolean");
-	xmlnode_put_attrib(field,"label",_("Set public GG user directory data"));
-	xmlnode_put_attrib(field,"var","setpubdir");
-	value=xmlnode_insert_tag(field,"value");
-	xmlnode_insert_cdata(value,"0",-1);
-
-	field=xmlnode_insert_tag(form,"field");
-	xmlnode_put_attrib(field,"type","fixed");
-	value=xmlnode_insert_tag(field,"value");
-	xmlnode_insert_cdata(value,_("Set your public directory info here (only if enabled above):"),-1);
 
 	return form;
 }
@@ -204,13 +194,11 @@ int i;
 	field=xmlnode_insert_tag(form,"field");
 	xmlnode_put_attrib(field,"type","text-private");
 	xmlnode_put_attrib(field,"var","newpassword");
-	xmlnode_insert_tag(field,"required");
 	xmlnode_put_attrib(field,"label",_("New password"));
 
 	field=xmlnode_insert_tag(form,"field");
 	xmlnode_put_attrib(field,"type","text-private");
 	xmlnode_put_attrib(field,"var","newpassword2");
-	xmlnode_insert_tag(field,"required");
 	xmlnode_put_attrib(field,"label",_("Confirm new password"));
 
 	field=xmlnode_insert_tag(form,"field");
@@ -228,6 +216,59 @@ int i;
 	value=xmlnode_insert_tag(field,"value");
 	xmlnode_insert_cdata(value,_("Fill out this part only when changing public directory info:"),-1);
 
+	field=xmlnode_insert_tag(form,"field");
+	xmlnode_put_attrib(field,"type","text-single");
+	xmlnode_put_attrib(field,"var","firstname");
+	xmlnode_put_attrib(field,"label",_("First name"));
+
+	field=xmlnode_insert_tag(form,"field");
+	xmlnode_put_attrib(field,"type","text-single");
+	xmlnode_put_attrib(field,"var","lastname");
+	xmlnode_put_attrib(field,"label",_("Last name"));
+
+	field=xmlnode_insert_tag(form,"field");
+	xmlnode_put_attrib(field,"type","text-single");
+	xmlnode_put_attrib(field,"var","nick");
+	xmlnode_put_attrib(field,"label",_("Nick"));
+
+	field=xmlnode_insert_tag(form,"field");
+	xmlnode_put_attrib(field,"type","text-single");
+	xmlnode_put_attrib(field,"var","birthyear");
+	xmlnode_put_attrib(field,"label",_("Birth year"));
+
+	field=xmlnode_insert_tag(form,"field");
+	xmlnode_put_attrib(field,"type","text-single");
+	xmlnode_put_attrib(field,"var","city");
+	xmlnode_put_attrib(field,"label",_("City"));
+
+	field=xmlnode_insert_tag(form,"field");
+	xmlnode_put_attrib(field,"type","list-single");
+	xmlnode_put_attrib(field,"var","gender");
+	xmlnode_put_attrib(field,"label",_("Sex"));
+	value=xmlnode_insert_tag(field,"value");
+	option=xmlnode_insert_tag(field,"option");
+	xmlnode_put_attrib(option,"label","");
+	value=xmlnode_insert_tag(option,"value");
+	xmlnode_insert_cdata(value,"",-1);
+	option=xmlnode_insert_tag(field,"option");
+	xmlnode_put_attrib(option,"label","female");
+	value=xmlnode_insert_tag(option,"value");
+	xmlnode_insert_cdata(value,GG_PUBDIR50_GENDER_FEMALE,-1);
+	option=xmlnode_insert_tag(field,"option");
+	xmlnode_put_attrib(option,"label","male");
+	value=xmlnode_insert_tag(option,"value");
+	xmlnode_insert_cdata(value,GG_PUBDIR50_GENDER_MALE,-1);
+
+	field=xmlnode_insert_tag(form,"field");
+	xmlnode_put_attrib(field,"type","text-single");
+	xmlnode_put_attrib(field,"var","familyname");
+	xmlnode_put_attrib(field,"label",_("Family name"));
+
+	field=xmlnode_insert_tag(form,"field");
+	xmlnode_put_attrib(field,"type","text-single");
+	xmlnode_put_attrib(field,"var","familycity");
+	xmlnode_put_attrib(field,"label",_("Family city"));
+	
 	return form;
 }
 
@@ -329,8 +370,72 @@ Request *r;
 	return 0;
 }
 
+#define FIELD_TO_PUBDIR(fieldname,symbol) \
+	field=xmlnode_get_tag(form,"field?var=" fieldname); \
+	if (field!=NULL) { \
+		value=xmlnode_get_tag(field,"value"); \
+		if (value!=NULL) val=xmlnode_get_data(value); \
+	} \
+	if (val!=NULL && val[0]) \
+		gg_pubdir50_add(change, symbol, from_utf8(val));
+
+int register_process_pubdir_form(Stream *s,const char *from,const char *to,
+					const char *id,User *u,xmlnode form,xmlnode q){
+xmlnode field,value;
+char *val=NULL;
+Request *r;
+Session *session=NULL;
+gg_pubdir50_t change;
+
+	session=session_get_by_jid(from,s);
+	if (session==NULL) {
+		jabber_iq_send_error(s,from,to,id,500,_("Not logged in?"));
+	}
+	
+	change=gg_pubdir50_new(GG_PUBDIR50_WRITE);
+
+	FIELD_TO_PUBDIR("firstname",GG_PUBDIR50_FIRSTNAME);
+	FIELD_TO_PUBDIR("lastname",GG_PUBDIR50_FIRSTNAME);
+	FIELD_TO_PUBDIR("nick",GG_PUBDIR50_NICKNAME);
+	FIELD_TO_PUBDIR("city",GG_PUBDIR50_CITY);
+
+	field=xmlnode_get_tag(form,"field?var=gender");
+	if (field!=NULL) {
+		value=xmlnode_get_tag(field,"value");
+		if (value!=NULL) val=xmlnode_get_data(value);
+	}
+	if (val!=NULL && val[0] && ( !strcmp(val,GG_PUBDIR50_GENDER_FEMALE) 
+					|| !strcmp(val,GG_PUBDIR50_GENDER_FEMALE)) )
+		gg_pubdir50_add(change, GG_PUBDIR50_NICKNAME, val);
+
+	field=xmlnode_get_tag(form,"field?var=gender");
+	if (field!=NULL) {
+		value=xmlnode_get_tag(field,"value");
+		if (value!=NULL) val=xmlnode_get_data(value);
+	}
+	if (val!=NULL && val[0]) {
+		val=g_strdup_printf("%i",atoi(val));
+		gg_pubdir50_add(change, GG_PUBDIR50_BIRTHYEAR, val);
+		g_free(val);
+	}
+	FIELD_TO_PUBDIR("familyname",GG_PUBDIR50_FAMILYNAME);
+	FIELD_TO_PUBDIR("familycity",GG_PUBDIR50_FAMILYCITY);
+
+	gg_pubdir50(session->ggs, change);
+	gg_pubdir50_free(change);
+	
+	r=add_request(RT_CHANGE,from,to,id,q,(void*)change,s);
+	if (!r){
+		session_remove(session);
+		jabber_iq_send_error(s,from,to,id,500,_("Internal Server Error"));
+		return -1;
+	}
+	return 0;
+}
+
+
 int register_process_change_form(Stream *s,const char *from,const char *to,
-					const char *id,User *u,xmlnode form){
+				const char *id,User *u,xmlnode form,xmlnode q){
 xmlnode field,value;
 char *action;
 
@@ -359,8 +464,9 @@ char *action;
 			return -1;
 	}
 	else if (!strcmp(action,"pubdir")){
-		jabber_iq_send_error(s,from,to,id,501,_("Not implemented (yet)"));
-		return -1;
+		if (register_process_pubdir_form(s,from,to,id,u,form,q))
+			return -1;
+		return 0;
 	}
 	else if (!strcmp(action,"unregister")){
 		if (unregister(s,from,to,id,0))
@@ -583,7 +689,7 @@ Request *r;
 		}
 		else if (!strcmp(ftype,"submit")){ 
 			if (user!=NULL) 
-				register_process_change_form(s,from,to,id,user,node);
+				register_process_change_form(s,from,to,id,user,node,q);
 			else 
 				register_process_form(s,from,to,id,node,q);
 		}
@@ -631,41 +737,28 @@ Request *r;
 			return;
 		}
 	}
+	else session=session_get_by_jid(from,s);
 
 	node=xmlnode_get_tag(q,"first");
-	if (node){
-		first=from_utf8(xmlnode_get_data(node));
-	}
+	if (node) first=xmlnode_get_data(node);
 
 	node=xmlnode_get_tag(q,"last");
-	if (node){
-		last=from_utf8(xmlnode_get_data(node));
-	}
+	if (node) last=xmlnode_get_data(node);
 
 	node=xmlnode_get_tag(q,"nick");
-	if (node){
-		nick=from_utf8(xmlnode_get_data(node));
-	}
+	if (node) nick=xmlnode_get_data(node);
 
 /*	node=xmlnode_get_tag(q,"email");
-	if (node) 
-		email=xmlnode_get_data(node);
-		gg_pubdir50_add(change, GG_PUBDIR50_email=xmlnode_get_data(node); */
+	if (node) email=xmlnode_get_data(node); */
 
 	node=xmlnode_get_tag(q,"city");
-	if (node){
-		city=from_utf8(xmlnode_get_data(node));
-	}
+	if (node) city=xmlnode_get_data(node);
 
 	node=xmlnode_get_tag(q,"gender");
-	if (node){
-		sex=xmlnode_get_data(node);
-	}
+	if (node) sex=xmlnode_get_data(node);
 
 	node=xmlnode_get_tag(q,"born");
-	if (node){
-		born=xmlnode_get_data(node);
-	}
+	if (node) born=xmlnode_get_data(node);
 
 	if (!first && !last && !nick && !city && !born && !sex){
 			if (!uin && !password){
@@ -698,19 +791,26 @@ Request *r;
 	if (!uin) uin=user->uin;
 
 	change=gg_pubdir50_new(GG_PUBDIR50_WRITE);
-	if (first) gg_pubdir50_add(change, GG_PUBDIR50_FIRSTNAME, (const char *)first);
-	if (last) gg_pubdir50_add(change, GG_PUBDIR50_LASTNAME, (const char *)last);
-	if (nick) gg_pubdir50_add(change, GG_PUBDIR50_NICKNAME, (const char *)nick);
-	if (city) gg_pubdir50_add(change, GG_PUBDIR50_CITY, (const char *)city);
+	if (first) gg_pubdir50_add(change, GG_PUBDIR50_FIRSTNAME, from_utf8(first));
+	if (last) gg_pubdir50_add(change, GG_PUBDIR50_LASTNAME, from_utf8(last));
+	if (nick) gg_pubdir50_add(change, GG_PUBDIR50_NICKNAME, from_utf8(nick));
+	if (city) gg_pubdir50_add(change, GG_PUBDIR50_CITY, from_utf8(city));
 	if (sex && (sex[0]=='k' || sex[0]=='f' || sex[0]=='K' || sex[0]=='F'))
 		gg_pubdir50_add(change, GG_PUBDIR50_GENDER,
 				GG_PUBDIR50_GENDER_FEMALE);
 	else if (sex!=NULL && sex[0]!='\000')
 		gg_pubdir50_add(change, GG_PUBDIR50_GENDER,
 				GG_PUBDIR50_GENDER_MALE);
-	if (born) gg_pubdir50_add(change, GG_PUBDIR50_BIRTHYEAR, (const char *)born);
+	if (born){
+		born=g_strdup_printf("%i",atoi(born));
+		gg_pubdir50_add(change, GG_PUBDIR50_BIRTHYEAR, born);
+		g_free(born);
+	}
 
-	r=add_request(RT_CHANGE,from,to,id,q,(void*)change,s);
+	gg_pubdir50(session->ggs, change);
+	gg_pubdir50_free(change);
+	
+	r=add_request(RT_CHANGE,from,to,id,q,change,s);
 	if (!r){
 		session_remove(session);
 		jabber_iq_send_error(s,from,to,id,500,_("Internal Server Error"));
