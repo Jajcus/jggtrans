@@ -1,3 +1,24 @@
+Version 2.0.6
+-------------
+
+This is major bugfix release.
+
+Changes from 2.0.5:
+
+* Fixed segmentation fault when message from unknown client is received
+  (this bug allowed remote DoS attack).
+
+* Presence handling cleaned up - now multiple Jabber sessions should
+  work well and offline status messages should be available.
+
+* "import roster" command marked as "not recommended". "get roster" is
+  now also available in the registration form.
+
+* removing transport's subscription to user's presence doesn't doesn't
+  unregister the user from the transport. Subscription type may be used
+  to disable automatic login to the transport.
+
+
 Version 2.0.5
 -------------
 

@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: jabber-gg-transport 2.0.5\n"
-"POT-Creation-Date: 2003-06-27 16:57+0200\n"
+"POT-Creation-Date: 2003-06-28 15:40+0200\n"
 "PO-Revision-Date: 2003-06-27 17:00+0200\n"
 "Last-Translator: Jacek Konieczny <jajcus@pld.org.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -449,7 +449,9 @@ msgstr "Pobierz listę użytkowników z serwera"
 msgid ""
 "Add users from the user list on server (not recommended - nicknames are not "
 "preserved)"
-msgstr "Dodaj użytkowników z listy na serwerze (nie polecane - nazwy nie są zachowywane)"
+msgstr ""
+"Dodaj użytkowników z listy na serwerze (nie polecane - nazwy nie są "
+"zachowywane)"
 
 #: src/message.c:59
 msgid "\"Only for friends\" mode"
@@ -724,6 +726,7 @@ msgstr "Numerek GG"
 msgid "Password"
 msgstr "Hasło"
 
+#. form_add_field(form,"boolean","new",_("Create new account"),"0",1);
 #: src/register.c:58
 msgid "Userlist on GG server"
 msgstr "Lista użytkowników na serwerze GG"
