@@ -1,4 +1,4 @@
-/* $Id: users.c,v 1.33 2003/04/13 11:19:47 jajcus Exp $ */
+/* $Id: users.c,v 1.34 2003/04/14 08:13:58 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -132,46 +132,6 @@ xmlnode xml,tag,ctag,userlist;
 			str=g_strdup_printf("%lu",(unsigned long)c->uin);
 			xmlnode_put_attrib(ctag,"uin",str);
 			g_free(str);
-			if (c->first){
-				tag=xmlnode_insert_tag(ctag,"first");
-				xmlnode_insert_cdata(tag,c->first,-1);
-			}
-			if (c->last){
-				tag=xmlnode_insert_tag(ctag,"last");
-				xmlnode_insert_cdata(tag,c->last,-1);
-			}
-			if (c->nick){
-				tag=xmlnode_insert_tag(ctag,"nick");
-				xmlnode_insert_cdata(tag,c->nick,-1);
-			}
-			if (c->display){
-				tag=xmlnode_insert_tag(ctag,"display");
-				xmlnode_insert_cdata(tag,c->display,-1);
-			}
-			if (c->phone){
-				tag=xmlnode_insert_tag(ctag,"phone");
-				xmlnode_insert_cdata(tag,c->phone,-1);
-			}
-			if (c->group){
-				tag=xmlnode_insert_tag(ctag,"group");
-				xmlnode_insert_cdata(tag,c->group,-1);
-			}
-			if (c->email){
-				tag=xmlnode_insert_tag(ctag,"email");
-				xmlnode_insert_cdata(tag,c->email,-1);
-			}
-			if (c->x1 && strcmp(c->x1,"0")!=0){
-				tag=xmlnode_insert_tag(ctag,"x1");
-				xmlnode_insert_cdata(tag,c->x1,-1);
-			}
-			if (c->x2 && c->x2[0]){
-				tag=xmlnode_insert_tag(ctag,"x2");
-				xmlnode_insert_cdata(tag,c->x2,-1);
-			}
-			if (c->x3 && strcmp(c->x3,"0")!=0){
-				tag=xmlnode_insert_tag(ctag,"x3");
-				xmlnode_insert_cdata(tag,c->x3,-1);
-			}
 		}
 	}
 
@@ -301,67 +261,6 @@ char *data;
 				c->status=GG_STATUS_NOT_AVAIL;
 				c->uin=uin;
 
-				tag=xmlnode_get_tag(xml,"first");
-				if (tag!=NULL){
-					d=xmlnode_get_data(tag);
-					if (d==NULL) d="";
-					c->first=g_strdup(d);
-				}
-				tag=xmlnode_get_tag(xml,"last");
-				if (tag!=NULL){
-					d=xmlnode_get_data(tag);
-					if (d==NULL) d="";
-					c->last=g_strdup(d);
-				}
-				tag=xmlnode_get_tag(xml,"nick");
-				if (tag!=NULL){
-					d=xmlnode_get_data(tag);
-					if (d==NULL) d="";
-					c->nick=g_strdup(d);
-				}
-				tag=xmlnode_get_tag(xml,"display");
-				if (tag!=NULL){
-					d=xmlnode_get_data(tag);
-					if (d==NULL) d="";
-					c->display=g_strdup(d);
-				}
-				tag=xmlnode_get_tag(xml,"phone");
-				if (tag!=NULL){
-					d=xmlnode_get_data(tag);
-					if (d==NULL) d="";
-					c->phone=g_strdup(d);
-				}
-				tag=xmlnode_get_tag(xml,"group");
-				if (tag!=NULL){
-					d=xmlnode_get_data(tag);
-					if (d==NULL) d="";
-					c->group=g_strdup(d);
-				}
-				tag=xmlnode_get_tag(xml,"email");
-				if (tag!=NULL){
-					d=xmlnode_get_data(tag);
-					if (d==NULL) d="";
-					c->email=g_strdup(d);
-				}
-				tag=xmlnode_get_tag(xml,"x1");
-				if (tag!=NULL){
-					d=xmlnode_get_data(tag);
-					if (d==NULL) d="";
-					c->x1=g_strdup(d);
-				}
-				tag=xmlnode_get_tag(xml,"x2");
-				if (tag!=NULL){
-					d=xmlnode_get_data(tag);
-					if (d==NULL) d="";
-					c->x2=g_strdup(d);
-				}
-				tag=xmlnode_get_tag(xml,"x3");
-				if (tag!=NULL){
-					d=xmlnode_get_data(tag);
-					if (d==NULL) d="";
-					c->x3=g_strdup(d);
-				}
-
 				contacts=g_list_append(contacts,c);
 			}
 		}
@@ -405,16 +304,6 @@ Contact *c;
 	g_assert(u!=NULL);
 	for(it=u->contacts;it;it=it->next){
 		c=(Contact *)it->data;
-		g_free(c->first);
-		g_free(c->last);
-		g_free(c->nick);
-		g_free(c->display);
-		g_free(c->phone);
-		g_free(c->group);
-		g_free(c->email);
-		g_free(c->x1);
-		g_free(c->x2);
-		g_free(c->x3);
 		g_free(c->status_desc);
 		g_free(c);
 	}
