@@ -1,4 +1,4 @@
-/* $Id: status.c,v 1.4 2002/12/06 15:05:45 jajcus Exp $ */
+/* $Id: status.c,v 1.5 2002/12/29 18:05:51 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -50,24 +50,20 @@ int available;
 		case GG_STATUS_NOT_AVAIL_DESCR:
 			available=0;
 			*show=NULL;
-			if (*status==NULL) *status="Not available";
 			break;
 		case GG_STATUS_AVAIL:
 		case GG_STATUS_AVAIL_DESCR:
 			available=1;
 			*show=NULL;
-			if (*status==NULL) *status="Available";
 			break;
 		case GG_STATUS_BUSY:
 		case GG_STATUS_BUSY_DESCR:
 			available=1;
 			*show="dnd";
-			if (*status==NULL) *status="Busy";
 			break;
 		default:
 			available=1;
 			*show=NULL;
-			if (*status==NULL) *status="Available";
 			break;
 	}
 	return available;
