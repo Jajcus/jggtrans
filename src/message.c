@@ -1,4 +1,4 @@
-/* $Id: message.c,v 1.20 2003/03/24 13:48:45 jajcus Exp $ */
+/* $Id: message.c,v 1.21 2003/03/24 14:05:55 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -404,6 +404,7 @@ int i;
 const char *ce;
 char *args,*p;
 User *user;
+char *msg;
 
 	user=user_get_by_jid(from);
 	if (user==NULL){
@@ -428,22 +429,18 @@ User *user;
 			return 0;
 		}
 	}
-	message_send(stream,to,from,1,"Available commands (and abbreviations):",0);
+	msg="\nAvailable commands (and abbreviations):";
 	for(i=0;msg_commands[i].command;i++){
-		p=g_strdup_printf("  %s (%s)%s",
+		msg=g_strdup_printf("%s\n  %s (%s)%s",msg,
 				msg_commands[i].command,
 				msg_commands[i].abr,
 				msg_commands[i].experimental?" EXPERIMENTAL!":"");
-		message_send(stream,to,from,1,p,0);
-		g_free(p);
 	}
-	message_send(stream,to,from,1,"Current settings:",0);
-	p=g_strdup_printf("  friends only: %s", user->friends_only?"on":"off");
-	message_send(stream,to,from,1,p,0);
-	g_free(p);
-	p=g_strdup_printf("  invisible: %s", user->invisible?"on":"off");
-	message_send(stream,to,from,1,p,0);
-	g_free(p);
+	msg=g_strdup_printf("%s\nCurrent settings:",msg);
+	msg=g_strdup_printf("%s\n  friends only: %s",msg,user->friends_only?"on":"off");
+	msg=g_strdup_printf("%s\n  invisible: %s",msg,user->invisible?"on":"off");
+	message_send(stream,to,from,1,msg,0);
+	g_free(msg);
 
 	return 0;
 }
