@@ -1,4 +1,4 @@
-/* $Id: requests.c,v 1.19.2.3 2003/04/09 07:45:10 jajcus Exp $ */
+/* $Id: requests.c,v 1.19.2.4 2003/04/09 08:09:11 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -49,7 +49,7 @@ Request *r;
 	r=g_hash_table_lookup(lookups, &hash);
 	g_hash_table_remove(lookups, &hash);
 
-	if (r) {
+	if (r){
 		switch(r->type){
 			case RT_VCARD:
 				vcard_done(r, data->event.pubdir50);
