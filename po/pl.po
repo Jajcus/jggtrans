@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: jabber-gg-transport 2.0.1\n"
-"POT-Creation-Date: 2003-04-28 09:23+0200\n"
+"POT-Creation-Date: 2003-04-28 12:50+0200\n"
 "PO-Revision-Date: 2003-04-24 09:35+0200\n"
 "Last-Translator: Jacek Konieczny <jajcus@pld.org.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -79,8 +79,8 @@ msgstr "Nie podany 'UIN' w 'do': %s"
 msgid "Bad Request"
 msgstr "Nieprawidłowe Żądanie"
 
-#: src/iq.c:224 src/iq.c:229 src/iq.c:234 src/presence.c:418
-#: src/presence.c:424 src/register.c:438 src/register.c:574 src/register.c:626
+#: src/iq.c:224 src/iq.c:229 src/iq.c:234 src/presence.c:417
+#: src/presence.c:423 src/register.c:438 src/register.c:574 src/register.c:626
 #: src/register.c:634
 msgid "Not Acceptable"
 msgstr "Nie Do Przyjęcia"
@@ -141,7 +141,7 @@ msgstr "Błąd w otrzymanym iq: %s"
 msgid "unexpected <iq/> (not connected yet)"
 msgstr "nieoczekiwany <iq/> (brak połączenia)"
 
-#: src/iq.c:361 src/message.c:525 src/presence.c:399
+#: src/iq.c:361 src/message.c:525 src/presence.c:398
 msgid "Not allowed"
 msgstr "Nie wolno"
 
@@ -646,17 +646,17 @@ msgstr "obecność: Nie ma takiej sesji: %s"
 msgid "Presence subscribe request sent to me"
 msgstr "Otrzymałem prośbę zapisania na moją obecność"
 
-#: src/presence.c:240 src/presence.c:352
+#: src/presence.c:240 src/presence.c:351
 #, c-format
 msgid "Presence subscription from unknown user (%s)"
 msgstr "Prośba zapisania na obecność od nieznanego użytkownika (%s)"
 
-#: src/presence.c:245 src/presence.c:356
+#: src/presence.c:245 src/presence.c:355
 #, c-format
 msgid "Bad 'to': %s"
 msgstr "Zły 'do': %s"
 
-#: src/presence.c:250 src/presence.c:361
+#: src/presence.c:250 src/presence.c:360
 #, c-format
 msgid "Couldn't find or open session for '%s'"
 msgstr "Nie mogę znaleźć lub otworzyć sesji dla '%s'"
@@ -686,40 +686,40 @@ msgstr "Nie Znaleziono"
 msgid "Not registered"
 msgstr "Nie zarejestrowany"
 
-#: src/presence.c:346
+#: src/presence.c:345
 msgid "Presence unsubscribe request sent to me"
 msgstr "Otrzymałem prośbę wypisania zapisu na obecność"
 
-#: src/presence.c:364
+#: src/presence.c:363
 #, c-format
 msgid "Unsubscribing %s from %s..."
 msgstr "Wypisuję %s z %s..."
 
-#: src/presence.c:367
+#: src/presence.c:366
 msgid "Unsubscribed."
 msgstr "Wypisany."
 
-#: src/presence.c:419
+#: src/presence.c:418
 #, c-format
 msgid "Bad <presence/>: %s"
 msgstr "Zła <presence/>: %s"
 
-#: src/presence.c:425
+#: src/presence.c:424
 #, c-format
 msgid "Wrong 'to' in %s"
 msgstr "Zły 'do' w %s"
 
-#: src/presence.c:451
+#: src/presence.c:450
 #, c-format
 msgid "Error presence received: %s"
 msgstr "Otrzymałem błąd obecności: %s"
 
-#: src/presence.c:455
+#: src/presence.c:454
 #, c-format
 msgid "Unsupported type in %s"
 msgstr "Nieobsługiwany typ w %s"
 
-#: src/presence.c:456
+#: src/presence.c:455
 msgid "Not Implemented"
 msgstr "Nie Zaimplementowane"
 
