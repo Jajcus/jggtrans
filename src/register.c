@@ -1,4 +1,4 @@
-/* $Id: register.c,v 1.44 2003/05/19 12:23:29 jajcus Exp $ */
+/* $Id: register.c,v 1.45 2003/06/27 14:45:45 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -29,6 +29,7 @@
 #include "requests.h"
 #include "encoding.h"
 #include "forms.h"
+#include "jid.h"
 
 char *register_instructions;
 
@@ -54,7 +55,10 @@ char *tmp;
 	form_add_field(form,"text-single","uin",_("GG number"),NULL,1);
 	form_add_field(form,"text-private","password",_("Password"),NULL,1);
 	/* form_add_field(form,"boolean","new",_("Create new account"),"0",1); */
-	form_add_field(form,"boolean","import_roster",_("Import userlist from GG server"),"0",1);
+	field=form_add_field(form,"list-single","userlist",_("Userlist on GG server"),"get",0);
+	form_add_option(field,_("ignore"),"ignore");
+	form_add_option(field,_("retrieve"),"get");
+	form_add_option(field,_("subscribe (not recommended)"),"import");
 
 	if (default_user_locale && default_user_locale[0]) tmp=default_user_locale;
 	else tmp="_default_";
@@ -378,12 +382,13 @@ Session *session;
 		return -1;
 	}
 
-	field=xmlnode_get_tag(form,"field?var=import_roster");
+	field=xmlnode_get_tag(form,"field?var=userlist");
 	if (field!=NULL) value=xmlnode_get_tag(field,"value");
 	else value=NULL;
 	if (value!=NULL){
 		tmp=xmlnode_get_data(value);
-		if (tmp) import_roster=atoi(tmp);
+		if (!strcmp(tmp,"import")) import_roster=1;
+		else if (!strcmp(tmp,"get")) import_roster=-1;
 	}
 
 	user=user_create(from,uin,password);
@@ -401,7 +406,7 @@ Session *session;
 		return -1;
 	}
 
-	if (import_roster) session->import_roster=1;
+	if (import_roster) session->import_roster=import_roster;
 
 	register_process_options_form(s,from,to,id,user,form);
 	return 0;
@@ -498,18 +503,28 @@ char *jid;
 		}
 
 	u=user_get_by_jid(from);
-	if (u){
-		jid=g_strdup(u->jid);
-		if (user_delete(u)){
-			g_warning(N_("'%s' unregistration failed"),from);
-			jabber_iq_send_error(s,from,to,id,500,_("Internal Server Error"));
-			return -1;
-		}
-	}
-
 	if (!u){
 		g_warning(N_("Tried to unregister '%s' who was never registered"),from);
 		jabber_iq_send_error(s,from,to,id,404,_("Not Found"));
+		return -1;
+	}
+
+	if (u->contacts) {
+		GList *it;
+		Contact *c;
+		char *ujid;
+		for(it=g_list_first(u->contacts);it;it=it->next){
+			c=(Contact *)it->data;
+			ujid=jid_build(c->uin);
+			presence_send_unsubscribed(s,ujid,u->jid);
+			g_free(ujid);
+		}
+	}
+	
+	jid=g_strdup(u->jid);
+	if (user_delete(u)){
+		g_warning(N_("'%s' unregistration failed"),from);
+		jabber_iq_send_error(s,from,to,id,500,_("Internal Server Error"));
 		return -1;
 	}
 
