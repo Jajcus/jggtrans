@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.90 2003/09/08 07:57:31 jajcus Exp $ */
+/* $Id: sessions.c,v 1.91 2003/09/08 08:03:12 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -733,7 +733,8 @@ int maxprio;
 int session_send_status(Session *s){
 int r;
 
-	g_assert(s!=NULL && s->ggs!=NULL);
+	g_assert(s!=NULL);
+	if (s->ggs==NULL) return -1;
 	r=session_make_status(s);
 	if (r==-1) return -1;
 	if (r==0) return 0;
