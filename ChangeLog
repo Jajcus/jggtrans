@@ -1,3 +1,12 @@
+2004-06-11  Tomasz Sterna  <smoku@chrome.pl>
+
+	* src/gg_versions.c: protocol 0x22 added
+
+	* src/sessions.c: conference disabling cleanup
+
+	* src/sessions.c:
+	disabled GG conference messages - it's not supported yet
+
 2004-05-05  Jacek Konieczny  <jajcus@bnet.pl>
 
 	* cosmetics.vim: s/tabwidth/tabstop/
