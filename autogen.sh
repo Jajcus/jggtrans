@@ -5,7 +5,7 @@
 libtoolize --force
 rm -f po/ChangeLog
 gettextize --force
-aclocal
+aclocal -I m4
 autoheader
 automake -a 
 autoconf

@@ -7,12 +7,11 @@ AM_CONFIG_HEADER([config.h])
 ALL_LINGUAS="pl"
 
 # Checks for programs.
-AC_PROG_CXX
 AC_PROG_CC
 AC_C_BIGENDIAN
 AC_PROG_MAKE_SET
 AM_PROG_LIBTOOL
-AM_GNU_GETTEXT
+AM_GNU_GETTEXT([external])
 
 CFLAGS="$CFLAGS -Wall"
 
@@ -20,9 +19,9 @@ AM_PATH_GLIB([1.2.0],[],AC_MSG_ERROR("You need glib >= 1.2.0 to compile this."))
 
 AC_ARG_WITH([libgadu-snapshot],AC_HELP_STRING([--with-libgadu-snapshot],[Try to compile and link with some libgadu snapshot]))
 if test "x$with_libgadu_snapshot" = "xyes" ; then
-PKG_CHECK_MODULES(JK_LIBGADU, [libgadu >= 20030420])
+PKG_CHECK_MODULES([JK_LIBGADU], [libgadu >= 20030420])
 else
-PKG_CHECK_MODULES(JK_LIBGADU, [libgadu >= 1.0 libgadu < 20000000])
+PKG_CHECK_MODULES([JK_LIBGADU], [libgadu >= 1.0 libgadu < 20000000])
 fi
 
 AC_SUBST(JK_LIBGADU_LIBS)
@@ -67,5 +66,5 @@ AC_CONFIG_SUBDIRS([libxode])
 MKINSTALLDIRS="${MKINSTALLDIRS} -m 755"
 XGETTEXT="${XGETTEXT} --keyword=L_"
 
-AC_CONFIG_FILES([Makefile src/Makefile intl/Makefile po/Makefile.in])
+AC_CONFIG_FILES([Makefile src/Makefile po/Makefile.in m4/Makefile ])
 AC_OUTPUT

@@ -5,3 +5,5 @@ Makefile.in.in
 POTFILES
 *.gmo
 jabber-gg-transport.pot
+Makevars
+stamp-po
