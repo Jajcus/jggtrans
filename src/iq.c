@@ -6,7 +6,7 @@
 #include "iq.h"
 #include "debug.h"
 
-void jabber_iq_send_error(Stream *s,const char *from,const char *id,int code,char *string){
+void jabber_iq_send_error(Stream *s,const char *from,const char *to,const char *id,int code,char *string){
 xmlnode iq;
 xmlnode error;
 char *str;
@@ -16,7 +16,8 @@ char *str;
 	xmlnode_put_attrib(iq,"type","error");
 	if (id) xmlnode_put_attrib(iq,"id",id);
 	xmlnode_put_attrib(iq,"to",from);
-	xmlnode_put_attrib(iq,"from",my_name);
+	if (to) xmlnode_put_attrib(iq,"from",to);
+	else xmlnode_put_attrib(iq,"from",my_name);
 	error=xmlnode_insert_tag(iq,"error");
 	if (code>0) {
 		str=g_strdup_printf("%03u",(unsigned)code);
@@ -28,17 +29,38 @@ char *str;
 	xmlnode_free(iq);
 }
 
-void jabber_iq_send_result(Stream *s,const char *from,const char *id,xmlnode content){
+void jabber_iq_send_result(Stream *s,const char *from,const char *to,const char *id,xmlnode content){
 xmlnode iq;
 
 	iq=xmlnode_new_tag("iq");
 	xmlnode_put_attrib(iq,"type","result");
 	if (id) xmlnode_put_attrib(iq,"id",id);
 	xmlnode_put_attrib(iq,"to",from);
-	xmlnode_put_attrib(iq,"from",my_name);
+	if (to) xmlnode_put_attrib(iq,"from",to);
+	else xmlnode_put_attrib(iq,"from",my_name);
 	if (content) xmlnode_insert_tag_node(iq,content);
 	stream_write(s,iq);
 	xmlnode_free(iq);
+}
+
+void jabber_iq_get_agent(Stream *s,const char *from,const char * to,const char *id,xmlnode q){
+xmlnode n;
+xmlnode query;
+
+	query=xmlnode_new_tag("query");
+	xmlnode_put_attrib(query,"xmlns","jabber:iq:agent");
+	n=xmlnode_get_tag(config,"vCard/FN");
+	if (n) xmlnode_insert_cdata( xmlnode_insert_tag(query,"name"),
+					xmlnode_get_data(n),-1);
+	n=xmlnode_get_tag(config,"vCard/DESC");
+	if (n) xmlnode_insert_cdata( xmlnode_insert_tag(query,"description"),
+					xmlnode_get_data(n),-1);
+	xmlnode_insert_cdata(xmlnode_insert_tag(query,"transport"),"GaduGadu user number",-1);
+	xmlnode_insert_cdata(xmlnode_insert_tag(query,"service"),"gg",-1);
+	xmlnode_insert_tag(query,"register");
+	xmlnode_insert_tag(query,"search");
+		
+	jabber_iq_send_result(s,from,to,id,query);
 }
 
 void jabber_iq_get_query(Stream *s,const char *from,const char * to,const char *id,xmlnode q){
@@ -52,17 +74,19 @@ char *ns;
 	}
 	if (jid_is_me(to)){
 		if (!g_strcasecmp(ns,"jabber:iq:register"))
-			jabber_iq_get_register(s,from,id,q);
+			jabber_iq_get_register(s,from,to,id,q);
 		else if (!g_strcasecmp(ns,"jabber:iq:search"))
-			jabber_iq_get_search(s,from,id,q);
+			jabber_iq_get_search(s,from,to,id,q);
+		else if (!g_strcasecmp(ns,"jabber:iq:agent"))
+			jabber_iq_get_agent(s,from,to,id,q);
 		else{
 			g_warning("Unsupported xmlns=%s in server iq/get!",ns);
-			jabber_iq_send_error(s,from,id,501,"Not Implemented");
+			jabber_iq_send_error(s,from,to,id,501,"Not Implemented");
 		}
 	}
 	else{
 		g_warning("Unsupported xmlns=%s in user iq/get!",ns);
-		jabber_iq_send_error(s,from,id,501,"Not Implemented");
+		jabber_iq_send_error(s,from,to,id,501,"Not Implemented");
 	}
 }
 
@@ -78,17 +102,17 @@ char *ns;
 
 	if (jid_is_me(to)){ 
 		if (!g_strcasecmp(ns,"jabber:iq:register"))
-			jabber_iq_set_register(s,from,id,q);
+			jabber_iq_set_register(s,from,to,id,q);
 		else if (!g_strcasecmp(ns,"jabber:iq:search"))
-			jabber_iq_set_search(s,from,id,q);
+			jabber_iq_set_search(s,from,to,id,q);
 		else{
 			g_warning("Unknown xmlns=%s in server iq/set!",ns);
-			jabber_iq_send_error(s,from,id,501,"Not Implemented");
+			jabber_iq_send_error(s,from,to,id,501,"Not Implemented");
 		}
 	}
 	else{
 		g_warning("Unsupported xmlns=%s in useriq/set!",ns);
-		jabber_iq_send_error(s,from,id,501,"Not Implemented");
+		jabber_iq_send_error(s,from,to,id,501,"Not Implemented");
 	}
 }
 
@@ -100,17 +124,17 @@ xmlnode n;
 	ns=xmlnode_get_attrib(q,"xmlns");
 	if (ns && g_strcasecmp(ns,"vcard-temp")){
 		g_warning("Unsupported vcard namespace: %s!",ns);
-		jabber_iq_send_error(s,from,id,501,"Not Implemented");
+		jabber_iq_send_error(s,from,to,id,501,"Not Implemented");
 		return;
 	}
 	if (jid_is_me(to)){
 		n=xmlnode_get_tag(config,"vCard");
 		if (!n){
-			jabber_iq_send_error(s,from,id,503,"Service Unavailable");
+			jabber_iq_send_error(s,from,to,id,503,"Service Unavailable");
 			g_warning("No vcard for server defined");
 			return;
 		}
-		jabber_iq_send_result(s,from,id,n);
+		jabber_iq_send_result(s,from,to,id,n);
 	}
 	else jabber_iq_get_user_vcard(s,from,to,id,q);
 }
@@ -121,11 +145,11 @@ char *ns;
 	ns=xmlnode_get_attrib(q,"xmlns");
 	if (ns && g_strcasecmp(ns,"vcard-temp")){
 		g_warning("Unsupported vcard namespace: %s!",ns);
-		jabber_iq_send_error(s,from,id,501,"Not Implemented");
+		jabber_iq_send_error(s,from,to,id,501,"Not Implemented");
 		return;
 	}
 	g_warning("vcard setting unsupported");
-	jabber_iq_send_error(s,from,id,501,"Not Implemented");
+	jabber_iq_send_error(s,from,to,id,501,"Not Implemented");
 }
 	
 void jabber_iq_get(Stream *s,xmlnode x){
@@ -137,14 +161,14 @@ xmlnode query;
 	to=xmlnode_get_attrib(x,"to");
 	if (!to || !jid_is_my(to) ){
 		g_warning("Wrong to=%s (my name is %s)",to?to:"(null)",my_name);
-		jabber_iq_send_error(s,from,id,400,"Bad Request");
+		jabber_iq_send_error(s,from,to,id,400,"Bad Request");
 		return;
 	}
 	id=xmlnode_get_attrib(x,"id");
 	from=xmlnode_get_attrib(x,"from");
 	if (!from){
 		g_warning("No from in query: %s",xmlnode2str(x));
-		jabber_iq_send_error(s,from,id,400,"Bad Request");
+		jabber_iq_send_error(s,from,to,id,400,"Bad Request");
 		return;
 	}
 	query=xmlnode_get_tag(x,"query");
@@ -159,7 +183,7 @@ xmlnode query;
 		return;
 	}
 	g_warning("No known content in iq: %s",xmlnode2str(x));
-	jabber_iq_send_error(s,from,id,400,"Bad Request");
+	jabber_iq_send_error(s,from,to,id,400,"Bad Request");
 }
 
 void jabber_iq_set(Stream *s,xmlnode x){
@@ -171,14 +195,14 @@ xmlnode query;
 	to=xmlnode_get_attrib(x,"to");
 	if (!to || g_strcasecmp(to,my_name)){
 		g_warning("Wrong 'to' (my name is %s) in query:  %s",to?to:"(null)",xmlnode2str(x));
-		jabber_iq_send_error(s,from,id,400,"Bad Request");
+		jabber_iq_send_error(s,from,to,id,400,"Bad Request");
 		return;
 	}
 	id=xmlnode_get_attrib(x,"id");
 	from=xmlnode_get_attrib(x,"from");
 	if (!from){
 		g_warning("No from in query: %s",xmlnode2str(x));
-		jabber_iq_send_error(s,from,id,400,"Bad Request");
+		jabber_iq_send_error(s,from,to,id,400,"Bad Request");
 		return;
 	}
 	query=xmlnode_get_tag(x,"query");
@@ -193,7 +217,7 @@ xmlnode query;
 		return;
 	}
 	g_warning("No known content in iq: %s",xmlnode2str(x));
-	jabber_iq_send_error(s,from,id,400,"Bad Request");
+	jabber_iq_send_error(s,from,to,id,400,"Bad Request");
 }
 
 void jabber_iq_result(Stream *s,xmlnode x){}
