@@ -62,17 +62,17 @@ void jabber_node(Stream *s,xmlnode x){
 char *name;
 
 	name=xmlnode_get_name(x);
-	if (g_strcasecmp(name,"stream:stream")==0)
+	if (strcmp(name,"stream:stream")==0)
 		jabber_stream_start(s,x);
-	else if (g_strcasecmp(name,"handshake")==0)
+	else if (strcmp(name,"handshake")==0)
 		jabber_handshake(s,x);
-	else if (g_strcasecmp(name,"stream:error")==0)
+	else if (strcmp(name,"stream:error")==0)
 		jabber_stream_error(s,x);
-	else if (g_strcasecmp(name,"iq")==0)
+	else if (strcmp(name,"iq")==0)
 		jabber_iq(s,x);
-	else if (g_strcasecmp(name,"presence")==0)
+	else if (strcmp(name,"presence")==0)
 		jabber_presence(s,x);
-	else if (g_strcasecmp(name,"message")==0)
+	else if (strcmp(name,"message")==0)
 		jabber_message(s,x);
 	else g_warning("Unsupported tag: %s",xmlnode2str(x));
 }

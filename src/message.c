@@ -102,8 +102,8 @@ Session *s;
 	else subject=NULL;
 	
 	type=xmlnode_get_attrib(tag,"type");
-	if (!type || !g_strcasecmp(type,"normal")) chat=0;
-	else if (!g_strcasecmp(type,"chat")) chat=1;
+	if (!type || !strcmp(type,"normal")) chat=0;
+	else if (!strcmp(type,"chat")) chat=1;
 	else {
 		g_warning("Unsupported message type");
 		message_send_error(stream,to,from,body,500,"Internal Server Error"); 

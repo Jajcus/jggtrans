@@ -385,19 +385,19 @@ char *show,*status;
 		return -1;
 	}
 	
-	if (!g_strcasecmp(type,"available"))
+	if (!strcmp(type,"available"))
 		return presence(stream,from,to,1,show,status);
-	else if (!g_strcasecmp(type,"unavailable"))
+	else if (!strcmp(type,"unavailable"))
 		return presence(stream,from,to,0,show,status);
-	else if (!g_strcasecmp(type,"subscribe"))
+	else if (!strcmp(type,"subscribe"))
 		return presence_subscribe(stream,from,to);
-	else if (!g_strcasecmp(type,"unsubscribe"))
+	else if (!strcmp(type,"unsubscribe"))
 		return presence_unsubscribe(stream,from,to);
-	else if (!g_strcasecmp(type,"subscribed"))
+	else if (!strcmp(type,"subscribed"))
 		return presence_subscribed(stream,from,to);
-	else if (!g_strcasecmp(type,"unsubscribed"))
+	else if (!strcmp(type,"unsubscribed"))
 		return presence_unsubscribed(stream,from,to);
-	else if (!g_strcasecmp(type,"probe"))
+	else if (!strcmp(type,"probe"))
 		return presence_probe(stream,from,to);
 	
 	g_warning("Unsupported type in %s",xmlnode2str(tag));

@@ -107,11 +107,11 @@ char *ns;
 		return;
 	}
 	if (jid_is_me(to)){
-		if (!g_strcasecmp(ns,"jabber:iq:register"))
+		if (!strcmp(ns,"jabber:iq:register"))
 			jabber_iq_get_register(s,from,to,id,q);
-		else if (!g_strcasecmp(ns,"jabber:iq:search"))
+		else if (!strcmp(ns,"jabber:iq:search"))
 			jabber_iq_get_search(s,from,to,id,q);
-		else if (!g_strcasecmp(ns,"jabber:iq:agent"))
+		else if (!strcmp(ns,"jabber:iq:agent"))
 			jabber_iq_get_agent(s,from,to,id,q);
 		else{
 			g_warning("Unsupported xmlns=%s in server iq/get!",ns);
@@ -135,9 +135,9 @@ char *ns;
 	}
 
 	if (jid_is_me(to)){ 
-		if (!g_strcasecmp(ns,"jabber:iq:register"))
+		if (!strcmp(ns,"jabber:iq:register"))
 			jabber_iq_set_register(s,from,to,id,q);
-		else if (!g_strcasecmp(ns,"jabber:iq:search"))
+		else if (!strcmp(ns,"jabber:iq:search"))
 			jabber_iq_set_search(s,from,to,id,q);
 		else{
 			g_warning("Unknown xmlns=%s in server iq/set!",ns);
@@ -156,7 +156,7 @@ xmlnode n;
 
 	debug("vCard request");
 	ns=xmlnode_get_attrib(q,"xmlns");
-	if (ns && g_strcasecmp(ns,"vcard-temp")){
+	if (ns && strcmp(ns,"vcard-temp")){
 		g_warning("Unsupported vcard namespace: %s!",ns);
 		jabber_iq_send_error(s,from,to,id,501,"Not Implemented");
 		return;
@@ -177,7 +177,7 @@ void jabber_iq_set_vcard(Stream *s,const char *from,const char *to,const char *i
 char *ns;
 
 	ns=xmlnode_get_attrib(q,"xmlns");
-	if (ns && g_strcasecmp(ns,"vcard-temp")){
+	if (ns && strcmp(ns,"vcard-temp")){
 		g_warning("Unsupported vcard namespace: %s!",ns);
 		jabber_iq_send_error(s,from,to,id,501,"Not Implemented");
 		return;
@@ -227,7 +227,7 @@ char *from;
 xmlnode query;
 
 	to=xmlnode_get_attrib(x,"to");
-	if (!to || g_strcasecmp(to,my_name)){
+	if (!to || strcmp(to,my_name)){
 		g_warning("Wrong to=%s (my name is %s) in query:  %s",to?to:"(null)",my_name,xmlnode2str(x));
 		jabber_iq_send_error(s,from,to,id,400,"Bad Request");
 		return;
@@ -266,13 +266,13 @@ char *type;
 	}
 	
 	type=xmlnode_get_attrib(x,"type");
-	if (g_strcasecmp(type,"get")==0)
+	if (strcmp(type,"get")==0)
 		jabber_iq_get(s,x);
-	else if (g_strcasecmp(type,"set")==0)
+	else if (strcmp(type,"set")==0)
 		jabber_iq_set(s,x);
-	else if (g_strcasecmp(type,"result")==0)
+	else if (strcmp(type,"result")==0)
 		jabber_iq_result(s,x);
-	else if (g_strcasecmp(type,"error")==0)
+	else if (strcmp(type,"error")==0)
 		jabber_iq_error(s,x);
 	else g_warning("Unsupported <iq/> type in: %s",xmlnode2str(x));
 }

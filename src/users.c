@@ -173,7 +173,7 @@ char *p;
 		Contact *c;
 		
 		for(t=xmlnode_get_firstchild(tag);t;t=xmlnode_get_nextsibling(t))
-			if (!g_strcasecmp(xmlnode_get_name(t),"uin")
+			if (!strcmp(xmlnode_get_name(t),"uin")
 					&& xmlnode_get_data(t)
 					&& atoi(xmlnode_get_data(t)) ) {
 
