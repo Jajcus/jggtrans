@@ -61,7 +61,7 @@
 		tutaj danych do sms-express.com Sp. z o.o. i ich przetwarzanie
 		przez tę spółkę. <p/>
 		Na serwerze realizującym transport zachowane będzie jedynie hasło,
-		jabberid oraz numer GG użytkownika, a także numery osób w liście kontaktów.
+		jabberid oraz numer GG użytkownika a także numery osób w liście kontaktów.
 	</instructions>
   </register>
 
@@ -91,12 +91,12 @@
  <!-- Tutaj definiuje się "wizytówkę" (vCard) transportu. -->
  <vCard>
      <FN>GaduGadu Transport</FN>
-     <DESC>To jest bramka pomiędzy Jabberem, a GaduGadu.</DESC>
+     <DESC>To jest bramka pomiędzy Jabberem a GaduGadu.</DESC>
      <URL>http://www.jabberstudio.org/projects/jabber-gg-transport/project/view.php</URL>
  </vCard>
 
  <!-- domyślne locale (język) użytkownika.
-      Puste oznacza lokale systemowe, a brak to brak tłumaczeń -->
+      Puste oznacza lokale systemowe a brak to brak tłumaczeń -->
  <default_locale>pl_PL</default_locale>
 
  <!--
