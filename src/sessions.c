@@ -20,7 +20,7 @@ char *data;
 int port;
 xmlnode node;
 
-	/*gdebug_level=255;*/
+	gg_debug_level=255;
 
 	sessions_jid=g_hash_table_new(g_str_hash,g_str_equal);
 	if (!sessions_jid) return -1;

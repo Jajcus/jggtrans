@@ -105,7 +105,7 @@ xmlnode xml,tag,userlist;
 	fclose(f);
 	r=unlink(njid);
 	if (r && errno!=ENOENT){
-		g_warning("Couldn't unlink '%s': %s",u->jid,g_strerror(errno));
+		g_warning("Couldn't unlink '%s': %s",njid,g_strerror(errno));
 		xmlnode_free(xml);
 		g_free(fn);
 		g_free(njid);
@@ -225,17 +225,18 @@ static int user_destroy(User *u){
 
 
 int user_remove(User *u){
+gpointer key,value;
+char *njid;
 
-	if (users_jid){
-		char *njid;
-		gpointer key,value;
-		njid=jid_normalized(u->jid);
-		if (g_hash_table_lookup_extended(users_jid,(gpointer)u->jid,&key,&value)){
-			g_hash_table_remove(users_jid,(gpointer)u->jid);
-			g_free(key);
-		}
-		g_free(njid);
+	g_assert(users_jid!=NULL);
+	
+	njid=jid_normalized(u->jid);
+	if (g_hash_table_lookup_extended(users_jid,(gpointer)u->jid,&key,&value)){
+		g_assert(u==value);
+		g_hash_table_remove(users_jid,(gpointer)u->jid);
+		g_free(key);
 	}
+	g_free(njid);
 	return user_destroy(u);
 }
 
@@ -244,16 +245,28 @@ User *u;
 char *p,*njid;
 
 	g_message("Creating user '%s'",jid);
+
+	njid=jid_normalized(jid);
+	u=(User *)g_hash_table_lookup(users_jid,(gpointer)njid);
+	if (u){
+		g_warning("User '%s' already exists",jid);
+		g_free(njid);
+		return NULL;
+	}
+	
 	if (uin<1){
 		g_warning("Bad UIN");
+		g_free(njid);
 		return NULL;
 	}
 	if (!password){
 		g_warning("Password not given");
+		g_free(njid);
 		return NULL;
 	}
 	if (!jid){
 		g_warning("JID not given");
+		g_free(njid);
 		return NULL;
 	}
 
@@ -266,7 +279,6 @@ char *p,*njid;
 	u->password=g_strdup(password);
 	u->confirmed=0;
 	g_assert(users_jid!=NULL);
-	njid=jid_normalized(u->jid);
 	g_hash_table_insert(users_jid,(gpointer)njid,(gpointer)u);
 	return u;
 }
@@ -347,4 +359,29 @@ int r;
 	}
 	closedir(dir);
 	return 0;
+}
+
+int user_delete(User *u){
+int r;
+char *njid;
+
+	g_assert(u!=NULL);
+
+	njid=jid_normalized(u->jid);
+	r=user_remove(u);
+	if (r){
+		g_free(njid);
+		return r;
+	}
+
+	r=unlink(njid);
+	if (r && errno!=ENOENT){
+		g_warning("Couldn't unlink '%s': %s",njid,g_strerror(errno));
+		r=-1;
+	}
+	else r=0;
+		
+	g_free(njid);
+
+	return r;	
 }

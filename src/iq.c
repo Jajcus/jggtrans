@@ -48,14 +48,12 @@ char *ns;
 	if (jid_is_me(to)){
 		if (!g_strcasecmp(ns,"jabber:iq:register"))
 			jabber_iq_get_register(s,from,id,q);
-		if (!g_strcasecmp(ns,"jabber:iq:search"))
+		else if (!g_strcasecmp(ns,"jabber:iq:search"))
 			jabber_iq_get_search(s,from,id,q);
 		else
 			g_warning("Unsupported xmlns=%s in server iq/get!",ns);
 	}
-	else {
-		g_warning("Unsupported xmlns=%s in user iq/get!",ns);
-	}
+	else g_warning("Unsupported xmlns=%s in user iq/get!",ns);
 }
 
 void jabber_iq_set_query(Stream *s,const char *from,const char * to,const char *id,xmlnode q){
@@ -71,7 +69,7 @@ char *ns;
 	if (jid_is_me(to)){ 
 		if (!g_strcasecmp(ns,"jabber:iq:register"))
 			jabber_iq_set_register(s,from,id,q);
-		if (!g_strcasecmp(ns,"jabber:iq:search"))
+		else if (!g_strcasecmp(ns,"jabber:iq:search"))
 			jabber_iq_set_search(s,from,id,q);
 		else
 			g_warning("Unknown xmlns=%s in server iq/set!",ns);
@@ -90,7 +88,7 @@ xmlnode n;
 		return;
 	}
 	if (jid_is_me(to)){
-		n=xmlnode_get_tag(config,"vcard");
+		n=xmlnode_get_tag(config,"vCard");
 		if (!n){
 			jabber_iq_send_error(s,from,id,"No vCard defined");
 			g_warning("No vcard for server defined");
@@ -98,7 +96,7 @@ xmlnode n;
 		}
 		jabber_iq_send_result(s,from,id,n);
 	}
-	jabber_iq_get_user_vcard(s,from,to,id,q);
+	else jabber_iq_get_user_vcard(s,from,to,id,q);
 }
 
 void jabber_iq_set_vcard(Stream *s,const char *from,const char *to,const char *id,xmlnode q){

@@ -5,6 +5,7 @@
 #include "iq.h"
 #include "jid.h"
 #include "encoding.h"
+#include "debug.h"
 #include <glib.h>
 
 const char *search_instructions;
@@ -96,6 +97,7 @@ Request *r;
 	if (n) sr.uin=atoi(xmlnode_get_data(n));
 	else sr.uin=0;
 
+	debug("gg_search()");
 	gghttp=gg_search(&sr,1);
 	if (!gghttp) jabber_iq_send_error(s,from,id,"Search error");
 

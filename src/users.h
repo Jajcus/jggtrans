@@ -22,6 +22,7 @@ extern GHashTable *users_jid;
 
 User *user_create(const char *jid,uin_t uin,const char * password);
 int user_remove(User *u);
+int user_delete(User *u);
 
 int user_save(User *u);
 

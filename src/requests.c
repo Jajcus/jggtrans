@@ -4,6 +4,7 @@
 #include "requests.h"
 #include "search.h"
 #include "stream.h"
+#include "register.h"
 #include <libgg.h>
 #include <glib.h>
 
@@ -27,6 +28,13 @@ int t;
 			t=gg_search_watch_fd(r->gghttp);
 			if (t || r->gghttp->state==GG_STATE_ERROR) vcard_error(r);
 			else if (!t && r->gghttp->state==GG_STATE_DONE) vcard_done(r);
+			else break;
+			remove_request(r);
+			return 0;
+		case RT_CHANGE:
+			t=gg_search_watch_fd(r->gghttp);
+			if (t || r->gghttp->state==GG_STATE_ERROR) register_error(r);
+			else if (!t && r->gghttp->state==GG_STATE_DONE) register_done(r);
 			else break;
 			remove_request(r);
 			return 0;

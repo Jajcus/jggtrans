@@ -79,6 +79,25 @@ xmlnode pres;
 	return 0;
 }
 
+int presence_send_unsubscribe(struct stream_s *stream,const char *from,const char *to){
+xmlnode pres;
+
+	pres=xmlnode_new_tag("presence");
+	if (from!=NULL) 
+		xmlnode_put_attrib(pres,"from",from);
+	else{
+		char *jid;
+		jid=jid_my_registered();
+		xmlnode_put_attrib(pres,"from",jid);
+		g_free(jid);
+	}
+	xmlnode_put_attrib(pres,"to",to);
+	xmlnode_put_attrib(pres,"type","unsubscribe");
+	stream_write(stream,pres);
+	xmlnode_free(pres);
+	return 0;
+}
+
 int presence_send(struct stream_s *stream,const char *from,
 		const char *to,int available,const char *show,
 		const char *status){

@@ -11,7 +11,8 @@ struct request_s;
 typedef enum request_type_e{
 	RT_NONE=0,
 	RT_SEARCH,
-	RT_VCARD
+	RT_VCARD,
+	RT_CHANGE
 }RequestType;
 
 typedef struct request_s{
