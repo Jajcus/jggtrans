@@ -1,5 +1,5 @@
 
-bin_PROGRAMS=jggtrans
+sbin_PROGRAMS=jggtrans
 
 jggtrans_SOURCES= \
 	debug.h \
