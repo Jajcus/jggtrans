@@ -59,5 +59,7 @@ AC_CHECK_FUNCS([memset strchr],[],AC_MSG_ERROR("Some functions needed are missin
 
 AC_CONFIG_SUBDIRS([libxode])
 
+MKINSTALLDIRS="${MKINSTALLDIRS} -m 755"
+
 AC_CONFIG_FILES([Makefile src/Makefile intl/Makefile po/Makefile.in])
 AC_OUTPUT
