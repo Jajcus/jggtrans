@@ -35,9 +35,9 @@
 
 #include "libxode.h"
 
-static void shaHashBlock(SHA_CTX *ctx);
+static void shaHashBlock(LIBXODE_SHA_CTX *ctx);
 
-void shaInit(SHA_CTX *ctx) {
+void shaInit(LIBXODE_SHA_CTX *ctx) {
   int i;
 
   ctx->lenW = 0;
@@ -56,7 +56,7 @@ void shaInit(SHA_CTX *ctx) {
 }
 
 
-void shaUpdate(SHA_CTX *ctx, unsigned char *dataIn, int len) {
+void shaUpdate(LIBXODE_SHA_CTX *ctx, unsigned char *dataIn, int len) {
   int i;
 
   /* Read the data into W and process blocks as they get full
@@ -74,7 +74,7 @@ void shaUpdate(SHA_CTX *ctx, unsigned char *dataIn, int len) {
 }
 
 
-void shaFinal(SHA_CTX *ctx, unsigned char hashout[20]) {
+void shaFinal(LIBXODE_SHA_CTX *ctx, unsigned char hashout[20]) {
   unsigned char pad0x80 = 0x80;
   unsigned char pad0x00 = 0x00;
   unsigned char padlen[8];
@@ -110,7 +110,7 @@ void shaFinal(SHA_CTX *ctx, unsigned char hashout[20]) {
 
 
 void shaBlock(unsigned char *dataIn, int len, unsigned char hashout[20]) {
-  SHA_CTX ctx;
+  LIBXODE_SHA_CTX ctx;
 
   shaInit(&ctx);
   shaUpdate(&ctx, dataIn, len);
@@ -120,7 +120,7 @@ void shaBlock(unsigned char *dataIn, int len, unsigned char hashout[20]) {
 
 #define SHA_ROTL(X,n) (((X) << (n)) | ((X) >> (32-(n))))
 
-static void shaHashBlock(SHA_CTX *ctx) {
+static void shaHashBlock(LIBXODE_SHA_CTX *ctx) {
   int t;
   unsigned long A,B,C,D,E,TEMP;
 

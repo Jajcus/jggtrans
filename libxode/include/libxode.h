@@ -425,12 +425,12 @@ typedef struct {
   unsigned long W[80];
   int lenW;
   unsigned long sizeHi,sizeLo;
-} SHA_CTX;
+} LIBXODE_SHA_CTX;
 
 
-void shaInit(SHA_CTX *ctx);
-void shaUpdate(SHA_CTX *ctx, unsigned char *dataIn, int len);
-void shaFinal(SHA_CTX *ctx, unsigned char hashout[20]);
+void shaInit(LIBXODE_SHA_CTX *ctx);
+void shaUpdate(LIBXODE_SHA_CTX *ctx, unsigned char *dataIn, int len);
+void shaFinal(LIBXODE_SHA_CTX *ctx, unsigned char hashout[20]);
 void shaBlock(unsigned char *dataIn, int len, unsigned char hashout[20]);
 
 

@@ -1,4 +1,4 @@
-/* $Id: sessions.h,v 1.24 2003/05/09 12:22:36 jajcus Exp $ */
+/* $Id: sessions.h,v 1.25 2003/05/27 07:45:35 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -63,6 +63,7 @@ typedef struct session_s{
 typedef struct gg_server_s {
 	struct in_addr addr;
 	int port;
+	int tls;
 }GgServer;
 
 extern GHashTable *sessions_jid;

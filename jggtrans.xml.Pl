@@ -143,6 +143,8 @@
  	<hub/> oznacza "użyj huba GG aby znaleźć właściwy serwer"
       	Element <server/> powinien zawierać adres serwera. Może też mieć
 	ustawiony atrybut "port" zawierający numer portu na serwerze.
+	Jeżeli TLS jest dostępne (obsługiwane przez libgadu) i nie jest
+	ustawione tls="no", to połączenie z serwerem GG będzie szyfrowane.
 	Jggtrans będzie się próbował łączyć z podanymi serwerami w podanej
 	kolejności i użyje pierwszego działającego.
 	Rozsądna domyślna lista serwerów jest wkompilowana w jggtrans.
@@ -153,6 +155,9 @@
 	<server>217.17.41.84</server>
 	<server>217.17.41.85</server>
 	<server port="8074">217.17.41.86</server>
+	<hub tls="no"/>
+	<server tls="no">217.17.41.84</server>
+	<server tls="no">217.17.41.85</server>
  </servers>
  -->
 

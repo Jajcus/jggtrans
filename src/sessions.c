@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.77 2003/05/19 12:23:29 jajcus Exp $ */
+/* $Id: sessions.c,v 1.78 2003/05/27 07:45:35 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -100,15 +100,22 @@ GgServer *server;
 			}
 			else if (strcmp(p, "server")==0){
 				server=g_new(GgServer, 1);
-				if((r=xmlnode_get_attrib(tag, "port")))
+				r=xmlnode_get_attrib(tag, "port");
+				if (r)
 					server->port=atoi(r);
 				else
 					server->port=8074;
-
 				r=xmlnode_get_data(tag);
 				if(inet_aton(r, &server->addr))
 					gg_servers=g_list_append(gg_servers, server);
 			}
+			else continue;
+			
+			r=xmlnode_get_attrib(tag, "tls");
+			if (r && !g_strcasecmp(r,"no"))
+				server->tls=0;
+			else
+				server->tls=1;
 		}
 
 
@@ -116,11 +123,13 @@ GgServer *server;
 	else{
 		server=g_new(GgServer, 1);
 		server->port=1;
+		server->tls=1;
 		gg_servers=g_list_append(gg_servers, server);
 
 		server=g_new(GgServer, 1);
-		inet_aton("217.17.41.84", &server->addr);
+		inet_aton("217.17.41.85", &server->addr);
 		server->port=8074;
+		server->tls=1;
 		gg_servers=g_list_append(gg_servers, server);
 	}
 
@@ -626,6 +635,10 @@ int r;
 		login_params.server_addr=serv->addr.s_addr;
 		login_params.server_port=serv->port;
 	}
+#ifdef __GG_LIBGADU_HAVE_OPENSSL
+	debug(N_("Turning TLS %s"), serv->tls?"on":"off");
+	login_params.tls=serv->tls;
+#endif
 
 	if (s->ggs) gg_free_session(s->ggs);
 	s->ggs=gg_login(&login_params);
