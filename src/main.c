@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.38 2003/04/13 15:55:43 jajcus Exp $ */
+/* $Id: main.c,v 1.39 2003/04/14 09:07:29 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -28,6 +28,7 @@
 #include <pwd.h>
 #include <grp.h>
 #include <ctype.h>
+#include <time.h>
 #include "jabber.h"
 #include "sessions.h"
 #include "encoding.h"
@@ -51,7 +52,13 @@ static int debug_level=0;
 static FILE *log_file=NULL;
 static gboolean use_syslog=FALSE;
 static char *pid_filename=NULL;
+
 GList *admins=NULL;
+time_t start_time=0;
+unsigned long packets_in=0;
+unsigned long packets_out=0;
+unsigned long gg_messages_in=0;
+unsigned long gg_messages_out=0;
 
 static struct {
 	const char *name;
@@ -516,6 +523,7 @@ guint lh;
 	signal(SIGUSR1,signal_handler);
 	signal(SIGCHLD,sigchld_handler);
 
+	start_time=time(NULL);
 	g_main_run(main_loop);
 
 	sessions_done();

@@ -1,4 +1,4 @@
-/* $Id: ggtrans.h,v 1.11 2003/04/14 09:07:29 jajcus Exp $ */
+/* $Id: stats.h,v 1.1 2003/04/14 09:07:29 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -17,28 +17,9 @@
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef ggtrans_h
-#define ggtrans_h
+#ifndef stats_h
+#define stats_h
 
-#include <libxode.h>
-#include <libintl.h>
-#include <glib.h>
-#include "../config.h"
-
-/* gettext shortcut for translating messages */
-#define _(String) gettext (String)
-
-/* dummy gettext shortcut for translating error/debug messages after log handler is set */
-#define N_(String) (String)
-
-extern GMainLoop *main_loop;
-extern gboolean do_restart;
-extern GList *admins;
-
-extern time_t start_time;
-extern unsigned long packets_in;
-extern unsigned long packets_out;
-extern unsigned long gg_messages_in;
-extern unsigned long gg_messages_out;
+void jabber_iq_get_server_stats(Stream *s,const char *from,const char * to,const char *id,xmlnode q);
 
 #endif

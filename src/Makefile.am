@@ -35,6 +35,8 @@ jggtrans_SOURCES= \
 	search.h \
 	sessions.c \
 	sessions.h \
+	stats.c \
+	stats.h \
 	status.c \
 	status.h \
 	stream.c \
