@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.10 2002/02/06 17:23:37 jajcus Exp $ */
+/* $Id: search.c,v 1.11 2002/03/04 16:51:21 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -193,6 +193,11 @@ struct gg_search * results;
 char *jid,*name,*str;
 	
 	results=(struct gg_search *)r->gghttp->data;
+	if (!results || !results->count){
+		jabber_iq_send_error(r->stream,r->from,r->to,r->id,404,"Not Found");
+		return 1;
+	}
+	
 	vc=xmlnode_new_tag("vCard");
 	xmlnode_put_attrib(vc,"xmlns","vcard-temp");
 	xmlnode_put_attrib(vc,"version","2.0");
