@@ -1,4 +1,4 @@
-/* $Id: presence.c,v 1.40 2003/05/13 16:18:16 jajcus Exp $ */
+/* $Id: presence.c,v 1.41 2003/05/19 11:48:35 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -326,8 +326,8 @@ GTime timestamp;
 	}
 
 	available=status_gg_to_jabber(status,&show,&stat);
-
-	presence_send(stream,to,u->jid,available,show,stat,timestamp);
+	if (available) presence_send(stream,jid_build(uin),u->jid,available,show,stat,timestamp);
+	else presence_send_error(stream,to,from,404,_("Not Found"));
 	return 0;
 }
 

@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.75 2003/05/16 17:46:16 mmazur Exp $ */
+/* $Id: sessions.c,v 1.76 2003/05/19 11:48:35 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -805,6 +805,7 @@ GList *it;
 		if (show) r->show=g_strdup(show);
 		if (status) r->status=g_strdup(status);
 		if (priority>=0) r->priority=priority;
+		if (s->connected) presence_send(s->s,NULL,s->user->jid,r->available,r->show,r->status,0);
 	}
 
 	if (s->connected) session_send_status(s);
