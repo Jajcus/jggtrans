@@ -1,4 +1,4 @@
-/* $Id: users.c,v 1.30 2003/04/08 17:45:28 jajcus Exp $ */
+/* $Id: users.c,v 1.31 2003/04/11 18:59:37 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -227,7 +227,7 @@ char *data;
 	errno=0;
 	xml=xmlnode_file(fn);
 	if (xml==NULL){
-		g_warning(N_("Couldn't read or parse '%s': %s"),fn,errno?g_strerror(errno):N_("XML parse error"));
+		debug(N_("Couldn't read or parse '%s': %s"),fn,errno?g_strerror(errno):N_("XML parse error"));
 		g_free(fn);
 		return NULL;
 	}
