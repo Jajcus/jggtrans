@@ -8,6 +8,7 @@ To build GaduGadu transport you need:
 
 	- libgadu >= 20030130 or 1.0 (http://dev.null.pl/ekg/)
 		Tested with libgadu-1.0
+		libfadu >= 20030515 for TLS support
 	
 	- pkgconfig (http://www.freedesktop.org/software/pkgconfig/)
 
