@@ -1,3 +1,19 @@
+Version 2.0.9
+-------------
+
+Changes from 2.0.8:
+
+* Roster import is back again. Only the "get roster" command, the other
+  "import roster" used a protocol hack forbidden in XMPP.
+
+* jggtrans will not hang when it cannot connect to the Jabber server.
+
+* Transport will not break when output buffer overflows (that happened
+  on transport setups with many registered users).
+
+* presence errors are not sent anymore in response to some presence errors received
+
+
 Version 2.0.8
 -------------
 
