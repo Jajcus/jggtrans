@@ -1,4 +1,4 @@
-/* $Id: register.c,v 1.20 2003/04/03 19:25:20 mmazur Exp $ */
+/* $Id: register.c,v 1.21 2003/04/04 10:58:40 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -204,7 +204,7 @@ username=password=first=last=nick=city=sex=born=NULL;
 		if (sex[0]=='k' || sex[0]=='f' || sex[0]=='K' || sex[0]=='F') 
 			gg_pubdir50_add(change, GG_PUBDIR50_GENDER,
 					GG_PUBDIR50_GENDER_FEMALE);
-		else 
+		else if (sex!=NULL && sex[0]!='\000') 
 			gg_pubdir50_add(change, GG_PUBDIR50_GENDER,
 					GG_PUBDIR50_GENDER_MALE);
 	}
