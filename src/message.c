@@ -1,4 +1,4 @@
-/* $Id: message.c,v 1.36 2003/04/27 19:18:44 jajcus Exp $ */
+/* $Id: message.c,v 1.37 2003/04/28 07:22:53 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -187,7 +187,6 @@ Request *r;
 	user=user_get_by_jid(from);
 
 	message_send(stream,to,from,1,_("Importing roster..."),0);
-
 	gghttp=gg_userlist_get(user->uin,from_utf8(user->password),1);
 	r=add_request(RT_USERLIST_IMPORT,from,to,"",msg,(void*)gghttp,stream);
 	if (!r){

@@ -1,4 +1,4 @@
-/* $Id: sessions.h,v 1.21 2003/04/27 19:18:44 jajcus Exp $ */
+/* $Id: sessions.h,v 1.22 2003/04/28 07:22:53 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -51,6 +51,7 @@ typedef struct session_s{
 
 	xmlnode query; /* The query */
 	gg_pubdir50_t pubdir_change; /* Info for public directory change reqested on registration */
+	int import_roster; /* 1 if roster should be imported from GG server after successful registration */
 	guint ping_timeout_func;
 	guint timeout_func;
 	GTimer *ping_timer;

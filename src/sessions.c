@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.67 2003/04/27 19:28:21 jajcus Exp $ */
+/* $Id: sessions.c,v 1.68 2003/04/28 07:22:53 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -410,6 +410,15 @@ time_t timestamp;
 							NULL,s->pubdir_change,s->s);
 				gg_pubdir50_free(s->pubdir_change);
 				s->pubdir_change=NULL;
+			}
+			if (s->import_roster){
+				struct gg_http * gghttp;
+				Request *r;
+
+				gghttp=gg_userlist_get(s->user->uin,from_utf8(s->user->password),1);
+				r=add_request(RT_USERLIST_IMPORT,s->jid,NULL,"",NULL,
+									(void*)gghttp,s->s);
+				s->import_roster=0;
 			}
 			break;
 		case GG_EVENT_NOTIFY:

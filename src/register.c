@@ -1,4 +1,4 @@
-/* $Id: register.c,v 1.40 2003/04/27 19:18:44 jajcus Exp $ */
+/* $Id: register.c,v 1.41 2003/04/28 07:22:53 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -53,7 +53,7 @@ int i;
 	form_add_field(form,"text-single","uin",_("GG number"),NULL,1);
 	form_add_field(form,"text-private","password",_("Password"),NULL,1);
 	/* form_add_field(form,"boolean","new",_("Create new account"),"0",1); */
-
+	form_add_field(form,"boolean","import_roster",_("Import userlist from GG server"),"0",1);
 
 	field=form_add_field(form,"list-single","locale",_("Language"),default_user_locale,0);
 	for(i=0;locale_mapping[i].locale!=NULL;i++)
@@ -329,6 +329,7 @@ int register_process_form(Stream *s,const char *from,const char *to,
 xmlnode field,value;
 char *password,*tmp;
 unsigned uin;
+int import_roster=0;
 User *user;
 Session *session;
 
@@ -338,7 +339,7 @@ Session *session;
 		return -1;
 	}
 	value=xmlnode_get_tag(field,"value");
-	if (field==NULL){
+	if (value==NULL){
 		jabber_iq_send_error(s,from,to,id,406,_("No uin value defined"));
 		return -1;
 	}
@@ -359,7 +360,7 @@ Session *session;
 		return -1;
 	}
 	value=xmlnode_get_tag(field,"value");
-	if (field==NULL){
+	if (value==NULL){
 		jabber_iq_send_error(s,from,to,id,406,_("No password value defined"));
 		return -1;
 	}
@@ -367,6 +368,14 @@ Session *session;
 	if (password==NULL){
 		jabber_iq_send_error(s,from,to,id,406,_("No password value defined"));
 		return -1;
+	}
+
+	field=xmlnode_get_tag(form,"field?var=import_roster");
+	if (field!=NULL) value=xmlnode_get_tag(field,"value");
+	else value=NULL;
+	if (value!=NULL){
+		tmp=xmlnode_get_data(value);
+		if (tmp) import_roster=atoi(tmp);
 	}
 
 	user=user_create(from,uin,password);
@@ -383,6 +392,8 @@ Session *session;
 		jabber_iq_send_error(s,from,to,id,500,_("Internal Server Error"));
 		return -1;
 	}
+
+	if (import_roster) session->import_roster=1;
 
 	register_process_options_form(s,from,to,id,user,form);
 	return 0;
