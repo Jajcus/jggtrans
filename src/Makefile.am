@@ -62,7 +62,7 @@ encodingtest_LDADD=$(GLIB_LIBS)
 INCLUDES=$(GLIB_CFLAGS) $(JK_LIBGADU_CFLAGS) -I$(top_srcdir)/libxode/include
 
 jggtrans_CFLAGS=-DVERSION="\"$(VERSION)\"" -DSYSCONFDIR="\"$(sysconfdir)\"" -DLOCALEDIR="\"$(localedir)\""
-jggtrans_LDADD=$(GLIB_LIBS) $(JK_LIBGADU_CFLAGS) $(JK_LIBGADU_LIBS) $(top_builddir)/libxode/src/libxode.la
+jggtrans_LDADD=$(INTLLIBS) $(GLIB_LIBS) $(JK_LIBGADU_CFLAGS) $(JK_LIBGADU_LIBS) $(top_builddir)/libxode/src/libxode.la
 
 tags: 
 	ctags -R . ../libxode/
