@@ -1,4 +1,4 @@
-/* $Id: message.c,v 1.23 2003/04/05 11:02:57 jajcus Exp $ */
+/* $Id: message.c,v 1.24 2003/04/06 11:06:54 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -36,6 +36,7 @@ typedef void (*MsgHandler)(struct stream_s *s,const char *from, const char *to,
 typedef struct iq_namespace_s{
 	const char *command;
 	const char *abr;
+	const char *description;
 	MsgHandler handler;
 	int experimental;
 }MsgCommand;
@@ -48,14 +49,17 @@ void message_friends_only(struct stream_s *s,const char *from, const char *to,
 				const char *args, xmlnode msg);
 void message_invisible(struct stream_s *s,const char *from, const char *to,
 				const char *args, xmlnode msg);
+void message_locale(struct stream_s *s,const char *from, const char *to,
+				const char *args, xmlnode msg);
 
 MsgCommand msg_commands[]={
 #ifdef REMOTE_USERLIST
-	{"get roster","gr",message_get_roster,1},
-	{"put roster","pr",message_put_roster,1},
+	{"get roster","gr",N_("Download user list from server"),message_get_roster,1},
+	{"put roster","pr",N_("Upload user list to server"),message_put_roster,1},
 #endif
-	{"friends only","fo",message_friends_only,1},
-	{"invisible","iv",message_invisible,1},
+	{"friends only","fo",N_("\"Only for friends\" mode"),message_friends_only,1},
+	{"invisible","iv",N_("\"Invisible\" mode"),message_invisible,1},
+	{"locale","loc",N_("Set user locale (language)"),message_locale,1},
 	{NULL,NULL,NULL,0},
 };
 
@@ -398,6 +402,30 @@ int on;
 	user_save(user);
 }
 
+void message_locale(struct stream_s *stream,const char *from, const char *to,
+				const char *args, xmlnode msg){
+Session *session;
+User *user;
+char *m;
+
+	session=session_get_by_jid(from,stream);
+	if (session!=NULL)
+		user=session->user;
+	else
+		user=user_get_by_jid(from);
+
+	if (args && args[0]){
+		if (user->locale) g_free(user->locale);
+		user->locale=g_strdup(args);
+	}
+
+	m=g_strdup_printf(_("Locale set to: %s"),user->locale?user->locale:_("_default_"));
+	message_send(stream,to,from,1,m,0);
+	g_free(m);
+	user_save(user);
+}
+
+
 int message_to_me(struct stream_s *stream,const char *from,
 		const char *to,const char *body,xmlnode tag){
 int i;
@@ -429,16 +457,18 @@ char *msg;
 			return 0;
 		}
 	}
-	msg=_("\nAvailable commands (and abbreviations):");
+	msg=_("\nAvailable commands and abbreviations:");
 	for(i=0;msg_commands[i].command;i++){
-		msg=g_strdup_printf("%s\n  %s (%s)%s",msg,
+		msg=g_strdup_printf("%s\n  %-12s %-4s  - %s%s",msg,
 				msg_commands[i].command,
 				msg_commands[i].abr,
+				_(msg_commands[i].description),
 				msg_commands[i].experimental?_(" EXPERIMENTAL!"):"");
 	}
 	msg=g_strdup_printf(_("%s\nCurrent settings:"),msg);
 	msg=g_strdup_printf(_("%s\n  friends only: %s"),msg,user->friends_only?_("on"):_("off"));
 	msg=g_strdup_printf(_("%s\n  invisible: %s"),msg,user->invisible?_("on"):_("off"));
+	msg=g_strdup_printf(_("%s\n  locale: %s"),msg,user->locale?user->locale:_("_default_"));
 	message_send(stream,to,from,1,msg,0);
 	g_free(msg);
 
