@@ -1,4 +1,4 @@
-/* $Id: iq.c,v 1.26 2003/01/12 15:20:24 jajcus Exp $ */
+/* $Id: iq.c,v 1.27 2003/01/13 13:24:38 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -36,6 +36,7 @@ void jabber_iq_get_server_vcard(Stream *s,const char *from,const char * to,const
 void jabber_iq_get_gateway(Stream *s,const char *from,const char * to,const char *id,xmlnode q);
 void jabber_iq_set_gateway(Stream *s,const char *from,const char * to,const char *id,xmlnode q);
 void jabber_iq_get_server_version(Stream *s,const char *from,const char * to,const char *id,xmlnode q);
+void jabber_iq_not_implemented(Stream *s,const char *from,const char * to,const char *id,xmlnode q);
 	
 IqNamespace server_iq_ns[]={
 	{"jabber:iq:register","query",jabber_iq_get_register,jabber_iq_set_register},
@@ -55,6 +56,7 @@ IqNamespace client_iq_ns[]={
 	{"vcard-temp","VCARD",jabber_iq_get_user_vcard,NULL}, /* WinJab bug workaround */
 	{"jabber:iq:browse","item",jabber_iq_get_client_browse,NULL},
 	{"jabber:iq:browse","query",jabber_iq_get_client_browse,NULL},/* WinJab bug (?) workaround */
+	{"jabber:iq:version","query",jabber_iq_not_implemented,NULL},
 	{NULL,NULL,NULL,NULL}
 };
 
@@ -243,6 +245,12 @@ int i;
 	g_warning("No known content in iq: %s",xmlnode2str(x));
 	jabber_iq_send_error(s,from,to,id,501,"Not implemented");
 }
+
+void jabber_iq_not_implemented(Stream *s,const char *from,const char * to,const char *id,xmlnode q){
+
+	jabber_iq_send_error(s,from,to,id,501,"Not implemented");
+}
+
 
 void jabber_iq_result(Stream *s,xmlnode x){}
 
