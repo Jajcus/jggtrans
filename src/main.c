@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.25 2003/01/15 14:17:08 jajcus Exp $ */
+/* $Id: main.c,v 1.26 2003/01/15 15:07:44 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -42,7 +42,7 @@ GMainLoop *main_loop;
 
 static int signal_received=FALSE;
 static gboolean the_end=FALSE;
-gboolean do_restart=TRUE;
+gboolean do_restart=FALSE;
 static int restart_timeout=60;
 static gboolean foreground=TRUE;
 static int debug_level=0;
