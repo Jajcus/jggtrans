@@ -99,6 +99,8 @@ Session *s;
 	g_assert(data!=NULL);
 	s=(Session *)data;
 	if (s->waiting_for_pong){
+		gg_ping(s->ggs); /* send ping, even if server doesn't respond 
+				    this one will be not counted for the ping delay*/
 		debug("Pong still not received :-( ...");
 		return TRUE;
 	}
