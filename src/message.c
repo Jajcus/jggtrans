@@ -1,4 +1,4 @@
-/* $Id: message.c,v 1.35 2003/04/25 13:25:35 jajcus Exp $ */
+/* $Id: message.c,v 1.36 2003/04/27 19:18:44 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -344,7 +344,7 @@ int i;
 		}
 
 		uin=atoi(cinfo[6]);
-		s=session_get_by_jid(r->from, r->stream);
+		s=session_get_by_jid(r->from, r->stream,0);
 		jid=jid_build(uin);
 		session_subscribe(s,uin);
 		presence_send_subscribed(r->stream,r->from,jid);
@@ -363,7 +363,7 @@ Session *session;
 User *user;
 int on;
 
-	session=session_get_by_jid(from,stream);
+	session=session_get_by_jid(from,stream,0);
 	if (session!=NULL)
 		user=session->user;
 	else
@@ -394,7 +394,7 @@ Session *session;
 User *user;
 int on;
 
-	session=session_get_by_jid(from,stream);
+	session=session_get_by_jid(from,stream,0);
 	if (session!=NULL)
 		user=session->user;
 	else
@@ -425,7 +425,7 @@ Session *session;
 User *user;
 char *m;
 
-	session=session_get_by_jid(from,stream);
+	session=session_get_by_jid(from,stream,0);
 	if (session!=NULL)
 		user=session->user;
 	else
@@ -559,7 +559,7 @@ User *u;
 		return -1;
 	}
 
-	s=session_get_by_jid(from,NULL);
+	s=session_get_by_jid(from,NULL,0);
 	if (!s || !s->connected){
 		g_warning(N_("%s not logged in. While processing %s"),from,xmlnode2str(tag));
 		message_send_error(stream,to,from,body,407,_("Not logged in"));

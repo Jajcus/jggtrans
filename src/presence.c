@@ -1,4 +1,4 @@
-/* $Id: presence.c,v 1.35 2003/04/22 08:43:55 jajcus Exp $ */
+/* $Id: presence.c,v 1.36 2003/04/27 19:18:44 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -205,7 +205,7 @@ const char *resource;
 Resource *res;
 User *u;
 
-	s=session_get_by_jid(from,available?stream:NULL);
+	s=session_get_by_jid(from,available?stream:NULL,1);
 	if (!s){
 		debug(L_("presence: No such session: %s"),from);
 		presence_send_error(stream,NULL,from,407,_("Not logged in"));
@@ -245,7 +245,7 @@ int r;
 		g_warning(N_("Bad 'to': %s"),to);
 		return -1;
 	}
-	s=session_get_by_jid(from,stream);
+	s=session_get_by_jid(from,stream,0);
 	if (!s){
 		g_warning(N_("Couldn't find or open session for '%s'"),from);
 		return -1;
@@ -282,7 +282,7 @@ char *show,*stat;
 GList *it;
 GTime timestamp;
 
-	s=session_get_by_jid(from,NULL);
+	s=session_get_by_jid(from,NULL,0);
 	if (jid_is_me(to)){
 		if (s){
 			if (!s->connected){
@@ -356,7 +356,7 @@ int r;
 		g_warning(N_("Bad 'to': %s"),to);
 		return -1;
 	}
-	s=session_get_by_jid(from,stream);
+	s=session_get_by_jid(from,stream,0);
 	if (!s){
 		g_warning(N_("Couldn't find or open session for '%s'"),from);
 		return -1;

@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.65 2003/04/22 08:25:08 jajcus Exp $ */
+/* $Id: sessions.c,v 1.66 2003/04/27 19:18:44 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -558,10 +558,31 @@ char *njid;
 	return 0;
 }
 
+/* returns: -1 on error, 1 on status change, 0 on no change */
+int session_make_status(Session *s){
+int status;
+Resource *r;
+
+	r=session_get_cur_resource(s);
+	if (!r) return -1;
+	status=status_jabber_to_gg(r->available,r->show,r->status);
+	if (s->user->invisible) status=GG_STATUS_INVISIBLE;
+	else if (s->user->friends_only) status|=GG_STATUS_FRIENDS_MASK;
+
+	if (status==s->gg_status && !strcmp(r->status,s->gg_status_descr))
+		return 0;
+	g_free(s->gg_status_descr);
+	s->gg_status_descr=g_strdup(r->status);
+	s->gg_status=status;
+	return 1;
+}
+
+
 static int session_try_login(Session *s){
 struct gg_login_params login_params;
 GIOCondition cond;
 GgServer *serv;
+int r;
 
 	g_warning(N_("Trying to log in on server %u"),
 			g_list_position(gg_servers, s->current_server));
@@ -574,6 +595,15 @@ GgServer *serv;
 	login_params.uin=s->user->uin;
 	login_params.password=from_utf8(s->user->password);
 	login_params.async=1;
+	login_params.last_sysmsg=s->user->last_sys_msg;
+
+	r=session_make_status(s);
+	if (r!=-1){
+		debug(L_("Setting gg status to %i (%s)"),s->gg_status,s->gg_status_descr);
+		login_params.status=s->gg_status;
+		if (s->gg_status_descr) login_params.status_descr=s->gg_status_descr;
+	}
+
 	serv=(GgServer*)s->current_server->data;
 	if(serv->port!=1){
 		login_params.server_addr=serv->addr.s_addr;
@@ -599,7 +629,8 @@ GgServer *serv;
 	return 0;
 }
 
-Session *session_create(User *user,const char *jid,const char *req_id,const xmlnode query,struct stream_s *stream){
+Session *session_create(User *user,const char *jid,const char *req_id,
+		const xmlnode query,struct stream_s *stream,int delay_login){
 Session *s;
 char *njid;
 
@@ -607,13 +638,13 @@ char *njid;
 	g_assert(user!=NULL);
 	s=g_new0(Session,1);
 	s->user=user;
+	s->gg_status=-1;
 	s->jid=g_strdup(jid);
 	if (req_id) s->req_id=g_strdup(req_id);
 	s->query=xmlnode_dup(query);
 	s->current_server=g_list_first(gg_servers);
 
-	if(session_try_login(s))
-		return NULL;
+	if (!delay_login && session_try_login(s)) return NULL;
 
 	s->s=stream;
 
@@ -623,7 +654,7 @@ char *njid;
 	return s;
 }
 
-Session *session_get_by_jid(const char *jid,Stream *stream){
+Session *session_get_by_jid(const char *jid,Stream *stream,int delay_login){
 Session *s;
 User *u;
 char *njid;
@@ -640,7 +671,7 @@ char *njid;
 	u=user_get_by_jid(jid);
 	if (!u) return NULL;
 	debug(L_("Creating new session"));
-	return session_create(u,jid,NULL,NULL,stream);
+	return session_create(u,jid,NULL,NULL,stream,delay_login);
 }
 
 Resource *session_get_cur_resource(Session *s){
@@ -660,20 +691,17 @@ int maxprio;
 }
 
 int session_send_status(Session *s){
-int status;
-Resource *r;
+int r;
 
 	g_assert(s!=NULL && s->ggs!=NULL);
-	r=session_get_cur_resource(s);
-	if (!r) return -1;
-	status=status_jabber_to_gg(r->available,r->show,r->status);
-	if (s->user->invisible) status=GG_STATUS_INVISIBLE;
-	else if (s->user->friends_only) status|=GG_STATUS_FRIENDS_MASK;
-	debug(L_("Changing gg status to %i"),status);
-	if (r->status!=NULL)
-		gg_change_status_descr(s->ggs,status,r->status);
+	r=session_make_status(s);
+	if (r==-1) return -1;
+	if (r==0) return 0;
+	debug(L_("Changing gg status to %i"),s->gg_status);
+	if (s->gg_status_descr!=NULL)
+		gg_change_status_descr(s->ggs,s->gg_status,s->gg_status_descr);
 	else
-		gg_change_status(s->ggs,status);
+		gg_change_status(s->ggs,s->gg_status);
 	return 0;
 }
 
@@ -734,6 +762,8 @@ GList *it;
 	}
 
 	if (s->connected) session_send_status(s);
+	else return session_try_login(s);
+
 	return 0;
 }
 

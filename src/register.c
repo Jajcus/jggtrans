@@ -1,4 +1,4 @@
-/* $Id: register.c,v 1.39 2003/04/22 09:34:52 jajcus Exp $ */
+/* $Id: register.c,v 1.40 2003/04/27 19:18:44 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -231,7 +231,7 @@ Request *r;
 Session *session=NULL;
 gg_pubdir50_t change;
 
-	session=session_get_by_jid(from,s);
+	session=session_get_by_jid(from,s,0);
 	if (session==NULL){
 		jabber_iq_send_error(s,from,to,id,500,_("Not logged in?"));
 	}
@@ -376,7 +376,7 @@ Session *session;
 		return -1;
 	}
 
-	session=session_create(user,from,id,q,s);
+	session=session_create(user,from,id,q,s,0);
 	if (!session){
 		user_remove(user);
 		g_warning(N_("Couldn't create session for %s"),from);
@@ -470,7 +470,7 @@ User *u;
 char *jid;
 
 	debug(L_("Unregistering '%s'"),from);
-	ses=session_get_by_jid(from,NULL);
+	ses=session_get_by_jid(from,NULL,0);
 	if (ses)
 		if (session_remove(ses)){
 			g_warning(N_("'%s' unregistration failed"),from);
@@ -572,7 +572,7 @@ Request *r;
 			return;
 		}
 
-		session=session_create(user,from,id,q,s);
+		session=session_create(user,from,id,q,s,0);
 		if (!session){
 			user_remove(user);
 			g_warning(N_("Couldn't create session for %s"),from);
@@ -580,7 +580,7 @@ Request *r;
 			return;
 		}
 	}
-	else session=session_get_by_jid(from,s);
+	else session=session_get_by_jid(from,s,0);
 
 	node=xmlnode_get_tag(q,"first");
 	if (node) first=xmlnode_get_data(node);

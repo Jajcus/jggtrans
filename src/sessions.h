@@ -1,4 +1,4 @@
-/* $Id: sessions.h,v 1.20 2003/04/16 11:10:17 jajcus Exp $ */
+/* $Id: sessions.h,v 1.21 2003/04/27 19:18:44 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -34,6 +34,8 @@ typedef struct session_s{
 	User *user;
 
 	struct gg_session *ggs; /* GG session */
+	int gg_status; /* status set at GG server */
+	char *gg_status_descr;
 
 	GIOChannel *ioch; /* GG IO Channel */
 	guint io_watch;
@@ -62,7 +64,8 @@ typedef struct gg_server_s {
 
 extern GHashTable *sessions_jid;
 
-Session *session_create(User *user,const char *jid,const char *req_id,const xmlnode query,struct stream_s *stream);
+Session *session_create(User *user,const char *jid,const char *req_id,
+		const xmlnode query,struct stream_s *stream,int delay_login);
 int session_remove(Session *s);
 
 int session_set_status(Session *s,const char *resource,int available,
@@ -82,8 +85,10 @@ Resource *session_get_cur_resource(Session *s);
 /*
  * Finds session associated with JID.
  * If none exists and stream is given, new session is created
+ * If delay_login != 0, than the session is not logged in, when created, but on
+ * the first status change
  */
-Session *session_get_by_jid(const char *jid,struct stream_s *stream);
+Session *session_get_by_jid(const char *jid,struct stream_s *stream,int delay_login);
 
 void session_print(Session *s,int indent);
 void sessions_print_all(int indent);

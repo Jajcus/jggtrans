@@ -1,4 +1,4 @@
-/* $Id: requests.c,v 1.35 2003/04/25 13:25:36 jajcus Exp $ */
+/* $Id: requests.c,v 1.36 2003/04/27 19:18:44 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -172,7 +172,7 @@ struct gg_http *gghttp;
 	r->stream=stream;
 
 	if(type==RT_VCARD || type==RT_SEARCH || type==RT_CHANGE){
-		s=session_get_by_jid(from, stream);
+		s=session_get_by_jid(from, stream,0);
 		if (s==NULL) return NULL;
 
 		r->hash=id_counter++;

@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.34 2003/04/16 11:10:17 jajcus Exp $ */
+/* $Id: search.c,v 1.35 2003/04/27 19:18:44 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -207,7 +207,7 @@ void jabber_iq_get_search(Stream *s,const char *from,const char *to,const char *
 xmlnode iq,n;
 Session *sess;
 
-	sess=session_get_by_jid(from,NULL);
+	sess=session_get_by_jid(from,NULL,0);
 	if (!sess || !sess->connected){
 		jabber_iq_send_error(s,from,to,id,407,_("Not logged in"));
 		return;
@@ -253,7 +253,7 @@ struct search_req_s *sr;
 
 	form=xmlnode_get_tag(q,"x?xmlns=jabber:x:data");
 
-	sess=session_get_by_jid(from,NULL);
+	sess=session_get_by_jid(from,NULL,0);
 	if (!sess || !sess->connected){
 		jabber_iq_send_error(s,from,to,id,407,_("Not logged in"));
 		return;
@@ -325,7 +325,7 @@ char *data;
 	if (n){
 		return jabber_iq_set_search_byform(s,from,to,id,q,0,0);
 	}
-	sess=session_get_by_jid(from,NULL);
+	sess=session_get_by_jid(from,NULL,0);
 	if (!sess || !sess->connected){
 		jabber_iq_send_error(s,from,to,id,407,_("Not logged in"));
 		return;
