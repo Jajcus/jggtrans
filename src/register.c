@@ -10,7 +10,7 @@
 #include "encoding.h"
 #include <glib.h>
 
-const char *instructions;
+const char *register_instructions;
 
 void jabber_iq_get_register(Stream *s,const char *from,const char *id,xmlnode q){
 xmlnode node;
@@ -21,7 +21,7 @@ xmlnode instr;
 	node=xmlnode_get_firstchild(q);
 	if (node){
 		g_warning("Get for jabber:iq:register not empty!: %s",xmlnode2str(q));
-		jabber_iq_send_error(s,from,id,"query not empty");
+		jabber_iq_send_error(s,from,id,406,"Not Acceptable");
 		return;
 	}		
 	iq=xmlnode_new_tag("iq");
@@ -48,7 +48,7 @@ xmlnode instr;
 	xmlnode_insert_tag(query,"gender");
 	
 	instr=xmlnode_insert_tag(query,"instructions");
-	xmlnode_insert_cdata(instr,instructions,-1);
+	xmlnode_insert_cdata(instr,register_instructions,-1);
 	stream_write(s,iq);
 	xmlnode_free(iq);
 }
@@ -63,7 +63,7 @@ char *jid;
 	if (ses) 
 		if (session_remove(ses)){
 			g_warning("'%s' unregistration failed",from);
-			jabber_iq_send_error(s,from,id,"Unregistration failed");
+			jabber_iq_send_error(s,from,id,500,"Internal Server Error");
 			return;
 		}
 			
@@ -72,14 +72,14 @@ char *jid;
 		jid=g_strdup(u->jid);
 		if (user_delete(u)){
 			g_warning("'%s' unregistration failed",from);
-			jabber_iq_send_error(s,from,id,"Unregistration failed");
+			jabber_iq_send_error(s,from,id,500,"Internal Server Error");
 			return;
 		}
 	}
 	
 	if (!u){
-		g_warning("Tried to register '%s' who was never registered",from);
-		jabber_iq_send_error(s,from,id,"Not registered");
+		g_warning("Tried to unregister '%s' who was never registered",from);
+		jabber_iq_send_error(s,from,id,404,"Not Found");
 		return;
 	}
 
@@ -122,7 +122,7 @@ Request *r;
 
 	if (!user && (!uin || !password)){
 		g_warning("User '%s' doesn't exist and not enough info to add him",from);
-		jabber_iq_send_error(s,from,id,"User not registered and not enough info to register");
+		jabber_iq_send_error(s,from,id,406,"Not Acceptable");
 		return;
 	}
 
@@ -130,14 +130,14 @@ Request *r;
 		user=user_create(from,uin,password);
 		if (!user){
 			g_warning("Couldn't create user %s",from);
-			jabber_iq_send_error(s,from,id,"Registration failed");
+			jabber_iq_send_error(s,from,id,500,"Internal Server Error");
 			return;
 		}
 	
 		session=session_create(user,from,id,q,s);
 		if (!session){
 			g_warning("Couldn't create session for %s",from);
-			jabber_iq_send_error(s,from,id,"Registration failed");
+			jabber_iq_send_error(s,from,id,500,"Internal Server Error");
 			return;
 		}	
 	}
@@ -166,9 +166,9 @@ Request *r;
 	
 	node=xmlnode_get_tag(q,"gender");
 	if (node) str=xmlnode_get_data(node);
-	if (!node || !str || !str[0]) modify.gender=0;
-	else if (str[0]=='k' || str[0]=='f' || str[0]=='K' || str[0]=='F') modify.gender=GG_GENDER_MALE;
-	else modify.gender=GG_GENDER_FEMALE;
+	if (!node || !str || !str[0]) modify.gender=GG_GENDER_NONE;
+	else if (str[0]=='k' || str[0]=='f' || str[0]=='K' || str[0]=='F') modify.gender=GG_GENDER_FEMALE;
+	else modify.gender=GG_GENDER_MALE;
 	
 	node=xmlnode_get_tag(q,"born");
 	if (node) str=xmlnode_get_data(node);
@@ -184,20 +184,20 @@ Request *r;
 			}
 			if (!uin || !password){
 				g_warning("Nothing to change");
-				jabber_iq_send_error(s,from,id,"Nothing to change.");
+				jabber_iq_send_error(s,from,id,406,"Not Acceptable");
 			}
 			return;
 	}
 
 	if (!modify.email || !modify.nickname){
 		debug("email or nickname not given for registration");
-		jabber_iq_send_error(s,from,id,"Must give email nad nickname to change registration data");
+		jabber_iq_send_error(s,from,id,406,"Not Acceptable");
 		return;
 	}
 	
 	if (!user && (!password ||!uin)){
 		g_warning("Not registered, and no password gived for public directory change.");
-		jabber_iq_send_error(s,from,id,"Not registered, and no password gived for public directory change.");
+		jabber_iq_send_error(s,from,id,406,"Not Acceptable");
 		return;
 	}
 	if (!password) password=user->password;
@@ -220,17 +220,17 @@ Request *r;
 	if (modify.city) g_free(modify.city);
 	
 	if (!gghttp){
-		jabber_iq_send_error(s,from,id,"Registration data change error");
+		jabber_iq_send_error(s,from,id,502,"Remote Server Error");
 		return;
 	}
 
 	r=add_request(RT_CHANGE,from,id,q,gghttp,s);
-	if (!r) jabber_iq_send_error(s,from,id,"Registration data change error");
+	if (!r) jabber_iq_send_error(s,from,id,500,"Internal Server Error");
 }
 
 int register_error(Request *r){
 
-	jabber_iq_send_error(r->stream,r->from,r->id,"Registration data change error");
+	jabber_iq_send_error(r->stream,r->from,r->id,502,"Remote Server Error");
 	return 0;
 }
 

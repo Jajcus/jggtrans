@@ -59,8 +59,7 @@ Request *r;
 GIOCondition cond;	
 	
 	g_assert(gghttp!=NULL);
-	r=(Request *)g_malloc(sizeof(Request));
-	memset(r,0,sizeof(*r));
+	r=g_new0(Request,1);
 	r->type=type;
 	r->id=g_strdup(id);
 	r->from=g_strdup(from);

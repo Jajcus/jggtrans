@@ -49,8 +49,7 @@ int optval;
 int r;
 int fd;
 
-	s=(Stream *)g_malloc(sizeof(Stream));
-	memset(s,0,sizeof(Stream));
+	s=g_new0(Stream,1);
 	fd=socket(PF_INET,SOCK_STREAM,0);
 	if (!fd){
 		perror("socket");
@@ -175,7 +174,7 @@ guint br;
 	if (!s->connected) g_error("Unconnected stream");
 	
 	if (!s->read_buf){
-		s->read_buf=(char *)g_malloc(1025);
+		s->read_buf=g_new(char,1025);
 		g_assert(s->read_buf!=0);
 		s->read_buf_len=1024;
 	}
@@ -220,7 +219,7 @@ guint br;
 			g_warning("write: %s",g_strerror(errno));
 			return TRUE;
 		}
-		str=(char *)g_malloc(br+1);
+		str=g_new(char,br+1);
 		g_assert(str!=NULL);
 		memcpy(str,s->write_buf+s->write_pos,br);
 		str[br]=0;
@@ -245,7 +244,7 @@ int stream_write_bytes(Stream *s,const char *buf,int l){
 		return -2;
 	}
 	if (!s->write_buf){
-		s->write_buf=(char *)g_malloc(1024);
+		s->write_buf=g_new(char,1024);
 		g_assert(s->write_buf!=NULL);
 		s->write_buf_len=1024;
 	}

@@ -12,14 +12,14 @@ const char *search_instructions;
 
 int search_error(Request *r){
 
-	jabber_iq_send_error(r->stream,r->from,r->id,"Search error");
+	jabber_iq_send_error(r->stream,r->from,r->id,502,"Remote Server Error");
 	return 0;
 }
 
 int search_done(struct request_s *r){
 xmlnode q,item,n;
 struct gg_search * results;
-char *jid,*name;
+char *jid,*name,*str;
 int i;
 	
 	results=(struct gg_search *)r->gghttp->data;
@@ -40,10 +40,20 @@ int i;
 		xmlnode_insert_cdata(n,to_utf8(results->results[i].last_name),-1);
 		n=xmlnode_insert_tag(item,"nick");
 		xmlnode_insert_cdata(n,to_utf8(results->results[i].nickname),-1);
-		n=xmlnode_insert_tag(item,"email");
-		xmlnode_insert_cdata(n,"",-1);
+		if (results->results[i].born>0){
+			str=g_strdup_printf("%i",results->results[i].born);
+			n=xmlnode_insert_tag(item,"born");
+			xmlnode_insert_cdata(n,str,-1);
+			g_free(str);
+		}
+		if (results->results[i].gender==GG_GENDER_FEMALE)
+			xmlnode_insert_cdata(xmlnode_insert_tag(item,"gender"),"f",-1);
+		else if (results->results[i].gender==GG_GENDER_MALE)
+			xmlnode_insert_cdata(xmlnode_insert_tag(item,"gender"),"m",-1);
 		n=xmlnode_insert_tag(item,"city");
 		xmlnode_insert_cdata(n,to_utf8(results->results[i].city),-1);
+		if (results->results[i].active)
+			xmlnode_insert_cdata(xmlnode_insert_tag(item,"active"),"yes",-1);
 	}
 	jabber_iq_send_result(r->stream,r->from,r->id,q);
 	return 0;
@@ -56,13 +66,16 @@ xmlnode iq,n;
 	xmlnode_put_attrib(iq,"xmlns","jabber:iq:search");
 	n=xmlnode_insert_tag(iq,"instructions");
 	xmlnode_insert_cdata(n,search_instructions,-1);
+	xmlnode_insert_tag(iq,"active");
 	xmlnode_insert_tag(iq,"first");
 	xmlnode_insert_tag(iq,"last");
 	xmlnode_insert_tag(iq,"nick");
 	xmlnode_insert_tag(iq,"city");
+	xmlnode_insert_tag(iq,"gender");
+	xmlnode_insert_tag(iq,"born");
 	xmlnode_insert_tag(iq,"email");
 	xmlnode_insert_tag(iq,"phone");
-	xmlnode_insert_tag(iq,"uin");
+	xmlnode_insert_tag(iq,"username");
 
 	jabber_iq_send_result(s,from,id,iq);
 }
@@ -72,9 +85,16 @@ struct gg_search_request sr;
 xmlnode n;
 struct gg_http *gghttp;
 Request *r;
+char *p,*str;
 
 	q=xmlnode_dup(q);
 	memset(&sr,0,sizeof(sr));
+	n=xmlnode_get_tag(q,"active");
+	if (n){
+		str=xmlnode_get_data(n);
+		if (str && (str[0]=='y' || str[0]=='Y' || str[0]=='t' || str[0]=='T'))
+				sr.active=1;
+	}
 	n=xmlnode_get_tag(q,"nick");
 	if (n) sr.nickname=g_strdup(from_utf8(xmlnode_get_data(n)));
 	else sr.nickname=NULL;
@@ -87,13 +107,26 @@ Request *r;
 	n=xmlnode_get_tag(q,"city");
 	if (n) sr.city=g_strdup(from_utf8(xmlnode_get_data(n)));
 	else sr.city=NULL;
+	n=xmlnode_get_tag(q,"gender");
+	if (n){
+		str=xmlnode_get_data(n);
+		if (!str || !str[0]) sr.gender=GG_GENDER_NONE;
+		else if (str[0]=='k' || str[0]=='f' || str[0]=='K' || str[0]=='F') sr.gender=GG_GENDER_FEMALE;
+		else sr.gender=GG_GENDER_MALE;
+	}
+	else sr.gender=GG_GENDER_NONE;
+	n=xmlnode_get_tag(q,"born");
+	if (n){
+		str=xmlnode_get_data(n);
+		if (str) sscanf(str,"%u-%u",&sr.min_birth,&sr.max_birth);
+	}
 	n=xmlnode_get_tag(q,"email");
 	if (n) sr.email=g_strdup(from_utf8(xmlnode_get_data(n)));
 	else sr.email=NULL;
 	n=xmlnode_get_tag(q,"phone");
 	if (n) sr.phone=g_strdup(from_utf8(xmlnode_get_data(n)));
 	else sr.phone=NULL;
-	n=xmlnode_get_tag(q,"uin");
+	n=xmlnode_get_tag(q,"username");
 	if (n) sr.uin=atoi(xmlnode_get_data(n));
 	else sr.uin=0;
 
@@ -107,10 +140,10 @@ Request *r;
 	if (sr.email) g_free(sr.email);
 	if (sr.phone) g_free(sr.phone);
 	
-	if (!gghttp) jabber_iq_send_error(s,from,id,"Search error");
+	if (!gghttp) jabber_iq_send_error(s,from,id,500,"Internal Server Error");
 
 	r=add_request(RT_SEARCH,from,id,q,gghttp,s);
-	if (!r) jabber_iq_send_error(s,from,id,"Search error");
+	if (!r) jabber_iq_send_error(s,from,id,500,"Internal Server Error");
 }
 
 void jabber_iq_get_user_vcard(Stream *s,const char *from,const char * to,const char *id,xmlnode q){
@@ -123,16 +156,16 @@ Request *r;
 	sr.uin=jid_get_uin(to);
 
 	gghttp=gg_search(&sr,1);
-	if (!gghttp) jabber_iq_send_error(s,from,id,"vCard error");
+	if (!gghttp) jabber_iq_send_error(s,from,id,500,"Internal Server Error");
 
 	r=add_request(RT_VCARD,from,id,q,gghttp,s);
-	if (!r) jabber_iq_send_error(s,from,id,"Search error");
+	if (!r) jabber_iq_send_error(s,from,id,500,"Internal Server Error");
 }
 
 int vcard_done(struct request_s *r){
 xmlnode vc,n,n1;
 struct gg_search * results;
-char *jid,*name;
+char *jid,*name,*str;
 	
 	results=(struct gg_search *)r->gghttp->data;
 	vc=xmlnode_new_tag("vCard");
@@ -152,7 +185,14 @@ char *jid,*name;
 	
 	n=xmlnode_insert_tag(vc,"NICKNAME");
 	xmlnode_insert_cdata(n,to_utf8(results->results[0].nickname),-1);
-	
+
+	if (results->results[0].born>0){
+		n=xmlnode_insert_tag(vc,"BDAY");
+		str=g_strdup_printf("%04i-00-00",results->results[0].born);
+		xmlnode_insert_cdata(n,str,-1);
+		g_free(str);	
+	}
+		
 	n1=xmlnode_insert_tag(vc,"ADR");
 	n=xmlnode_insert_tag(n1,"LOCALITY");
 	xmlnode_insert_cdata(n,to_utf8(results->results[0].city),-1);
@@ -168,6 +208,6 @@ char *jid,*name;
 
 int vcard_error(Request *r){
 
-	jabber_iq_send_error(r->stream,r->from,r->id,"vCard error");
+	jabber_iq_send_error(r->stream,r->from,r->id,502,"Remote Server Error");
 	return 0;
 }

@@ -31,7 +31,7 @@ xmlnode n;
 }
 
 int message_send_error(struct stream_s *stream,const char *from,
-		const char *to,const char *body,int code){
+		const char *to,const char *body,int code,const char *str){
 xmlnode msg;
 xmlnode n;
 char *s;
@@ -50,10 +50,8 @@ char *s;
 	s=g_strdup_printf("%03u",code);
 	xmlnode_put_attrib(msg,"code",s);
 	g_free(s);
-	s=g_strdup_printf("Error %03u",code);
 	n=xmlnode_insert_tag(msg,"error");
-	xmlnode_insert_cdata(n,s,-1);
-	g_free(s);
+	xmlnode_insert_cdata(n,str,-1);
 	if (body) {
 		n=xmlnode_insert_tag(msg,"body");
 		xmlnode_insert_cdata(n,body,-1);
@@ -79,11 +77,19 @@ Session *s;
 	to=xmlnode_get_attrib(tag,"to");
 	if (!to || !jid_is_my(to) || !jid_has_uin(to)){
 		g_warning("Bad 'to' in: %s",xmlnode2str(tag));
+		message_send_error(stream,to,from,body,400,"Bad Request"); 
+		return -1;
+	}
+	
+	if (!jid_has_uin(to)){
+		g_warning("Bad 'to' in: %s",xmlnode2str(tag));
+		message_send_error(stream,to,from,body,404,"Not Found"); 
 		return -1;
 	}
 
 	if (!from){
 		g_warning("Anonymous message? %s",xmlnode2str(tag));
+		message_send_error(stream,to,from,body,400,"Bad Request"); 
 		return -1;
 	}
 	
@@ -100,14 +106,14 @@ Session *s;
 	else if (!g_strcasecmp(type,"chat")) chat=1;
 	else {
 		g_warning("Unsupported message type");
-		message_send_error(stream,to,from,body,499); /* FIXME */
+		message_send_error(stream,to,from,body,500,"Internal Server Error"); 
 		return -1;
 	}
 	
 	s=session_get_by_jid(from,NULL);
 	if (!s || !s->connected){
 		g_warning("%s not logged in. While processing %s",from,xmlnode2str(tag));
-		message_send_error(stream,to,from,body,499); /* FIXME */
+		message_send_error(stream,to,from,body,407,"Not logged in"); 
 		return -1;
 	}	
 	

@@ -21,7 +21,7 @@ int encoding_init(){
 	if (from_utf8_c==(iconv_t)-1)
 		g_error("Couldn't open 'from Unicode' converter (%s)",g_strerror(errno));
 	buf_len=16;
-	buf=(char *)g_malloc(buf_len);
+	buf=g_new(char,buf_len);
 	return 0;
 }
 

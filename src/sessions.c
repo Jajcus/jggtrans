@@ -108,7 +108,7 @@ int i;
 
 	g_assert(s!=NULL);
 	userlist_len=g_list_length(s->user->contacts);
-	userlist=(uin_t *)g_malloc(sizeof(uin_t)*(userlist_len+1));
+	userlist=g_new(uin_t,userlist_len+1);
 
 	i=0;
 	for(it=g_list_first(s->user->contacts);it;it=it->next)
@@ -146,7 +146,7 @@ GIOCondition cond;
 		if (condition&G_IO_HUP) g_warning("Hangup on connection for %s",s->jid);
 		if (condition&G_IO_NVAL) g_warning("Invalid channel on connection for %s",s->jid);
 		if (s->req_id){
-			jabber_iq_send_error(s->s,s->jid,s->req_id,"Server connection broken");
+			jabber_iq_send_error(s->s,s->jid,s->req_id,502,"Remote Server Error");
 		}
 		else{
 			presence_send(s->s,NULL,s->user->jid,0,NULL,"Connection broken");
@@ -162,7 +162,7 @@ GIOCondition cond;
 	if (!event){
 		g_warning("Connection broken. Session of %s",s->jid);
 		if (s->req_id){
-			jabber_iq_send_error(s->s,s->jid,s->req_id,"Server connection broken");
+			jabber_iq_send_error(s->s,s->jid,s->req_id,502,"Remote Server Error");
 		}
 		else{
 			presence_send(s->s,NULL,s->user->jid,0,NULL,"Connection broken");
@@ -177,7 +177,7 @@ GIOCondition cond;
 		case GG_EVENT_CONN_FAILED:
 			g_warning("Login failed for %s",s->jid);
 			if (s->req_id)
-				jabber_iq_send_error(s->s,s->jid,s->req_id,"Login failed");
+				jabber_iq_send_error(s->s,s->jid,s->req_id,401,"Unauthorized");
 			else presence_send(s->s,NULL,s->user->jid,0,NULL,"Login failed");
 			s->io_watch=0;
 			session_remove(s);
@@ -246,10 +246,22 @@ GIOCondition cond;
 
 /* destroys Session object */
 static int session_destroy(Session *s){
+GList *it;
 
 	g_message("Deleting session for '%s'",s->jid);
-	if (s->connected && s->s && s->jid)
+	if (s->connected && s->s && s->jid){
 		presence_send(s->s,NULL,s->user->jid,0,NULL,"Offline");
+		for(it=s->user->contacts;it;it=it->next){
+			Contact *c=(Contact *)it->data;
+
+			if (c->status!=GG_STATUS_NOT_AVAIL){
+				char *ujid;
+				ujid=jid_build(c->uin);
+				presence_send(s->s,ujid,s->user->jid,0,NULL,"Transport disconnected");
+				g_free(ujid);
+			}
+		}
+	}
 	if (s->ioch) g_io_channel_close(s->ioch);
 	if (s->ggs){
 		if (s->connected) {
@@ -289,9 +301,7 @@ GIOCondition cond;
 
 	g_message("Creating session for '%s'",jid);
 	g_assert(user!=NULL);
-	s=(Session *)g_malloc(sizeof(Session));
-	g_assert(s!=NULL);
-	memset(s,0,sizeof(Session));
+	s=g_new0(Session,1);
 	s->user=user;
 	s->jid=g_strdup(jid);
 	if (req_id) s->req_id=g_strdup(req_id);

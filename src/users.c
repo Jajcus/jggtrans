@@ -178,14 +178,12 @@ char *p;
 					&& xmlnode_get_data(t)
 					&& atoi(xmlnode_get_data(t)) ) {
 
-					c=(Contact *)g_malloc(sizeof(Contact));
-					memset(c,0,sizeof(*c));
+					c=g_new0(Contact,1);
 					c->uin=atoi(xmlnode_get_data(t));	
 					contacts=g_list_append(contacts,c);
 			}
 	}
-	u=(User *)g_malloc(sizeof(User));
-	memset(u,0,sizeof(User));
+	u=g_new0(User,1);
 	u->uin=atoi(uin);
 	u->jid=g_strdup(jid);
 	p=strchr(u->jid,'/');
@@ -270,8 +268,7 @@ char *p,*njid;
 		return NULL;
 	}
 
-	u=(User *)g_malloc(sizeof(User));
-	memset(u,0,sizeof(User));
+	u=g_new0(User,1);
 	u->uin=uin;
 	u->jid=g_strdup(jid);
 	p=strchr(u->jid,'/');
@@ -293,8 +290,7 @@ GList *it;
 		if (c->uin==uin) return -1;
 	}
 
-	c=(Contact *)g_malloc(sizeof(Contact));
-	memset(c,0,sizeof(*c));
+	c=g_new0(Contact,1);
 
 	c->uin=uin;
 
