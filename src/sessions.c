@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.83 2003/06/27 14:53:34 jajcus Exp $ */
+/* $Id: sessions.c,v 1.84 2003/06/27 14:58:24 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -552,7 +552,7 @@ GList *it;
 		for(it=s->user->contacts;it;it=it->next){
 			Contact *c=(Contact *)it->data;
 
-			if (c->status!=GG_STATUS_NOT_AVAIL && c->status!=-1){
+			if (!GG_S_NA(c->status) && c->status!=-1){
 				char *ujid;
 				ujid=jid_build_full(c->uin);
 				presence_send(s->s,ujid,s->user->jid,0,NULL,"Transport disconnected",0);
