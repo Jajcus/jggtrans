@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.55 2003/04/11 13:22:54 jajcus Exp $ */
+/* $Id: sessions.c,v 1.56 2003/04/13 16:45:31 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -180,6 +180,7 @@ Session *s;
 	g_warning(N_("Timeout for server %u"),
 			g_list_position(gg_servers, s->current_server)-1);
 
+	s->current_server=g_list_next(s->current_server);
 	if(s->current_server!=NULL)
 		if(!session_try_login(s))
 			return FALSE;
@@ -303,6 +304,7 @@ time_t timestamp;
 		if (condition&G_IO_ERR) g_warning(N_("Error on connection for %s"),s->jid);
 		if (condition&G_IO_HUP){
 			g_warning(N_("Hangup on connection for %s"),s->jid);
+			s->current_server=g_list_next(s->current_server);
 			if(!s->connected && s->current_server!=NULL){
 				session_try_login(s);
 				return FALSE;
@@ -569,7 +571,6 @@ GgServer *serv;
 
 	s->timeout_func=g_timeout_add(conn_timeout*1000,session_timeout,s);
 
-	s->current_server=g_list_next(s->current_server);
 
 	return 0;
 }
