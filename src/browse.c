@@ -14,12 +14,21 @@ const Session *sess=(Session *)value;
 xmlnode result=(xmlnode)data;
 xmlnode n;
 char *str;
+GgServer *server;
 
 	n=xmlnode_insert_tag(result,"user");
 	xmlnode_put_attrib(n,"type","client");
 	xmlnode_put_attrib(n,"jid",jid);
 
-	str=g_strdup_printf("%s (%s)",jid,sess->connected?_("Connected"):_("Disconnected"));
+	server=(GgServer *)sess->current_server->data;	
+
+	if (!server || server->port==1)
+		str=g_strdup_printf("%s (%s via hub)",jid,
+				sess->connected?_("Connected"):_("Connecting"));
+	else
+		str=g_strdup_printf("%s (%s to %s:%u)",jid,
+				sess->connected?_("Connected"):_("Connecting"),
+				inet_ntoa(server->addr),ntohs(server->port));
 	xmlnode_put_attrib(n,"name",str);
 	g_free(str);
 }
