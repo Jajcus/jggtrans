@@ -1,4 +1,4 @@
-/* $Id: iq.c,v 1.35 2003/03/25 07:43:45 jajcus Exp $ */
+/* $Id: iq.c,v 1.36 2003/04/05 11:02:57 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -318,11 +318,18 @@ void jabber_iq_error(Stream *s,xmlnode x){
 
 void jabber_iq(Stream *s,xmlnode x){
 char *type;
+char *from;
+User *u;
 
 	if (jabber_state!=JS_CONNECTED){
 		g_warning("unexpected <iq/> (not connected yet)");
 		return;
 	}
+
+	from=xmlnode_get_attrib(x,"from");
+	if (from) u=user_get_by_jid(from);
+	else u=NULL;
+	user_load_locale(u);
 
 	type=xmlnode_get_attrib(x,"type");
 	if (strcmp(type,"get")==0)

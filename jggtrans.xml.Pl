@@ -94,6 +94,10 @@
      <URL>http://foo.bar/</URL>
  </vCard>
 
+ <!-- domyślne locale (język) użytkownika. 
+      Puste oznacza lokale systemowe, a brak to brak tłumaczeń -->
+ <default_locale>pl_PL</default_locale>
+
  <!-- 
       Konfiguracja logów. 
       Można skonfigurować jeden logger typu "syslog" i/lub jeden "file".

@@ -87,6 +87,11 @@
      <URL>http://foo.bar/</URL>
  </vCard>
 
+ <!-- Default user locale (language). 
+      Empty means system locale setting, 
+      no (or commented-out) <default_locale> tag means no translations. -->
+ <!-- <default_locale>pl_PL</default_locale> -->
+
  <!-- Logger configuration. 
       You may configure one logger of type "syslog" and/or one of type "file".
       You may also not configure logging at all. -->

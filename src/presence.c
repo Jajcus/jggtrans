@@ -1,4 +1,4 @@
-/* $Id: presence.c,v 1.24 2003/01/22 07:53:01 jajcus Exp $ */
+/* $Id: presence.c,v 1.25 2003/04/05 11:02:57 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -379,10 +379,15 @@ xmlnode show_n;
 xmlnode status_n;
 char *show,*status;
 int priority;
+User *u;
 
 	type=xmlnode_get_attrib(tag,"type");
 	from=xmlnode_get_attrib(tag,"from");
 	to=xmlnode_get_attrib(tag,"to");
+
+	if (from) u=user_get_by_jid(from);
+	else u=NULL;
+	user_load_locale(u);
 
 	show_n=xmlnode_get_tag(tag,"show");
 	if (show_n) show=xmlnode_get_data(show_n);

@@ -1,4 +1,4 @@
-/* $Id: requests.c,v 1.22 2003/04/04 13:49:02 jajcus Exp $ */
+/* $Id: requests.c,v 1.23 2003/04/05 11:02:57 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -65,11 +65,16 @@ Request *r;
 
 int request_io_handler(GIOChannel *source,GIOCondition condition,gpointer data){
 Request *r;
+User *u;
 int t;
 GIOCondition cond;
 
 	r=(Request *)data;
 	g_assert(r!=NULL);
+
+	u=user_get_by_jid(r->from);
+	user_load_locale(u);
+
 	switch(r->type){
 		case RT_CHANGE:
 			t=gg_search_watch_fd(r->gghttp);

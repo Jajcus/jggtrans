@@ -1,4 +1,4 @@
-/* $Id: message.c,v 1.22 2003/03/24 14:43:37 jajcus Exp $ */
+/* $Id: message.c,v 1.23 2003/04/05 11:02:57 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -429,16 +429,16 @@ char *msg;
 			return 0;
 		}
 	}
-	msg="\nAvailable commands (and abbreviations):";
+	msg=_("\nAvailable commands (and abbreviations):");
 	for(i=0;msg_commands[i].command;i++){
 		msg=g_strdup_printf("%s\n  %s (%s)%s",msg,
 				msg_commands[i].command,
 				msg_commands[i].abr,
-				msg_commands[i].experimental?" EXPERIMENTAL!":"");
+				msg_commands[i].experimental?_(" EXPERIMENTAL!"):"");
 	}
-	msg=g_strdup_printf("%s\nCurrent settings:",msg);
-	msg=g_strdup_printf("%s\n  friends only: %s",msg,user->friends_only?"on":"off");
-	msg=g_strdup_printf("%s\n  invisible: %s",msg,user->invisible?"on":"off");
+	msg=g_strdup_printf(_("%s\nCurrent settings:"),msg);
+	msg=g_strdup_printf(_("%s\n  friends only: %s"),msg,user->friends_only?_("on"):_("off"));
+	msg=g_strdup_printf(_("%s\n  invisible: %s"),msg,user->invisible?_("on"):_("off"));
 	message_send(stream,to,from,1,msg,0);
 	g_free(msg);
 
@@ -455,6 +455,7 @@ int chat;
 xmlnode subject_n;
 xmlnode body_n;
 Session *s;
+User *u;
 
 	body_n=xmlnode_get_tag(tag,"body");
 	if (body_n!=NULL) body=xmlnode_get_data(body_n);
@@ -466,6 +467,10 @@ Session *s;
 
 	from=xmlnode_get_attrib(tag,"from");
 	to=xmlnode_get_attrib(tag,"to");
+
+	if (from) u=user_get_by_jid(from);
+	else u=NULL;
+	user_load_locale(u);
 
 	type=xmlnode_get_attrib(tag,"type");
 	if (!type || !strcmp(type,"normal")) chat=0;

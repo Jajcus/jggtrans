@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.48 2003/03/24 13:46:49 jajcus Exp $ */
+/* $Id: sessions.c,v 1.49 2003/04/05 11:02:57 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -174,6 +174,7 @@ Session *s;
 
 	g_assert(data!=NULL);
 	s=(Session *)data;
+	user_load_locale(s->user);
 
 	g_warning("Timeout for server %u",
 			g_list_position(gg_servers, s->current_server)-1);
@@ -296,6 +297,7 @@ Resource *r;
 time_t timestamp;
 
 	s=(Session *)data;
+	user_load_locale(s->user);
 	debug("Checking error conditions...");
 	if (condition&(G_IO_ERR|G_IO_NVAL)){
 		if (condition&G_IO_ERR) g_warning("Error on connection for %s",s->jid);

@@ -1,4 +1,4 @@
-/* $Id: users.h,v 1.15 2003/01/15 08:04:56 jajcus Exp $ */
+/* $Id: users.h,v 1.16 2003/04/05 11:02:57 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -48,6 +48,7 @@ typedef struct user_s{
 	int last_sys_msg;
 	int friends_only;
 	int invisible;
+	char *locale;
 
 	int confirmed;
 	GList *contacts;
@@ -70,6 +71,8 @@ int user_sys_msg_received(User *u,int nr);
 
 int user_set_contact_status(User *u,int status,unsigned int uin,char *desc,
 				int more,uint32_t ip,uint16_t port,uint32_t version);
+
+void user_load_locale(User *u);
 
 void user_print(User *u,int indent);
 int users_probe_all();

@@ -1,4 +1,4 @@
-/* $Id: users.c,v 1.25 2003/01/22 07:53:01 jajcus Exp $ */
+/* $Id: users.c,v 1.26 2003/04/05 11:02:57 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -31,9 +31,12 @@
 
 GHashTable *users_jid=NULL;
 static char *spool_dir;
+static char *default_user_locale="C";
 
 int users_init(){
 int r;
+
+	default_user_locale=config_load_string("default_locale");
 
 	spool_dir=config_load_string("spool");
 	if (!spool_dir)
@@ -108,6 +111,10 @@ xmlnode xml,tag,ctag,userlist;
 
 	if (u->invisible) tag=xmlnode_insert_tag(xml,"invisible");
 	if (u->friends_only) tag=xmlnode_insert_tag(xml,"friendsonly");
+	if (u->locale){
+		tag=xmlnode_insert_tag(xml,"locale");
+		xmlnode_insert_cdata(tag,u->locale,-1);
+	}
 
 	if (u->contacts){
 		GList *it;
@@ -202,7 +209,7 @@ xmlnode xml,tag,ctag,userlist;
 User *user_load(const char *jid){
 char *fn,*njid;
 xmlnode xml,tag,t;
-char *uin,*ujid,*name,*password,*email;
+char *uin,*ujid,*name,*password,*email,*locale;
 int last_sys_msg=0,invisible=0,friends_only=0;
 User *u;
 GList *contacts;
@@ -252,6 +259,9 @@ char *data;
 	if (tag!=NULL) friends_only=1;
 	tag=xmlnode_get_tag(xml,"invisible");
 	if (tag!=NULL) invisible=1;
+	tag=xmlnode_get_tag(xml,"locale");
+	if (tag!=NULL) locale=xmlnode_get_data(tag);
+	else locale=NULL;
 	tag=xmlnode_get_tag(xml,"userlist");
 	contacts=NULL;
 	if (tag!=NULL){
@@ -360,6 +370,7 @@ char *data;
 	u->last_sys_msg=last_sys_msg;
 	u->friends_only=friends_only;
 	u->invisible=invisible;
+	u->locale=locale;
 	u->contacts=contacts;
 	xmlnode_free(xml);
 	g_assert(users_jid!=NULL);
@@ -533,6 +544,18 @@ Contact *c;
 	}
 
 	return -1;
+}
+
+void user_load_locale(User *u){
+
+	if (u && u->locale){
+		setlocale(LC_MESSAGES,u->locale);
+		setlocale(LC_CTYPE,u->locale);
+	}
+	else{
+		setlocale(LC_MESSAGES,default_user_locale);
+		setlocale(LC_CTYPE,default_user_locale);
+	}
 }
 
 int users_probe_all(){

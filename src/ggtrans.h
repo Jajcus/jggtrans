@@ -1,4 +1,4 @@
-/* $Id: ggtrans.h,v 1.7 2003/04/04 17:59:32 jajcus Exp $ */
+/* $Id: ggtrans.h,v 1.8 2003/04/05 11:02:57 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -29,7 +29,7 @@
 #define _(String) gettext (String)
 
 /* dummy gettext shortcut for translating error/debug messages after log handler is set */
-#define __(String) gettext (String)
+#define N_(String) gettext (String)
 
 extern GMainLoop *main_loop;
 extern gboolean do_restart;

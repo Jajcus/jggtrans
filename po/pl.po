@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: jabber-gg-transport 1.4.1\n"
-"POT-Creation-Date: 2003-04-04 19:39+0200\n"
+"POT-Creation-Date: 2003-04-05 12:55+0200\n"
 "PO-Revision-Date: 2003-04-04 19:43+0200\n"
 "Last-Translator: Jacek Konieczny <jajcus@pld.org.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -53,78 +53,222 @@ msgstr ""
 msgid "Warning: %s"
 msgstr ""
 
-#: src/main.c:280
+#: src/main.c:243
+msgid "Daemonizing..."
+msgstr ""
+
+#: src/main.c:245
+#, c-format
+msgid "Failed to fork(): %s"
+msgstr ""
+
+#: src/main.c:251
+#, c-format
+msgid "Daemon born, pid %i."
+msgstr ""
+
+#: src/main.c:273
+msgid "I am a daemon, I think."
+msgstr ""
+
+#: src/main.c:282
 #, c-format
 msgid ""
 "\n"
 "Jabber GaduGadu Transport %s\n"
 msgstr ""
 
-#: src/main.c:281 src/main.c:290
+#: src/main.c:283 src/main.c:292
 msgid "\n"
 msgstr ""
 
-#: src/main.c:282
+#: src/main.c:284
 #, c-format
 msgid "\tUsage: %s [OPTIONS]... [<config file>]\n"
 msgstr ""
 
-#: src/main.c:283
+#: src/main.c:285
 msgid ""
 "\n"
 "Options:\n"
 msgstr ""
 
-#: src/main.c:284
+#: src/main.c:286
 msgid "\t-h\t      This message\n"
 msgstr ""
 
-#: src/main.c:285
+#: src/main.c:287
 msgid ""
 "\t-f\t      Run in foreground. Debug/error messages will be sent to stderr\n"
 msgstr ""
 
-#: src/main.c:286
-msgid "\t-d <n>      Log level (0(default) - normal, >0 more, <0 less)\n"
-msgstr ""
-
-#: src/main.c:287
-msgid "\t-D <n>      libgg debug level (enables also -f)\n"
-msgstr ""
-
 #: src/main.c:288
-msgid "\t-u <user>   Switch to uid of <user> on startup\n"
+msgid "\t-d <n>\tLog level (0(default) - normal, >0 more, <0 less)\n"
 msgstr ""
 
 #: src/main.c:289
-msgid "\t-g <group>  Switch to gid of <group> on startup\n"
+msgid "\t-D <n>\tlibgg debug level (enables also -f)\n"
 msgstr ""
 
-#: src/main.c:349
+#: src/main.c:290
+msgid "\t-u <user>\tSwitch to uid of <user> on startup\n"
+msgstr ""
+
+#: src/main.c:291
+msgid "\t-g <group>\tSwitch to gid of <group> on startup\n"
+msgstr ""
+
+#: src/main.c:351
 msgid "Cannot change user."
 msgstr ""
 
-#: src/main.c:353
+#: src/main.c:355
 msgid "Cannot change group."
 msgstr ""
 
-#: src/main.c:358
+#: src/main.c:360
 #, c-format
 msgid "Unknown command-line option: -%c.\n"
 msgstr "Nieznana opcja: -%c.\n"
 
-#: src/main.c:360
+#: src/main.c:362
 #, c-format
 msgid "Unknown command-line option: -\\%03o.\n"
 msgstr "Nieznana opcja: -\\%03o.\n"
 
-#: src/main.c:364
+#: src/main.c:366
 msgid "Error while processing command line options"
 msgstr ""
 
-#: src/main.c:370
+#: src/main.c:372
 #, c-format
 msgid "Unexpected argument: %s\n"
 msgstr ""
 
-# vi: encoding=utf-8
+#: src/main.c:392
+msgid "Couldn't load config!"
+msgstr ""
+
+#: src/main.c:397
+#, c-format
+msgid "%s doesn't look like jggtrans config file."
+msgstr ""
+
+#: src/main.c:408
+msgid "Multiple syslog configs specified. Using only one."
+msgstr ""
+
+#: src/main.c:419
+#, c-format
+msgid "Unknown syslog facility: %s"
+msgstr ""
+
+#: src/main.c:422
+msgid "Multiple log files specified. Using only one."
+msgstr ""
+
+#: src/main.c:429
+#, c-format
+msgid "Ignoring unknown log type: %s"
+msgstr ""
+
+#: src/main.c:446
+msgid "jggtrans already running"
+msgstr ""
+
+#: src/main.c:448
+msgid "Stale pid file. Removing."
+msgstr ""
+
+#: src/main.c:452
+msgid "Invalid pid file."
+msgstr ""
+
+#: src/main.c:456
+#, c-format
+msgid "Couldn't open pidfile %s"
+msgstr ""
+
+#: src/main.c:463
+#, c-format
+msgid "Couldn't find group %s"
+msgstr ""
+
+#: src/main.c:468
+#, c-format
+msgid "Couldn't find user %s"
+msgstr ""
+
+#: src/main.c:471
+#, c-format
+msgid "Couldn't change group: %s"
+msgstr ""
+
+#: src/main.c:472
+#, c-format
+msgid "Couldn't init groups: %s"
+msgstr ""
+
+#: src/main.c:473
+#, c-format
+msgid "Couldn't change user: %s"
+msgstr ""
+
+#: src/main.c:475
+msgid "Refusing to run with uid=0"
+msgstr ""
+
+#: src/main.c:493
+#, c-format
+msgid "Couldn't open log file '%s': %s"
+msgstr ""
+
+#: src/main.c:525
+#, c-format
+msgid "Restarting in %i seconds.\n"
+msgstr ""
+
+#: src/main.c:546
+msgid "Exiting normally.\n"
+msgstr ""
+
+#: src/message.c:432
+msgid ""
+"\n"
+"Available commands (and abbreviations):"
+msgstr ""
+"\n"
+"Dostêpne komendy (i skróty):"
+
+#: src/message.c:437
+msgid " EXPERIMENTAL!"
+msgstr ""
+
+#: src/message.c:439
+#, c-format
+msgid ""
+"%s\n"
+"Current settings:"
+msgstr ""
+
+#: src/message.c:440
+#, c-format
+msgid ""
+"%s\n"
+"  friends only: %s"
+msgstr ""
+
+#: src/message.c:440 src/message.c:441
+msgid "on"
+msgstr ""
+
+#: src/message.c:440 src/message.c:441
+msgid "off"
+msgstr ""
+
+#: src/message.c:441
+#, c-format
+msgid ""
+"%s\n"
+"  invisible: %s"
+msgstr ""
