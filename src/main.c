@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.45 2003/04/16 11:10:17 jajcus Exp $ */
+/* $Id: main.c,v 1.46 2003/04/19 10:51:54 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -291,7 +291,7 @@ char *p;
 	p=strrchr(name,'/');
 	if (p) name=p+1;
 	printf(_("\nJabber GaduGadu Transport %s\n"),VERSION);
-	printf(_("\n"));
+	printf("\n");
 	printf(_("\tUsage: %s [OPTIONS]... [<config file>]\n"),name);
 	printf(_("\nOptions:\n"));
 	printf(_("\t-h	      This message\n"));
@@ -300,7 +300,7 @@ char *p;
 	printf(_("\t-D <n>	libgg debug level (enables also -f)\n"));
 	printf(_("\t-u <user>	Switch to uid of <user> on startup\n"));
 	printf(_("\t-g <group>	Switch to gid of <group> on startup\n"));
-	printf(_("\n"));
+	printf("\n");
 }
 
 int main(int argc,char *argv[]){
