@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.51 2003/04/06 15:42:42 mmazur Exp $ */
+/* $Id: sessions.c,v 1.52 2003/04/08 12:58:02 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -427,7 +427,7 @@ time_t timestamp;
 				timestamp=event->event.msg.time;
 			}
 			else timestamp=0;
-			message_send(s->s,jid,s->user->jid,chat,event->event.msg.message,timestamp);
+			message_send(s->s,jid,s->jid,chat,event->event.msg.message,timestamp);
 			g_free(jid);
 			break;
 		case GG_EVENT_PONG:
