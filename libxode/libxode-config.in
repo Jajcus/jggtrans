@@ -1,0 +1,119 @@
+#!/bin/sh
+## Jabber config program, graciously based on libxode-config
+## Released under the GPL, refer to the file COPYING
+##
+DIFS='
+'
+
+prefix="@prefix@"
+exec_prefix="@exec_prefix@"
+
+libxode_prefix="$prefix"
+libxode_exec_prefix="$exec_prefix"
+libxode_bindir="@bindir@"
+libxode_libdir="@libdir@"
+libxode_includedir="@includedir@"
+libxode_mandir="@mandir@"
+libxode_datadir="@datadir@"
+libxode_acdir="@datadir@/aclocal"
+libxode_cflags="@CFLAGS@"
+libxode_ldflags="@LDFLAGS@"
+libxode_libs="@LIBS@"
+libxode_version="@VERSION@"
+
+help=no
+version=no
+
+usage="libxode-config"
+usage="$usage [--help] [--version] [--all]"
+usage="$usage [--prefix] [--exec-prefix] [--bindir] [--libdir] [--includedir] [--mandir] [--datadir] [--acdir]"
+usage="$usage [--cflags] [--ldflags] [--libs]"
+if [ $# -eq 0 ]; then
+    echo "libxode-config:Error: Invalid option" 1>&2
+    echo "libxode-config:Usage: $usage" 1>&2
+    exit 1
+fi
+output=''
+output_extra=''
+all=no
+prev=''
+OIFS="$IFS" IFS="$DIFS"
+for option
+do
+    if [ ".$prev" != . ]; then
+        eval "$prev=\$option"
+        prev=''
+        continue
+    fi
+    case "$option" in
+        -*=*) optarg=`echo "$option" | sed 's/[-_a-zA-Z0-9]*=//'` ;;
+           *) optarg='' ;;
+    esac
+    case "$option" in
+        --help|-h)
+            echo "Usage: $usage"
+            echo "Report bugs to http://bugs.jabber.org"
+            exit 0
+            ;;
+        --version|-v)
+            echo "LibXode $libxode_version"
+            exit 0
+            ;;
+        --all)
+            all=yes
+            ;;
+        --prefix)
+            output="$output $libxode_prefix"
+            ;;
+        --exec-prefix)
+            output="$output $libxode_exec_prefix"
+            ;;
+        --bindir)
+            output="$output $libxode_bindir"
+            ;;
+        --libdir)
+            output="$output $libxode_libdir"
+            ;;
+        --includedir)
+            output="$output $libxode_includedir"
+            ;;
+        --mandir)
+            output="$output $libxode_mandir"
+            ;;
+        --datadir)
+            output="$output $libxode_datadir"
+            ;;
+        --acdir)
+            output="$output $libxode_acdir"
+            ;;
+        --cflags)
+            output="$output -I$libxode_includedir"
+            output_extra="$output_extra $libxode_cflags"
+            ;;
+        --ldflags)
+            output="$output -L$libxode_libdir"
+            output_extra="$output_extra $libxode_ldflags"
+            ;;
+        --libs)
+            output="$output -lxode"
+            output_extra="$output_extra $libxode_libs"
+            ;;
+        * )
+            echo "libxode-config:Error: Invalid option" 1>&2
+            echo "libxode-config:Usage: $usage" 1>&2
+            exit 1;
+            ;;
+    esac
+done
+IFS="$OIFS"
+if [ ".$prev" != . ]; then
+    echo "libxode-config:Error: missing argument to --`echo $prev | sed 's/_/-/g'`" 1>&2
+    exit 1
+fi
+if [ ".$output" != . ]; then
+    if [ ".$all" = .yes ]; then
+        output="$output $output_extra"
+    fi
+    echo $output
+fi
+

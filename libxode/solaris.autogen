@@ -1,0 +1,4 @@
+#!/bin/sh
+# sets the compiler to gmake 
+MAKE=gmake ./autogen.sh
+echo "when using solaris, run gmake, not make"
