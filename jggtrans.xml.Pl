@@ -6,7 +6,7 @@
 
 <jggtrans>
 
-  <!-- Żeby to zadziałało także plik jabber.xml musi być uaktualniony.
+  <!-- Żeby to zadziałało z jabberd 1.4.x także plik jabber.xml musi być uaktualniony.
        Należy dodać następujące linie w sekcji <browse/>:
 
     <item category="service" type="x-gadugadu" jid="gg.localhost" name="GaduGadu Transport">
@@ -33,13 +33,14 @@
   a secret na jakiś dowolny ciąg znaków.
   -->
 
-  <!-- Ten wpis powinien zgadzać się z <service/> w sekcji <browse/> pliku jabber.xml -->
+  <!-- Dla jabberd 1.4:
+       Ten wpis powinien zgadzać się z <service/> w sekcji <browse/> pliku jabber.xml -->
   <service jid="gg.localhost"/>
 
   <!-- A ten, z <service id="gglinker/> -->
-  <connect id="gglinker">
+  <connect>
     <ip>127.0.0.1</ip>
-    <port>5353</port>
+    <port>5353</port> <!-- Dla jabberd 2.0 zmień to na port routera (domyślnie: 5347) -->
     <secret>secret</secret>
   </connect>
 

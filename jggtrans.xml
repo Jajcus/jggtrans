@@ -1,6 +1,6 @@
 <jggtrans>
 
-  <!-- For this to work, you should also update /etc/jabber/jabber.xml
+  <!-- For this to work with jabberd 1.4.x, you should also update /etc/jabber/jabber.xml
        Add the following (changed to your needs):
   <browse>
 
@@ -33,9 +33,9 @@
   <service jid="gg.localhost"/>
 
   <!-- This connects the GG-transport process to the master process -->
-  <connect id="gglinker">
+  <connect>
     <ip>127.0.0.1</ip>
-    <port>5353</port>
+    <port>5353</port> <!-- for jabberd 2.0 change to the router port (default: 5347) -->
     <secret>secret</secret>
   </connect>
 
