@@ -1,4 +1,4 @@
-/* $Id: iq.c,v 1.15 2002/02/01 20:08:41 jajcus Exp $ */
+/* $Id: iq.c,v 1.16 2002/02/01 20:22:47 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -230,11 +230,10 @@ xmlnode query;
 		jabber_iq_get_query(s,from,to,id,query);
 		return;
 	}
-	query=xmlnode_get_tag(x,"vcard");
+	query=xmlnode_get_tag(x,"vCard");
 	if (!query){
-		query=xmlnode_get_tag(x,"vCard");
-		if (!query) /* WinJab bug workaround :-( */
-			query=xmlnode_get_tag(x,"VCARD");
+		/* WinJab bug workaround :-( */
+		query=xmlnode_get_tag(x,"VCARD");
 	}
 	if (query){
 		jabber_iq_get_vcard(s,from,to,id,query);
