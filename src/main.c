@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.28 2003/01/22 07:53:01 jajcus Exp $ */
+/* $Id: main.c,v 1.29 2003/01/22 08:35:14 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -224,7 +224,7 @@ void log_handler(const gchar *log_domain, GLogLevelFlags log_level,
 	if (use_syslog) log_handler_syslog(log_domain,log_level,message);
 }
 
-void daemonize(){
+void daemonize(FILE *pidfile){
 pid_t pid;
 pid_t sid;
 int fd;
@@ -233,16 +233,9 @@ int fd;
 	pid=fork();
 	if (pid==-1) g_error("Failed to fork(): %s",g_strerror(errno));
 	if (pid){
-		if (pid_filename){
-			FILE *f;
-			f=fopen(pid_filename,"w");
-			if (!f){
-				g_critical("Couldn't write pid file, killing child: %s",g_strerror(errno));
-				kill(pid,SIGTERM);
-				exit(1);
-			}
-			fprintf(f,"%u",pid);
-			fclose(f);
+		if (pidfile){
+			fprintf(pidfile,"%u",pid);
+			fclose(pidfile);
 		}
 		debug("Daemon born, pid %i.",pid);
 		exit(0);
@@ -305,7 +298,7 @@ char *data;
 char saved_pwd_b[1024],*saved_pwd;
 const char *param_d=NULL,*param_D=NULL;
 int restarting=0;
-FILE *f;
+FILE *pidfile;
 guint lh;
 
 	uid=getuid();
@@ -365,21 +358,6 @@ guint lh;
 		return 1;
 	}
 
-	if (group){
-		grp=getgrnam(group);
-		if (!grp) g_error("Couldn't find group %s",group);
-		newgid=grp->gr_gid;
-	}
-	if (user){
-		pwd=getpwnam(user);
-		if (!pwd) g_error("Couldn't find user %s",user);
-		if (newgid<=0) newgid=pwd->pw_gid;
-		if (setgid(newgid)) g_error("Couldn't change group: %s",g_strerror(errno));
-		if (initgroups(user,newgid)) g_error("Couldn't init groups: %s",g_strerror(errno));
-		if (setuid(pwd->pw_uid)) g_error("Couldn't change user: %s",g_strerror(errno));
-	}
-	else if (uid==0 && !restarting) g_error("Refusing to run with uid=0");
-
 	if (optind==argc-1) config_file=g_strdup(argv[optind]);
 	else config_file=g_strdup_printf("%s/%s",SYSCONFDIR,"jggtrans.xml");
 
@@ -435,13 +413,13 @@ guint lh;
 	restart_timeout=config_load_int("restart_timeout",restart_timeout);
 
 	if (pid_filename && !restarting){
-		f=fopen(pid_filename,"r");
-		if (f){
+		pidfile=fopen(pid_filename,"r");
+		if (pidfile){
 			pid_t pid;
 			int r;
 
-			r=fscanf(f,"%u",&pid);
-			fclose(f);
+			r=fscanf(pidfile,"%u",&pid);
+			fclose(pidfile);
 			if (r==1 && pid>0){
 				r=kill(pid,0);
 				if (!r || (r && errno!=ESRCH)) g_error("jggtrans already running");
@@ -450,9 +428,30 @@ guint lh;
 					unlink(pid_filename);
 				}
 			}
-			else g_error("Invalid pid file.");
+			else if (r!=EOF) g_error("Invalid pid file.");
 		}
+		pidfile=fopen(pid_filename,"w");
+		if (pidfile==NULL)
+			g_error("Couldn't open pidfile %s",pid_filename);
 	}
+	else 
+		pidfile=NULL;
+
+	if (group){
+		grp=getgrnam(group);
+		if (!grp) g_error("Couldn't find group %s",group);
+		newgid=grp->gr_gid;
+	}
+	if (user){
+		pwd=getpwnam(user);
+		if (!pwd) g_error("Couldn't find user %s",user);
+		if (newgid<=0) newgid=pwd->pw_gid;
+		fchown(fileno(pidfile),pwd->pw_uid,newgid);
+		if (setgid(newgid)) g_error("Couldn't change group: %s",g_strerror(errno));
+		if (initgroups(user,newgid)) g_error("Couldn't init groups: %s",g_strerror(errno));
+		if (setuid(pwd->pw_uid)) g_error("Couldn't change user: %s",g_strerror(errno));
+	}
+	else if (uid==0 && !restarting) g_error("Refusing to run with uid=0");
 
 	main_loop=g_main_new(0);
 
@@ -461,7 +460,11 @@ guint lh;
 	if (users_init()) return 1;
 	if (encoding_init()) return 1;
 
-	if (!fg && !restarting) daemonize();
+	if (!fg && !restarting) daemonize(pidfile);
+	else if (pidfile!=NULL){
+		fprintf(pidfile,"%i",getpid());
+		fclose(pidfile);
+	}
 
 	if (log_filename){
 		log_file=fopen(log_filename,"a");
@@ -510,6 +513,12 @@ guint lh;
 		log_file=NULL;
 	}
 	xmlnode_free(config);
+	if (pid_filename){
+		if (unlink(pid_filename)!=0){
+			pidfile=fopen(pid_filename,"w");
+			if (pidfile) fclose(pidfile);
+		}
+	}
 
 	return 0;
 }
