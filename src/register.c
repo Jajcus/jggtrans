@@ -1,4 +1,4 @@
-/* $Id: register.c,v 1.41 2003/04/28 07:22:53 jajcus Exp $ */
+/* $Id: register.c,v 1.42 2003/05/07 11:39:37 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -56,6 +56,7 @@ int i;
 	form_add_field(form,"boolean","import_roster",_("Import userlist from GG server"),"0",1);
 
 	field=form_add_field(form,"list-single","locale",_("Language"),default_user_locale,0);
+	form_add_option(field,_("-default-"),"");
 	for(i=0;locale_mapping[i].locale!=NULL;i++)
 		form_add_option(field,locale_mapping[i].lang_name,locale_mapping[i].locale);
 
@@ -86,6 +87,7 @@ int i;
 	form_add_fixed(form,_("Fill out this part only when changing account options:"));
 	field=form_add_field(form,"list-single","locale",_("Language"),
 			(u->locale&&u->locale[0])?u->locale:"",0);
+	form_add_option(field,_("-default-"),"");
 	for(i=0;locale_mapping[i].locale!=NULL;i++)
 		form_add_option(field,locale_mapping[i].lang_name,locale_mapping[i].locale);
 	form_add_field(form,"boolean","friends_only",_("Friends only"),
@@ -105,7 +107,7 @@ int i;
 	form_add_field(form,"text-single","nick",_("Nick"),NULL,0);
 	form_add_field(form,"text-single","birthyear",_("Birth year"),NULL,0);
 	form_add_field(form,"text-single","city",_("City"),NULL,0);
-	field=form_add_field(form,"list-single","gender",_("Sex"),NULL,0);
+	field=form_add_field(form,"list-single","gender",_("Sex"),"",0);
 	form_add_option(field,"","");
 	form_add_option(field,"female",GG_PUBDIR50_GENDER_FEMALE);
 	form_add_option(field,"male",GG_PUBDIR50_GENDER_MALE);
