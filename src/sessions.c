@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.104 2004/06/11 07:09:18 smoku Exp $ */
+/* $Id: sessions.c,v 1.105 2004/06/11 07:19:11 smoku Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -485,7 +485,13 @@ time_t timestamp;
 					event->event.status60.version);
 			break;
 		case GG_EVENT_MSG:
-			if (event->event.msg.recipients_count>1) break;
+			if (event->event.msg.recipients_count>1){
+				debug(L_("Dropped conference message: sender: %i class: %i time: %lu"),
+							event->event.msg.sender,
+							event->event.msg.msgclass,
+							(unsigned long)event->event.msg.time);
+				break;
+			}
 			gg_messages_in++;
 			debug(L_("Message: sender: %i class: %i time: %lu"),
 							event->event.msg.sender,
