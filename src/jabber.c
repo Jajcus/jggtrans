@@ -5,6 +5,7 @@
 #include "ggtrans.h"
 #include "iq.h"
 #include "presence.h"
+#include "message.h"
 #include <glib.h>
 
 Stream *stream;
@@ -68,6 +69,8 @@ char *name;
 		jabber_iq(s,x);
 	else if (g_strcasecmp(name,"presence")==0)
 		jabber_presence(s,x);
+	else if (g_strcasecmp(name,"message")==0)
+		jabber_message(s,x);
 	else fprintf(stderr,"\nUnsupported tag: '%s'\n",name);
 }
 

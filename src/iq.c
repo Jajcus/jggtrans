@@ -2,12 +2,14 @@
 #include "jabber.h"
 #include "iq.h"
 #include "register.h"
+#include "jid.h"
 #include <glib.h>
 
 void jabber_iq_send_error(Stream *s,const char *from,const char *id,char *string){
 xmlnode iq;
 xmlnode error;
 
+	if (from==NULL) from=my_name;
 	iq=xmlnode_new_tag("iq");
 	xmlnode_put_attrib(iq,"type","error");
 	if (id) xmlnode_put_attrib(iq,"id",id);
@@ -15,6 +17,19 @@ xmlnode error;
 	xmlnode_put_attrib(iq,"from",my_name);
 	error=xmlnode_insert_tag(iq,"error");
 	xmlnode_insert_cdata(error,string,-1);
+	stream_write(s,iq);
+	xmlnode_free(iq);
+}
+
+void jabber_iq_send_result(Stream *s,const char *from,const char *id,xmlnode content){
+xmlnode iq;
+
+	iq=xmlnode_new_tag("iq");
+	xmlnode_put_attrib(iq,"type","result");
+	if (id) xmlnode_put_attrib(iq,"id",id);
+	xmlnode_put_attrib(iq,"to",from);
+	xmlnode_put_attrib(iq,"from",my_name);
+	if (content) xmlnode_insert_tag_node(iq,content);
 	stream_write(s,iq);
 	xmlnode_free(iq);
 }
@@ -57,7 +72,7 @@ char *from;
 xmlnode query;
 
 	to=xmlnode_get_attrib(x,"to");
-	if (!to || g_strcasecmp(to,my_name)){
+	if (!to || !jid_is_my(to) ){
 		fprintf(stderr,"\nWrong to=%s (my name is %s)\n",to?to:"(null)",my_name);
 		return;
 	}

@@ -4,6 +4,11 @@
 #include <libgg.h>
 #include <glib.h>
 
+typedef struct contact_s{
+	uin_t uin;
+	int status;
+}Contact;
+
 typedef struct user_s{
 	uin_t uin;
 	char * jid;
@@ -11,8 +16,7 @@ typedef struct user_s{
 	char * password;
 	char * email;
 	int confirmed;
-	uin_t *userlist;
-	int userlist_len;
+	GList *contacts;
 }User;
 
 extern GHashTable *users_jid;
@@ -27,6 +31,9 @@ User *user_get_by_jid(const char *jid);
 int user_subscribe(User *u,uin_t uin);
 int user_unsubscribe(User *u,uin_t uin);
 
+int user_set_contact_status(User *u,int status,unsigned int uin);
+
 int users_init();
+int users_done();
 
 #endif

@@ -4,6 +4,8 @@
 #include "jabber.h"
 #include "ggtrans.h"
 #include "users.h"
+#include "jid.h"
+#include <glib.h>
 
 GHashTable *users_uin=NULL;
 GHashTable *users_jid=NULL;
@@ -34,23 +36,43 @@ int r;
 	return 0;
 }
 
+static int user_destroy(User *s);
+
+static gboolean users_hash_func(gpointer key,gpointer value,gpointer udata){
+
+	user_destroy((User *)value);
+	g_free(key);
+	return TRUE;
+}
+
+int users_done(){
+
+	g_hash_table_foreach_remove(users_jid,users_hash_func,NULL);
+	g_hash_table_destroy(users_jid);
+	g_hash_table_destroy(users_uin);
+	return 0;
+}
+
 int user_save(User *u){
 FILE *f;
 char *fn;
 char *str;
+char *njid;
 int r;	
 xmlnode xml,tag,userlist;
-int i;
 
 	assert(u!=NULL);
 	str=strchr(u->jid,'/');
 	assert(str==NULL);
-	
-	fn=g_strdup_printf("%s.new",u->jid);
+
+	fprintf(stderr,"\nSaving user '%s'\n",u->jid);
+	njid=jid_normalized(u->jid);
+	fn=g_strdup_printf("%s.new",njid);
 	f=fopen(fn,"w");
 	if (!f){
 		fprintf(stderr,"Couldn't open '%s'\n",fn);
 		g_free(fn);
+		g_free(njid);
 		perror("fopen");
 		return -1;
 	}
@@ -72,11 +94,15 @@ int i;
 		xmlnode_insert_cdata(tag,u->name,-1);
 	}
 
-	if (u->userlist){
+	if (u->contacts){
+		GList *it;
+		Contact *c;
+		
 		userlist=xmlnode_insert_tag(xml,"userlist");
-		for(i=0;i<u->userlist_len;i++){
+		for(it=g_list_first(u->contacts);it;it=it->next){
+			c=(Contact *)it->data;
 			tag=xmlnode_insert_tag(userlist,"uin");
-			str=g_strdup_printf("%lu",(unsigned long)u->userlist[i]);
+			str=g_strdup_printf("%lu",(unsigned long)c->uin);
 			xmlnode_insert_cdata(tag,str,-1);
 			g_free(str);
 		}
@@ -91,49 +117,53 @@ int i;
 		unlink(fn);
 		xmlnode_free(xml);
 		g_free(fn);
+		g_free(njid);
 		return -1;
 	}
 	fclose(f);
-	r=unlink(u->jid);
+	r=unlink(njid);
 	if (r && errno!=ENOENT){
 		fprintf(stderr,"Couldn't unlink '%s'\n",u->jid);
 		perror("unlink");
 		xmlnode_free(xml);
 		g_free(fn);
+		g_free(njid);
 		return -1;
 	}
 	
-	r=rename(fn,u->jid);
+	r=rename(fn,njid);
 	if (r){
 		fprintf(stderr,"Couldn't rename '%s' to '%s'\n",fn,u->jid);
 		perror("rename");
 		xmlnode_free(xml);
 		g_free(fn);
+		g_free(njid);
 		return -1;
 	}
 	
 	xmlnode_free(xml);
 	g_free(fn);
+	g_free(njid);
 	return 0;
 }
 
 User *user_load(const char *jid){
-char *fn,*p;
+char *fn,*njid;
 xmlnode xml,tag,t;
 char *uin,*ujid,*name,*password,*email;
 User *u;
-uin_t *userlist;
-int userlist_len;
+GList *contacts;
+char *p;
 
 	uin=ujid=name=password=email=NULL;
-	fn=g_strdup(jid);
-	p=strchr(fn,'/');
-	if (p) *p=0;
+	fprintf(stderr,"\nLoading user '%s'\n",jid);
+	fn=jid_normalized(jid);
+	errno=0;
 	xml=xmlnode_file(fn);
 	if (!xml){
 		fprintf(stderr,"Couldn't read or parse '%s'\n",fn);
+		if (errno) perror("xmlnode_file");
 		g_free(fn);
-		perror("fopen");
 		return NULL;
 	}
 	g_free(fn);
@@ -160,38 +190,36 @@ int userlist_len;
 	tag=xmlnode_get_tag(xml,"name");
 	if (tag) name=xmlnode_get_data(tag);
 	tag=xmlnode_get_tag(xml,"userlist");
-	userlist_len=0;
+	contacts=NULL;
 	if (tag){
+		Contact *c;
+		
 		for(t=xmlnode_get_firstchild(tag);t;t=xmlnode_get_nextsibling(t))
 			if (!g_strcasecmp(xmlnode_get_name(t),"uin")
 					&& xmlnode_get_data(t)
-					&& atoi(xmlnode_get_data(t)) ) 
-				userlist_len++;
-		if (userlist_len){
-			int i;
-			userlist=(uin_t *)g_malloc(sizeof(uin_t)*userlist_len);
-			i=0;
-			for(t=xmlnode_get_firstchild(tag);t;
-					t=xmlnode_get_nextsibling(t))
-				if (!g_strcasecmp(xmlnode_get_name(t),"uin")
-				    && xmlnode_get_data(t)
-				    && atoi(xmlnode_get_data(t)) ) 
-					userlist[i++]=atoi(xmlnode_get_data(t));	
-		}
-		else userlist=NULL;
+					&& atoi(xmlnode_get_data(t)) ) {
+
+					c=(Contact *)g_malloc(sizeof(Contact));
+					memset(c,0,sizeof(*c));
+					c->uin=atoi(xmlnode_get_data(t));	
+					contacts=g_list_append(contacts,c);
+			}
 	}
-	else userlist=NULL;
 	u=(User *)g_malloc(sizeof(User));
 	memset(u,0,sizeof(User));
 	u->uin=atoi(uin);
 	u->jid=g_strdup(jid);
+	p=strchr(u->jid,'/');
+	if (p) *p=0;
 	u->password=g_strdup(password);
-	u->name=g_strdup(name);
-	u->email=g_strdup(email);
-	u->userlist=userlist;
-	u->userlist_len=userlist_len;
+	if (name) u->name=g_strdup(name);
+	if (email) u->email=g_strdup(email);
+	u->contacts=contacts;
 	xmlnode_free(xml);
-	g_hash_table_insert(users_jid,(gpointer)u->jid,(gpointer)u);
+	assert(users_jid!=NULL);
+	assert(users_uin!=NULL);
+	njid=jid_normalized(u->jid);
+	g_hash_table_insert(users_jid,(gpointer)njid,(gpointer)u);
 	g_hash_table_insert(users_uin,GINT_TO_POINTER(u->uin),(gpointer)u);
 	u->confirmed=1;
 	return u;
@@ -199,8 +227,12 @@ int userlist_len;
 
 User *user_get_by_uin(uin_t uin){
 User *u;
+char *njid;
 	
+	assert(users_uin!=NULL);
+	njid=jid_normalized(u->jid);
 	u=(User *)g_hash_table_lookup(users_uin,GINT_TO_POINTER(uin));
+	g_free(njid);
 	return u;
 }
 
@@ -211,19 +243,17 @@ char *str,*p;
 	str=g_strdup(jid);
 	p=strchr(str,'/');
 	if (p) *p=0;
+	assert(users_jid!=NULL);
 	u=(User *)g_hash_table_lookup(users_jid,(gpointer)str);
 	g_free(str);
 	if (u) return u;
 	return user_load(jid);	
 }
 
-int user_delete(User *u){
+static int user_destroy(User *u){
 
-	if (u->uin) g_hash_table_remove(users_uin,GINT_TO_POINTER(u->uin));
-	if (u->jid){
-		g_hash_table_remove(users_jid,(gpointer)u->jid);
-		g_free(u->jid);
-	}
+	fprintf(stderr,"\nRemoving user '%s'\n",u->jid);
+	if (u->jid) g_free(u->jid);
 	if (u->name) g_free(u->name);
 	if (u->password) g_free(u->password);
 	if (u->email) g_free(u->email);
@@ -231,10 +261,28 @@ int user_delete(User *u){
 	return 0;
 }
 
+
+int user_delete(User *u){
+
+	if (u->uin && users_uin) g_hash_table_remove(users_uin,GINT_TO_POINTER(u->uin));
+	if (users_jid){
+		char *njid;
+		gpointer key,value;
+		njid=jid_normalized(u->jid);
+		if (g_hash_table_lookup_extended(users_jid,(gpointer)u->jid,&key,&value)){
+			g_hash_table_remove(users_jid,(gpointer)u->jid);
+			g_free(key);
+		}
+		g_free(njid);
+	}
+	return user_destroy(u);
+}
+
 User *user_add(const char *jid,uin_t uin,const char *name,const char * password,const char *email){
 User *u;
-char *p;
+char *p,*njid;
 
+	fprintf(stderr,"\nCreating user '%s'\n",jid);
 	if (uin<1){
 		fprintf(stderr,"Bad UIN\n");
 		return NULL;
@@ -256,52 +304,67 @@ char *p;
 	if (p) *p=0;
 	u->password=g_strdup(password);
 	if (name) u->name=g_strdup(name);
+	else name=NULL;
 	if (email) u->email=g_strdup(email);
+	else name=NULL;
 	u->confirmed=0;
-	g_hash_table_insert(users_jid,(gpointer)u->jid,(gpointer)u);
+	assert(users_jid!=NULL);
+	assert(users_uin!=NULL);
+	njid=jid_normalized(u->jid);
+	g_hash_table_insert(users_jid,(gpointer)njid,(gpointer)u);
 	g_hash_table_insert(users_uin,GINT_TO_POINTER(u->uin),(gpointer)u);
 	return u;
 }
 
 int user_subscribe(User *u,uin_t uin){
-int i;
+Contact *c;	
+GList *it;
 
 	assert(u!=NULL);
-	if (!u->userlist){
-		u->userlist=(uin_t *)g_malloc(sizeof(uin_t));
-		u->userlist[0]=uin;
-		u->userlist_len=1;
-		return 0;
+	for(it=g_list_first(u->contacts);it;it=it->next){
+		c=(Contact *)it->data;
+		if (c->uin==uin) return -1;
 	}
-	
-	for(i=0;i<u->userlist_len;i++)
-		if (u->userlist[i]==uin) return 1;
-	
-	u->userlist=(uin_t *)g_realloc(u->userlist,sizeof(uin_t)*(u->userlist_len+1));
-	assert(u->userlist!=NULL);
-	u->userlist[u->userlist_len++]=uin;
+
+	c=(Contact *)g_malloc(sizeof(Contact));
+	memset(c,0,sizeof(*c));
+
+	c->uin=uin;
+
+	u->contacts=g_list_append(u->contacts,c);
 	if (u->confirmed) user_save(u);
 	return 0;	
 }
 
 int user_unsubscribe(User *u,uin_t uin){
-int i;
+Contact *c;
+GList *it;
+
+	for(it=g_list_first(u->contacts);it;it=it->next){
+		c=(Contact *)it->data;
+		if (c->uin==uin){
+			u->contacts=g_list_remove(u->contacts,c);
+			g_free(c);
+			if (u->confirmed) user_save(u);
+			return 0;
+		}
+	}
+	return -1;
+}
+
+int user_set_contact_status(User *u,int status,unsigned int uin){
+GList *it;
+Contact *c;
 
 	assert(u!=NULL);
-	if (!u->userlist) return 0;
-	
-	for(i=0;i<u->userlist_len;i++)
-		if (u->userlist[i]==uin) break;
-
-	if (i==u->userlist_len) return 0;
-	
-	u->userlist_len--;
-	if (u->userlist_len<1){
-		g_free(u->userlist);
-		u->userlist=NULL;
+	for(it=u->contacts;it;it=it->next){
+		c=(Contact *)it->data;
+		if (c->uin==uin){
+			c->status=status;
+			return 0;
+		}
 	}
-	u->userlist=(uin_t *)g_realloc(u->userlist,sizeof(uin_t)*u->userlist_len);
-	assert(u->userlist!=NULL);
-	if (u->confirmed) user_save(u);
-	return 0;	
+		
+	return -1;	
 }
+

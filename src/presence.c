@@ -9,9 +9,15 @@
 int presence_send_subscribe(struct stream_s *stream,const char *from,const char *to){
 xmlnode pres;
 
-	if (from==NULL) from=my_name;
 	pres=xmlnode_new_tag("presence");
-	xmlnode_put_attrib(pres,"from",from);
+	if (from!=NULL) 
+		xmlnode_put_attrib(pres,"from",from);
+	else{
+		char *jid;
+		jid=jid_my_registered();
+		xmlnode_put_attrib(pres,"from",jid);
+		g_free(jid);
+	}
 	xmlnode_put_attrib(pres,"to",to);
 	xmlnode_put_attrib(pres,"type","subscribe");
 	stream_write(stream,pres);
@@ -22,9 +28,15 @@ xmlnode pres;
 int presence_send_subscribed(struct stream_s *stream,const char *from,const char *to){
 xmlnode pres;
 
-	if (from==NULL) from=my_name;
 	pres=xmlnode_new_tag("presence");
-	xmlnode_put_attrib(pres,"from",from);
+	if (from!=NULL) 
+		xmlnode_put_attrib(pres,"from",from);
+	else{
+		char *jid;
+		jid=jid_my_registered();
+		xmlnode_put_attrib(pres,"from",jid);
+		g_free(jid);
+	}
 	xmlnode_put_attrib(pres,"to",to);
 	xmlnode_put_attrib(pres,"type","subscribed");
 	stream_write(stream,pres);
@@ -35,9 +47,15 @@ xmlnode pres;
 int presence_send_unsubscribed(struct stream_s *stream,const char *from,const char *to){
 xmlnode pres;
 
-	if (from==NULL) from=my_name;
 	pres=xmlnode_new_tag("presence");
-	xmlnode_put_attrib(pres,"from",from);
+	if (from!=NULL) 
+		xmlnode_put_attrib(pres,"from",from);
+	else{
+		char *jid;
+		jid=jid_my_registered();
+		xmlnode_put_attrib(pres,"from",jid);
+		g_free(jid);
+	}
 	xmlnode_put_attrib(pres,"to",to);
 	xmlnode_put_attrib(pres,"type","unsubscribed");
 	stream_write(stream,pres);
@@ -51,9 +69,15 @@ int presence_send(struct stream_s *stream,const char *from,
 xmlnode pres;
 xmlnode n;
 
-	if (from==NULL) from=my_name;
 	pres=xmlnode_new_tag("presence");
-	xmlnode_put_attrib(pres,"from",from);
+	if (from!=NULL) 
+		xmlnode_put_attrib(pres,"from",from);
+	else{
+		char *jid;
+		jid=jid_my_registered();
+		xmlnode_put_attrib(pres,"from",jid);
+		g_free(jid);
+	}
 	xmlnode_put_attrib(pres,"to",to);
 	if (!available) xmlnode_put_attrib(pres,"type","unavailable");
 	if (show){
@@ -76,6 +100,7 @@ Session *s;
 	s=session_get_by_jid(from,available?stream:NULL);
 	if (!s){
 		fprintf(stderr,"No such session\n");
+		presence_send(stream,NULL,from,0,NULL,"Not logged in");
 		return -1;
 	}
 	return session_set_status(s,available,show,status);
@@ -87,16 +112,17 @@ Session *s;
 int r;
 	
 	u=user_get_by_jid(from);
-	if (!g_strcasecmp(to,my_name)){
-		if (!u) presence_send_unsubscribed(stream,my_name,from);
-		else presence_send_subscribed(stream,my_name,from);
+	if (jid_is_me(to)){
+		fprintf(stderr,"\nIts me :-)\n");
+		if (!u) presence_send_unsubscribed(stream,to,from);
+		else presence_send_subscribed(stream,to,from);
 		return 0;
 	}
 	if (!u)	{
 		fprintf(stderr,"\nPresence subscription from unknown user\n");
 		return -1;
 	}
-	if (!jid_has_uin(to) || !jid_ok(to)){
+	if (!jid_has_uin(to) || !jid_is_my(to)){
 		fprintf(stderr,"\nBad 'to'\n");
 		return -1;
 	}
@@ -105,8 +131,11 @@ int r;
 		fprintf(stderr,"\nCouldn't find or open session for '%s'\n",from);
 		return -1;
 	}
+	fprintf(stderr,"\nSubscribing...\n");
 	r=session_subscribe(s,jid_get_uin(to));
-	presence_send_subscribed(stream,to,from);
+	fprintf(stderr,"\nSubscribed...\n");
+	if (!r) presence_send_subscribed(stream,to,from);
+	else presence_send_subscribed(stream,to,from);
 	
 	return 0;
 }
@@ -148,7 +177,7 @@ char *show,*status;
 		return -1;
 	}
 
-	if (!jid_ok(to)){
+	if (!jid_is_my(to)){
 		fprintf(stderr,"\nWrong 'to' in <presence/>\n");
 		return -1;
 	}

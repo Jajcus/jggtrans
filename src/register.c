@@ -67,10 +67,10 @@ Session *session;
 	}		
 	node=xmlnode_get_tag(q,"name");
 	if (node) name=xmlnode_get_data(node);
-	if (name && strlen(name)==0) name=NULL;
+	if (!node || strlen(name)==0) name=NULL;
 	node=xmlnode_get_tag(q,"email");
-	if (email && strlen(email)==0) email=NULL;
 	if (node) email=xmlnode_get_data(node);
+	if (!node || strlen(email)==0) email=NULL;
 
 	user=user_add(from,uin,name,password,email);
 	if (!user){
