@@ -1,4 +1,4 @@
-/* $Id: disco.c,v 1.5 2003/04/16 11:10:17 jajcus Exp $ */
+/* $Id: disco.c,v 1.6 2003/04/17 12:04:03 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -25,6 +25,8 @@
 #include "conf.h"
 #include "jid.h"
 #include "sessions.h"
+
+static const char *extra_features[]={"iq","message","presence","presence-invisible",NULL};
 
 static void disco_session(gpointer key,gpointer value,gpointer data){
 const char *jid=(char *)key;
@@ -147,6 +149,11 @@ int i;
 		n=xmlnode_insert_tag(result,"feature");
 		xmlnode_put_attrib(n,"var",server_iq_ns[i].ns);
 	}
+	for(i=0;extra_features[i];i++){
+		n=xmlnode_insert_tag(result,"feature");
+		xmlnode_put_attrib(n,"var",extra_features[i]);
+	}
+
 	jabber_iq_send_result(s,from,to,id,result);
 	xmlnode_free(result);
 }
