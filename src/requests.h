@@ -1,4 +1,4 @@
-/* $Id: requests.h,v 1.19 2003/04/25 13:25:36 jajcus Exp $ */
+/* $Id: requests.h,v 1.20 2004/03/16 19:30:25 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -30,9 +30,7 @@ typedef enum request_type_e{
 	RT_SEARCH,
 	RT_VCARD,
 	RT_CHANGE,
-	RT_PASSWD,
-	RT_USERLIST_GET,
-	RT_USERLIST_IMPORT
+	RT_PASSWD
 }RequestType;
 
 typedef struct request_s{

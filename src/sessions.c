@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.101 2004/03/01 18:31:33 mmazur Exp $ */
+/* $Id: sessions.c,v 1.102 2004/03/16 19:30:25 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -454,20 +454,8 @@ time_t timestamp;
 				gg_pubdir50_free(s->pubdir_change);
 				s->pubdir_change=NULL;
 			}
-			if (s->import_roster){
-			/*	struct gg_http * gghttp;
-				Request *r;
-				int rt;
-
-				gghttp=gg_userlist_get(s->user->uin,from_utf8(s->user->password),1);
-
-				if (s->import_roster>0)
-					rt=RT_USERLIST_IMPORT;
-				else
-					rt=RT_USERLIST_GET;
-
-				r=add_request(rt,s->jid,NULL,"",NULL,(void*)gghttp,s->s);
-			*/	s->import_roster=0;
+			if (s->get_roster){
+				gg_userlist_request(s->ggs, GG_USERLIST_GET, NULL);
 			}
 			break;
 		case GG_EVENT_NOTIFY:
@@ -547,6 +535,12 @@ time_t timestamp;
 			break;
 		case GG_EVENT_NONE:
 			debug("GG_EVENT_NONE");
+			break;
+		case GG_EVENT_USERLIST:
+			if(event->event.userlist.type==GG_USERLIST_GET_REPLY)
+				get_roster_done(s,event);
+			else
+				g_warning(N_("Wrong gg userlist type: %i"),event->event.userlist.type);
 			break;
 		default:
 			g_warning(N_("Unknown GG event: %i"),event->type);

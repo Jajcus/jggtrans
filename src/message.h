@@ -1,4 +1,4 @@
-/* $Id: message.h,v 1.8 2003/04/25 13:25:36 jajcus Exp $ */
+/* $Id: message.h,v 1.9 2004/03/16 19:30:25 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -21,6 +21,7 @@
 #define message_h
 
 #include "jabber.h"
+#include "sessions.h"
 
 struct stream_s;
 
@@ -37,8 +38,6 @@ int jabber_message(struct stream_s *stream,xmlnode tag);
 
 struct request_s;
 
-void get_roster_error(struct request_s *r);
-void get_roster_done(struct request_s *r);
-void import_roster_done(struct request_s *r);
+void get_roster_done(Session *s,struct gg_event *event);
 
 #endif

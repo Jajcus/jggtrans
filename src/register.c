@@ -1,4 +1,4 @@
-/* $Id: register.c,v 1.50 2004/01/30 09:47:11 jajcus Exp $ */
+/* $Id: register.c,v 1.51 2004/03/16 19:30:25 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -58,7 +58,6 @@ char *tmp;
 	field=form_add_field(form,"list-single","userlist",_("Userlist on GG server"),"get",0);
 	form_add_option(field,_("ignore"),"ignore");
 	form_add_option(field,_("retrieve"),"get");
-	form_add_option(field,_("subscribe (not recommended)"),"import");
 
 	if (default_user_locale && default_user_locale[0]) tmp=default_user_locale;
 	else tmp="_default_";
@@ -341,7 +340,7 @@ int register_process_form(Stream *s,const char *from,const char *to,
 xmlnode field,value;
 char *password,*tmp;
 unsigned uin;
-int import_roster=0;
+int get_roster=0;
 User *user;
 Session *session;
 
@@ -387,8 +386,7 @@ Session *session;
 	else value=NULL;
 	if (value!=NULL){
 		tmp=xmlnode_get_data(value);
-/*		if (!strcmp(tmp,"import")) import_roster=1;
-		else if (!strcmp(tmp,"get")) import_roster=-1;*/
+		if (!strcmp(tmp,"get")) get_roster=1;
 	}
 
 	user=user_create(from,uin,password);
@@ -406,7 +404,7 @@ Session *session;
 		return -1;
 	}
 
-	if (import_roster) session->import_roster=import_roster;
+	if (get_roster) session->get_roster=get_roster;
 
 	register_process_options_form(s,from,to,id,user,form);
 	return 0;
