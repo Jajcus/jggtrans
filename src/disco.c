@@ -54,10 +54,9 @@ char *jid;
 	}
 	g_free(jid);
 
-	result=xmlnode_new_tag("item");
-	xmlnode_put_attrib(result,"xmlns","jabber:iq:browse");
-	xmlnode_put_attrib(result,"jid",to);
-	xmlnode_put_attrib(result,"name",_("Online users"));
+	result=xmlnode_new_tag("query");
+	xmlnode_put_attrib(result,"xmlns","http://jabber.org/protocol/disco#items");
+	xmlnode_put_attrib(result,"node","online_users");
 
 	g_hash_table_foreach(sessions_jid,disco_session,result);
 
@@ -79,12 +78,13 @@ char *jid,*node;
 	result=xmlnode_new_tag("query");
 	xmlnode_put_attrib(result,"xmlns","http://jabber.org/protocol/disco#items");
 	jid=jid_normalized(from);
-	if (g_list_find_custom(admins,jid,(GCompareFunc)strcmp)==NULL){
+	if (g_list_find_custom(admins,jid,(GCompareFunc)strcmp)!=NULL){
 		n=xmlnode_insert_tag(result,"item");
 		xmlnode_put_attrib(n,"jid",my_name);
 		xmlnode_put_attrib(n,"node","online_users");
 		xmlnode_put_attrib(n,"name",_("Online users"));
 	}
+	else debug("%s not admin",jid);
 	g_free(jid);
 	jabber_iq_send_result(s,from,to,id,result);
 }
@@ -100,6 +100,7 @@ int i;
 		if (!strcmp(node,"online_users")){
 			result=xmlnode_new_tag("query");
 			xmlnode_put_attrib(result,"xmlns","http://jabber.org/protocol/disco#info");
+			xmlnode_put_attrib(result,"node","online_users");
 			jabber_iq_send_result(s,from,to,id,result);
 		}
 		jabber_iq_send_error(s,from,to,id,404,_("Disco request for unknown node"));
