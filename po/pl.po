@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jabber-gg-transport 2.0.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-10-31 16:55+0100\n"
+"POT-Creation-Date: 2004-11-11 17:41+0100\n"
 "PO-Revision-Date: 2004-03-10 13:15+0200\n"
 "Last-Translator: Jacek Konieczny <jajcus@pld.org.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -75,8 +75,8 @@ msgid "Bad Request"
 msgstr "Nieprawidłowe Żądanie"
 
 #: src/iq.c:227 src/iq.c:232 src/iq.c:237 src/presence.c:424
-#: src/presence.c:431 src/register.c:453 src/register.c:599 src/register.c:651
-#: src/register.c:661
+#: src/presence.c:431 src/register.c:455 src/register.c:601 src/register.c:653
+#: src/register.c:663
 msgid "Not Acceptable"
 msgstr "Nie Do Przyjęcia"
 
@@ -637,9 +637,9 @@ msgstr "Otrzymano błąd: %s"
 msgid "Unsupported message type"
 msgstr "Nieobsługiwany typ wiadomości"
 
-#: src/message.c:474 src/register.c:288 src/register.c:399 src/register.c:407
-#: src/register.c:420 src/register.c:503 src/register.c:529 src/register.c:607
-#: src/register.c:615
+#: src/message.c:474 src/register.c:290 src/register.c:401 src/register.c:409
+#: src/register.c:422 src/register.c:505 src/register.c:531 src/register.c:609
+#: src/register.c:617
 msgid "Internal Server Error"
 msgstr "Wewnętrzny błąd serwera"
 
@@ -708,7 +708,7 @@ msgstr "Zapisywanie nie powiodło się"
 msgid "Presence unsubscribed sent to me."
 msgstr "Otrzymałem wypisanie zapisu na obecność"
 
-#: src/presence.c:300 src/presence.c:327 src/register.c:510 src/search.c:424
+#: src/presence.c:300 src/presence.c:327 src/register.c:512 src/search.c:424
 msgid "Not Found"
 msgstr "Nie Znaleziono"
 
@@ -923,124 +923,124 @@ msgstr "Pytanie zawiera nieprawidłowe znaki."
 msgid "Answer contains illegal characters."
 msgstr "Odpowiedź zawiera nieprawidłowe znaki."
 
-#: src/register.c:251
+#: src/register.c:253
 msgid "Not logged in?"
 msgstr "Nie zalogowany?"
 
-#: src/register.c:302
+#: src/register.c:304
 msgid "No action field present"
 msgstr "Brak pola akcji"
 
-#: src/register.c:307 src/register.c:313
+#: src/register.c:309 src/register.c:315
 msgid "No action value defined"
 msgstr "Nie podana wartość akcji"
 
-#: src/register.c:335
+#: src/register.c:337
 msgid "Bad action given"
 msgstr "Podana nieprawidłowa akcja"
 
-#: src/register.c:353
+#: src/register.c:355
 msgid "No uin field present"
 msgstr "Nie podane pole uin"
 
-#: src/register.c:358 src/register.c:363
+#: src/register.c:360 src/register.c:365
 msgid "No uin value defined"
 msgstr "Nie podana wartość uin"
 
-#: src/register.c:368
+#: src/register.c:370
 msgid "Bad uin value defined"
 msgstr "Podany nieprawidłowy uin"
 
-#: src/register.c:374
+#: src/register.c:376
 msgid "No password field present"
 msgstr "Nie podane pole hasła"
 
-#: src/register.c:379 src/register.c:384
+#: src/register.c:381 src/register.c:386
 msgid "No password value defined"
 msgstr "Nie podane hasło"
 
-#: src/register.c:398 src/register.c:606
+#: src/register.c:400 src/register.c:608
 #, c-format
 msgid "Couldn't create user %s"
 msgstr "Nie mogę utworzyć użytkownika %s"
 
-#: src/register.c:406 src/register.c:614
+#: src/register.c:408 src/register.c:616
 #, c-format
 msgid "Couldn't create session for %s"
 msgstr "Nie mogę stworzyć sesji dla %s"
 
-#: src/register.c:419
+#: src/register.c:421
 #, c-format
 msgid "Password change error for user '%s'"
 msgstr "Błąd podczas zmiany hasła użytkownika '%s'"
 
-#: src/register.c:429
+#: src/register.c:431
 msgid "Couldn't find the user."
 msgstr "Nie ma takiego użytkownika."
 
-#: src/register.c:433
+#: src/register.c:435
 #, c-format
 msgid "Password changed for user '%s'"
 msgstr "Zmieniono hasło użytkownika '%s'"
 
-#: src/register.c:498
+#: src/register.c:500
 #, c-format
 msgid "Unregistering '%s'"
 msgstr "Wyrejestrowuję '%s'"
 
-#: src/register.c:502 src/register.c:528
+#: src/register.c:504 src/register.c:530
 #, c-format
 msgid "'%s' unregistration failed"
 msgstr "Wyrejestrowanie '%s' nie powiodło się"
 
-#: src/register.c:509
+#: src/register.c:511
 #, c-format
 msgid "Tried to unregister '%s' who was never registered"
 msgstr "Próba wyrejestrowania '%s' który nie był zarejestrowany"
 
-#: src/register.c:538
+#: src/register.c:540
 #, c-format
 msgid "User '%s' unregistered"
 msgstr "Wyrejestrowano użytkownika '%s'"
 
-#: src/register.c:558 src/register.c:644
+#: src/register.c:560 src/register.c:646
 #, c-format
 msgid "Set query for jabber:iq:register empty: %s"
 msgstr "Żądanie Set dla jabber:iq:register jest puste: %s"
 
-#: src/register.c:567
+#: src/register.c:569
 msgid "Form returned with no type defined"
 msgstr "Zwrócono formularz bez zdefiniowanego typu"
 
-#: src/register.c:576
+#: src/register.c:578
 msgid "Cancelled"
 msgstr "Zaniechany"
 
-#: src/register.c:578
+#: src/register.c:580
 msgid "Bad form type"
 msgstr "Nieprawidłowy typ formularza"
 
-#: src/register.c:584
+#: src/register.c:586
 #, c-format
 msgid "<remove/> in jabber:iq:register set: %s"
 msgstr "ustawiony <remove/> w jabber:iq:register: %s"
 
-#: src/register.c:598
+#: src/register.c:600
 #, c-format
 msgid "User '%s' doesn't exist and not enough info to add him"
 msgstr "Użytkownik '%s' nie istnieje, a podano za mało danych by go utworzyć"
 
-#: src/register.c:649
+#: src/register.c:651
 msgid "Nothing to change"
 msgstr "Żadnych zmian"
 
-#: src/register.c:659
+#: src/register.c:661
 msgid "Not registered, and no password given for public directory change."
 msgstr ""
 "Użytkownik nie jest zarejestrowany i nie podał hasła by zmienić dane w "
 "katalogu."
 
-#: src/register.c:695 src/sessions.c:346
+#: src/register.c:697 src/sessions.c:346
 msgid "Remote Server Error"
 msgstr "Błąd po stronie zdalnego serwera"
 

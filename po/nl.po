@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-10-31 16:55+0100\n"
+"POT-Creation-Date: 2004-11-11 17:41+0100\n"
 "PO-Revision-Date: 03/04/04 13:02\n"
 "Last-Translator: Sander Devrieze <s.devrieze@pandora.be>\n"
 "Language-Team: Nederlands\n"
@@ -81,8 +81,8 @@ msgid "Bad Request"
 msgstr "Onjuist verzoek"
 
 #: src/iq.c:227 src/iq.c:232 src/iq.c:237 src/presence.c:424
-#: src/presence.c:431 src/register.c:453 src/register.c:599 src/register.c:651
-#: src/register.c:661
+#: src/presence.c:431 src/register.c:455 src/register.c:601 src/register.c:653
+#: src/register.c:663
 msgid "Not Acceptable"
 msgstr "Niet aanvaardbaar"
 
@@ -642,9 +642,9 @@ msgstr "Foutmelding ontvangen: %s"
 msgid "Unsupported message type"
 msgstr "Niet ondersteund berichttype"
 
-#: src/message.c:474 src/register.c:288 src/register.c:399 src/register.c:407
-#: src/register.c:420 src/register.c:503 src/register.c:529 src/register.c:607
-#: src/register.c:615
+#: src/message.c:474 src/register.c:290 src/register.c:401 src/register.c:409
+#: src/register.c:422 src/register.c:505 src/register.c:531 src/register.c:609
+#: src/register.c:617
 msgid "Internal Server Error"
 msgstr "Interne serverfout"
 
@@ -713,7 +713,7 @@ msgstr "Authorizatie mislukt"
 msgid "Presence unsubscribed sent to me."
 msgstr "Authorizatie is ongedaan gemaakt."
 
-#: src/presence.c:300 src/presence.c:327 src/register.c:510 src/search.c:424
+#: src/presence.c:300 src/presence.c:327 src/register.c:512 src/search.c:424
 msgid "Not Found"
 msgstr "Niet gevonden"
 
@@ -931,128 +931,128 @@ msgstr "Vraag bevat ongeldige tekens."
 msgid "Answer contains illegal characters."
 msgstr "Antwoordt bevat ongeldige tekens."
 
-#: src/register.c:251
+#: src/register.c:253
 msgid "Not logged in?"
 msgstr "Niet aangemeld?"
 
-#: src/register.c:302
+#: src/register.c:304
 msgid "No action field present"
 msgstr "Geen actie-veld aanwezig"
 
-#: src/register.c:307 src/register.c:313
+#: src/register.c:309 src/register.c:315
 msgid "No action value defined"
 msgstr "Geen actie-waarde gedefiniëerd"
 
-#: src/register.c:335
+#: src/register.c:337
 msgid "Bad action given"
 msgstr "Ongeldige actie opgegeven"
 
-#: src/register.c:353
+#: src/register.c:355
 msgid "No uin field present"
 msgstr "Geen uin-veld aanwezig"
 
-#: src/register.c:358 src/register.c:363
+#: src/register.c:360 src/register.c:365
 msgid "No uin value defined"
 msgstr "Geen uin-waarde gedefiniëerd"
 
-#: src/register.c:368
+#: src/register.c:370
 msgid "Bad uin value defined"
 msgstr "Ongeldige uin-waarde gedefiniëerd"
 
-#: src/register.c:374
+#: src/register.c:376
 msgid "No password field present"
 msgstr "Geen wachtwoordveld aanwezig"
 
-#: src/register.c:379 src/register.c:384
+#: src/register.c:381 src/register.c:386
 msgid "No password value defined"
 msgstr "Geen wachtwoordwaarde gedefiniëerd"
 
-#: src/register.c:398 src/register.c:606
+#: src/register.c:400 src/register.c:608
 #, c-format
 msgid "Couldn't create user %s"
 msgstr "Kon gebruiker %s niet aanmaken"
 
-#: src/register.c:406 src/register.c:614
+#: src/register.c:408 src/register.c:616
 #, c-format
 msgid "Couldn't create session for %s"
 msgstr "Kon geen sessie aanmaken voor %s"
 
-#: src/register.c:419
+#: src/register.c:421
 #, c-format
 msgid "Password change error for user '%s'"
 msgstr "Wachtwoord wijzigingsfout voor gebruiker '%s'"
 
-#: src/register.c:429
+#: src/register.c:431
 msgid "Couldn't find the user."
 msgstr "Kon de gebruiker niet vinden."
 
-#: src/register.c:433
+#: src/register.c:435
 #, c-format
 msgid "Password changed for user '%s'"
 msgstr "Wachtwoord van gebruiker '%s' is gewijzigd"
 
-#: src/register.c:498
+#: src/register.c:500
 #, c-format
 msgid "Unregistering '%s'"
 msgstr "Bezig met authorizatie ongedaan te maken van '%s'"
 
-#: src/register.c:502 src/register.c:528
+#: src/register.c:504 src/register.c:530
 #, c-format
 msgid "'%s' unregistration failed"
 msgstr "Ongedaan maken van de registratie van '%s' is mislukt"
 
-#: src/register.c:509
+#: src/register.c:511
 #, c-format
 msgid "Tried to unregister '%s' who was never registered"
 msgstr ""
 "Probeerde de registratie van '%s' ongedaan te maken maar die was nooit "
 "geregistreerd"
 
-#: src/register.c:538
+#: src/register.c:540
 #, c-format
 msgid "User '%s' unregistered"
 msgstr "Registratie van gebruiker '%s' is ongedaan gemaakt"
 
-#: src/register.c:558 src/register.c:644
+#: src/register.c:560 src/register.c:646
 #, c-format
 msgid "Set query for jabber:iq:register empty: %s"
 msgstr "Stel vraag in voor jabber:iq:register empty: %s"
 
-#: src/register.c:567
+#: src/register.c:569
 msgid "Form returned with no type defined"
 msgstr "Formulier teruggestuurd zonder een type te definiëren"
 
-#: src/register.c:576
+#: src/register.c:578
 msgid "Cancelled"
 msgstr "Geannulleerd"
 
-#: src/register.c:578
+#: src/register.c:580
 msgid "Bad form type"
 msgstr "Ongeldig formuliertype"
 
-#: src/register.c:584
+#: src/register.c:586
 #, c-format
 msgid "<remove/> in jabber:iq:register set: %s"
 msgstr "<remove/> in jabber:iq:register set: %s"
 
-#: src/register.c:598
+#: src/register.c:600
 #, c-format
 msgid "User '%s' doesn't exist and not enough info to add him"
 msgstr ""
 "Gebruiker '%s' bestaat niet en er is niet genoeg informatie opgegeven om hem "
 "toe te voegen"
 
-#: src/register.c:649
+#: src/register.c:651
 msgid "Nothing to change"
 msgstr "Niets om te veranderen"
 
-#: src/register.c:659
+#: src/register.c:661
 msgid "Not registered, and no password given for public directory change."
 msgstr ""
 "Niet geregistreerd en geen wachtwoord opgegeven voor publieke directory "
 "verandering."
 
-#: src/register.c:695 src/sessions.c:346
+#: src/register.c:697 src/sessions.c:346
 msgid "Remote Server Error"
 msgstr "Serverfout"
 
