@@ -1,4 +1,4 @@
-/* $Id: register.c,v 1.25 2003/04/06 15:42:42 mmazur Exp $ */
+/* $Id: register.c,v 1.26 2003/04/06 16:49:15 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -39,7 +39,82 @@ static struct {
 	{ "English", "C" },
 	{ NULL, NULL}
 	};
+
+xmlnode register_form(User *u){
+xmlnode form,tag,field,option,value;
+int i;
+
+	form=xmlnode_new_tag("x");
+	xmlnode_put_attrib(form,"xmlns","jabber:x:data");
+	xmlnode_put_attrib(form,"type","form");
+	tag=xmlnode_insert_tag(form,"title");
+	xmlnode_insert_cdata(tag,_("Jabber GG transport registration form"),-1);
+	tag=xmlnode_insert_tag(form,"instructions");
+	xmlnode_insert_cdata(tag,_("Fill in this form to regiser in the transport"),-1);
 	
+	field=xmlnode_insert_tag(form,"field");
+	xmlnode_put_attrib(field,"type","text-single");
+	xmlnode_put_attrib(field,"var","uin");
+	xmlnode_insert_tag(field,"required");
+	xmlnode_put_attrib(field,"label",_("GG number"));
+
+	field=xmlnode_insert_tag(form,"field");
+	xmlnode_put_attrib(field,"type","text-private");
+	xmlnode_put_attrib(field,"var","password");
+	xmlnode_insert_tag(field,"required");
+	xmlnode_put_attrib(field,"label",_("password"));
+
+/*	field=xmlnode_insert_tag(form,"field");
+	xmlnode_put_attrib(field,"type","boolean");
+	xmlnode_put_attrib(field,"label",_("Create new account"));
+	xmlnode_put_attrib(field,"var","create");
+	xmlnode_insert_tag(field,"required");
+	value=xmlnode_insert_tag(field,"value");
+	xmlnode_insert_cdata(value,"0",-1); */
+
+	field=xmlnode_insert_tag(form,"field");
+	xmlnode_put_attrib(field,"type","list-single");
+	xmlnode_put_attrib(field,"label",_("Language"));
+	xmlnode_put_attrib(field,"var","locale");
+	value=xmlnode_insert_tag(field,"value");
+	xmlnode_insert_cdata(value,default_user_locale,-1);
+	for(i=0;locale_mapping[i].locale!=NULL;i++){
+		option=xmlnode_insert_tag(field,"option");
+		xmlnode_put_attrib(option,"label",locale_mapping[i].lang_name);
+		value=xmlnode_insert_tag(option,"value");
+		xmlnode_insert_cdata(value,locale_mapping[i].locale,-1);
+	}
+	
+	field=xmlnode_insert_tag(form,"field");
+	xmlnode_put_attrib(field,"type","boolean");
+	xmlnode_put_attrib(field,"label",_("Friends only"));
+	xmlnode_put_attrib(field,"var","friends_only");
+	value=xmlnode_insert_tag(field,"value");
+	xmlnode_insert_cdata(value,"1",-1);
+
+	field=xmlnode_insert_tag(form,"field");
+	xmlnode_put_attrib(field,"type","boolean");
+	xmlnode_put_attrib(field,"label",_("Invisible"));
+	xmlnode_put_attrib(field,"var","invisible");
+	value=xmlnode_insert_tag(field,"value");
+	xmlnode_insert_cdata(value,"0",-1);
+
+	field=xmlnode_insert_tag(form,"field");
+	xmlnode_put_attrib(field,"type","boolean");
+	xmlnode_put_attrib(field,"label",_("Set public GG user directory data"));
+	xmlnode_put_attrib(field,"var","setpubdir");
+	value=xmlnode_insert_tag(field,"value");
+	xmlnode_insert_cdata(value,"0",-1);
+
+	field=xmlnode_insert_tag(form,"field");
+	xmlnode_put_attrib(field,"type","fixed");
+	value=xmlnode_insert_tag(field,"value");
+	xmlnode_insert_cdata(value,_("Set your public directory info here (only if enabled above):"),-1);
+
+	return form;
+}
+
+
 xmlnode register_change_form(User *u){
 xmlnode form,tag,field,option,value;
 int i;
@@ -49,7 +124,7 @@ int i;
 	xmlnode_put_attrib(form,"type","form");
 	tag=xmlnode_insert_tag(form,"title");
 	xmlnode_insert_cdata(tag,_("Registration change form"),-1);
-	tag=xmlnode_insert_tag(form,"instruction");
+	tag=xmlnode_insert_tag(form,"instructions");
 	xmlnode_insert_cdata(tag,_("You may use this form to change account"
 				" information, change personal information in the"
 				" public directory or unregister from the"
@@ -71,7 +146,7 @@ int i;
 	value=xmlnode_insert_tag(option,"value");
 	xmlnode_insert_cdata(value,"account",-1);
 	option=xmlnode_insert_tag(field,"option");
-	xmlnode_put_attrib(option,"label",_("Change public directory information"));
+	xmlnode_put_attrib(option,"label",_("Change public directory information:"));
 	value=xmlnode_insert_tag(option,"value");
 	xmlnode_insert_cdata(value,"pubdir",-1);
 	option=xmlnode_insert_tag(field,"option");
@@ -83,7 +158,7 @@ int i;
 	field=xmlnode_insert_tag(form,"field");
 	xmlnode_put_attrib(field,"type","fixed");
 	value=xmlnode_insert_tag(field,"value");
-	xmlnode_insert_cdata(value,_("Fill out this part only when changing account options"),-1);
+	xmlnode_insert_cdata(value,_("Fill out this part only when changing account options:"),-1);
 
 	field=xmlnode_insert_tag(form,"field");
 	xmlnode_put_attrib(field,"type","list-single");
@@ -124,12 +199,12 @@ int i;
 	field=xmlnode_insert_tag(form,"field");
 	xmlnode_put_attrib(field,"type","fixed");
 	value=xmlnode_insert_tag(field,"value");
-	xmlnode_insert_cdata(value,_("Fill out this part only when changing account"),-1);
+	xmlnode_insert_cdata(value,_("Fill out this part only when changing account:"),-1);
 
 	field=xmlnode_insert_tag(form,"field");
 	xmlnode_put_attrib(field,"type","fixed");
 	value=xmlnode_insert_tag(field,"value");
-	xmlnode_insert_cdata(value,_("Fill out this part only when changing public directory info"),-1);
+	xmlnode_insert_cdata(value,_("Fill out this part only when changing public directory info:"),-1);
 
 	return form;
 }
@@ -167,7 +242,6 @@ char *locale=NULL,*invisible=NULL,*friends_only=NULL;
 		u->friends_only=0;
 	user_save(u);
 	
-	jabber_iq_send_result(s,from,to,id,NULL);
 	return 0;
 }
 
@@ -193,7 +267,8 @@ char *action;
 		return -1;
 	}
 	else if (!strcmp(action,"options")){
-		register_process_options_form(s,from,to,id,u,form);
+		if (register_process_options_form(s,from,to,id,u,form))
+			return -1;
 	}
 	else if (!strcmp(action,"account")){
 		jabber_iq_send_error(s,from,to,id,501,_("Not implemented (yet)"));
@@ -204,14 +279,82 @@ char *action;
 		return -1;
 	}
 	else if (!strcmp(action,"unregister")){
-		unregister(s,from,to,id,0);
+		if (unregister(s,from,to,id,0))
+			return -1;
+		return 0;
 	}
 	else{
 		jabber_iq_send_error(s,from,to,id,406,_("Bad action given"));
 		return -1;
 	}
+	jabber_iq_send_result(s,from,to,id,NULL);
 	return 0;
 }
+
+int register_process_form(Stream *s,const char *from,const char *to,
+					const char *id,xmlnode form,xmlnode q){
+xmlnode field,value;
+char *password,*tmp;
+unsigned uin;
+User *user;
+Session *session;
+
+	field=xmlnode_get_tag(form,"field?var=uin");
+	if (field==NULL) {
+		jabber_iq_send_error(s,from,to,id,406,_("No uin field present"));
+		return -1;
+	}
+	value=xmlnode_get_tag(field,"value");
+	if (field==NULL) {
+		jabber_iq_send_error(s,from,to,id,406,_("No uin value defined"));
+		return -1;
+	}
+	tmp=xmlnode_get_data(value);
+	if (tmp==NULL) {
+		jabber_iq_send_error(s,from,to,id,406,_("No uin value defined"));
+		return -1;
+	}
+	uin=(unsigned)atol(tmp);
+	if (uin<=0) {
+		jabber_iq_send_error(s,from,to,id,406,_("Bad uin value defined"));
+		return -1;
+	}
+	
+	field=xmlnode_get_tag(form,"field?var=password");
+	if (field==NULL) {
+		jabber_iq_send_error(s,from,to,id,406,_("No password field present"));
+		return -1;
+	}
+	value=xmlnode_get_tag(field,"value");
+	if (field==NULL) {
+		jabber_iq_send_error(s,from,to,id,406,_("No password value defined"));
+		return -1;
+	}
+	password=xmlnode_get_data(value);
+	if (password==NULL) {
+		jabber_iq_send_error(s,from,to,id,406,_("No password value defined"));
+		return -1;
+	}
+	
+	user=user_create(from,uin,password);
+	if (!user){
+		g_warning(N_("Couldn't create user %s"),from);
+		jabber_iq_send_error(s,from,to,id,500,_("Internal Server Error"));
+		return -1;
+	}
+
+	session=session_create(user,from,id,q,s);
+	if (!session){
+		user_remove(user);
+		g_warning(N_("Couldn't create session for %s"),from);
+		jabber_iq_send_error(s,from,to,id,500,_("Internal Server Error"));
+		return -1;
+	}
+
+	register_process_options_form(s,from,to,id,user,form);
+	return 0;
+}
+
 
 void jabber_iq_get_register(Stream *s,const char *from,const char *to,const char *id,xmlnode q){
 xmlnode node;
@@ -254,15 +397,16 @@ User *u;
 	xmlnode_insert_cdata(instr,register_instructions,-1);
 
 	u=user_get_by_jid(from);
-	if (u!=NULL){
+	if (u==NULL)
+		xmlnode_insert_tag_node(query,register_form(u));
+	else
 		xmlnode_insert_tag_node(query,register_change_form(u));
-	}
 	
 	stream_write(s,iq);
 	xmlnode_free(iq);
 }
 
-void unregister(Stream *s,const char *from,const char *to,const char *id,int presence_used){
+int unregister(Stream *s,const char *from,const char *to,const char *id,int presence_used){
 Session *ses;
 User *u;
 char *jid;
@@ -273,7 +417,7 @@ char *jid;
 		if (session_remove(ses)){
 			g_warning(N_("'%s' unregistration failed"),from);
 			jabber_iq_send_error(s,from,to,id,500,_("Internal Server Error"));
-			return;
+			return -1;
 		}
 
 	u=user_get_by_jid(from);
@@ -282,14 +426,14 @@ char *jid;
 		if (user_delete(u)){
 			g_warning(N_("'%s' unregistration failed"),from);
 			jabber_iq_send_error(s,from,to,id,500,_("Internal Server Error"));
-			return;
+			return -1;
 		}
 	}
 
 	if (!u){
 		g_warning(N_("Tried to unregister '%s' who was never registered"),from);
 		jabber_iq_send_error(s,from,to,id,404,_("Not Found"));
-		return;
+		return -1;
 	}
 
 	if (!presence_used){
@@ -299,6 +443,7 @@ char *jid;
 	presence_send_unsubscribed(s,NULL,jid);
 	g_message(N_("User '%s' unregistered"),from);
 	g_free(jid);
+	return 0;
 }
 
 void jabber_iq_set_register(Stream *s,const char *from,const char *to,const char *id,xmlnode q){
@@ -331,7 +476,7 @@ Request *r;
 			if (user!=NULL) 
 				register_process_change_form(s,from,to,id,user,node);
 			else 
-				jabber_iq_send_error(s,from,to,id,501,_("Not implemented (yet)"));
+				register_process_form(s,from,to,id,node,q);
 		}
 		else if (!strcmp(ftype,"cancel")){ 
 			jabber_iq_send_error(s,from,to,id,406,_("Cancelled"));
@@ -393,9 +538,10 @@ Request *r;
 		nick=from_utf8(xmlnode_get_data(node));
 	}
 
-//	node=xmlnode_get_tag(q,"email");
-//	if (node)
-//		gg_pubdir50_add(change, GG_PUBDIR50_email=xmlnode_get_data(node);
+/*	node=xmlnode_get_tag(q,"email");
+	if (node) 
+		email=xmlnode_get_data(node);
+		gg_pubdir50_add(change, GG_PUBDIR50_email=xmlnode_get_data(node); */
 
 	node=xmlnode_get_tag(q,"city");
 	if (node){

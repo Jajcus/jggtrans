@@ -1,4 +1,4 @@
-/* $Id: register.h,v 1.5 2002/01/30 16:52:03 jajcus Exp $ */
+/* $Id: register.h,v 1.6 2003/04/06 16:49:15 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -22,7 +22,7 @@
 
 void jabber_iq_get_register(Stream *s,const char *from,const char *to,const char *id,xmlnode q);
 void jabber_iq_set_register(Stream *s,const char *from,const char *to,const char *id,xmlnode q);
-void unregister(Stream *s,const char *from,const char *to,const char *id,int presence_used);
+int unregister(Stream *s,const char *from,const char *to,const char *id,int presence_used);
 
 struct request_s;
 int register_error(struct request_s *r);

@@ -1,4 +1,4 @@
-/* $Id: jabber.c,v 1.20 2003/04/06 15:42:42 mmazur Exp $ */
+/* $Id: jabber.c,v 1.21 2003/04/06 16:49:15 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -71,7 +71,7 @@ void jabber_stream_error(Stream *s,xmlnode x){
 char *data;
 
 	data=xmlnode_get_data(x);
-	if (data==NULL) data=N_("-unknown-");
+	if (data==NULL) data="-unknown-";
 	g_critical(N_("Stream error: %s"),data);
 	stream_close(s);
 	stop_it=1;
@@ -130,7 +130,7 @@ char *data;
 			g_warning(N_("Stream Error"));
 			if (x){
 				data=xmlnode_get_data(x);
-				if (data==NULL) data=N_("-unknown-");
+				if (data==NULL) data="-unknown-";
 				g_warning("    %s",data);
 			}
 			break;

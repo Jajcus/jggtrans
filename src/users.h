@@ -1,4 +1,4 @@
-/* $Id: users.h,v 1.16 2003/04/05 11:02:57 jajcus Exp $ */
+/* $Id: users.h,v 1.17 2003/04/06 16:49:15 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -54,6 +54,7 @@ typedef struct user_s{
 	GList *contacts;
 }User;
 
+extern char *default_user_locale;
 extern GHashTable *users_jid;
 
 User *user_create(const char *jid,uin_t uin,const char * password);

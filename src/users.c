@@ -1,4 +1,4 @@
-/* $Id: users.c,v 1.28 2003/04/06 15:42:42 mmazur Exp $ */
+/* $Id: users.c,v 1.29 2003/04/06 16:49:15 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -31,7 +31,7 @@
 
 GHashTable *users_jid=NULL;
 static char *spool_dir;
-static char *default_user_locale="C";
+char *default_user_locale="C";
 
 int users_init(){
 int r;
