@@ -25,8 +25,11 @@ jggtrans mo¿e byæ uruchomiony z konta "root", ale tylko gdy podana
 bêdzie opcja "-u" (oraz opcjonalnie "-g"). W takim przypadku program
 zmieni uid i gid zaraz po starcie.
 
-Proszê zg³aszaæ mi wszelkie znalezione b³êdy, mo¿e uda mi siê je
-poprawiæ.
+Wszelkie b³êdy oraz pro¶by o ulepszenia najlepiej umieszczaæ na stronie
+projektu na JabberStudio:
+http://www.jabberstudio.org/projects/jabber-gg-transport/project/view.php
+
+Mo¿na oczywi¶cie te¿ s³aæ mailem do mnie.
 
 	Mi³ego Jabberowania :-)
 	

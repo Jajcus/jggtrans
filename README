@@ -17,8 +17,8 @@ jabber server.
 You can start is from root accound, giving "-u" and maybe "-g" options
 --- it will change to given uid/gid then.
 
-Please report any bugs to me: 
-		Jacek Konieczny <jajcus@pld.org.pl>
+Look for more information and report any bugs or feature requests at
+JabberStudio:
+http://www.jabberstudio.org/projects/jabber-gg-transport/project/view.php
 
-		
 # vi: tw=72 fo=tcql1 
