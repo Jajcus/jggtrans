@@ -1,4 +1,4 @@
-/* $Id: message.c,v 1.19 2003/03/24 13:46:49 jajcus Exp $ */
+/* $Id: message.c,v 1.20 2003/03/24 13:48:45 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -363,6 +363,8 @@ int on;
 		message_send(stream,to,from,1,"friends only: off",0);
 
 	session_send_status(session);
+	
+	user_save(user);
 }
 
 void message_invisible(struct stream_s *stream,const char *from, const char *to,
@@ -392,6 +394,8 @@ int on;
 		message_send(stream,to,from,1,"invisible: off",0);
 
 	session_send_status(session);
+
+	user_save(user);
 }
 
 int message_to_me(struct stream_s *stream,const char *from,
