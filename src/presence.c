@@ -1,4 +1,4 @@
-/* $Id: presence.c,v 1.27 2003/04/12 11:22:54 mmazur Exp $ */
+/* $Id: presence.c,v 1.28 2003/04/12 12:37:13 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -360,7 +360,7 @@ int r;
 		g_warning(N_("Couldn't find or open session for '%s'"),from);
 		return -1;
 	}
-	debug(N_("Unsubscribing %s to %s..."),from,to);
+	debug(N_("Unsubscribing %s from %s..."),from,to);
 	r=session_unsubscribe(s,jid_get_uin(to));
 	if (!r){
 		debug(N_("Unsubscribed."));
