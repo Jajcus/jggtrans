@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.18 2003/02/03 20:28:19 mmazur Exp $ */
+/* $Id: search.c,v 1.19 2003/02/03 23:58:54 mmazur Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -89,7 +89,7 @@ Session *sess;
 	
 	sess=session_get_by_jid(from,NULL);
 	if (!sess || !sess->connected){
-		message_send_error(s,to,from,NULL,407,"Not logged in");
+		jabber_iq_send_error(s,from,to,id,407,"Not logged in");
 		return;
 	}
 
@@ -121,7 +121,7 @@ char *data;
 
 	sess=session_get_by_jid(from,NULL);
 	if (!sess || !sess->connected){
-		message_send_error(s,to,from,NULL,407,"Not logged in");
+		jabber_iq_send_error(s,from,to,id,407,"Not logged in");
 		return;
 	}
 
