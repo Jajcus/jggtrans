@@ -1,4 +1,5 @@
 As soon as possible:
+- track user resources and disconnect when the last one goes unavailable
 
 Always:
 - bug fixes
