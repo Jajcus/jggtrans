@@ -1,4 +1,4 @@
-/* $Id: register.c,v 1.12 2002/02/02 13:38:15 jajcus Exp $ */
+/* $Id: register.c,v 1.13 2002/02/24 11:24:31 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -114,7 +114,7 @@ char *jid;
 void jabber_iq_set_register(Stream *s,const char *from,const char *to,const char *id,xmlnode q){
 xmlnode node;
 char *str,*password;
-struct gg_modify modify;
+struct gg_change_info_request change;
 uin_t uin;
 User *user;
 Session *session;
@@ -168,41 +168,41 @@ Request *r;
 		}	
 	}
 
-	memset(&modify,0,sizeof(modify));	
+	memset(&change,0,sizeof(change));	
 
 	node=xmlnode_get_tag(q,"first");
-	if (node) modify.first_name=xmlnode_get_data(node);
-	else modify.first_name=NULL;
+	if (node) change.first_name=xmlnode_get_data(node);
+	else change.first_name=NULL;
 	
 	node=xmlnode_get_tag(q,"last");
-	if (node) modify.last_name=xmlnode_get_data(node);
-	else modify.last_name=NULL;
+	if (node) change.last_name=xmlnode_get_data(node);
+	else change.last_name=NULL;
 	
 	node=xmlnode_get_tag(q,"nick");
-	if (node) modify.nickname=xmlnode_get_data(node);
-	else modify.nickname=NULL;
+	if (node) change.nickname=xmlnode_get_data(node);
+	else change.nickname=NULL;
 	
 	node=xmlnode_get_tag(q,"email");
-	if (node) modify.email=xmlnode_get_data(node);
-	else modify.email=NULL;
+	if (node) change.email=xmlnode_get_data(node);
+	else change.email=NULL;
 	
 	node=xmlnode_get_tag(q,"city");
-	if (node) modify.city=xmlnode_get_data(node);
-	else modify.city=NULL;
+	if (node) change.city=xmlnode_get_data(node);
+	else change.city=NULL;
 	
 	node=xmlnode_get_tag(q,"gender");
 	if (node) str=xmlnode_get_data(node);
-	if (!node || !str || !str[0]) modify.gender=GG_GENDER_NONE;
-	else if (str[0]=='k' || str[0]=='f' || str[0]=='K' || str[0]=='F') modify.gender=GG_GENDER_FEMALE;
-	else modify.gender=GG_GENDER_MALE;
+	if (!node || !str || !str[0]) change.gender=GG_GENDER_NONE;
+	else if (str[0]=='k' || str[0]=='f' || str[0]=='K' || str[0]=='F') change.gender=GG_GENDER_FEMALE;
+	else change.gender=GG_GENDER_MALE;
 	
 	node=xmlnode_get_tag(q,"born");
 	if (node) str=xmlnode_get_data(node);
-	if (!node || !str || !str[0]) modify.born=0;
-	else modify.born=atoi(str);
+	if (!node || !str || !str[0]) change.born=0;
+	else change.born=atoi(str);
 		
-	if (!modify.first_name && !modify.last_name && !modify.nickname
-		&& !modify.city && !modify.email && !modify.born && !modify.gender){ 
+	if (!change.first_name && !change.last_name && !change.nickname
+		&& !change.city && !change.email && !change.born && !change.gender){ 
 			if (!uin && !password){
 				debug("Set query for jabber:iq:register empty: %s",xmlnode2str(q));
 				unregister(s,from,to,id,0);
@@ -215,7 +215,7 @@ Request *r;
 			return;
 	}
 
-	if (!modify.email || !modify.nickname){
+	if (!change.email || !change.nickname){
 		debug("email or nickname not given for registration");
 		jabber_iq_send_error(s,from,to,id,406,"Not Acceptable");
 		return;
@@ -231,19 +231,19 @@ Request *r;
 
 	debug("gg_change_pubdir()");
 	
-	if (modify.first_name) modify.first_name=g_strdup(from_utf8(modify.first_name));
-	if (modify.last_name) modify.last_name=g_strdup(from_utf8(modify.last_name));
-	if (modify.nickname) modify.nickname=g_strdup(from_utf8(modify.nickname));
-	if (modify.email) modify.email=g_strdup(from_utf8(modify.email));
-	if (modify.city) modify.city=g_strdup(from_utf8(modify.city));
+	if (change.first_name) change.first_name=g_strdup(from_utf8(change.first_name));
+	if (change.last_name) change.last_name=g_strdup(from_utf8(change.last_name));
+	if (change.nickname) change.nickname=g_strdup(from_utf8(change.nickname));
+	if (change.email) change.email=g_strdup(from_utf8(change.email));
+	if (change.city) change.city=g_strdup(from_utf8(change.city));
 	
-	gghttp=gg_change_pubdir(uin,password,&modify,1);
+	gghttp=gg_change_info(uin,password,&change,1);
 	
-	if (modify.first_name) g_free(modify.first_name);
-	if (modify.last_name) g_free(modify.last_name);
-	if (modify.nickname) g_free(modify.nickname);
-	if (modify.email) g_free(modify.email);
-	if (modify.city) g_free(modify.city);
+	if (change.first_name) g_free(change.first_name);
+	if (change.last_name) g_free(change.last_name);
+	if (change.nickname) g_free(change.nickname);
+	if (change.email) g_free(change.email);
+	if (change.city) g_free(change.city);
 	
 	if (!gghttp){
 		jabber_iq_send_error(s,from,to,id,502,"Remote Server Error");
