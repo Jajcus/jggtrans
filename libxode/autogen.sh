@@ -66,8 +66,3 @@ aclocal $ACLOCAL_FLAGS
 automake -a $am_opt
 autoconf
 
-./configure "$@"
-
-echo 
-echo "Now type 'make' to compile $PROJECT."
-
