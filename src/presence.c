@@ -1,4 +1,4 @@
-/* $Id: presence.c,v 1.45 2003/06/27 09:30:29 jajcus Exp $ */
+/* $Id: presence.c,v 1.46 2003/06/27 14:42:25 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -261,9 +261,6 @@ int presence_unsubscribed(struct stream_s *stream,const char *from,const char *t
 	if (!jid_is_me(to)) return 0;
 
 	debug(L_("Presence unsubscribed sent to me."));
-
-	unregister(stream,from,NULL,NULL,1);
-
 	return 0;
 }
 
@@ -324,11 +321,12 @@ GTime timestamp;
 		presence_send_error(stream,to,from,404,_("Not Found"));
 		return -1;
 	}
+	if (status==-1) return 0; /* Not known yet */
 
 	available=status_gg_to_jabber(status,&show,&stat);
 	if (available) presence_send(stream,jid_build_full(uin),u->jid,available,show,stat,timestamp);
-	else presence_send(stream,jid_build_full(uin),u->jid,available,show,stat,timestamp);
-	/* more XMPP-like, but it doesn't work well with 0.9 clients 
+	else presence_send(stream,jid_build(uin),u->jid,available,show,stat,timestamp);
+	/* more XMPP-like, but it doesn't work well with legacy clients 
 	else presence_send_error(stream,to,from,404,_("Not Found"));*/
 	return 0;
 }
