@@ -10,3 +10,4 @@ configure
 libtool
 libxode-config
 ltmain.sh
+autom4te.cache
