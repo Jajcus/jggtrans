@@ -40,3 +40,6 @@ INCLUDES=$(GLIB_CFLAGS) -I../libxode/include
 
 jggtrans_CFLAGS=-DVERSION="\"$(VERSION)\"" -DSYSCONFDIR=\"$(sysconfdir)\"
 jggtrans_LDADD=$(GLIB_LIBS) ../libxode/src/libxode.la
+
+tags: 
+	ctags -R . ../libxode/
