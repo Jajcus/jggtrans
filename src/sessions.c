@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.25 2002/02/22 16:20:33 jajcus Exp $ */
+/* $Id: sessions.c,v 1.26 2002/02/23 16:28:55 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -546,14 +546,41 @@ int session_unsubscribe(Session *s,uin_t uin){
 	return 0;
 }
 
+char * session_split_message(const char **msg){
+const char *m;
+int i;
+	
+	m=*msg;
+	if (strlen(*msg)<=2000){
+		*msg=NULL;
+		return g_strdup(m);
+	}
+	for(i=2000;i>1000;i++){
+		if (isspace(m[i])){
+			*msg=m+i+1;
+			return g_strndup(m,i);	
+		}
+	}
+	*msg=m+i;
+	return g_strndup(m,i);
+}
+
 int session_send_message(Session *s,uin_t uin,int chat,const char *body){
+const char *m;
+char *mp;
 
 	g_assert(s!=NULL);
 	if (!s->connected || !s->ggs) return -1;
-	gg_send_message(s->ggs,chat?GG_CLASS_CHAT:GG_CLASS_MSG,uin,(char *)body);
+	m=body;
+	while(m){
+		mp=session_split_message(&m);
+		if (mp){
+			gg_send_message(s->ggs,chat?GG_CLASS_CHAT:GG_CLASS_MSG,uin,mp);
+			g_free(mp);
+		}
+	}
 	return 0; /* FIXME: check for errors */
 }
-
 
 void session_print(Session *s,int indent){
 char *space,*space1;
