@@ -1,4 +1,4 @@
-/* $Id: iq.c,v 1.21 2002/02/02 19:49:54 jajcus Exp $ */
+/* $Id: iq.c,v 1.22 2002/02/06 17:24:54 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -106,7 +106,7 @@ xmlnode query;
 	if (n) xmlnode_insert_cdata( xmlnode_insert_tag(query,"description"),
 					xmlnode_get_data(n),-1);
 	xmlnode_insert_cdata(xmlnode_insert_tag(query,"transport"),gateway_prompt,-1);
-	xmlnode_insert_cdata(xmlnode_insert_tag(query,"service"),"x-gg",-1); /* until gg is registered */
+	xmlnode_insert_cdata(xmlnode_insert_tag(query,"service"),"x-gadugadu",-1); /* until gg is registered */
 	xmlnode_insert_tag(query,"register");
 	xmlnode_insert_tag(query,"search");
 		

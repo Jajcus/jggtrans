@@ -13,7 +13,7 @@ int i;
 
 	result=xmlnode_new_tag("service");
 	xmlnode_put_attrib(result,"xmlns","jabber:iq:browse");
-	xmlnode_put_attrib(result,"type","x-gg");
+	xmlnode_put_attrib(result,"type","x-gadugadu");
 	xmlnode_put_attrib(result,"jid",my_name);
 	n=xmlnode_get_tag(config,"vCard/FN");
 	if (n){
