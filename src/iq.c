@@ -1,4 +1,4 @@
-/* $Id: iq.c,v 1.27 2003/01/13 13:24:38 jajcus Exp $ */
+/* $Id: iq.c,v 1.28 2003/01/13 17:41:02 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -152,11 +152,20 @@ int uin;
 xmlnode query;
 
 	n=xmlnode_get_tag(q,"prompt");
-	if (!n) jabber_iq_send_error(s,from,to,id,406,"Not Acceptable");
+	if (!n){
+		jabber_iq_send_error(s,from,to,id,406,"Not Acceptable");
+		return;
+	}
 	str=xmlnode_get_data(n);
-	if (!str) jabber_iq_send_error(s,from,to,id,406,"Not Acceptable");
+	if (!str){
+		jabber_iq_send_error(s,from,to,id,406,"Not Acceptable");
+		return;
+	}
 	uin=atoi(str);
-	if (uin<=0) jabber_iq_send_error(s,from,to,id,406,"Not Acceptable");
+	if (uin<=0){
+		jabber_iq_send_error(s,from,to,id,406,"Not Acceptable");
+		return;
+	}
 	
 	query=xmlnode_new_tag("query");
 	xmlnode_put_attrib(query,"xmlns","jabber:iq:gateway");
