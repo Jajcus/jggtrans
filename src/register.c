@@ -1,4 +1,4 @@
-/* $Id: register.c,v 1.30 2003/04/11 13:26:21 jajcus Exp $ */
+/* $Id: register.c,v 1.31 2003/04/11 15:59:38 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -45,15 +45,10 @@ xmlnode register_form(User *u){
 xmlnode form,tag,field;
 int i;
 
-	form=xmlnode_new_tag("x");
-	xmlnode_put_attrib(form,"xmlns","jabber:x:data");
-	xmlnode_put_attrib(form,"type","form");
-	tag=xmlnode_insert_tag(form,"title");
-	xmlnode_insert_cdata(tag,_("Jabber GG transport registration form"),-1);
-	tag=xmlnode_insert_tag(form,"instructions");
-	xmlnode_insert_cdata(tag,_("Fill in this form to regiser in the transport.\n"
-				"You may use registration later to change your settings,"
-				" password, public directory information or to unregister."),-1);
+	form=form_new(_("Jabber GG transport registration form"),
+			_("Fill in this form to regiser in the transport.\n"
+			"You may use registration later to change your settings,"
+			" password, public directory information or to unregister."));
 
 	form_add_field(form,"text-single","uin",_("GG number"),NULL,1);
 	form_add_field(form,"text-private","password",_("Password"),NULL,1);
@@ -75,16 +70,11 @@ xmlnode register_change_form(User *u){
 xmlnode form,tag,field;
 int i;
 
-	form=xmlnode_new_tag("x");
-	xmlnode_put_attrib(form,"xmlns","jabber:x:data");
-	xmlnode_put_attrib(form,"type","form");
-	tag=xmlnode_insert_tag(form,"title");
-	xmlnode_insert_cdata(tag,_("Registration change form"),-1);
-	tag=xmlnode_insert_tag(form,"instructions");
-	xmlnode_insert_cdata(tag,_("You may use this form to change account"
-				" information, change personal information in the"
-				" public directory or unregister from the"
-				" transport."),-1);
+	form=form_new(_("Registration change form"),
+			_("You may use this form to change account"
+			" information, change personal information"
+			" in the public directory or unregister from"
+			" the transport."));
 	
 	field=form_add_field(form,"list-single","action",_("Action"),"options",1);
 	form_add_option(field,_("Change account options"),"options");

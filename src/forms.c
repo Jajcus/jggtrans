@@ -1,4 +1,4 @@
-/* $Id: forms.c,v 1.1 2003/04/11 13:18:20 jajcus Exp $ */
+/* $Id: forms.c,v 1.2 2003/04/11 15:59:38 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -18,6 +18,23 @@
  */
 
 #include "ggtrans.h"
+
+/*
+ * creates a new jabber:x:data form
+ * returns the node created added
+ */
+xmlnode form_new(const char *title,const char *instructions){
+xmlnode form,tag;
+	
+	form=xmlnode_new_tag("x");
+	xmlnode_put_attrib(form,"xmlns","jabber:x:data");
+	xmlnode_put_attrib(form,"type","form");
+	tag=xmlnode_insert_tag(form,"title");
+	xmlnode_insert_cdata(tag,title,-1);
+	tag=xmlnode_insert_tag(form,"instructions");
+	xmlnode_insert_cdata(tag,instructions,-1);
+	return form;
+}
 
 /*
  * adds a field to a jabber:x:data form
