@@ -30,13 +30,13 @@ static int stat_gg_messages_out(void){
 
 static int stat_users_registered(void){
 
-	return -1;
+	return users_count();
 }
 	
 static void count_session(gpointer key,gpointer value,gpointer data){
 int *counter=(int *)data;
 
-	counter++;
+	(*counter)++;
 }
 	
 static int stat_users_online(void){
@@ -50,7 +50,7 @@ static void count_connected_session(gpointer key,gpointer value,gpointer data){
 const Session *sess=(Session *)value;
 int *counter=(int *)data;
 
-	if (sess->connected) counter++;
+	if (sess->connected) (*counter)++;
 }
 
 static int stat_users_connected(void){
@@ -81,6 +81,13 @@ xmlnode result;
 xmlnode n,stat,err;
 char *str;
 int i;
+char *jid;
+
+	jid=jid_normalized(from);
+	if (g_list_find_custom(admins,jid,(GCompareFunc)strcmp)!=NULL){
+		jabber_iq_send_error(s,from,to,id,401,_("You are not allowed to read statistics"));
+		return;
+	}
 
 	n=xmlnode_get_firstchild(q);
 	result=xmlnode_new_tag("query");
@@ -93,7 +100,7 @@ int i;
 	}
 	for(;n;n=xmlnode_get_nextsibling(q)){
 		str=xmlnode_get_name(n);
-		if (!strcmp(str,"stat")) continue;
+		if (strcmp(str,"stat")) continue;
 		str=xmlnode_get_attrib(n,"name");
 		if (!str) continue;
 		stat=xmlnode_insert_tag(result,"stat");
