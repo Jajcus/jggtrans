@@ -1,4 +1,4 @@
-/* $Id: forms.c,v 1.5 2003/04/16 10:18:57 jajcus Exp $ */
+/* $Id: forms.c,v 1.6 2003/04/16 11:10:17 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -26,11 +26,11 @@
 xmlnode form_new(xmlnode parent,const char *title,const char *instructions){
 xmlnode form,tag;
 
-	if (parent) 
+	if (parent)
 		form=xmlnode_insert_tag(parent,"x");
 	else
 		form=xmlnode_new_tag("x");
-	
+
 	xmlnode_put_attrib(form,"xmlns","jabber:x:data");
 	xmlnode_put_attrib(form,"type","form");
 	tag=xmlnode_insert_tag(form,"title");

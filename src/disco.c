@@ -1,4 +1,4 @@
-/* $Id: disco.c,v 1.4 2003/04/15 16:33:04 jajcus Exp $ */
+/* $Id: disco.c,v 1.5 2003/04/16 11:10:17 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -38,9 +38,9 @@ GgServer *server;
 	xmlnode_put_attrib(n,"jid",jid);
 
 	if (sess->current_server){
-		server=(GgServer *)sess->current_server->data;	
+		server=(GgServer *)sess->current_server->data;
 		if (!server || server->port==1){
-			if (sess->connected) {
+			if (sess->connected){
 				str=g_strdup_printf(_("%s (Connected via hub to %s:%i)"),jid,
 						inet_ntoa(*(struct in_addr*)&sess->ggs->server_addr),
 						sess->ggs->port);
@@ -64,7 +64,7 @@ GgServer *server;
 static void disco_online_users(Stream *s,const char *from,const char * to, const char *id,xmlnode q){
 xmlnode result;
 char *jid;
-	
+
 	jid=jid_normalized(from);
 	if (g_list_find_custom(admins,jid,(GCompareFunc)strcmp)==NULL){
 		g_free(jid);
@@ -174,7 +174,7 @@ int i;
 	str=g_strdup_printf("GG user #%u",jid_get_uin(to));
 	xmlnode_put_attrib(n,"name",str);
 	g_free(str);
-	
+
 	for(i=0;client_iq_ns[i].ns;i++){
 		if (i && !strcmp(client_iq_ns[i-1].ns,client_iq_ns[i].ns)){
 			/* workaround for the WinJab bug workaround :-) */

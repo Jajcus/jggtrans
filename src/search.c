@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.33 2003/04/16 10:18:57 jajcus Exp $ */
+/* $Id: search.c,v 1.34 2003/04/16 11:10:17 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -79,7 +79,7 @@ struct search_req_s *sr;
 	maxgroups=sr->maxgroups-1;
 	start=sr->start;
 	g_free(sr);
-	
+
 	q=xmlnode_new_tag("query");
 	xmlnode_put_attrib(q,"xmlns","jabber:iq:search");
 	form=form_new_result(_("GG public directory search results"));

@@ -1,4 +1,4 @@
-/* $Id: iq.c,v 1.43 2003/04/14 12:46:03 jajcus Exp $ */
+/* $Id: iq.c,v 1.44 2003/04/16 11:10:17 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -351,7 +351,7 @@ User *u;
 	from=xmlnode_get_attrib(x,"from");
 	type=xmlnode_get_attrib(x,"type");
 	if (!acl_is_allowed(from,x)){
-		if (type && !strcmp(type,"error")) {
+		if (type && !strcmp(type,"error")){
 			debug("Ignoring forbidden error");
 			return;
 		}

@@ -1,4 +1,4 @@
-/* $Id: message.c,v 1.29 2003/04/16 10:38:30 jajcus Exp $ */
+/* $Id: message.c,v 1.30 2003/04/16 11:10:17 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -465,7 +465,7 @@ User *u;
 	type=xmlnode_get_attrib(tag,"type");
 
 	if (!acl_is_allowed(from,tag)){
-		if (type && !strcmp(type,"error")) {
+		if (type && !strcmp(type,"error")){
 			debug("Ignoring forbidden message error");
 			return -1;
 		}

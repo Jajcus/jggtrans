@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.44 2003/04/16 09:34:37 jajcus Exp $ */
+/* $Id: main.c,v 1.45 2003/04/16 11:10:17 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -396,7 +396,7 @@ guint lh;
 				| G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING
 				| G_LOG_LEVEL_MESSAGE | G_LOG_LEVEL_INFO
 				| G_LOG_LEVEL_DEBUG,log_handler,NULL);
-	
+
 	/* now the log handlers worry about the right language */
 	setlocale(LC_MESSAGES,"C");
 	setlocale(LC_CTYPE,"C");
@@ -417,7 +417,7 @@ guint lh;
 	for(tag=xmlnode_get_firstchild(config);tag;tag=xmlnode_get_nextsibling(tag)){
 		str=xmlnode_get_name(tag);
 		if (!str) continue;
-		if (!strcmp(str,"admin")) {
+		if (!strcmp(str,"admin")){
 			data=xmlnode_get_data(tag);
 			admins=g_list_append(admins,data);
 		}
@@ -562,7 +562,7 @@ guint lh;
 			newargv[n++]=(char *)param_D;
 		}
 		newargv[n]=NULL;
-		if (!the_end) {
+		if (!the_end){
 			execvp(argv[0],newargv);
 			perror("exec");
 			return 1;
@@ -572,10 +572,10 @@ guint lh;
 	g_message(N_("Exiting normally.\n"));
 
 	g_log_remove_handler(NULL,lh);
-	
+
 	g_list_pop_allocator();
 	g_allocator_free(list_allocator);
-	
+
 	if (log_file!=NULL){
 		fclose(log_file);
 		log_file=NULL;

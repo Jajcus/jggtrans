@@ -1,4 +1,4 @@
-/* $Id: acl.c,v 1.2 2003/04/16 09:41:25 jajcus Exp $ */
+/* $Id: acl.c,v 1.3 2003/04/16 11:10:17 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -31,16 +31,16 @@ struct acl_s {
 
 static GList *acl=NULL;
 
-int acl_init() {
+int acl_init(){
 xmlnode node;
 char *str,*what,*who;
 int allow=0;
 struct acl_s *acl_e;
-	
+
 
 	node=xmlnode_get_tag(config,"acl");
 	if (!node) return 0;
-	
+
 	for(node=xmlnode_get_firstchild(node);node;node=xmlnode_get_nextsibling(node)){
 		str=xmlnode_get_name(node);
 		if (!str) continue;
@@ -60,10 +60,10 @@ struct acl_s *acl_e;
 	return 0;
 }
 
-void acl_done() {
+void acl_done(){
 GList *it;
 struct acl_s *acl_e;
-	
+
 	for(it=g_list_first(acl);it;it=g_list_next(it)){
 		acl_e=(struct acl_s*)it->data;
 		g_free(acl_e->who);
@@ -86,7 +86,7 @@ int result=0;
 	else jid=NULL;
 	for(it=g_list_first(acl);it;it=g_list_next(it)){
 		acl_e=(struct acl_s*)it->data;
-		if (acl_e->who && jid) {
+		if (acl_e->who && jid){
 			if (fnmatch(acl_e->who,jid,0)) continue; /* no match */
 		}
 		if (acl_e && !xmlnode_get_tag(x,acl_e->what)) continue; /* no match */

@@ -1,4 +1,4 @@
-/* $Id: stats.c,v 1.7 2003/04/16 09:53:02 jajcus Exp $ */
+/* $Id: stats.c,v 1.8 2003/04/16 11:10:17 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -51,13 +51,13 @@ static int stat_users_registered(void){
 
 	return users_count();
 }
-	
+
 static void count_session(gpointer key,gpointer value,gpointer data){
 int *counter=(int *)data;
 
 	(*counter)++;
 }
-	
+
 static int stat_users_online(void){
 int counter=0;
 

@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.62 2003/04/16 10:38:30 jajcus Exp $ */
+/* $Id: sessions.c,v 1.63 2003/04/16 11:10:17 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -109,7 +109,7 @@ GgServer *server;
 
 
 	}
-	else {
+	else{
 		server=g_new(GgServer, 1);
 		server->port=1;
 		gg_servers=g_list_append(gg_servers, server);
@@ -149,7 +149,7 @@ GList *it;
 	for(it=g_list_first(gg_servers);it;it=g_list_next(it))
 		g_free(it->data);
 	g_list_free(gg_servers);
-	
+
 	g_hash_table_foreach_remove(sessions_jid,sessions_hash_remove_func,NULL);
 	g_hash_table_destroy(sessions_jid);
 

@@ -1,4 +1,4 @@
-/* $Id: presence.c,v 1.33 2003/04/16 09:38:43 jajcus Exp $ */
+/* $Id: presence.c,v 1.34 2003/04/16 11:10:17 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -386,7 +386,7 @@ User *u;
 	user_load_locale(u);
 
 	if (!acl_is_allowed(from,tag)){
-		if (type && !strcmp(type,"error")) {
+		if (type && !strcmp(type,"error")){
 			debug("Ignoring forbidden presence error");
 			return -1;
 		}
@@ -394,7 +394,7 @@ User *u;
 		presence_send_error(stream,to,from,405,_("Not allowed"));
 		return -1;
 	}
-	
+
 	show_n=xmlnode_get_tag(tag,"show");
 	if (show_n) show=xmlnode_get_data(show_n);
 	else show=NULL;
