@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.24 2002/02/06 17:23:37 jajcus Exp $ */
+/* $Id: sessions.c,v 1.25 2002/02/22 16:20:33 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -35,6 +35,7 @@
 static int conn_timeout=30;
 static int pong_timeout=30;
 static int ping_interval=10;
+static int reconnect=0;
 GHashTable *sessions_jid;
 
 int sessions_init(){
@@ -54,6 +55,8 @@ xmlnode node;
 	if (i>0) pong_timeout=i;
 	i=config_load_int("ping_interval");
 	if (i>0) ping_interval=i;
+	i=config_load_int("reconnect");
+	if (i>0) reconnect=i;
 	
 	proxy_ip=config_load_string("proxy/ip");
 	if (!proxy_ip) return 0;
@@ -77,9 +80,32 @@ static gboolean sessions_hash_remove_func(gpointer key,gpointer value,gpointer u
 }
 
 int sessions_done(){
+guint s;
+
+	s=g_hash_table_size(sessions_jid);
+	debug("%u sessions in hash table",s);
 
 	g_hash_table_foreach_remove(sessions_jid,sessions_hash_remove_func,NULL);
+	g_hash_table_destroy(sessions_jid);
 	return 0;
+}
+
+gboolean sessions_reconnect(gpointer data){
+char *jid;
+
+	jid=(char *)data;
+	presence_send_probe(jabber_stream(),jid);
+	g_free(jid);
+	return FALSE;
+}
+
+void session_schedule_reconnect(Session *s){
+int t;
+	
+	if (!reconnect) return;
+	t=(int)((reconnect*9.0/10.0)+(2.0*reconnect/10.0*rand()/(RAND_MAX+1.0)));
+	debug("Sheduling reconnect in reconnect %u seconds",t);
+	g_timeout_add(t*1000,sessions_reconnect,g_strdup(s->jid));
 }
 
 gboolean session_timeout(gpointer data){
@@ -195,6 +221,7 @@ Resource *r;
 		}
 		s->connected=0;
 		s->io_watch=0;
+		session_schedule_reconnect(s);
 		session_remove(s);
 		return FALSE;
 	}
@@ -211,6 +238,7 @@ Resource *r;
 		}
 		s->connected=0;
 		s->io_watch=0;
+		session_schedule_reconnect(s);
 		session_remove(s);
 		return FALSE;
 	}
@@ -222,6 +250,8 @@ Resource *r;
 				jabber_iq_send_error(s->s,s->jid,NULL,s->req_id,401,"Unauthorized");
 			else presence_send(s->s,NULL,s->user->jid,0,NULL,"Login failed",0);
 			s->io_watch=0;
+			if (!s->req_id)
+				session_schedule_reconnect(s);
 			session_remove(s);
 			return FALSE;
 		case GG_EVENT_CONN_SUCCESS:

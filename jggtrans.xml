@@ -110,7 +110,10 @@
   <!-- GaduGadu server doesn't seem to answer pings any more :-( 
        So let's give it a year :-) -->
   <pong_timeout>31536000</pong_timeout>
-		     
+
+ <!-- this time after disconnection from gg server the transport
+      will try to connect again -->
+ <reconnect>300</reconnect>
 
  <!-- Spool directory. This is the place, where user info will be stored. -->
  <!-- Be careful about permissions - users' GG passwords are stored there -->

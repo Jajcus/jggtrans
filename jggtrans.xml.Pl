@@ -119,6 +119,9 @@
       Ale dajmy mu rok czasu na odpowiedź :-) -->
  <pong_timeout>31536000</pong_timeout>
 
+ <!-- jak szybko ma transport spróbować się połączyć po rozłączeniu -->
+ <reconnect>300</reconnect>
+
  <!-- Katalog z danymi użytkowników. -->
  <!-- Proszę uważać na uprawnienie - hasła użytkowników (do GG) będą tam przechowywane -->
  <spool>/var/lib/jabber/spool/gg.localhost/</spool>
