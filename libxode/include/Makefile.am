@@ -1,7 +1,8 @@
 includedir = $(prefix)/include
-include_HEADERS = xmlparse.h libxode.h
 
 noinst_HEADERS =  \
+	xmlparse.h \
+	libxode.h \
 	asciitab.h \
 	hashtable.h \
 	iasciitab.h \
