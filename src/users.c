@@ -1,4 +1,4 @@
-/* $Id: users.c,v 1.15 2002/02/23 15:36:51 jajcus Exp $ */
+/* $Id: users.c,v 1.16 2002/02/23 15:39:42 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -233,14 +233,11 @@ char *p;
 
 User *user_get_by_jid(const char *jid){
 User *u;
-char *str,*p;
+char *njid;
 	
-	str=g_strdup(jid);
-	p=strchr(str,'/');
-	if (p) *p=0;
-	g_assert(users_jid!=NULL);
-	u=(User *)g_hash_table_lookup(users_jid,(gpointer)str);
-	g_free(str);
+	njid=jid_normalized(jid);
+	u=(User *)g_hash_table_lookup(users_jid,(gpointer)njid);
+	g_free(njid);
 	if (u) return u;
 	return user_load(jid);	
 }
