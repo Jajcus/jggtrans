@@ -13,6 +13,8 @@
       <ns>jabber:iq:gateway</ns>
       <ns>jabber:iq:register</ns>
       <ns>jabber:iq:search</ns>
+      <ns>jabber:iq:agent</ns>
+      <ns>jabber:iq:browse</ns>
     </service>
 
   Oraz następujące, pod koniec pliku jabber.xml (poza <browse/>):
