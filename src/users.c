@@ -1,4 +1,4 @@
-/* $Id: users.c,v 1.14 2002/02/22 15:20:35 jajcus Exp $ */
+/* $Id: users.c,v 1.15 2002/02/23 15:36:51 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -262,7 +262,7 @@ char *njid;
 	g_assert(users_jid!=NULL);
 	
 	njid=jid_normalized(u->jid);
-	if (g_hash_table_lookup_extended(users_jid,(gpointer)u->jid,&key,&value)){
+	if (g_hash_table_lookup_extended(users_jid,(gpointer)njid,&key,&value)){
 		g_assert(u==value);
 		g_hash_table_remove(users_jid,(gpointer)u->jid);
 		g_free(key);
