@@ -1,4 +1,4 @@
-/* $Id: users.c,v 1.37 2003/04/16 11:32:56 jajcus Exp $ */
+/* $Id: users.c,v 1.38 2003/04/22 08:23:00 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -41,10 +41,10 @@ int r;
 
 	spool_dir=config_load_string("spool");
 	if (!spool_dir)
-		g_error(N_("No <spool/> defined in config file"));
+		g_error(L_("No <spool/> defined in config file"));
 
 	r=chdir(spool_dir);
-	if (r) g_error(N_("Couldn't enter %s: %s"),spool_dir,g_strerror(errno));
+	if (r) g_error(L_("Couldn't enter %s: %s"),spool_dir,g_strerror(errno));
 
 	users_jid=g_hash_table_new(g_str_hash,g_str_equal);
 	if (!users_jid) return -1;
@@ -65,7 +65,7 @@ static gboolean users_hash_func(gpointer key,gpointer value,gpointer udata){
 int users_done(){
 guint s;
 	s=g_hash_table_size(users_jid);
-	if (s) g_warning(N_("Still %u users in hash table"),s);
+	if (s) g_warning(L_("Still %u users in hash table"),s);
 	/*g_hash_table_foreach_remove(users_jid,users_hash_func,NULL);*/
 	g_hash_table_destroy(users_jid);
 	return 0;
@@ -84,16 +84,16 @@ xmlnode xml,tag,ctag,userlist;
 	g_assert(str==NULL);
 
 	if (!u->confirmed){
-		g_message(N_("Not saving user '%s' - account not confirmed."),u->jid);
+		g_message(L_("Not saving user '%s' - account not confirmed."),u->jid);
 		return -1;
 	}
 
-	g_message(N_("Saving user '%s'"),u->jid);
+	g_message(L_("Saving user '%s'"),u->jid);
 	njid=jid_normalized(u->jid);
 	fn=g_strdup_printf("%s.new",njid);
 	f=fopen(fn,"w");
 	if (!f){
-		g_warning(N_("Couldn't open '%s': %s"),fn,g_strerror(errno));
+		g_warning(L_("Couldn't open '%s': %s"),fn,g_strerror(errno));
 		g_free(fn);
 		g_free(njid);
 		return -1;
@@ -139,7 +139,7 @@ xmlnode xml,tag,ctag,userlist;
 	str=xmlnode2str(xml);
 	r=fputs(str,f);
 	if (r<0){
-		g_warning(N_("Couldn't save '%s': %s"),u->jid,g_strerror(errno));
+		g_warning(L_("Couldn't save '%s': %s"),u->jid,g_strerror(errno));
 		fclose(f);
 		unlink(fn);
 		xmlnode_free(xml);
@@ -150,7 +150,7 @@ xmlnode xml,tag,ctag,userlist;
 	fclose(f);
 	r=unlink(njid);
 	if (r && errno!=ENOENT){
-		g_warning(N_("Couldn't unlink '%s': %s"),njid,g_strerror(errno));
+		g_warning(L_("Couldn't unlink '%s': %s"),njid,g_strerror(errno));
 		xmlnode_free(xml);
 		g_free(fn);
 		g_free(njid);
@@ -159,7 +159,7 @@ xmlnode xml,tag,ctag,userlist;
 
 	r=rename(fn,njid);
 	if (r){
-		g_warning(N_("Couldn't rename '%s' to '%s': %s"),fn,u->jid,g_strerror(errno));
+		g_warning(L_("Couldn't rename '%s' to '%s': %s"),fn,u->jid,g_strerror(errno));
 		xmlnode_free(xml);
 		g_free(fn);
 		g_free(njid);
@@ -183,12 +183,12 @@ char *p;
 char *data;
 
 	uin=ujid=name=password=email=NULL;
-	g_message(N_("Loading user '%s'"),jid);
+	debug(L_("Loading user '%s'"),jid);
 	fn=jid_normalized(jid);
 	errno=0;
 	xml=xmlnode_file(fn);
 	if (xml==NULL){
-		g_warning(N_("Couldn't read or parse '%s': %s"),fn,errno?g_strerror(errno):N_("XML parse error"));
+		debug(L_("Couldn't read or parse '%s': %s"),fn,errno?g_strerror(errno):N_("XML parse error"));
 		g_free(fn);
 		return NULL;
 	}
@@ -196,19 +196,19 @@ char *data;
 	tag=xmlnode_get_tag(xml,"jid");
 	if (tag!=NULL) ujid=xmlnode_get_data(tag);
 	if (ujid==NULL){
-		g_warning(N_("Couldn't find JID in %s's file"),jid);
+		g_warning(L_("Couldn't find JID in %s's file"),jid);
 		return NULL;
 	}
 	tag=xmlnode_get_tag(xml,"uin");
 	if (tag!=NULL) uin=xmlnode_get_data(tag);
 	if (uin==NULL){
-		g_warning(N_("Couldn't find UIN in %s's file"),jid);
+		g_warning(L_("Couldn't find UIN in %s's file"),jid);
 		return NULL;
 	}
 	tag=xmlnode_get_tag(xml,"password");
 	if (tag!=NULL) password=xmlnode_get_data(tag);
 	if (password==NULL){
-		g_warning(N_("Couldn't find password in %s's file"),jid);
+		g_warning(L_("Couldn't find password in %s's file"),jid);
 		return NULL;
 	}
 	tag=xmlnode_get_tag(xml,"email");
@@ -300,7 +300,7 @@ static int user_destroy(User *u){
 GList *it;
 Contact *c;
 
-	g_message(N_("Destroying user '%s'"),u->jid);
+	g_message(L_("Destroying user '%s'"),u->jid);
 
 	g_assert(u!=NULL);
 	for(it=u->contacts;it;it=it->next){
@@ -330,7 +330,7 @@ char *njid;
 		g_hash_table_remove(users_jid,(gpointer)njid);
 		g_free(key);
 	}
-	else debug(N_("user_remove: user '%s' not found in hash table"),njid);
+	else debug(L_("user_remove: user '%s' not found in hash table"),njid);
 	g_free(njid);
 	return user_destroy(u);
 }
@@ -339,28 +339,28 @@ User *user_create(const char *jid,uin_t uin,const char * password){
 User *u;
 char *p,*njid;
 
-	g_message(N_("Creating user '%s'"),jid);
+	g_message(L_("Creating user '%s'"),jid);
 
 	njid=jid_normalized(jid);
 	u=(User *)g_hash_table_lookup(users_jid,(gpointer)njid);
 	if (u){
-		g_warning(N_("User '%s' already exists"),jid);
+		g_warning(L_("User '%s' already exists"),jid);
 		g_free(njid);
 		return NULL;
 	}
 
 	if (uin<1){
-		g_warning(N_("Bad UIN"));
+		g_warning(L_("Bad UIN"));
 		g_free(njid);
 		return NULL;
 	}
 	if (!password){
-		g_warning(N_("Password not given"));
+		g_warning(L_("Password not given"));
 		g_free(njid);
 		return NULL;
 	}
 	if (!jid){
-		g_warning(N_("JID not given"));
+		g_warning(L_("JID not given"));
 		g_free(njid);
 		return NULL;
 	}
@@ -464,13 +464,13 @@ int r;
 	if (!s) return -1;
 	dir=opendir(".");
 	if (!dir){
-		g_warning(N_("Couldn't open '%s' directory: %s"),spool_dir,g_strerror(errno));
+		g_warning(L_("Couldn't open '%s' directory: %s"),spool_dir,g_strerror(errno));
 		return -1;
 	}
 	while((de=readdir(dir))){
 		r=stat(de->d_name,&st);
 		if (r){
-			g_warning(N_("Couldn't stat '%s': %s"),de->d_name,g_strerror(errno));
+			g_warning(L_("Couldn't stat '%s': %s"),de->d_name,g_strerror(errno));
 			continue;
 		}
 		if (S_ISREG(st.st_mode)) presence_send_probe(s,de->d_name);
@@ -487,13 +487,13 @@ int r,count=0;
 
 	dir=opendir(".");
 	if (!dir){
-		g_warning(N_("Couldn't open '%s' directory: %s"),spool_dir,g_strerror(errno));
+		g_warning(L_("Couldn't open '%s' directory: %s"),spool_dir,g_strerror(errno));
 		return -1;
 	}
 	while((de=readdir(dir))){
 		r=stat(de->d_name,&st);
 		if (r){
-			g_warning(N_("Couldn't stat '%s': %s"),de->d_name,g_strerror(errno));
+			g_warning(L_("Couldn't stat '%s': %s"),de->d_name,g_strerror(errno));
 			continue;
 		}
 		if (S_ISREG(st.st_mode)) count++;
@@ -525,7 +525,7 @@ char *njid;
 
 	r=unlink(njid);
 	if (r && errno!=ENOENT){
-		g_warning(N_("Couldn't unlink '%s': %s"),njid,g_strerror(errno));
+		g_warning(L_("Couldn't unlink '%s': %s"),njid,g_strerror(errno));
 		r=-1;
 	}
 	else r=0;
@@ -542,19 +542,19 @@ Contact *c;
 
 	space=g_strnfill(indent*2,' ');
 	space1=g_strnfill((indent+1)*2,' ');
-	g_message(N_("%sUser: %p"),space,u);
-	g_message(N_("%sJID: %s"),space,u->jid);
-	g_message(N_("%sUIN: %u"),space,(unsigned)u->uin);
-	g_message(N_("%sPassword: %p"),space,u->password);
-	g_message(N_("%sLast sys message: %i"),space,u->last_sys_msg);
-	g_message(N_("%sConfirmed: %i"),space,u->confirmed);
-	g_message(N_("%sContacts:"),space);
+	g_message(L_("%sUser: %p"),space,u);
+	g_message(L_("%sJID: %s"),space,u->jid);
+	g_message(L_("%sUIN: %u"),space,(unsigned)u->uin);
+	g_message(L_("%sPassword: %p"),space,u->password);
+	g_message(L_("%sLast sys message: %i"),space,u->last_sys_msg);
+	g_message(L_("%sConfirmed: %i"),space,u->confirmed);
+	g_message(L_("%sContacts:"),space);
 	for(it=g_list_first(u->contacts);it;it=it->next){
 		c=(Contact *)it->data;
-		g_message(N_("%sContact: %p"),space1,c);
-		g_message(N_("%sUin: %u"),space1,(unsigned)c->uin);
-		g_message(N_("%sStatus: %i"),space1,c->status);
-		g_message(N_("%sLast update: %s"),space1,ctime((time_t *)&c->last_update));
+		g_message(L_("%sContact: %p"),space1,c);
+		g_message(L_("%sUin: %u"),space1,(unsigned)c->uin);
+		g_message(L_("%sStatus: %i"),space1,c->status);
+		g_message(L_("%sLast update: %s"),space1,ctime((time_t *)&c->last_update));
 	}
 	g_free(space1);
 	g_free(space);
