@@ -1,4 +1,4 @@
-/* $Id: iq.c,v 1.44 2003/04/16 11:10:17 jajcus Exp $ */
+/* $Id: iq.c,v 1.45 2003/05/07 08:51:16 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -50,7 +50,7 @@ IqNamespace server_iq_ns[]={
 	{"jabber:iq:agent","query",jabber_iq_get_agent,NULL},
 	{"jabber:iq:gateway","query",jabber_iq_get_gateway,jabber_iq_set_gateway},
 	{"jabber:iq:browse","item",jabber_iq_get_server_browse,NULL},
-	{"jabber:iq:browse","query",jabber_iq_get_server_browse,NULL},/* WinJab bug (?) workaround */
+	{"jabber:iq:browse","query",jabber_iq_get_server_browse,NULL},/* WinJab/Psi bug workaround */
 	{"jabber:iq:version","query",jabber_iq_get_server_version,NULL},
 	{"vcard-temp","vCard",jabber_iq_get_server_vcard,NULL},
 	{"vcard-temp","VCARD",jabber_iq_get_server_vcard,NULL}, /* WinJab bug workaround */
@@ -64,7 +64,7 @@ IqNamespace client_iq_ns[]={
 	{"vcard-temp","vCard",jabber_iq_get_user_vcard,NULL},
 	{"vcard-temp","VCARD",jabber_iq_get_user_vcard,NULL}, /* WinJab bug workaround */
 	{"jabber:iq:browse","item",jabber_iq_get_client_browse,NULL},
-	{"jabber:iq:browse","query",jabber_iq_get_client_browse,NULL},/* WinJab bug (?) workaround */
+	{"jabber:iq:browse","query",jabber_iq_get_client_browse,NULL},/* WinJab/Psi bug workaround */
 	{"jabber:iq:version","query",jabber_iq_get_client_version,NULL},
 	{"http://jabber.org/protocol/disco#items","query",jabber_iq_get_client_disco_items,NULL},
 	{"http://jabber.org/protocol/disco#info","query",jabber_iq_get_client_disco_info,NULL},
