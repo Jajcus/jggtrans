@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.95 2004/02/05 12:46:10 smoku Exp $ */
+/* $Id: sessions.c,v 1.96 2004/02/05 12:47:16 smoku Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -455,7 +455,7 @@ time_t timestamp;
 				s->pubdir_change=NULL;
 			}
 			if (s->import_roster){
-				struct gg_http * gghttp;
+			/*	struct gg_http * gghttp;
 				Request *r;
 				int rt;
 
@@ -467,7 +467,7 @@ time_t timestamp;
 					rt=RT_USERLIST_GET;
 
 				r=add_request(rt,s->jid,NULL,"",NULL,(void*)gghttp,s->s);
-				s->import_roster=0;
+			*/	s->import_roster=0;
 			}
 			break;
 		case GG_EVENT_NOTIFY:
