@@ -1,4 +1,4 @@
-/* $Id: sessions.c,v 1.45 2003/02/04 08:09:21 jajcus Exp $ */
+/* $Id: sessions.c,v 1.46 2003/02/04 13:23:28 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -503,6 +503,7 @@ int session_remove(Session *s){
 gpointer key,value;
 char *njid;
 
+	if (s==NULL) return 1;
 	g_assert(sessions_jid!=NULL);
 	if (s->io_watch) g_source_remove(s->io_watch);
 	njid=jid_normalized(s->jid);
