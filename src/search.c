@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.31 2003/04/13 14:18:03 jajcus Exp $ */
+/* $Id: search.c,v 1.32 2003/04/16 10:09:05 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -144,7 +144,7 @@ struct search_req_s *sr;
 		next=gg_pubdir50_next(results);
 		if (next>0 && next>start)
 			jabber_iq_set_search_byform(r->stream,r->from,r->to,r->id,
-						xmlnode_dup(r->query),maxgroups,next);
+							r->query,maxgroups,next);
 	}
 	return 0;
 }

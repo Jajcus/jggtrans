@@ -1,4 +1,4 @@
-/* $Id: requests.c,v 1.33 2003/04/15 17:48:17 jajcus Exp $ */
+/* $Id: requests.c,v 1.34 2003/04/16 10:09:05 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -197,6 +197,7 @@ int remove_request(Request *r){
 		g_io_channel_close(r->ioch);
 	}
 	if (r->from) g_free(r->from);
+	if (r->to) g_free(r->to);
 	if (r->id) g_free(r->id);
 	if (r->query) xmlnode_free(r->query);
 	if (r->gghttp){
