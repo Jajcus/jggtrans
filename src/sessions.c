@@ -267,9 +267,16 @@ gdouble t;
 			session_event_status(s,event->event.status.status,event->event.status.uin);
 			break;
 		case GG_EVENT_MSG:
-			jid=jid_build(event->event.msg.sender);
-			if (event->event.msg.msgclass==GG_CLASS_CHAT) chat=1;
-			else chat=0;
+			if (event->event.msg.sender==0){
+				if (!user_sys_msg_received(s->user,event->event.msg.msgclass)) break;	
+				jid=jid_my_registered();
+				chat=0;
+			}
+			else{
+				jid=jid_build(event->event.msg.sender);
+				if (event->event.msg.msgclass==GG_CLASS_CHAT) chat=1;
+				else chat=0;
+			}
 			message_send(s->s,jid,s->user->jid,chat,event->event.msg.message);
 			g_free(jid);
 			break;

@@ -13,6 +13,7 @@ typedef struct user_s{
 	uin_t uin;
 	char * jid;
 	char * password;
+	int last_sys_msg;
 
 	int confirmed;
 	GList *contacts;
@@ -30,6 +31,8 @@ User *user_get_by_jid(const char *jid);
 
 int user_subscribe(User *u,uin_t uin);
 int user_unsubscribe(User *u,uin_t uin);
+
+int user_sys_msg_received(User *u,int nr);
 
 int user_set_contact_status(User *u,int status,unsigned int uin);
 

@@ -76,6 +76,13 @@ xmlnode xml,tag,userlist;
 	tag=xmlnode_insert_tag(xml,"password");
 	xmlnode_insert_cdata(tag,u->password,-1);
 
+	if (u->last_sys_msg>0){
+		tag=xmlnode_insert_tag(xml,"last_sys_msg");
+		str=g_strdup_printf("%i",u->last_sys_msg);
+		xmlnode_insert_cdata(tag,str,-1);
+		g_free(str);
+	}
+
 	if (u->contacts){
 		GList *it;
 		Contact *c;
@@ -130,6 +137,7 @@ User *user_load(const char *jid){
 char *fn,*njid;
 xmlnode xml,tag,t;
 char *uin,*ujid,*name,*password,*email;
+int last_sys_msg=0;
 User *u;
 GList *contacts;
 char *p;
@@ -167,6 +175,8 @@ char *p;
 	if (tag) email=xmlnode_get_data(tag);
 	tag=xmlnode_get_tag(xml,"name");
 	if (tag) name=xmlnode_get_data(tag);
+	tag=xmlnode_get_tag(xml,"last_sys_msg");
+	if (tag) last_sys_msg=atoi(xmlnode_get_data(tag));
 	tag=xmlnode_get_tag(xml,"userlist");
 	contacts=NULL;
 	if (tag){
@@ -188,6 +198,7 @@ char *p;
 	p=strchr(u->jid,'/');
 	if (p) *p=0;
 	u->password=g_strdup(password);
+	u->last_sys_msg=last_sys_msg;
 	u->contacts=contacts;
 	xmlnode_free(xml);
 	g_assert(users_jid!=NULL);
@@ -355,6 +366,14 @@ int r;
 	}
 	closedir(dir);
 	return 0;
+}
+
+int user_sys_msg_received(User *u,int nr){
+
+	if (nr<=u->last_sys_msg) return 0;
+	u->last_sys_msg=nr;
+	if (u->confirmed) user_save(u);
+	return 1;
 }
 
 int user_delete(User *u){
