@@ -1,4 +1,4 @@
-/* $Id: requests.c,v 1.21 2003/04/04 13:41:53 jajcus Exp $ */
+/* $Id: requests.c,v 1.22 2003/04/04 13:49:02 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -46,7 +46,7 @@ Request *r;
 	r=g_hash_table_lookup(lookups, &hash);
 	g_hash_table_remove(lookups, &hash);
 
-	if (r) {
+	if (r){
 		switch(r->type){
 			case RT_VCARD:
 				vcard_done(r, data->event.pubdir50);
@@ -132,7 +132,7 @@ struct gg_http *gghttp;
 	if(type==RT_VCARD || type==RT_SEARCH){
 		s=session_get_by_jid(from, stream);
 		if (s==NULL) return NULL;
-		
+
 		r->hash=time(NULL);
 		gg_pubdir50_seq_set((gg_pubdir50_t)data, r->hash);
 		gg_pubdir50(s->ggs, (gg_pubdir50_t)data);

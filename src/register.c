@@ -1,4 +1,4 @@
-/* $Id: register.c,v 1.21 2003/04/04 10:58:40 jajcus Exp $ */
+/* $Id: register.c,v 1.22 2003/04/04 13:49:02 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -169,48 +169,48 @@ username=password=first=last=nick=city=sex=born=NULL;
 	}
 
 	change=gg_pubdir50_new(GG_PUBDIR50_WRITE);
-	
+
 	node=xmlnode_get_tag(q,"first");
-	if (node) {
+	if (node){
 		first=from_utf8(xmlnode_get_data(node));
 		gg_pubdir50_add(change, GG_PUBDIR50_FIRSTNAME, (const char *)first);
 	}
 
 	node=xmlnode_get_tag(q,"last");
-	if (node) {
+	if (node){
 		last=from_utf8(xmlnode_get_data(node));
 		gg_pubdir50_add(change, GG_PUBDIR50_LASTNAME, (const char *)last);
 	}
 
 	node=xmlnode_get_tag(q,"nick");
-	if (node) {
+	if (node){
 		nick=from_utf8(xmlnode_get_data(node));
 		gg_pubdir50_add(change, GG_PUBDIR50_NICKNAME, (const char *)nick);
 	}
 
 //	node=xmlnode_get_tag(q,"email");
-//	if (node) 
+//	if (node)
 //		gg_pubdir50_add(change, GG_PUBDIR50_email=xmlnode_get_data(node);
 
 	node=xmlnode_get_tag(q,"city");
-	if (node) {
+	if (node){
 		city=from_utf8(xmlnode_get_data(node));
 		gg_pubdir50_add(change, GG_PUBDIR50_CITY, (const char *)city);
 	}
 
 	node=xmlnode_get_tag(q,"gender");
-	if (node) {
+	if (node){
 		sex=xmlnode_get_data(node);
-		if (sex[0]=='k' || sex[0]=='f' || sex[0]=='K' || sex[0]=='F') 
+		if (sex[0]=='k' || sex[0]=='f' || sex[0]=='K' || sex[0]=='F')
 			gg_pubdir50_add(change, GG_PUBDIR50_GENDER,
 					GG_PUBDIR50_GENDER_FEMALE);
-		else if (sex!=NULL && sex[0]!='\000') 
+		else if (sex!=NULL && sex[0]!='\000')
 			gg_pubdir50_add(change, GG_PUBDIR50_GENDER,
 					GG_PUBDIR50_GENDER_MALE);
 	}
 
 	node=xmlnode_get_tag(q,"born");
-	if (node) {
+	if (node){
 		born=xmlnode_get_data(node);
 		gg_pubdir50_add(change, GG_PUBDIR50_BIRTHYEAR,
 			(const char *)born);

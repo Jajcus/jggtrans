@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.26 2003/04/04 12:51:47 jajcus Exp $ */
+/* $Id: search.c,v 1.27 2003/04/04 13:49:02 jajcus Exp $ */
 
 /*
  *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
@@ -270,7 +270,7 @@ const char *uin, *first_name, *last_name, *nickname, *born, *city;
 	n=xmlnode_insert_tag(n1,"LOCALITY");
 	xmlnode_insert_cdata(n,to_utf8(city),-1);
 
-	if (uin) {
+	if (uin){
 		jid=jid_build(atoi(uin));
 		n=xmlnode_insert_tag(vc,"JABBERID");
 		xmlnode_insert_cdata(n,jid,-1);
