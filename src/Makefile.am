@@ -59,8 +59,6 @@ encodingtest_SOURCES = \
 encodingtest_CFLAGS=-DENCODINGTEST
 encodingtest_LDADD=$(GLIB_LIBS)
 
-include ../libgadu/make.inc
-
 INCLUDES=$(GLIB_CFLAGS) $(LIBGADU_INCLUDES) -I../libgadu/lib $(JK_LIBIDN_CFLAGS) -I$(top_srcdir)/libxode/include
 
 jggtrans_CFLAGS=-DVERSION="\"$(VERSION)\"" -DSYSCONFDIR="\"$(sysconfdir)\"" -DLOCALEDIR="\"$(localedir)\""
