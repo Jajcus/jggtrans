@@ -113,10 +113,10 @@ znaków CP1250 (windows-1250). Linie koñcz± siê znakami <tt>\r\n</tt>.
 Przy opisie struktur, za³o¿ono, ¿e <tt>char</tt> ma rozmiar 1 bajtu,
 <tt>short</tt> 2 bajtów, <tt>int</tt> 4 bajtów, <tt>long long</tt> 8 bajtów.
 U¿ywaj±c architektur innych ni¿ i386, nale¿y zwróciæ szczególn± uwagê na
-rozmiar typów zmiennych i kolejno¶æ znaków. Poza tym, wiêkszo¶æ dostêpnych
+rozmiar typów zmiennych i kolejno¶æ bajtów. Poza tym, wiêkszo¶æ dostêpnych
 obecnie kompilatorów domy¶lnie wyrównuje zmienne do rozmiaru s³owa danej
 architektury, wiêc nale¿y wy³±czyæ t± funkcjê. W przypadku gcc bêdzie to
-<tt>__attribute__ ((packed))</tt> zaraz za deklaracj± ka¿dej struktury. a dla
+<tt>__attribute__ ((packed))</tt> zaraz za deklaracj± ka¿dej struktury, a dla
 Microsoft Visual C++ powinno pomóc:
 </p>
 
@@ -270,7 +270,7 @@ Hash has³a mo¿na obliczyæ nastêpuj±c± funkcj± jêzyka C:
 </p>
 
 <div class="example">
-<pre>int gg_login_hash(char *password, int seed)
+<pre>int gg_login_hash(unsigned char *password, unsigned int seed)
 {
 	unsigned int x, y, z;
 
@@ -301,6 +301,9 @@ Liczba oznaczaj±ca wersjê mo¿e byæ jedn± z poni¿szych:
 
 <table class="tab" border="0" cellspacing="1" cellpadding="2" width="100%">
 <tr class="tabh"><td><b>Warto¶æ</b></td><td><b>Wersje klientów</b></td></tr>
+<tr class="tabf"><td><tt>0x24</tt></td><td>6.1 (build 155)</td></tr>
+<tr class="tabf"><td><tt>0x22</tt></td><td>6.0 (build 140)</td></tr>
+<tr class="tabf"><td><tt>0x21</tt></td><td>6.0 (build 133)</td></tr>
 <tr class="tabf"><td><tt>0x20</tt></td><td>6.0</td></tr>
 <tr class="tabf"><td><tt>0x1e</tt></td><td>5.7 beta (build 121)</td></tr>
 <tr class="tabf"><td><tt>0x1c</tt></td><td>5.7 beta</td></tr>
@@ -331,6 +334,14 @@ do wersji dodawana jest warto¶æ:
 
 <div class="c">
 <pre>#define GG_HAS_AUDIO_MASK 0x40000000</pre>
+</div>
+
+<p>
+Je¶li osoba korzysta z bramki Era Omnix, do wersji dodawana jest warto¶æ:
+</p>
+
+<div class="c">
+<pre>#define GG_ERA_OMNIX_MASK 0x04000000</pre>
 </div>
 
 <p>
@@ -503,6 +514,7 @@ W najstarszym bajcie pola <tt>uin</tt> mog± znajdowaæ siê nastêpuj±ce flagi:
 <tr class="tabf"><td><tt>GG_UINFLAG_UNKNOWN1</tt></td><td><tt>0x10</tt></td><td>Nieznane</td></tr>
 <tr class="tabf"><td><tt>GG_UINFLAG_UNKNOWN2</tt></td><td><tt>0x20</tt></td><td>Flaga spotykana, gdy u¿ytkownik staje siê niedostêpny</td></tr>
 <tr class="tabf"><td><tt>GG_UINFLAG_VOICE</tt></td><td><tt>0x40</tt></td><td>U¿ytkownik mo¿e prowadziæ rozmowy g³osowe</td></tr>
+<tr class="tabf"><td><tt>GG_UINFLAG_ERA_OMNIX</tt></td><td><tt>0x08</tt></td><td>U¿ytkownik ³±czy siê przez bramkê Era Omnix</td></tr>
 </table>
 
 <p><tt>remote_port</tt> poza zwyk³ym
@@ -666,7 +678,7 @@ Na przyk³ad, by wys³aæ do dwóch osób, nale¿y wys³aæ pakiet:
 
 <p>
 Od wersji 4.8.1 mo¿liwe jest równie¿ dodawanie do wiadomo¶ci ró¿nych
-atrybutów tekstu jak pogrubienie czy kolory. Niezbêdne jest do³±czenie
+atrybutów tekstu, jak pogrubienie czy kolory. Niezbêdne jest do³±czenie
 nastêpuj±cej struktury:
 </p>
 
@@ -757,17 +769,22 @@ struktur± <tt>gg_msg_image_reply</tt>:
 	int size;       	<i>/* rozmiar */</i>
 	int crc32;      	<i>/* suma kontrolna */</i>
 	char filename[];	<i>/* nazwa pliku, nie musi wyst±piæ */</i>
-	char image[];		<i>/* zawarto¶æ obrazka */</i>
+	char image[];		<i>/* zawarto¶æ obrazka, nie musi wyst±piæ */</i>
 };</pre>
 </div>
 
 <p>
 Je¶li d³ugo¶æ struktury <tt>gg_msg_image_reply</tt> jest d³u¿sza ni¿ 1909
-bajtów, tre¶æ obrazka jest dzielona na kilka pakietów nie przeraczaj±cych
+bajtów, tre¶æ obrazka jest dzielona na kilka pakietów nie przekraczaj±cych
 1909 bajtów. Pierwszy pakiet ma pole <tt>flag</tt> równe 0x05 i ma wype³nione
 pole <tt>filename</tt>, a w kolejnych pole <tt>flag</tt> jest równe 0x06
 i pole <tt>filename</tt> w ogóle nie wystêpuje (nawet bajt zakoñczenia ci±gu
 znaków).
+</p>
+
+<p>
+Je¶li otrzymamy pakiet bez pola <tt>filename</tt> oraz <tt>image</tt>, oznacza
+to, ¿e klient nie posiada ¿±danego obrazka.
 </p>
 
 <p>
@@ -1808,7 +1825,7 @@ Autorami powy¿szego opisu s±:
 	opisowych.</li>
 	<li><b>Pawe³ Piwowar</b> (alfapawel%go2.pl): format czasu.</li>
 	<li><b>Tomasz Chiliñski</b> (chilek%chilan.com): nowo¶ci w 5.0.2.</li>
-	<li><b>Rados³aw Nowak</b> (rano%ranosoft.com): uzupe³nienie statusu
+	<li><b>Rados³aw Nowak</b> (rano%ranosoft.net): uzupe³nienie statusu
 	opisowego, wersja 5.0.3.</li>
 	<li><b>Walerian Soko³owski</b>: pierwsza wersja opisu protoko³u
 	bezpo¶rednich po³±czeñ.</li>
@@ -1818,7 +1835,7 @@ Autorami powy¿szego opisu s±:
 <hr />
 
 <font color="silver">
-$Id: protocol.html,v 1.60 2004/12/21 21:42:43 wojtekka Exp $
+$Id: protocol.html,v 1.68 2005/07/17 12:46:06 szalik Exp $
 </font>
 
 </td></tr></table>

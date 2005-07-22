@@ -1,4 +1,4 @@
-/* $Id: pubdir50.c,v 1.12 2004/10/29 18:20:42 wojtekka Exp $ */
+/* $Id: pubdir50.c,v 1.14 2005/03/20 00:51:24 szalik Exp $ */
 
 /*
  *  (C) Copyright 2003 Wojtek Kaniewski <wojtekka@irc.pl>
@@ -266,7 +266,7 @@ int gg_pubdir50_handle_reply(struct gg_event *e, const char *packet, int length)
 
 	if (!e || !packet) {
 		gg_debug(GG_DEBUG_MISC, "// gg_pubdir50_handle_reply() invalid arguments\n");
-		errno = EINVAL;
+		errno = EFAULT;
 		return -1;
 	}
 
