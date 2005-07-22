@@ -692,7 +692,7 @@ int r;
 
 	r=session_make_status(s, FALSE);
 	if (r!=-1){
-		debug(L_("Setting gg status to %i (%s)"),s->gg_status,s->gg_status_descr);
+		debug(L_("Setting gg status to %i (%s)"),s->gg_status,s->gg_status_descr?s->gg_status_descr:"");
 		login_params.status=s->gg_status;
 		if (s->gg_status_descr) login_params.status_descr=s->gg_status_descr;
 	}
