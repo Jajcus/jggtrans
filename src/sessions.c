@@ -681,7 +681,10 @@ int r;
 
 	if (s->timeout_func) g_source_remove(s->timeout_func);
 	if (s->io_watch) g_source_remove(s->io_watch);
-	if (s->ioch) g_io_channel_close(s->ioch);
+	if (s->ioch) {
+		g_io_channel_close(s->ioch);
+		s->ioch=NULL;
+	}
 
 	memset(&login_params,0,sizeof(login_params));
 	login_params.uin=s->user->uin;
