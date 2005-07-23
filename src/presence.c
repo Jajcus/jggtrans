@@ -398,7 +398,7 @@ Contact *c;
 uin_t uin;
 int status;
 int available;
-char *show,*stat;
+char *show,*stat,*jid;
 GList *it;
 GTime timestamp;
 
@@ -463,8 +463,13 @@ GTime timestamp;
 	if (status==-1) return 0; /* Not known yet */
 
 	available=status_gg_to_jabber(status,&show,&stat);
-	if (available) presence_send(stream,jid_build_full(uin),u->jid,available,show,stat,timestamp);
-	else presence_send(stream,jid_build(uin),u->jid,available,show,stat,timestamp);
+
+	if (available) jid=jid_build_full(uin);
+	else jid=jid_build(uin);
+	
+	presence_send(stream,jid,u->jid,available,show,stat,timestamp);
+
+	g_free(jid);
 	
 	return 0;
 }
