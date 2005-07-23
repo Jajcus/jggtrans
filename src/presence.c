@@ -197,6 +197,7 @@ xmlnode n;
 		char str[21];
 		time_t ts;
 
+		ts=time(NULL);
 		t=localtime(&ts);
 		timestamp=ts;
 		strftime(str,20,"%Y%m%dT%T",t);
