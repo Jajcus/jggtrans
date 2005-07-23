@@ -195,11 +195,9 @@ xmlnode n;
 	if (timestamp){
 		struct tm *t;
 		char str[21];
-		time_t ts;
+		time_t ts=(time_t)timestamp;
 
-		ts=time(NULL);
 		t=localtime(&ts);
-		timestamp=ts;
 		strftime(str,20,"%Y%m%dT%T",t);
 		n=xmlnode_insert_tag(pres,"x");
 		xmlnode_put_attrib(n,"xmlns","jabber:x:delay");
