@@ -395,7 +395,6 @@ int i=0;
 char *uin;
 gg_pubdir50_t sr;
 
-	q=xmlnode_dup(q);
 	sr=gg_pubdir50_new(GG_PUBDIR50_SEARCH);
 
 	while(to[i]!='@')
