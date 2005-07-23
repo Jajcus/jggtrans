@@ -470,7 +470,6 @@ time_t timestamp;
 			g_message(L_("Login succeed for %s"),s->jid);
 			if (s->req_id)
 				jabber_iq_send_result(s->s,s->jid,NULL,s->req_id,NULL);
-			presence_send_subscribe(s->s,NULL,s->user->jid);
 			if (s->req_id){
 				free(s->req_id);
 				s->req_id=NULL;
@@ -486,7 +485,7 @@ time_t timestamp;
 			s->connected=1;
 			session_send_status(s);
 			if (s->user->contacts) session_send_notify(s);
-
+			presence_send(s->s,NULL,s->user->jid,1,NULL,s->gg_status_descr,0);
 
 			if (s->timeout_func) g_source_remove(s->timeout_func);
 			s->ping_timeout_func=
@@ -644,7 +643,7 @@ GList *it;
 	}
 	while(s->resources) resource_remove((Resource *)s->resources->data,0);
 	if (s->query) xmlnode_free(s->query);
-	if (s->user) user_remove(s->user);
+	if (s->user) user_unref(s->user);
 	if (s->gg_status_descr) g_free(s->gg_status_descr);
 	g_free(s);
 	return 0;
@@ -776,7 +775,7 @@ int r;
 	return FALSE;
 }
 
-Session *session_create(User *user,const char *jid,const char *req_id,
+Session * session_create(User *user,const char *jid,const char *req_id,
 		const xmlnode query,struct stream_s *stream,int delay_login){
 Session *s;
 char *njid;
@@ -791,6 +790,7 @@ char *njid;
 	g_assert(user!=NULL);
 	s=g_new0(Session,1);
 	s->user=user;
+	user_ref(user);
 	s->gg_status=-1;
 	s->jid=g_strdup(jid);
 	if (req_id) s->req_id=g_strdup(req_id);
