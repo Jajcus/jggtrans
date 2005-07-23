@@ -63,6 +63,7 @@ typedef struct user_s{
 	char * invisible_status;
 
 	int confirmed;
+	int refcount;
 	GList *contacts;
 }User;
 
@@ -70,7 +71,8 @@ extern char *default_user_locale;
 extern GHashTable *users_jid;
 
 User *user_create(const char *jid,uin_t uin,const char * password);
-int user_remove(User *u);
+int user_ref(User *u);
+int user_unref(User *u);
 int user_delete(User *u);
 
 int user_save(User *u);

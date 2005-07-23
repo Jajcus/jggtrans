@@ -53,23 +53,65 @@ int r;
 
 static int user_destroy(User *s);
 
-#if 0
-static gboolean users_hash_func(gpointer key,gpointer value,gpointer udata){
+static gboolean users_gc_hash_func(gpointer key,gpointer value,gpointer udata){
+User *u=(User *)value;
 
-	user_destroy((User *)value);
-	g_free(key);
+	if (u->refcount==0) {
+		user_destroy(u);
+		g_free(key);
+	}
 	return TRUE;
 }
-#endif
+
+int users_gc(){
+	g_hash_table_foreach_remove(users_jid,users_gc_hash_func,NULL);
+	return 0;
+}
+
 
 int users_done(){
 guint s;
+	
+	s=g_hash_table_size(users_jid);
+	if (s) g_debug(L_("Before cleanup: %u users in hash table"),s);
+	users_gc();
 	s=g_hash_table_size(users_jid);
 	if (s) g_warning(L_("Still %u users in hash table"),s);
-	/*g_hash_table_foreach_remove(users_jid,users_hash_func,NULL);*/
 	g_hash_table_destroy(users_jid);
 	return 0;
 }
+
+int user_ref(User *u){
+
+	return ++u->refcount;
+}
+
+int user_unref(User *u){
+
+	g_assert(u->refcount>0);
+	u->refcount--;
+	return u->refcount;
+}
+
+int user_free(User *u){
+gpointer key,value;
+char *njid;
+	
+	g_assert(u->refcount==0);
+	g_assert(users_jid!=NULL);
+
+	njid=jid_normalized(u->jid,0);
+	g_assert(njid!=NULL);
+	if (g_hash_table_lookup_extended(users_jid,(gpointer)njid,&key,&value)){
+		g_assert(u==value);
+		g_hash_table_remove(users_jid,(gpointer)njid);
+		g_free(key);
+	}
+	else debug(L_("user_remove: user '%s' not found in hash table"),njid);
+	g_free(njid);
+	return user_destroy(u);
+}
+
 
 int user_save(User *u){
 FILE *f;
@@ -367,8 +409,8 @@ char *njid;
 	if (njid==NULL) return NULL;
 	u=(User *)g_hash_table_lookup(users_jid,(gpointer)njid);
 	g_free(njid);
-	if (u) return u;
-	return user_load(jid);
+	if (u==NULL) u=user_load(jid);
+	return u;
 }
 
 static int user_destroy(User *u){
@@ -396,24 +438,6 @@ Contact *c;
 	return 0;
 }
 
-
-int user_remove(User *u){
-gpointer key,value;
-char *njid;
-
-	g_assert(users_jid!=NULL);
-
-	njid=jid_normalized(u->jid,0);
-	g_assert(njid!=NULL);
-	if (g_hash_table_lookup_extended(users_jid,(gpointer)njid,&key,&value)){
-		g_assert(u==value);
-		g_hash_table_remove(users_jid,(gpointer)njid);
-		g_free(key);
-	}
-	else debug(L_("user_remove: user '%s' not found in hash table"),njid);
-	g_free(njid);
-	return user_destroy(u);
-}
 
 User *user_create(const char *jid,uin_t uin,const char * password){
 User *u;
@@ -461,6 +485,7 @@ char *p,*njid;
 	u->friends_only=1;
 	g_assert(users_jid!=NULL);
 	g_hash_table_insert(users_jid,(gpointer)njid,(gpointer)u);
+	u->refcount=0;
 	return u;
 }
 
@@ -612,11 +637,6 @@ char *njid;
 
 	njid=jid_normalized(u->jid,0);
 	g_assert(njid!=NULL);
-	r=user_remove(u);
-	if (r){
-		g_free(njid);
-		return r;
-	}
 
 	r=unlink(njid);
 	if (r && errno!=ENOENT){
