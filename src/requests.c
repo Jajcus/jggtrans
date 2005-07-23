@@ -97,55 +97,11 @@ Request *r;
 }
 
 
-int request_io_handler(GIOChannel *source,GIOCondition condition,gpointer data){
-Request *r;
-User *u;
-GIOCondition cond;
-int res=0;
-
-	r=(Request *)data;
-	g_assert(r!=NULL);
-
-	u=user_get_by_jid(r->from);
-	user_load_locale(u);
-
-	if (r->gghttp){
-		if (r->gghttp->callback)
-			res=r->gghttp->callback(r->gghttp);
-		else
-			res=gg_http_watch_fd(r->gghttp);
-	}
-
-	switch(r->type){
-		case RT_PASSWD:
-			if (res || r->gghttp->state==GG_STATE_ERROR) change_password_error(r);
-			else if (!res && r->gghttp->state==GG_STATE_DONE) change_password_done(r);
-			else break;
-			r->io_watch=0;
-			remove_request(r);
-			return FALSE;
-
-		default:
-			g_warning(N_("Unknow gg_http session type: %i"),r->gghttp->type);
-			gg_http_watch_fd(r->gghttp);
-			break;
-	}
-
-	cond=G_IO_ERR|G_IO_HUP|G_IO_NVAL;
-	if (r->gghttp->check&GG_CHECK_READ) cond|=G_IO_IN;
-	if (r->gghttp->check&GG_CHECK_WRITE) cond|=G_IO_OUT;
-	r->io_watch=g_io_add_watch(r->ioch,cond,request_io_handler,r);
-
-	return FALSE;
-}
-
 Request * add_request(RequestType type,const char *from,const char *to,
 			const char *id,xmlnode query, void *data,
 			Stream *stream){
 Request *r;
 Session *s;
-GIOCondition cond;
-struct gg_http *gghttp;
 
 	r=g_new0(Request,1);
 	r->type=type;
@@ -157,7 +113,7 @@ struct gg_http *gghttp;
 	else r->query=NULL;
 	r->stream=stream;
 
-	if(type==RT_VCARD || type==RT_SEARCH || type==RT_CHANGE){
+	if (type==RT_VCARD || type==RT_SEARCH || type==RT_CHANGE) {
 		s=session_get_by_jid(from, stream,0);
 		if (s==NULL) return NULL;
 
@@ -165,17 +121,6 @@ struct gg_http *gghttp;
 		gg_pubdir50_seq_set((gg_pubdir50_t)data, r->hash);
 		gg_pubdir50(s->ggs, (gg_pubdir50_t)data);
 		g_hash_table_insert(lookups, &r->hash, r);
-	}
-	else{
-		gghttp=(struct gg_http*)data;
-
-		r->gghttp=gghttp;
-
-		r->ioch=g_io_channel_unix_new(gghttp->fd);
-			cond=G_IO_ERR|G_IO_HUP|G_IO_NVAL;
-		if (r->gghttp->check&GG_CHECK_READ) cond|=G_IO_IN;
-		if (r->gghttp->check&GG_CHECK_WRITE) cond|=G_IO_OUT;
-		r->io_watch=g_io_add_watch(r->ioch,cond,request_io_handler,r);
 	}
 	requests=g_list_append(requests,r);
 	return r;
@@ -185,10 +130,6 @@ int remove_request(Request *r){
 
 	if (!r) return -1;
 	requests=g_list_remove(requests,r);
-	if (r->io_watch) g_source_remove(r->io_watch);
-	if (r->type!=RT_VCARD && r->type!=RT_SEARCH){
-		g_io_channel_close(r->ioch);
-	}
 	if (r->from) g_free(r->from);
 	if (r->to) g_free(r->to);
 	if (r->id) g_free(r->id);
