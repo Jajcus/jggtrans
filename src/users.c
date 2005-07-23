@@ -252,7 +252,9 @@ char *data;
 	if (tag!=NULL) {
 	       	invisible=1;
 		invisible_status=xmlnode_get_data(tag);
+		if (invisible_status==NULL) invisible_status="";
 	}
+	else invisible_status=NULL;
 	tag=xmlnode_get_tag(xml,"ignore_unknown");
 	if (tag!=NULL) ignore_unknown=1;
 	tag=xmlnode_get_tag(xml,"locale");
