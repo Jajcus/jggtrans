@@ -511,8 +511,8 @@ Session *s;
 	c=user_get_contact(s->user,uin,FALSE);
 	if (!c) return -1;
 	c->got_online=FALSE;
-	user_check_contact(s->user,c);
 	session_update_contact(s,c);
+	user_check_contact(s->user,c);
 	return 0;
 }
 
