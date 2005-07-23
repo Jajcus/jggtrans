@@ -47,6 +47,7 @@ GHashTable *sessions_jid;
 static int session_try_login(Session *s);
 static int session_destroy(Session *s);
 static void resource_remove(Resource *r,int kill_session);
+static int session_io_handler(Session *s);
 
 static void session_stream_destroyed(gpointer key,gpointer value,gpointer user_data){
 Session *s=(Session *)value;
@@ -58,6 +59,69 @@ Stream *stream=(Stream *)user_data;
 static void sessions_stream_destroyed(struct stream_s *stream){
 
 	g_hash_table_foreach(sessions_jid,session_stream_destroyed,stream);
+}
+
+typedef struct {
+	GSource g_src;
+	Session *session;
+}Source;
+
+static gboolean session_g_source_prepare(GSource *source, gint* timeout_){
+
+	*timeout_=-1;
+
+	return FALSE;
+}
+static gboolean session_g_source_check(GSource *source){
+Source *src=(Source *)(gpointer)source;
+
+	return src->session->g_pollfd.revents != 0;
+}
+static gboolean session_g_source_dispatch(GSource *source,GSourceFunc callback,gpointer user_data){
+Source *src=(Source *)(gpointer)source;
+
+	session_io_handler(src->session);
+	return TRUE;
+}
+
+static GSourceFuncs source_funcs = {
+	session_g_source_prepare,
+	session_g_source_check,
+	session_g_source_dispatch,
+	NULL
+};
+
+static void session_setup_g_source(Session *s) {
+
+	if (!s->ggs) return;
+	
+	if (s->g_source && s->g_pollfd.fd != s->ggs->fd) {
+		g_source_remove_poll(s->g_source, &s->g_pollfd);
+	}
+
+	if (!s->g_source) {
+		s->g_source = g_source_new(&source_funcs, sizeof(Source));
+		((Source *)(gpointer)s->g_source)->session=s;
+		g_source_attach(s->g_source,g_main_loop_get_context(main_loop));
+	}
+	
+	s->g_pollfd.events=G_IO_ERR|G_IO_HUP|G_IO_NVAL;
+	if (s->ggs->check&GG_CHECK_READ) s->g_pollfd.events|=G_IO_IN;
+	if (s->ggs->check&GG_CHECK_WRITE) s->g_pollfd.events|=G_IO_OUT;
+
+	if (s->g_pollfd.fd != s->ggs->fd) {
+		s->g_pollfd.fd=s->ggs->fd;
+		if (s->g_pollfd.fd!=-1) g_source_add_poll(s->g_source, &s->g_pollfd);
+	}
+}
+
+static void session_remove_g_source(Session *s) {
+
+	if (!s->g_source) return;
+
+	if (s->g_pollfd.fd!=-1) g_source_remove_poll(s->g_source, &s->g_pollfd);
+	g_source_destroy(s->g_source);
+	s->g_source=NULL;
 }
 
 
@@ -348,21 +412,18 @@ void session_broken(Session *s){
 		}
 	}
 	s->connected=0;
-	s->io_watch=0;
 	session_schedule_reconnect(s);
 	session_remove(s);
 }
 
 
-int session_io_handler(GIOChannel *source,GIOCondition condition,gpointer data){
-Session *s;
+int session_io_handler(Session *s){
 struct gg_event *event;
 char *jid,*str;
 int chat;
-GIOCondition cond;
+GIOCondition condition=s->g_pollfd.revents;
 time_t timestamp;
 
-	s=(Session *)data;
 	user_load_locale(s->user);
 	debug(L_("Checking error conditions..."));
 	if (condition&(G_IO_ERR|G_IO_NVAL)){
@@ -400,7 +461,6 @@ time_t timestamp;
 			if (s->req_id)
 				jabber_iq_send_error(s->s,s->jid,NULL,s->req_id,401,_("Unauthorized"));
 			else presence_send(s->s,NULL,s->user->jid,0,NULL,"Login failed",0);
-			s->io_watch=0;
 			if (!s->req_id)
 				session_schedule_reconnect(s);
 			session_remove(s);
@@ -545,10 +605,7 @@ time_t timestamp;
 			break;
 	}
 
-	cond=G_IO_ERR|G_IO_HUP|G_IO_NVAL;
-	if (s->ggs->check&GG_CHECK_READ) cond|=G_IO_IN;
-	if (s->ggs->check&GG_CHECK_WRITE) cond|=G_IO_OUT;
-	s->io_watch=g_io_add_watch(s->ioch,cond,session_io_handler,s);
+	session_setup_g_source(s);
 
 	gg_event_free(event);
 	debug(L_("io handler done..."));
@@ -561,7 +618,6 @@ static int session_destroy(Session *s){
 GList *it;
 
 	g_message(L_("Deleting session for '%s'"),s->jid);
-	if (s->io_watch) g_source_remove(s->io_watch);
 	if (s->ping_timeout_func) g_source_remove(s->ping_timeout_func);
 	if (s->timeout_func) g_source_remove(s->timeout_func);
 	if (s->ping_timer) g_timer_destroy(s->ping_timer);
@@ -578,7 +634,7 @@ GList *it;
 			}
 		}
 	}
-	if (s->ioch) g_io_channel_close(s->ioch);
+	session_remove_g_source(s);
 	if (s->ggs){
 		if (s->connected){
 			debug("gg_logoff(%p)",s->ggs);
@@ -672,7 +728,6 @@ Resource *r;
 
 static int session_try_login(Session *s){
 struct gg_login_params login_params;
-GIOCondition cond;
 GgServer *serv;
 int r;
 
@@ -680,11 +735,11 @@ int r;
 			g_list_position(gg_servers, s->current_server));
 
 	if (s->timeout_func) g_source_remove(s->timeout_func);
-	if (s->io_watch) g_source_remove(s->io_watch);
-	if (s->ioch) {
-		g_io_channel_close(s->ioch);
-		s->ioch=NULL;
+	if (s->ggs) {
+		gg_free_session(s->ggs);
+		s->ggs=NULL;
 	}
+	session_remove_g_source(s);
 
 	memset(&login_params,0,sizeof(login_params));
 	login_params.uin=s->user->uin;
@@ -710,22 +765,14 @@ int r;
 	login_params.tls=serv->tls;
 #endif
 
-	if (s->ggs) gg_free_session(s->ggs);
 	s->ggs=gg_login(&login_params);
 	if (!s->ggs){
 		g_free(s);
 		return 1;
 	}
-
-	s->ioch=g_io_channel_unix_new(s->ggs->fd);
-	cond=G_IO_ERR|G_IO_HUP|G_IO_NVAL;
-	if (s->ggs->check&GG_CHECK_READ) cond|=G_IO_IN;
-	if (s->ggs->check&GG_CHECK_WRITE) cond|=G_IO_OUT;
-	s->io_watch=g_io_add_watch(s->ioch,cond,session_io_handler,s);
+	session_setup_g_source(s);
 
 	s->timeout_func=g_timeout_add(conn_timeout*1000,session_timeout,s);
-
-
 	return FALSE;
 }
 
@@ -749,6 +796,7 @@ char *njid;
 	if (req_id) s->req_id=g_strdup(req_id);
 	s->query=xmlnode_dup(query);
 	s->current_server=g_list_first(gg_servers);
+	s->g_pollfd.fd=-1;
 
 	if (!delay_login && session_try_login(s)) return NULL;
 
@@ -1036,7 +1084,7 @@ char *njid;
 			g_message(L_("%sStatus: %s"),space1,r->status);
 	}
 	g_message(L_("%sGG session: %p"),space,s->ggs);
-	g_message(L_("%sIO Channel: %p"),space,s->ioch);
+	g_message(L_("%sGSource: %p"),space,s->g_source);
 	g_message(L_("%sStream: %p"),space,s->s);
 	g_message(L_("%sConnected: %i"),space,s->connected);
 	g_message(L_("%sRequest id: %s"),space,s->req_id?s->req_id:"(null)");

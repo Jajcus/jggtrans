@@ -39,8 +39,8 @@ typedef struct session_s{
 	int gg_status; /* status set at GG server */
 	char *gg_status_descr;
 
-	GIOChannel *ioch; /* GG IO Channel */
-	guint io_watch;
+	GSource *g_source;
+	GPollFD g_pollfd;
 
 	int connected;
 	GList *current_server;
