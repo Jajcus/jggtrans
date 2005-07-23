@@ -36,13 +36,8 @@
 
 const char *search_instructions;
 
-struct search_req_s {
-	int start;
-	int maxgroups;
-};
-
 void jabber_iq_set_search_byform(Stream *s,const char *from,const char *to,
-				const char *id,xmlnode q,int maxgroups,int start);
+				const char *id,xmlnode q);
 
 xmlnode search_form(xmlnode parent){
 xmlnode form,field;
@@ -62,40 +57,31 @@ xmlnode form,field;
 	form_add_field(form,"boolean","active",_("Active only"),"0",0);
 	form_add_field(form,"text-single","familyname",_("Family name"),NULL,0);
 	form_add_field(form,"text-single","familycity",_("Family city"),NULL,0);
-	form_add_field(form,"text-single","maxgroups",_("Max. result groups"),"1",1);
 	return form;
 }
 
 #define GG_SEARCH_FRIENDS_MASK	0x0080
 
 int search_byform_done(struct request_s *r, gg_pubdir50_t results){
-int i,start,next,maxgroups;
+int i;
 xmlnode q,form,item;
 char *jid;
 const char *val;
-struct search_req_s *sr;
-
-	sr=(struct search_req_s *)r->data;
-	maxgroups=sr->maxgroups-1;
-	start=sr->start;
-	g_free(sr);
 
 	q=xmlnode_new_tag("query");
 	xmlnode_put_attrib(q,"xmlns","jabber:iq:search");
 	form=form_new_result(_("GG public directory search results"));
 
-	if (start==0){
-		form_add_result_field(form,"jid",_("JID"),"jid-single");
-		form_add_result_field(form,"nick",_("Nick"),"text-single");
-		form_add_result_field(form,"status",_("Status"),"text-single");
-		form_add_result_field(form,"firstname",_("First name"),"text-single");
-		form_add_result_field(form,"lastname",_("Last name"),"text-single");
-		form_add_result_field(form,"city",_("City"),"text-single");
-		form_add_result_field(form,"gender",_("Sex"),"text-single");
-		form_add_result_field(form,"birthyear","Birth year","text-single");
-		form_add_result_field(form,"familyname",_("Family name"),"text-single");
-		form_add_result_field(form,"familycity",_("Family city"),"text-single");
-	}
+	form_add_result_field(form,"jid",_("JID"),"jid-single");
+	form_add_result_field(form,"nick",_("Nick"),"text-single");
+	form_add_result_field(form,"status",_("Status"),"text-single");
+	form_add_result_field(form,"firstname",_("First name"),"text-single");
+	form_add_result_field(form,"lastname",_("Last name"),"text-single");
+	form_add_result_field(form,"city",_("City"),"text-single");
+	form_add_result_field(form,"gender",_("Sex"),"text-single");
+	form_add_result_field(form,"birthyear","Birth year","text-single");
+	form_add_result_field(form,"familyname",_("Family name"),"text-single");
+	form_add_result_field(form,"familycity",_("Family city"),"text-single");
 
 	for(i=0;i<gg_pubdir50_count(results);i++){
 		item=form_add_result_item(form);
@@ -140,12 +126,7 @@ struct search_req_s *sr;
 	xmlnode_insert_tag_node(q,form);
 	jabber_iq_send_result(r->stream,r->from,r->to,r->id,q);
 	xmlnode_free(q);
-	if (maxgroups>0){
-		next=gg_pubdir50_next(results);
-		if (next>0 && next>start)
-			jabber_iq_set_search_byform(r->stream,r->from,r->to,r->id,
-							r->query,maxgroups,next);
-	}
+	xmlnode_free(form);
 	return 0;
 }
 
@@ -243,13 +224,12 @@ Session *sess;
 		gg_pubdir50_add(search, symbol, from_utf8(val));
 
 void jabber_iq_set_search_byform(Stream *s,const char *from,const char *to,
-		const char *id,xmlnode q,int maxgroups,int start){
+		const char *id,xmlnode q){
 xmlnode form,field,value;
 char *val;
 gg_pubdir50_t search;
 Session *sess;
 Request *r;
-struct search_req_s *sr;
 
 	form=xmlnode_get_tag(q,"x?xmlns=jabber:x:data");
 
@@ -288,30 +268,9 @@ struct search_req_s *sr;
 	FIELD_TO_PUBDIR("familyname",GG_PUBDIR50_FAMILYNAME);
 	FIELD_TO_PUBDIR("familycity",GG_PUBDIR50_FAMILYCITY);
 
-	val=g_strdup_printf("%i",start);
-	gg_pubdir50_add(search, GG_PUBDIR50_START, val);
-	g_free(val);
-
-	if (maxgroups<1){
-		val=NULL;
-		field=xmlnode_get_tag(form,"field?var=maxgroups");
-		if (field!=NULL){
-			value=xmlnode_get_tag(field,"value");
-			if (value!=NULL) val=xmlnode_get_data(value);
-		}
-		if (val!=NULL){
-			maxgroups=atoi(val);
-			if (maxgroups<1) maxgroups=1;
-		}
-		else
-			maxgroups=1;
-	}
+	gg_pubdir50_add(search, GG_PUBDIR50_START, "0");
 
 	r=add_request(RT_SEARCH,from,to,id,q,search,s);
-	sr=g_new(struct search_req_s,1);
-	sr->maxgroups=maxgroups;
-	sr->start=start;
-	r->data=sr;
 	gg_pubdir50_free(search);
 }
 
@@ -323,7 +282,7 @@ char *data;
 
 	n=xmlnode_get_tag(q,"x?xmlns=jabber:x:data");
 	if (n){
-		return jabber_iq_set_search_byform(s,from,to,id,q,0,0);
+		return jabber_iq_set_search_byform(s,from,to,id,q);
 	}
 	sess=session_get_by_jid(from,NULL,0);
 	if (!sess || !sess->connected){
