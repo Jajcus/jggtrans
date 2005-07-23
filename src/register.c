@@ -87,7 +87,7 @@ int i;
 
 	field=form_add_field(form,"list-single","action",_("Action"),"options",1);
 	form_add_option(field,_("Change account options"),"options");
-	form_add_option(field,_("Change password"),"passwd");
+	/*form_add_option(field,_("Change password"),"passwd"); */
 	form_add_option(field,_("Change public directory information"),"pubdir");
 	form_add_option(field,_("Unregister"),"unregister");
 
@@ -166,6 +166,8 @@ Session *session;
 	return 0;
 }
 
+#if 0 
+/* Password change dissabled, as it would be hard to support token-based password change */
 int register_process_passwd_form(Stream *s,const char *from,const char *to,
 					const char *id,User *u,xmlnode form){
 xmlnode field,value;
@@ -228,6 +230,8 @@ Request *r;
 	}
 	return 0;
 }
+#endif
+
 
 #define FIELD_TO_PUBDIR(fieldname,symbol) \
 	val=0; \
@@ -318,10 +322,12 @@ char *action;
 		if (register_process_options_form(s,from,to,id,u,form))
 			return -1;
 	}
+#if 0
 	else if (!strcmp(action,"passwd")){
 		if (register_process_passwd_form(s,from,to,id,u,form))
 			return -1;
 	}
+#endif
 	else if (!strcmp(action,"pubdir")){
 		if (register_process_pubdir_form(s,from,to,id,u,form,q))
 			return -1;
