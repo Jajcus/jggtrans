@@ -51,7 +51,7 @@ char *tmp;
 	form=form_new(parent,_("Jabber GG transport registration form"),
 			_("Fill in this form to regiser in the transport.\n"
 			"You may use registration later to change your settings,"
-			" password, public directory information or to unregister."));
+			" public directory information or to unregister."));
 
 	form_add_field(form,"text-single","uin",_("GG number"),NULL,1);
 	form_add_field(form,"text-private","password",_("Password"),NULL,1);
@@ -103,11 +103,11 @@ int i;
 	form_add_field(form,"boolean","invisible",_("Invisible"),
 						u->invisible?"1":"0",0);
 
-	form_add_fixed(form,_("Fill out this part only when changing password:"));
+	/*form_add_fixed(form,_("Fill out this part only when changing password:"));
 	form_add_field(form,"text-private","newpassword",_("New password"),NULL,0);
 	form_add_field(form,"text-private","newpassword2",_("Confirm new password"),NULL,0);
 	form_add_field(form,"text-single","question",_("Question"),NULL,0);
-	form_add_field(form,"text-single","answer",_("Answer"),NULL,0);
+	form_add_field(form,"text-single","answer",_("Answer"),NULL,0);*/
 
 	form_add_fixed(form,_("Fill out this part only when changing public directory info:"));
 	form_add_field(form,"text-single","firstname",_("First name"),NULL,0);
