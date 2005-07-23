@@ -189,14 +189,14 @@ int version;
 		jabber_iq_send_error(s,from,to,id,401,_("I don't know you"));
 		return;
 	}
-	query=xmlnode_new_tag("query");
-	xmlnode_put_attrib(query,"xmlns","jabber:iq:version");
-	xmlnode_insert_cdata(xmlnode_insert_tag(query,"name"),"Gadu-Gadu(tm)",-1);
 	if (!jid_has_uin(to)){
 		g_warning(N_("No UIN given in 'to': %s"),to);
 		jabber_iq_send_error(s,from,to,id,400,_("Bad Request"));
 		return;
 	}
+	query=xmlnode_new_tag("query");
+	xmlnode_put_attrib(query,"xmlns","jabber:iq:version");
+	xmlnode_insert_cdata(xmlnode_insert_tag(query,"name"),"Gadu-Gadu(tm)",-1);
 	uin=jid_get_uin(to);
 	sprintf(verstring, "%s", _(verstring));
 	ver=verstring;
@@ -214,6 +214,7 @@ int version;
 	}
 	xmlnode_insert_cdata(xmlnode_insert_tag(query,"version"),ver,-1);
 	jabber_iq_send_result(s,from,to,id,query);
+	xmlnode_free(query);
 }
 
 void jabber_iq_set_gateway(Stream *s,const char *from,const char * to,const char *id,xmlnode q){
