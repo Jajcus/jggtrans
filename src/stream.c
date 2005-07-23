@@ -304,6 +304,7 @@ int stream_close(Stream *s){
 
 int stream_destroy(Stream *s){
 GList *it;
+GError *err=NULL;
 
 	g_assert(s!=NULL);
 	for(it=destroy_handlers;it;it=it->next){
@@ -333,7 +334,7 @@ GList *it;
 	if (s->read_watch) g_source_remove(s->read_watch);
 	if (s->read_buf) free(s->read_buf);
 	pool_free(s->xs->p);
-	g_io_channel_close(s->ioch);
+	g_io_channel_shutdown(s->ioch,TRUE,&err);
 	free(s);
 	return 0;
 }
