@@ -620,6 +620,15 @@ GList *it;
 	if (s->ping_timeout_func) g_source_remove(s->ping_timeout_func);
 	if (s->timeout_func) g_source_remove(s->timeout_func);
 	if (s->ping_timer) g_timer_destroy(s->ping_timer);
+	session_remove_g_source(s);
+	if (s->ggs){
+		if (s->connected){
+			debug("gg_logoff(%p)",s->ggs);
+			gg_logoff(s->ggs);
+		}
+		gg_free_session(s->ggs);
+	}
+	while(s->resources) resource_remove((Resource *)s->resources->data,0);
 	if (s->connected && s->s && s->jid){
 		presence_send(s->s,NULL,s->user->jid,0,NULL,"Offline",0);
 		for(it=s->user->contacts;it;it=it->next){
@@ -633,15 +642,6 @@ GList *it;
 			}
 		}
 	}
-	session_remove_g_source(s);
-	if (s->ggs){
-		if (s->connected){
-			debug("gg_logoff(%p)",s->ggs);
-			gg_logoff(s->ggs);
-		}
-		gg_free_session(s->ggs);
-	}
-	while(s->resources) resource_remove((Resource *)s->resources->data,0);
 	if (s->query) xmlnode_free(s->query);
 	if (s->user) user_unref(s->user);
 	if (s->gg_status_descr) g_free(s->gg_status_descr);
@@ -673,7 +673,7 @@ int status;
 char *status_descr;
 
 	if (!r) {
-		if (send_presence) presence_send(s->s,NULL,s->user->jid,1,NULL,s->gg_status_descr,0);
+		if (send_presence) presence_send(s->s,NULL,s->user->jid,FALSE,NULL,s->gg_status_descr,0);
 		return -1;
 	}
 	status=status_jabber_to_gg(r->available,r->show,r->status);
