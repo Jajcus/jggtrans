@@ -130,7 +130,7 @@ xmlnode xml,tag,ctag,userlist;
 		return -1;
 	}
 
-	g_message(L_("Saving user '%s'"),u->jid);
+	g_debug(L_("Saving user '%s'"),u->jid);
 	njid=jid_normalized(u->jid,0);
 	g_assert(njid!=NULL);
 	fn=g_strdup_printf("%s.new",njid);
