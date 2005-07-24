@@ -273,7 +273,7 @@ Session *s;
 	user_load_locale(s->user);
 
 	g_warning(N_("Timeout for server %u"),
-			g_list_position(gg_servers, s->current_server)-1);
+			g_list_position(gg_servers, s->current_server));
 
 	s->current_server=g_list_next(s->current_server);
 	if(s->current_server!=NULL)
