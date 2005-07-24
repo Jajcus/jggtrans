@@ -577,7 +577,7 @@ const char *ce;
 char *args,*p;
 User *user;
 Session *sess;
-char *msg;
+char *msg, *t;
 GList *it;
 
 	sess=session_get_by_jid(from,stream,1);
@@ -607,27 +607,40 @@ GList *it;
 			return 0;
 		}
 	}
-	msg=_("\nAvailable commands and abbreviations:");
+	msg=g_strdup(_("\nAvailable commands and abbreviations:"));
 	for(i=0;msg_commands[i].command;i++){
-		msg=g_strdup_printf("%s\n  %-14s %-4s - %s%s",msg,
+		t=g_strdup_printf("%s\n  %-14s %-4s - %s%s",msg,
 				msg_commands[i].command,
 				msg_commands[i].abr,
 				_(msg_commands[i].description),
 				msg_commands[i].experimental?_(" EXPERIMENTAL!"):"");
+		g_free(msg); msg=t;
 	}
-	msg=g_strdup_printf(_("%s\n\nCurrent settings:"),msg);
-	msg=g_strdup_printf(_("%s\n  friends only: %s"),msg,user->friends_only?_("on"):_("off"));
-	msg=g_strdup_printf(_("%s\n  invisible: %s"),msg,user->invisible?_("on"):_("off"));
-	msg=g_strdup_printf(_("%s\n  ignore unknown: %s"),msg,user->ignore_unknown?_("on"):_("off"));
-	msg=g_strdup_printf(_("%s\n  locale: %s"),msg,user->locale?user->locale:_("_default_"));
+	t=g_strdup_printf(_("%s\n\nCurrent settings:"),msg);
+	g_free(msg); msg=t;
+	t=g_strdup_printf(_("%s\n  friends only: %s"),msg,user->friends_only?_("on"):_("off"));
+	g_free(msg); msg=t;
+	t=g_strdup_printf(_("%s\n  invisible: %s"),msg,user->invisible?_("on"):_("off"));
+	g_free(msg); msg=t;
+	t=g_strdup_printf(_("%s\n  ignore unknown: %s"),msg,user->ignore_unknown?_("on"):_("off"));
+	g_free(msg); msg=t;
+	t=g_strdup_printf(_("%s\n  locale: %s"),msg,user->locale?user->locale:_("_default_"));
+	g_free(msg); msg=t;
 	ignored=0;
 	for(it=user->contacts;it;it=it->next){
 		Contact * c=(Contact *)it->data;
 		if (c->ignored) ignored++;
 	}
-	msg=g_strdup_printf(_("%s\n  number of ignored users: %i"),msg,ignored);
-	msg=g_strdup_printf(_("%s\n\nRegistered as: %u"),msg,user->uin);
-	if (sess->ggs) msg=g_strdup_printf("%s\n  %s",msg,session_get_info_string(sess));
+	t=g_strdup_printf(_("%s\n  number of ignored users: %i"),msg,ignored);
+	g_free(msg); msg=t;
+	t=g_strdup_printf(_("%s\n\nRegistered as: %u"),msg,user->uin);
+	g_free(msg); msg=t;
+	if (sess->ggs){
+		char *t1=session_get_info_string(sess);
+		t=g_strdup_printf("%s\n  %s",msg,t1);
+		g_free(t1);
+		g_free(msg); msg=t;
+	}
 	message_send(stream,to,from,1,msg,0);
 	g_free(msg);
 
