@@ -830,7 +830,7 @@ GList *it;
 	u=user_get_by_jid(jid);
 	if (!u) return NULL;
 
-	debug(L_("User loaded processing his subscriptions."));
+	debug(L_("User loaded, processing his subscriptions."));
 	for(it=u->contacts;it;it=it->next){
 		Contact *c;
 		char *c_jid;
