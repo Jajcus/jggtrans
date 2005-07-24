@@ -1,7 +1,7 @@
-/* $Id: stats.h,v 1.1 2003/04/14 09:07:29 jajcus Exp $ */
+/* $Id$ */
 
 /*
- *  (C) Copyright 2002 Jacek Konieczny <jajcus@pld.org.pl>
+ *  (C) Copyright 2002-2005 Jacek Konieczny [jajcus(a)jajcus,net]
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License Version 2 as
