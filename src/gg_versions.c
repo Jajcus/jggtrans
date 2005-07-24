@@ -45,5 +45,7 @@ char *gg_version[]={
 	"6.0",					/* 0x20 */
 	"6.0 (build 133)",			/* 0x21 */
 	"6.0 (build 136,142)",			/* 0x22 */
-	NULL,NULL,NULL,NULL,NULL		/* 0x23 - 0x27 */
+        NULL,                                   /* 0x23 */
+        "6.0 (build 156)",                      /* 0x24 */
+        NULL,NULL,NULL                          /* 0x25 - 0x27 */
 };
