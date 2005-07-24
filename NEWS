@@ -1,3 +1,29 @@
+Version 2.2.0
+-------------
+
+Changes from 2.1.0:
+
+* Libgadu is now included in the sources. External libgadu is not
+  required any more and won't be used even if available. Most available
+  builds of libgadu didn't work well with the transport and changes in
+  libgadu often break jggtrans.
+
+* Per-user, bidirectional presence control added. Now XMPP privacy lists
+  and one-way presence subscriptions will work with GG contacts (in
+  'friends-only' mode).
+
+* Ignore lists. User may choose GG numbers to completely ignore.
+
+* Customizable status messages for available, unavailable and invisible
+  modes. When set they will be used instead of current XMPP status.
+
+* Password change code dropped. It didn't work after protocol change any
+  more anyway and the new protocol uses graphical tokens which are much
+  harder to implement in the transport.
+
+* Many bugfixes.
+
+
 Version 2.1.0
 -------------
 
