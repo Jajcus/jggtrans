@@ -33,23 +33,7 @@
 GHashTable *users_jid=NULL;
 static char *spool_dir;
 char *default_user_locale="C";
-
-int users_init(){
-int r;
-
-	default_user_locale=config_load_string("default_locale");
-
-	spool_dir=config_load_string("spool");
-	if (!spool_dir)
-		g_error(L_("No <spool/> defined in config file"));
-
-	r=chdir(spool_dir);
-	if (r) g_error(L_("Couldn't enter %s: %s"),spool_dir,g_strerror(errno));
-
-	users_jid=g_hash_table_new(g_str_hash,g_str_equal);
-	if (!users_jid) return -1;
-	return 0;
-}
+static guint users_tick_source;
 
 static int user_destroy(User *s);
 
@@ -68,10 +52,38 @@ int users_gc(){
 	return 0;
 }
 
+gboolean users_tick(gpointer data){
+
+	users_gc();
+	return TRUE;
+}
+
+int users_init(){
+int r;
+
+	default_user_locale=config_load_string("default_locale");
+
+	spool_dir=config_load_string("spool");
+	if (!spool_dir)
+		g_error(L_("No <spool/> defined in config file"));
+
+	r=chdir(spool_dir);
+	if (r) g_error(L_("Couldn't enter %s: %s"),spool_dir,g_strerror(errno));
+
+	users_jid=g_hash_table_new(g_str_hash,g_str_equal);
+	if (!users_jid) return -1;
+	
+	users_tick_source=g_timeout_add(60000,users_tick,NULL);
+	
+	return 0;
+}
+
+
 
 int users_done(){
 guint s;
 	
+	g_source_remove(users_tick_source);
 	s=g_hash_table_size(users_jid);
 	if (s) g_debug(L_("Before cleanup: %u users in hash table"),s);
 	users_gc();
@@ -646,6 +658,8 @@ char *njid;
 	else r=0;
 
 	g_free(njid);
+
+	users_gc();
 
 	return r;
 }
