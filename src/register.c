@@ -406,13 +406,15 @@ Session *session;
 		jabber_iq_send_error(s,from,to,id,500,_("Internal Server Error"));
 		return -1;
 	}
-
+			
 	session=session_create(user,from,id,q,s,0);
 	if (!session){
 		g_warning(N_("Couldn't create session for %s"),from);
 		jabber_iq_send_error(s,from,to,id,500,_("Internal Server Error"));
 		return -1;
 	}
+	
+	presence_send_subscribe(s,NULL,from);
 
 	if (get_roster) session->get_roster=get_roster;
 
@@ -656,7 +658,7 @@ Request *r;
 				jabber_iq_send_error(s,from,to,id,406,_("Not Acceptable"));
 				return;
 			}
-			presence_send_subscribe(s,NULL,to);
+			presence_send_subscribe(s,NULL,from);
 			return;
 	}
 
