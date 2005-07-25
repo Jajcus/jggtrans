@@ -25,6 +25,13 @@
 #include <glib.h>
 #include "../config.h"
 
+/* older glib versions don't define g_log() */
+#ifndef g_debug
+#define g_debug(format...)      g_log (G_LOG_DOMAIN,         \
+                                       G_LOG_LEVEL_DEBUG,    \
+                                       format)
+#endif
+
 #ifdef ENABLE_NLS
 /* gettext shortcut for translating messages */
 #  define _(String) gettext (String)
