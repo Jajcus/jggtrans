@@ -453,7 +453,7 @@ xmlnode node;
 xmlnode iq;
 xmlnode query;
 xmlnode instr;
-User *u;
+User *user;
 
 	node=xmlnode_get_firstchild(q);
 	if (node){
@@ -461,6 +461,13 @@ User *u;
 		jabber_iq_send_error(s,from,to,id,406,_("Not Acceptable"));
 		return;
 	}
+
+	user=user_get_by_jid(from);
+	if (user && user->deleted) {
+		jabber_iq_send_error(s,from,to,id,503,_("User still in use, try later."));
+		return;
+	}
+	
 	iq=xmlnode_new_tag("iq");
 	xmlnode_put_attrib(iq,"type","result");
 	if (id) xmlnode_put_attrib(iq,"id",id);
@@ -488,11 +495,10 @@ User *u;
 	instr=xmlnode_insert_tag(query,"instructions");
 	xmlnode_insert_cdata(instr,register_instructions,-1);
 
-	u=user_get_by_jid(from);
-	if (u==NULL)
-		register_form(query,u);
+	if (user==NULL)
+		register_form(query,user);
 	else
-		register_change_form(query,u);
+		register_change_form(query,user);
 
 	stream_write(s,iq);
 	xmlnode_free(iq);
@@ -527,6 +533,7 @@ char *jid;
 			c=(Contact *)it->data;
 			ujid=jid_build(c->uin);
 			presence_send_unsubscribed(s,ujid,u->jid);
+			presence_send_unsubscribe(s,ujid,u->jid);
 			g_free(ujid);
 		}
 	}
@@ -560,6 +567,10 @@ Request *r;
 	username=password=first=last=nick=city=sex=born=NULL;
 
 	user=user_get_by_jid(from);
+	if (user && user->deleted) {
+		jabber_iq_send_error(s,from,to,id,503,_("User still in use, try later."));
+		return;
+	}
 
 	node=xmlnode_get_firstchild(q);
 	if (!node){

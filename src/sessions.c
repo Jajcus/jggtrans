@@ -788,6 +788,12 @@ char *njid;
 	}
 
 	g_assert(user!=NULL);
+
+	if (user->deleted){
+		g_message(L_("User deleted: '%s'"),user->jid);
+		return NULL;
+	}
+	
 	s=g_new0(Session,1);
 	s->user=user;
 	user_ref(user);

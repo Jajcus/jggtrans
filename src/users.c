@@ -495,9 +495,9 @@ char *p,*njid;
 	u->confirmed=0;
 	u->invisible=0;
 	u->friends_only=1;
-	g_assert(users_jid!=NULL);
 	g_hash_table_insert(users_jid,(gpointer)njid,(gpointer)u);
 	u->refcount=0;
+	u->deleted=FALSE;
 	return u;
 }
 
@@ -658,6 +658,8 @@ char *njid;
 	else r=0;
 
 	g_free(njid);
+
+	u->deleted=TRUE;
 
 	users_gc();
 

@@ -64,6 +64,7 @@ typedef struct user_s{
 
 	int confirmed;
 	int refcount;
+	gboolean deleted;
 	GList *contacts;
 }User;
 
