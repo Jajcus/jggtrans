@@ -70,7 +70,7 @@ tags:
 .PHONY: valgrind
 
 
-VALGRIND_FLAGS=--num-callers=20 --leak-check=yes --show-reachable=yes -v --trace-children=no
+VALGRIND_FLAGS=--num-callers=20 --leak-check=yes -v --trace-children=no
 
 
 valgrind:
