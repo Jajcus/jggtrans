@@ -22,6 +22,7 @@
 #include <sys/stat.h>
 #include <time.h>
 #include <locale.h>
+#include <stdlib.h>
 #include "ggtrans.h"
 #include "jabber.h"
 #include "users.h"
@@ -154,6 +155,10 @@ xmlnode xml,tag,ctag,userlist;
 		return -1;
 	}
 	xml=xmlnode_new_tag("user");
+	tag=xmlnode_insert_tag(xml,"version");
+	str=g_strdup_printf("%08x",USER_FILE_FORMAT_VERSION);
+	xmlnode_put_attrib(tag,"file_format",str);
+	g_free(str);
 	tag=xmlnode_insert_tag(xml,"jid");
 	xmlnode_insert_cdata(tag,u->jid,-1);
 	tag=xmlnode_insert_tag(xml,"uin");
@@ -252,6 +257,7 @@ xmlnode xml,tag,t;
 char *uin,*ujid,*name,*password,*email,*locale;
 char *status,*offline_status,*invisible_status;
 int last_sys_msg=0,invisible=0,friends_only=0,ignore_unknown=0;
+unsigned int file_format_version=0;
 User *u;
 GList *contacts;
 char *p;
@@ -272,6 +278,11 @@ char *data;
 		return NULL;
 	}
 	g_free(fn);
+	tag=xmlnode_get_tag(xml,"jid");
+	if (tag!=NULL) {
+		p=xmlnode_get_data(tag);
+		if (p!=NULL) file_format_version=(unsigned int)strtol(p,NULL,16);
+	}
 	tag=xmlnode_get_tag(xml,"jid");
 	if (tag!=NULL) ujid=xmlnode_get_data(tag);
 	if (ujid==NULL){
@@ -332,7 +343,10 @@ char *data;
 		Contact *c;
 
 		for(t=xmlnode_get_firstchild(tag);t;t=xmlnode_get_nextsibling(t)){
-			if (!strcmp(xmlnode_get_name(t),"uin")){
+			char *node_name;
+			node_name=xmlnode_get_name(t);
+			if (!node_name) continue;
+			if (!strcmp(node_name,"uin")){
 				char *d;
 				int uin;
 
@@ -347,7 +361,7 @@ char *data;
 				contacts=g_list_append(contacts,c);
 				continue;
 			}
-			if (!strcmp(xmlnode_get_name(t),"contact")){
+			if (!strcmp(node_name,"contact")){
 				char *d;
 				int uin;
 
@@ -374,7 +388,15 @@ char *data;
 							c->subscribe=SUB_FROM;
 							break;
 						case 't':
-							c->subscribe=SUB_TO;
+							/* version 2.2.0 has a bug which causes
+							 * SUB_BOTH to be changed to SUB_TO
+							 * this will force resynchronisation with
+							 * user's roster. User will be asked for 
+							 * subscription authorisation if the
+							 * subscription was really "to"
+							 */
+							if (file_format_version<=0x02020000) c->subscribe=SUB_UNDEFINED;
+							else c->subscribe=SUB_TO;
 							break;
 						case 'b':
 							c->subscribe=SUB_BOTH;

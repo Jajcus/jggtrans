@@ -22,6 +22,8 @@
 
 #include <libgadu.h>
 
+#define USER_FILE_FORMAT_VERSION 0x02020001U   /* first change after 2.2.0 */
+
 typedef enum subscription_type_e {
 	SUB_UNDEFINED=0,
 	SUB_NONE,
