@@ -436,9 +436,8 @@ GTime timestamp;
 	if (!c) {
 	       	return -1;
 	}
-	if (c->subscribe==SUB_FROM) c->subscribe=SUB_NONE;
-	else if (c->subscribe==SUB_BOTH) c->subscribe=SUB_TO;
-	user_save(u);
+
+	c->got_probe=TRUE;
 
 	if (s) session_update_contact(s,c);	
 
