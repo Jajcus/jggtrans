@@ -95,7 +95,7 @@ int result=0;
 		if (acl_e->who && jid){
 			if (fnmatch(acl_e->who,jid,0)) continue; /* no match */
 		}
-		if (acl_e && !xmlnode_get_tag(x,acl_e->what)) continue; /* no match */
+		if (acl_e && acl_e->what && !xmlnode_get_tag(x,acl_e->what)) continue; /* no match */
 		result=acl_e->allow;
 		break;
 	}
