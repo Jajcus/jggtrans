@@ -953,7 +953,7 @@ int num_resources=0;
 		}
 		r->available=available;
 		if (show) r->show=g_strdup(show);
-		if (status) r->status=g_strndup(status, 70);
+		if (status) r->status=g_strndup(status, GG_STATUS_DESCR_MAXSIZE);
 		if (priority>=0) r->priority=priority;
 		session_send_status(s);
 	}

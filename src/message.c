@@ -358,7 +358,7 @@ int on;
 		else {
 		       	on=TRUE;
 			g_free(user->invisible_status);
-			user->invisible_status=g_strndup(args,70);
+			user->invisible_status=g_strndup(args,GG_STATUS_DESCR_MAXSIZE);
 		}
 	}
 	else on=!user->invisible;
@@ -393,7 +393,7 @@ char *m;
 	g_free(user->status);
 	if (args) {
 		if (!g_strcasecmp(args,"off")) user->status=NULL;
-		else user->status=g_strndup(args,70);
+		else user->status=g_strndup(args,GG_STATUS_DESCR_MAXSIZE);
 	}
 	else user->status=NULL;
 
@@ -423,7 +423,7 @@ char *m;
 	g_free(user->offline_status);
 	if (args) {
 		if (!g_strcasecmp(args,"off")) user->offline_status=NULL;
-		else user->offline_status=g_strndup(args,70);
+		else user->offline_status=g_strndup(args,GG_STATUS_DESCR_MAXSIZE);
 	}
 	else user->offline_status=NULL;
 
