@@ -621,6 +621,7 @@ GList *it;
 	if (s->timeout_func) g_source_remove(s->timeout_func);
 	if (s->ping_timer) g_timer_destroy(s->ping_timer);
 	session_remove_g_source(s);
+	while(s->resources) resource_remove((Resource *)s->resources->data,0);
 	if (s->ggs){
 		if (s->connected){
 			debug("gg_logoff(%p)",s->ggs);
@@ -628,7 +629,6 @@ GList *it;
 		}
 		gg_free_session(s->ggs);
 	}
-	while(s->resources) resource_remove((Resource *)s->resources->data,0);
 	if (s->connected && s->s && s->jid){
 		presence_send(s->s,NULL,s->user->jid,0,NULL,"Offline",0);
 		for(it=s->user->contacts;it;it=it->next){
