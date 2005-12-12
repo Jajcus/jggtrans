@@ -336,7 +336,7 @@ void message_invisible(struct stream_s *stream,const char *from, const char *to,
 Session *session;
 User *user;
 char *m;
-int on;
+gboolean on;
 
 	session=session_get_by_jid(from,stream,0);
 	if (session!=NULL)
@@ -465,7 +465,7 @@ void message_ignore_unknown(struct stream_s *stream,const char *from, const char
 				const char *args, xmlnode msg){
 Session *session;
 User *user;
-int on;
+gboolean on;
 
 	session=session_get_by_jid(from,stream,0);
 	if (session!=NULL)
