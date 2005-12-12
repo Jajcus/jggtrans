@@ -182,6 +182,10 @@ xmlnode xml,tag,ctag,userlist;
 		tag=xmlnode_insert_tag(xml,"locale");
 		xmlnode_insert_cdata(tag,u->locale,-1);
 	}
+	if (u->status){
+		tag=xmlnode_insert_tag(xml,"status");
+		xmlnode_insert_cdata(tag,to_utf8(u->status),-1);
+	}
 
 	if (u->contacts){
 		GList *it;
