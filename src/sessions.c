@@ -674,6 +674,7 @@ char *status_descr;
 
 	if (!r) {
 		if (send_presence) presence_send(s->s,NULL,s->user->jid,FALSE,NULL,s->gg_status_descr,0);
+		s->gg_status=status_jabber_to_gg(0,NULL,s->gg_status_descr);
 		return -1;
 	}
 	status=status_jabber_to_gg(r->available,r->show,r->status);
