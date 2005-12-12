@@ -21,6 +21,6 @@
 #define ggversions_h
 
 extern char *gg_version[];
-#define GG_VERSION_ELEMENTS 0x28
+#define GG_VERSION_ELEMENTS 0x40
 
 #endif
