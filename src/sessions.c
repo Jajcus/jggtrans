@@ -729,7 +729,6 @@ Resource *r;
 static int session_try_login(Session *s){
 struct gg_login_params login_params;
 GgServer *serv;
-int r;
 
 	g_warning(N_("Trying to log in on server %u"),
 			g_list_position(gg_servers, s->current_server));
@@ -747,13 +746,7 @@ int r;
 	login_params.async=1;
 	login_params.last_sysmsg=s->user->last_sys_msg;
 	login_params.protocol_version=GG_DEFAULT_PROTOCOL_VERSION;
-
-	r=session_make_status(s, FALSE);
-	if (r!=-1){
-		debug(L_("Setting gg status to %i (%s)"),s->gg_status,s->gg_status_descr?s->gg_status_descr:"");
-		login_params.status=s->gg_status;
-		if (s->gg_status_descr) login_params.status_descr=s->gg_status_descr;
-	}
+	login_params.status=GG_STATUS_INVISIBLE;
 
 	serv=(GgServer*)s->current_server->data;
 	if(serv->port!=1){
