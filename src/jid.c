@@ -249,8 +249,8 @@ char *domainbuf;
 	}
 	else{
 		if (node[0])
-			return g_strconcat(node,"@",domain,'/',resource,NULL);
+			return g_strconcat(node,"@",domain,"/",resource,NULL);
 		else
-			return g_strconcat(domain,'/',resource,NULL);
+			return g_strconcat(domain,"/",resource,NULL);
 	}
 }
