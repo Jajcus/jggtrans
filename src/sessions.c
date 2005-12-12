@@ -688,9 +688,9 @@ char *status_descr;
 	else if (s->user->friends_only) status|=GG_STATUS_FRIENDS_MASK;
 
 	if (status==s->gg_status){
-		if (r->status!=NULL && s->gg_status_descr!=NULL
+		if (status_descr!=NULL && s->gg_status_descr!=NULL
 				&& !strcmp(status_descr,s->gg_status_descr)) return 0;
-		if (r->status==NULL && s->gg_status_descr==NULL) return 0;
+		if (status_descr==NULL && s->gg_status_descr==NULL) return 0;
 	}
 	g_free(s->gg_status_descr);
 	s->gg_status_descr=g_strdup(status_descr);
