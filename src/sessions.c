@@ -485,7 +485,7 @@ time_t timestamp;
 			s->connected=1;
 			session_send_status(s);
 			if (s->user->contacts) session_send_notify(s);
-			presence_send(s->s,NULL,s->user->jid,1,NULL,s->gg_status_descr,0);
+			presence_send(s->s,NULL,s->user->jid,s->user->invisible?-1:1,NULL,s->gg_status_descr,0);
 
 			if (s->timeout_func) g_source_remove(s->timeout_func);
 			s->ping_timeout_func=
@@ -630,7 +630,6 @@ GList *it;
 		gg_free_session(s->ggs);
 	}
 	if (s->connected && s->s && s->jid){
-		presence_send(s->s,NULL,s->user->jid,0,NULL,"Offline",0);
 		for(it=s->user->contacts;it;it=it->next){
 			Contact *c=(Contact *)it->data;
 
@@ -677,13 +676,14 @@ char *status_descr;
 		s->gg_status=status_jabber_to_gg(0,NULL,s->gg_status_descr);
 		return -1;
 	}
-	status=status_jabber_to_gg(r->available,r->show,r->status);
-	status_descr=r->status;
-	if (!r->available && s->user->offline_status) status_descr=s->user->offline_status;
-	else if (s->user->status) status_descr=s->user->status;
+	status_descr=s->user->status?s->user->status:r->status;
+	status=status_jabber_to_gg(r->available,r->show,status_descr);
 	if (s->user->invisible || r->available==-1){
-	       	status=GG_STATUS_INVISIBLE;
-		if (s->user->invisible_status) status_descr=s->user->invisible_status;
+		if(status_descr){
+		       	status=GG_STATUS_INVISIBLE_DESCR;
+		}else{
+			status=GG_STATUS_INVISIBLE;
+		}
 	}
 	else if (s->user->friends_only) status|=GG_STATUS_FRIENDS_MASK;
 
@@ -696,7 +696,7 @@ char *status_descr;
 	s->gg_status_descr=g_strdup(status_descr);
 	s->gg_status=status;
 	if (send_presence) {
-		presence_send(s->s,NULL,s->user->jid,r->available,r->show,s->gg_status_descr,0);
+		presence_send(s->s,NULL,s->user->jid,s->user->invisible?-1:r->available,r->show,s->gg_status_descr,0);
 	}
 	return 1;
 }
@@ -856,13 +856,15 @@ int r;
 	g_assert(s!=NULL);
 	if (s->ggs==NULL) return -1;
 	r=session_make_status(s, s->connected);
-	if (r==-1) return -1;
 	if (r==0) return 0;
-	debug(L_("Changing gg status to %i"),s->gg_status);
-	if (s->gg_status_descr!=NULL)
+	if (s->gg_status_descr!=NULL){
+		debug(L_("Changing gg status to %i (%s)"),s->gg_status,s->gg_status_descr);
 		gg_change_status_descr(s->ggs,s->gg_status,s->gg_status_descr);
-	else
+	}else{
+		debug(L_("Changing gg status to %i"),s->gg_status);
 		gg_change_status(s->ggs,s->gg_status);
+	}
+	if (r==-1) return -1;
 	return 0;
 }
 
@@ -870,20 +872,26 @@ static void resource_remove(Resource *r,int kill_session){
 Session *s=r->session;
 
 	debug(L_("Removing resource %s of %s"),r->name,s->jid);
-	if (r->name) g_free(r->name);
-	if (r->show) g_free(r->show);
-	if (r->status) g_free(r->status);
 	s->resources=g_list_remove(s->resources,r);
+	/* HACK! when last resource is removed set session description to it's status */
+	if (!s->resources && !s->user->status){
+		g_free(s->gg_status_descr);
+		if(r->status) s->gg_status_descr=g_strdup(r->status);
+		else s->gg_status_descr=NULL;
+	}
 	if (r->disconnect_delay_func){
 		g_source_remove(r->disconnect_delay_func);
 		r->disconnect_delay_func=0;
 	}
+	if (r->name) g_free(r->name);
+	if (r->show) g_free(r->show);
+	if (r->status) g_free(r->status);
 	g_free(r);
+	session_send_status(s);
 	if (!s->resources && kill_session){
 		session_remove(s);
 		return;
 	}
-	session_send_status(s);
 }
 
 gboolean delayed_disconnect(gpointer data){
@@ -913,6 +921,17 @@ int num_resources=0;
 		num_resources++;
 	}
 
+	if ( r ){
+		if (r->show){
+			g_free(r->show);
+			r->show=NULL;
+		}
+		if (r->status){
+			g_free(r->status);
+			r->status=NULL;
+		}
+	}
+
 	if (!available){
 		if (!r){
 			g_warning(N_("Unknown resource %s of %s"),resource?resource:"NULL",s->jid);
@@ -920,6 +939,8 @@ int num_resources=0;
 		}
 		if (disconnect_delay>0 && r->available && num_resources==1){
 			r->available=0;
+			if (status) r->status=g_strndup(status,GG_STATUS_DESCR_MAXSIZE);
+			r->priority=-1;
 			debug(L_("Delaying removal of resource %s of %s"),resource?resource:"NULL",s->jid);
 			r->disconnect_delay_func=g_timeout_add(disconnect_delay*1000,delayed_disconnect,r);
 		}
@@ -929,14 +950,6 @@ int num_resources=0;
 	else{
 		if ( r ){
 			if (r->disconnect_delay_func) g_source_remove(r->disconnect_delay_func);
-			if (r->show){
-				g_free(r->show);
-				r->show=NULL;
-			}
-			if (r->status){
-				g_free(r->status);
-				r->status=NULL;
-			}
 		}
 		else{
 			debug(L_("New resource %s of %s"),resource?resource:"NULL",s->jid);
@@ -947,7 +960,7 @@ int num_resources=0;
 		}
 		r->available=available;
 		if (show) r->show=g_strdup(show);
-		if (status) r->status=g_strndup(status, GG_STATUS_DESCR_MAXSIZE);
+		if (status) r->status=g_strndup(status,GG_STATUS_DESCR_MAXSIZE);
 		if (priority>=0) r->priority=priority;
 		session_send_status(s);
 	}

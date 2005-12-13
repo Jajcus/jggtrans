@@ -177,20 +177,16 @@ xmlnode n;
 	}
 	xmlnode_put_attrib(pres,"to",to);
 
-	/* if (available==-1) xmlnode_put_attrib(pres,"type","invisible");
-	else*/ if (!available) xmlnode_put_attrib(pres,"type","unavailable");
+	if (available==-1) xmlnode_put_attrib(pres,"type","invisible");
+	else if (!available) xmlnode_put_attrib(pres,"type","unavailable");
 
-	if (available==-1) show="away";
 	if (show){
 		n=xmlnode_insert_tag(pres,"show");
 		xmlnode_insert_cdata(n,show,-1);
 	}
-	if (status || available==-1){
+	if (status){
 		n=xmlnode_insert_tag(pres,"status");
-		if (available==-1)
-			xmlnode_insert_cdata(n,_("(invisible)"),-1);
-		if (status)
-			xmlnode_insert_cdata(n,to_utf8(status),-1);
+		xmlnode_insert_cdata(n,to_utf8(status),-1);
 	}
 	if (timestamp){
 		struct tm *t;
@@ -408,7 +404,7 @@ GTime timestamp;
 			}
 			else{
 				Resource *r=session_get_cur_resource(s);
-				if (r) presence_send(stream,NULL,s->user->jid,r->available,
+				if (r) presence_send(stream,NULL,s->user->jid,s->user->invisible?-1:r->available,
 							r->show,r->status,0);
 			}
 		}

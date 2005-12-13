@@ -61,8 +61,6 @@ typedef struct user_s{
 	gboolean ignore_unknown;
 	char *locale;
 	char * status;
-	char * offline_status;
-	char * invisible_status;
 
 	int confirmed;
 	int refcount;
