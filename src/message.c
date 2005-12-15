@@ -573,7 +573,7 @@ GList *it;
 	g_free(msg); msg=t;
 	t=g_strdup_printf(_("%s\n  status: %s%s%s"),msg,
 			(user->status?"`":""),
-			(user->status?user->status:_("not set")),
+			(user->status?to_utf8(user->status):_("not set")),
 			(user->status?"'":""));
 	g_free(msg); msg=t;
 	t=g_strdup_printf(_("%s\n  friends only: %s"),msg,user->friends_only?_("on"):_("off"));
