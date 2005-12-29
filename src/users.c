@@ -29,6 +29,7 @@
 #include "jid.h"
 #include "presence.h"
 #include "conf.h"
+#include "encoding.h"
 #include "debug.h"
 
 GHashTable *users_jid=NULL;
@@ -125,6 +126,25 @@ char *njid;
 	return user_destroy(u);
 }
 
+static void set_subscribe(xmlnode node, SubscriptionType subscription) { 
+	
+	switch (subscription){
+	case SUB_NONE:
+		xmlnode_put_attrib(node,"subscribe","none");
+		break;
+	case SUB_FROM:
+		xmlnode_put_attrib(node,"subscribe","from");
+		break;
+	case SUB_TO:
+		xmlnode_put_attrib(node,"subscribe","to");
+		break;
+	case SUB_BOTH:
+		xmlnode_put_attrib(node,"subscribe","both");
+		break;
+	default:
+		break;
+	}
+}
 
 int user_save(User *u){
 FILE *f;
@@ -161,6 +181,7 @@ xmlnode xml,tag,ctag,userlist;
 	g_free(str);
 	tag=xmlnode_insert_tag(xml,"jid");
 	xmlnode_insert_cdata(tag,u->jid,-1);
+	set_subscribe(tag, u->subscribe);
 	tag=xmlnode_insert_tag(xml,"uin");
 	str=g_strdup_printf("%lu",(unsigned long)u->uin);
 	xmlnode_insert_cdata(tag,str,-1);
@@ -199,22 +220,7 @@ xmlnode xml,tag,ctag,userlist;
 			xmlnode_put_attrib(ctag,"uin",str);
 			if (c->ignored) xmlnode_put_attrib(ctag,"ignored","ignored");
 			if (c->blocked) xmlnode_put_attrib(ctag,"blocked","blocked");
-			switch (c->subscribe){
-			case SUB_NONE:
-			       	xmlnode_put_attrib(ctag,"subscribe","none");
-				break;
-			case SUB_FROM:
-			       	xmlnode_put_attrib(ctag,"subscribe","from");
-				break;
-			case SUB_TO:
-			       	xmlnode_put_attrib(ctag,"subscribe","to");
-				break;
-			case SUB_BOTH:
-			       	xmlnode_put_attrib(ctag,"subscribe","both");
-				break;
-			default:
-				break;
-			}
+			set_subscribe(ctag, c->subscribe);
 			g_free(str);
 		}
 	}
@@ -255,6 +261,37 @@ xmlnode xml,tag,ctag,userlist;
 	return 0;
 }
 
+static SubscriptionType get_subscribe(xmlnode node, unsigned int file_format_version){
+char *tmp;
+
+	tmp=xmlnode_get_attrib(node,"subscribe");
+	if (tmp) {
+		switch (tmp[0]) {
+			case 'f':
+				return SUB_FROM;
+				break;
+			case 't':
+				/* version 2.2.0 has a bug which causes
+				 * SUB_BOTH to be changed to SUB_TO
+				 * this will force resynchronisation with
+				 * user's roster. User will be asked for 
+				 * subscription authorisation if the
+				 * subscription was really "to"
+				 */
+				if (file_format_version<=0x02020000) return SUB_UNDEFINED;
+				else return SUB_TO;
+				break;
+			case 'b':
+				return SUB_BOTH;
+				break;
+			default:
+				return SUB_NONE;
+				break;
+		}
+	}
+	return SUB_UNDEFINED;
+}
+
 User *user_load(const char *jid){
 char *fn,*njid;
 xmlnode xml,tag,t;
@@ -262,6 +299,7 @@ char *uin,*ujid,*name,*password,*email,*locale;
 char *status;
 int last_sys_msg=0,invisible=0,friends_only=0,ignore_unknown=0;
 unsigned int file_format_version=0;
+SubscriptionType subscribe;
 User *u;
 GList *contacts;
 char *p;
@@ -282,13 +320,16 @@ char *data;
 		return NULL;
 	}
 	g_free(fn);
-	tag=xmlnode_get_tag(xml,"jid");
+	tag=xmlnode_get_tag(xml,"version");
 	if (tag!=NULL) {
-		p=xmlnode_get_data(tag);
+		p=xmlnode_get_attrib(tag,"file_format");
 		if (p!=NULL) file_format_version=(unsigned int)strtol(p,NULL,16);
 	}
 	tag=xmlnode_get_tag(xml,"jid");
-	if (tag!=NULL) ujid=xmlnode_get_data(tag);
+	if (tag!=NULL) {
+		ujid=xmlnode_get_data(tag);
+		subscribe=get_subscribe(tag, file_format_version);
+	}
 	if (ujid==NULL){
 		g_warning(L_("Couldn't find JID in %s's file"),jid);
 		return NULL;
@@ -374,32 +415,7 @@ char *data;
 				d=xmlnode_get_attrib(t,"blocked");
 				if (d!=NULL && d[0]!='\000') c->blocked=1;
 				else c->blocked=0;
-				d=xmlnode_get_attrib(t,"subscribe");
-				if (d) {
-					switch (d[0]) {
-						case 'f':
-							c->subscribe=SUB_FROM;
-							break;
-						case 't':
-							/* version 2.2.0 has a bug which causes
-							 * SUB_BOTH to be changed to SUB_TO
-							 * this will force resynchronisation with
-							 * user's roster. User will be asked for 
-							 * subscription authorisation if the
-							 * subscription was really "to"
-							 */
-							if (file_format_version<=0x02020000) c->subscribe=SUB_UNDEFINED;
-							else c->subscribe=SUB_TO;
-							break;
-						case 'b':
-							c->subscribe=SUB_BOTH;
-							break;
-						default:
-							c->subscribe=SUB_NONE;
-							break;
-					}
-				}
-				else c->subscribe=SUB_UNDEFINED;
+				c->subscribe=get_subscribe(t, file_format_version);
 				contacts=g_list_append(contacts,c);
 			}
 		}

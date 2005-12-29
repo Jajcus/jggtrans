@@ -234,8 +234,17 @@ Contact *c;
 	u=user_get_by_jid(from);
 	if (jid_is_me(to)){
 		debug(L_("Presence subscribe request sent to me"));
-		if (!u) presence_send_unsubscribed(stream,to,from);
-		else presence_send_subscribed(stream,to,from);
+		if (!u) {
+			presence_send_unsubscribed(stream,to,from);
+			return 0;
+		}
+		presence_send_subscribed(stream,to,from);
+		if (u->subscribe==SUB_UNDEFINED || u->subscribe==SUB_NONE) u->subscribe=SUB_TO;
+		else if (u->subscribe==SUB_FROM) u->subscribe=SUB_BOTH;
+		if (u->subscribe!=SUB_FROM && u->subscribe!=SUB_BOTH){
+			presence_send_subscribe(stream,to,from);
+		}
+		user_save(u);
 		return 0;
 	}
 	if (!u){
@@ -263,7 +272,9 @@ Contact *c;
 	debug(L_("Subscribed."));
 	presence_send_subscribed(stream,to,from);
 	bare=jid_normalized(from,FALSE);
-	presence_send_subscribe(stream,to,bare);
+	if (c->subscribe!=SUB_FROM && c->subscribe!=SUB_BOTH) {
+		presence_send_subscribe(stream,to,bare);
+	}
 	g_free(bare);
 	return 0;
 }
@@ -281,6 +292,9 @@ uin_t uin;
 		return -1;
 	}
 	if (jid_is_me(to)){
+		if (u->subscribe==SUB_NONE) u->subscribe=SUB_FROM;
+		else if (u->subscribe==SUB_UNDEFINED || u->subscribe==SUB_TO) u->subscribe=SUB_BOTH;
+		user_save(u);
 		debug(L_("Presence 'subscribed' sent to me"));
 		return 0;
 	}
@@ -316,6 +330,9 @@ uin_t uin;
 		return -1;
 	}
 	if (jid_is_me(to)){
+		if (u->subscribe==SUB_FROM) u->subscribe=SUB_NONE;
+		else if (u->subscribe==SUB_BOTH || c->subscribe==SUB_UNDEFINED) u->subscribe=SUB_TO;
+		user_save(u);
 		debug(L_("Presence 'unsubscribed' sent to me"));
 		return 0;
 	}
@@ -346,6 +363,9 @@ uin_t uin;
 
 	if (jid_is_me(to)){
 		debug(L_("Presence unsubscribe request sent to me"));
+		if (u->subscribe==SUB_TO || c->subscribe==SUB_UNDEFINED) u->subscribe=SUB_NONE;
+		else if (u->subscribe==SUB_BOTH) u->subscribe=SUB_FROM;
+		user_save(u);
 		presence_send_unsubscribed(stream,to,from);
 		return 0;
 	}
@@ -372,7 +392,6 @@ uin_t uin;
 	user_save(u);
 
 	if (s) session_update_contact(s,c);
-	
 	
 	debug(L_("Unsubscribed."));
 	presence_send_unsubscribed(stream,to,from);

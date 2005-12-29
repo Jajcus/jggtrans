@@ -22,7 +22,7 @@
 
 #include <libgadu.h>
 
-#define USER_FILE_FORMAT_VERSION 0x02020001U   /* first change after 2.2.0 */
+#define USER_FILE_FORMAT_VERSION 0x02020101U   /* first change after 2.2.1 */
 
 typedef enum subscription_type_e {
 	SUB_UNDEFINED=0,
@@ -61,6 +61,7 @@ typedef struct user_s{
 	gboolean ignore_unknown;
 	char *locale;
 	char * status;
+	SubscriptionType subscribe;
 
 	int confirmed;
 	int refcount;
