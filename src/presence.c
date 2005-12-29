@@ -331,7 +331,7 @@ uin_t uin;
 	}
 	if (jid_is_me(to)){
 		if (u->subscribe==SUB_FROM) u->subscribe=SUB_NONE;
-		else if (u->subscribe==SUB_BOTH || c->subscribe==SUB_UNDEFINED) u->subscribe=SUB_TO;
+		else if (u->subscribe==SUB_BOTH || u->subscribe==SUB_UNDEFINED) u->subscribe=SUB_TO;
 		user_save(u);
 		debug(L_("Presence 'unsubscribed' sent to me"));
 		return 0;
@@ -361,18 +361,18 @@ Session *s;
 Contact *c;
 uin_t uin;
 
-	if (jid_is_me(to)){
-		debug(L_("Presence unsubscribe request sent to me"));
-		if (u->subscribe==SUB_TO || c->subscribe==SUB_UNDEFINED) u->subscribe=SUB_NONE;
-		else if (u->subscribe==SUB_BOTH) u->subscribe=SUB_FROM;
-		user_save(u);
-		presence_send_unsubscribed(stream,to,from);
-		return 0;
-	}
 	u=user_get_by_jid(from);
 	if (!u){
 		g_warning(N_("Presence subscription from unknown user (%s)"),from);
+		presence_send_unsubscribed(stream,to,from);
 		return -1;
+	}
+	if (jid_is_me(to)){
+		debug(L_("Presence unsubscribe request sent to me"));
+		if (u->subscribe==SUB_TO || u->subscribe==SUB_UNDEFINED) u->subscribe=SUB_NONE;
+		else if (u->subscribe==SUB_BOTH) u->subscribe=SUB_FROM;
+		user_save(u);
+		return 0;
 	}
 	if (!jid_has_uin(to) || !jid_is_my(to)){
 		g_warning(N_("Bad 'to': %s"),to);
