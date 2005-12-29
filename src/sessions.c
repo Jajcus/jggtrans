@@ -975,6 +975,9 @@ static int compute_notify_type(Contact *c){
 int notify_type=0;
 
 	if (c->blocked) return GG_USER_BLOCKED;
+
+	/* do not rely on c->subscribe only, but rather use presence stanzas received,
+	 * so directed presece and privacy rules may work */
 	if (c->got_online) notify_type|=GG_USER_NORMAL-GG_USER_OFFLINE;
 	if (c->got_probe || c->subscribe==SUB_TO || c->subscribe==SUB_BOTH) notify_type|=GG_USER_OFFLINE;
 
