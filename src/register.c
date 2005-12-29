@@ -343,7 +343,6 @@ char *action;
 		return -1;
 	}
 	jabber_iq_send_result(s,from,to,id,NULL);
-	presence_send_subscribe(s,NULL,from);
 	return 0;
 }
 
@@ -707,7 +706,6 @@ Request *r;
 	else{
 		session->pubdir_change=change;
 	}
-	presence_send_subscribe(s,NULL,from);
 }
 
 int register_error(Request *r){
