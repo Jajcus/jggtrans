@@ -40,6 +40,11 @@
        Ten wpis powinien zgadzać się z <service/> w sekcji <browse/> pliku jabber.xml -->
   <service jid="gg.localhost"/>
 
+  <!-- Starsze wersje transportu używały zasobu "/registered" we własnym JIDzie.
+       Poniższa dyrektywa wyłącza to zachowanie. Użycie jej na istniejącej instalacji
+       może powodować problemy. -->
+  <bare_domain/> 
+
   <!-- A ten, z <service id="gglinker/> -->
   <connect>
     <ip>127.0.0.1</ip>

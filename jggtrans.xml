@@ -36,6 +36,10 @@
   <!-- this should match <service/> in <browse/> section of jabber.xml -->
   <service jid="gg.localhost"/>
 
+  <!-- older transport versions used "/registered" resource in own jid, this 
+       directive disables that behaviour (may break existing registered accounts). -->
+  <bare_domain/> 
+
   <!-- This connects the GG-transport process to the master process -->
   <connect>
     <ip>127.0.0.1</ip>

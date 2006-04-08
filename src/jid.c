@@ -146,7 +146,10 @@ const char *p;
 
 char * jid_my_registered(){
 
-	return g_strdup_printf("%s/registered",my_name);
+	if (bare_domain) 
+		return g_strdup(my_name);
+	else 
+		return g_strdup_printf("%s/registered",my_name);
 }
 
 char * jid_build(long unsigned int uin){

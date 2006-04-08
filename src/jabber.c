@@ -31,6 +31,7 @@ Stream *stream=NULL;
 char *stream_id=NULL;
 const char *secret;
 const char *my_name;
+int bare_domain = 0;
 int stop_it;
 
 enum jabber_state_e jabber_state;
@@ -223,6 +224,9 @@ xmlnode node;
 	my_name=xmlnode_get_attrib(node,"jid");
 	if (!my_name)
 		g_error(L_("<service/> without \"jid\" in config file"));
+
+	node=xmlnode_get_tag(config, "bare_domain");
+	if (node) bare_domain=1;
 
 	server=config_load_string("connect/ip");
 	if (!server)

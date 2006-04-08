@@ -37,10 +37,11 @@ enum jabber_state_e{
 extern enum jabber_state_e jabber_state;
 
 
-extern const char *my_name;
-extern char *register_instructions;
+extern const char *my_name;		/* transport domain name */
+extern char *register_instructions;     
 extern char *search_instructions;
 extern char *gateway_desc;
 extern char *gateway_prompt;
+extern int bare_domain;			/* when not "0" no "/registered" will be used in transport JID */
 
 #endif
