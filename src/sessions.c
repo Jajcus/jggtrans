@@ -457,7 +457,7 @@ time_t timestamp;
 			gg_event_free(event);
 			return FALSE;
 		case GG_EVENT_CONN_FAILED:
-			g_warning(N_("Login failed for %s"),s->jid);
+			g_warning(N_("Login failed for %s ,[GGnumber: %i]"),s->jid,s->ggs->uin);
 			if (s->req_id)
 				jabber_iq_send_error(s->s,s->jid,NULL,s->req_id,401,_("Unauthorized"));
 			else presence_send(s->s,NULL,s->user->jid,0,NULL,"Login failed",0);
@@ -467,7 +467,7 @@ time_t timestamp;
 			gg_event_free(event);
 			return FALSE;
 		case GG_EVENT_CONN_SUCCESS:
-			g_message(L_("Login succeed for %s"),s->jid);
+			g_message(L_("Login succeed for %s ,[GGnumber: %i]"),s->jid,s->ggs->uin);
 			if (s->req_id)
 				jabber_iq_send_result(s->s,s->jid,NULL,s->req_id,NULL);
 			if (s->req_id){
