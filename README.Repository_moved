@@ -1,0 +1,13 @@
+--- IMPORTANT ---
+
+SVN repository for GG Transport has been moved. The new URL is:
+
+	http://jggtrans.jajcus.net/svn/jggtrans/
+
+To switch your working copy to the new repository do:
+
+svn switch --relocate svn://svn.jabberstudio.org/jggtrans/svn/ http://jggtrans.jajcus.net/svn/jggtrans/
+
+For more current information about GG Transport see the new web site (when it is ready):
+
+	http://jggtrans.jajcus.net
