@@ -1,7 +1,7 @@
 /* $Id: gg_versions.h,v 1.2 2003/09/07 11:40:10 smoku Exp $ */
 
 /*
- *  (C) Copyright 2002-2005 Jacek Konieczny [jajcus(a)jajcus,net]
+ *  (C) Copyright 2002-2006 Jacek Konieczny [jajcus(a)jajcus,net]
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License Version 2 as

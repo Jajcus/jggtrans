@@ -1,7 +1,7 @@
 /* $Id: iq.c,v 1.48 2004/02/20 17:42:51 jajcus Exp $ */
 
 /*
- *  (C) Copyright 2002-2005 Jacek Konieczny [jajcus(a)jajcus,net]
+ *  (C) Copyright 2002-2006 Jacek Konieczny [jajcus(a)jajcus,net]
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License Version 2 as

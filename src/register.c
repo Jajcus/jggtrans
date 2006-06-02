@@ -1,7 +1,7 @@
 /* $Id: register.c,v 1.53 2004/03/28 13:24:35 jajcus Exp $ */
 
 /*
- *  (C) Copyright 2002-2005 Jacek Konieczny [jajcus(a)jajcus,net]
+ *  (C) Copyright 2002-2006 Jacek Konieczny [jajcus(a)jajcus,net]
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License Version 2 as
