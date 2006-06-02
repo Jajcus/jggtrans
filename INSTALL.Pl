@@ -1,7 +1,7 @@
 
 Wymagania.
 ===============
-Aby zbudowaæ jabber-gg-transport potrzeba:
+Aby zbudowaæ tranport GG potrzeba:
 
 	- glib >= 2.0.0 (http://www.gtk.org/)
 		Przetestowane z glib-2.8.3
