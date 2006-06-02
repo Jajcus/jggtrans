@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-07 21:17+0200\n"
+"POT-Creation-Date: 2006-06-02 19:17+0000\n"
 "PO-Revision-Date: 03/04/04 13:02\n"
 "Last-Translator: Sander Devrieze <s.devrieze@pandora.be>\n"
 "Language-Team: Nederlands\n"
@@ -151,70 +151,70 @@ msgstr "Niet toegestaan"
 msgid "Unsupported <iq/> type in: %s"
 msgstr "Niet ondersteund <iq/>-type in: %s"
 
-#: src/jabber.c:44
+#: src/jabber.c:45
 msgid "unexpected <stream:stream/>"
 msgstr "onverwachte <stream:stream/>"
 
-#: src/jabber.c:62
+#: src/jabber.c:63
 msgid "unexpected <hanshake/>"
 msgstr "onverwachte <hanshake/>"
 
-#: src/jabber.c:66
+#: src/jabber.c:67
 msgid "handshake OK"
 msgstr "handdruk OK"
 
-#: src/jabber.c:76
+#: src/jabber.c:77
 #, c-format
 msgid "Stream error: %s"
 msgstr "Stream-fout: %s"
 
-#: src/jabber.c:102
+#: src/jabber.c:103
 #, c-format
 msgid "Unsupported tag: %s"
 msgstr "Niet ondersteunde tag: %s"
 
-#: src/jabber.c:132
+#: src/jabber.c:133
 msgid "Stream Error"
 msgstr "Streamfout"
 
-#: src/jabber.c:140
+#: src/jabber.c:141
 #, c-format
 msgid "Unknown node type: %i"
 msgstr "Onbekend nodetype: %i"
 
-#: src/jabber.c:221
+#: src/jabber.c:222
 msgid "No <service/> found in config file"
 msgstr "Geen <service/>-tag gevonden in configuratiebestand"
 
-#: src/jabber.c:225
+#: src/jabber.c:226
 msgid "<service/> without \"jid\" in config file"
 msgstr "<service/> zonder \"jid\" in configuratiebestand"
 
-#: src/jabber.c:229
+#: src/jabber.c:233
 msgid "Jabberd server not found in config file"
 msgstr "Geen Jabberserver gevonden in configuratiebestand"
 
-#: src/jabber.c:233
+#: src/jabber.c:237
 msgid "Connect port not found in config file"
 msgstr "Poort niet gevonden in configuratiebestand"
 
-#: src/jabber.c:238
+#: src/jabber.c:242
 msgid "Connect secret not found in config file"
 msgstr "\"Server secret\" niet gevonden in configuratiebestand"
 
-#: src/jabber.c:242
+#: src/jabber.c:246
 msgid "Registration instructions not not found in config file"
 msgstr "Registratie-instructies niet gevonden in configuratiebestand"
 
-#: src/jabber.c:246
+#: src/jabber.c:250
 msgid "Search instructions not found in config file"
 msgstr "Zoekinstructies niet gevonden in configuratiebestand"
 
-#: src/jabber.c:250
+#: src/jabber.c:254
 msgid "Gateway instructions not found in config file"
 msgstr "Gateway-instructies niet gevonden in configuratiebestand"
 
-#: src/jabber.c:254
+#: src/jabber.c:258
 msgid "Gateway prompt not found in config file"
 msgstr "Gateway prompt niet gevonden in configuratiebestand"
 
@@ -223,7 +223,7 @@ msgstr "Gateway prompt niet gevonden in configuratiebestand"
 msgid "Non-digits before '@' in jid: %s"
 msgstr "Ongeldige tekens voor het @-teken in jid: %s"
 
-#: src/jid.c:53 src/jid.c:176
+#: src/jid.c:53 src/jid.c:179
 #, c-format
 msgid "slash<at (%i<%i) in %s"
 msgstr "slash<at (%i<%i) in %s"
@@ -241,32 +241,32 @@ msgstr ""
 msgid "Bad hostname (%s) in JID: %s"
 msgstr "Onjuiste hostnaam (%s) in JID: %s"
 
-#: src/jid.c:180
+#: src/jid.c:183
 #, c-format
 msgid "empty domain in %s"
 msgstr ""
 
-#: src/jid.c:187
+#: src/jid.c:190
 #, c-format
 msgid "node too long in %s"
 msgstr ""
 
-#: src/jid.c:198 src/jid.c:206
+#: src/jid.c:201 src/jid.c:209
 #, c-format
 msgid "domain too long in %s"
 msgstr ""
 
-#: src/jid.c:215
+#: src/jid.c:218
 #, fuzzy, c-format
 msgid "resource too long in %s"
 msgstr "Nieuwe bron %s van %s"
 
-#: src/jid.c:225 src/jid.c:232
+#: src/jid.c:228 src/jid.c:235
 #, fuzzy, c-format
 msgid "bad node: %s"
 msgstr "Ongeldige 'aan': %s"
 
-#: src/jid.c:238
+#: src/jid.c:241
 #, fuzzy, c-format
 msgid "bad domain: %s"
 msgstr "Ongeldige 'ontvanger' in: %s"
@@ -1289,8 +1289,8 @@ msgid "Server closed connection of %s"
 msgstr "Server heeft verbinding van %s verbroken"
 
 #: src/sessions.c:460
-#, c-format
-msgid "Login failed for %s"
+#, fuzzy, c-format
+msgid "Login failed for %s ,[GGnumber: %i]"
 msgstr "Aanmelden mislukt voor %s"
 
 #: src/sessions.c:462
@@ -1298,8 +1298,8 @@ msgid "Unauthorized"
 msgstr "Authorisatie ongedaan gemaakt"
 
 #: src/sessions.c:470
-#, c-format
-msgid "Login succeed for %s"
+#, fuzzy, c-format
+msgid "Login succeed for %s ,[GGnumber: %i]"
 msgstr "Aanmelden gelukt voor %s"
 
 #: src/sessions.c:531
