@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jabber-gg-transport 2.0.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-07 21:17+0200\n"
+"POT-Creation-Date: 2006-06-02 19:17+0000\n"
 "PO-Revision-Date: 2004-03-10 13:15+0200\n"
 "Last-Translator: Jacek Konieczny <jajcus@pld.org.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -145,70 +145,70 @@ msgstr "Nie wolno"
 msgid "Unsupported <iq/> type in: %s"
 msgstr "Nieobsługiwany typ <iq/> w: %s"
 
-#: src/jabber.c:44
+#: src/jabber.c:45
 msgid "unexpected <stream:stream/>"
 msgstr "nieoczekiwany <stream:stream/>"
 
-#: src/jabber.c:62
+#: src/jabber.c:63
 msgid "unexpected <hanshake/>"
 msgstr "nieoczekiwany <hanshake/>"
 
-#: src/jabber.c:66
+#: src/jabber.c:67
 msgid "handshake OK"
 msgstr "handshake OK"
 
-#: src/jabber.c:76
+#: src/jabber.c:77
 #, c-format
 msgid "Stream error: %s"
 msgstr "Błąd strumienia: %s"
 
-#: src/jabber.c:102
+#: src/jabber.c:103
 #, c-format
 msgid "Unsupported tag: %s"
 msgstr "Nieobsługiwany tag: %s"
 
-#: src/jabber.c:132
+#: src/jabber.c:133
 msgid "Stream Error"
 msgstr "Błąd Strumienia"
 
-#: src/jabber.c:140
+#: src/jabber.c:141
 #, c-format
 msgid "Unknown node type: %i"
 msgstr "Nieznany typ węzła: %i"
 
-#: src/jabber.c:221
+#: src/jabber.c:222
 msgid "No <service/> found in config file"
 msgstr "Nie znaleziony tag <service/> w pliku konfiguracyjnym"
 
-#: src/jabber.c:225
+#: src/jabber.c:226
 msgid "<service/> without \"jid\" in config file"
 msgstr "<service/> bez \"jid\" w pliku konfiguracyjnym"
 
-#: src/jabber.c:229
+#: src/jabber.c:233
 msgid "Jabberd server not found in config file"
 msgstr "Nie znaleziony serwer jabbera w pliku konfiguracyjnym"
 
-#: src/jabber.c:233
+#: src/jabber.c:237
 msgid "Connect port not found in config file"
 msgstr "Port połączenia nie znaleziony w pliku konfiguracyjnym"
 
-#: src/jabber.c:238
+#: src/jabber.c:242
 msgid "Connect secret not found in config file"
 msgstr "Hasło połączenia nie znalezione w pliku konfiguracyjnym"
 
-#: src/jabber.c:242
+#: src/jabber.c:246
 msgid "Registration instructions not not found in config file"
 msgstr "Nie znaleziono instrukcji rejestracji w pliku konfiguracyjnym"
 
-#: src/jabber.c:246
+#: src/jabber.c:250
 msgid "Search instructions not found in config file"
 msgstr "Nie znaleziono instrukcji wyszukiwania w pliku konfiguracyjnym"
 
-#: src/jabber.c:250
+#: src/jabber.c:254
 msgid "Gateway instructions not found in config file"
 msgstr "Nie znaleziono instrukcji dla bramki w pliku konfiguracyjnym"
 
-#: src/jabber.c:254
+#: src/jabber.c:258
 msgid "Gateway prompt not found in config file"
 msgstr "Nie znaleziono promptu dla bramki w pliku konfiguracyjnym"
 
@@ -217,7 +217,7 @@ msgstr "Nie znaleziono promptu dla bramki w pliku konfiguracyjnym"
 msgid "Non-digits before '@' in jid: %s"
 msgstr "Nie-cyfry przed @ w jid: %s"
 
-#: src/jid.c:53 src/jid.c:176
+#: src/jid.c:53 src/jid.c:179
 #, c-format
 msgid "slash<at (%i<%i) in %s"
 msgstr "slash<at (%i<%i) w %s"
@@ -235,32 +235,32 @@ msgstr "Domena JID nie przechodzi ToUnicode"
 msgid "Bad hostname (%s) in JID: %s"
 msgstr "Nieprawidłowa nazwa hosta (%s) w JID: %s"
 
-#: src/jid.c:180
+#: src/jid.c:183
 #, c-format
 msgid "empty domain in %s"
 msgstr "pusta domena w %s"
 
-#: src/jid.c:187
+#: src/jid.c:190
 #, c-format
 msgid "node too long in %s"
 msgstr "węzeł za długi w %s"
 
-#: src/jid.c:198 src/jid.c:206
+#: src/jid.c:201 src/jid.c:209
 #, c-format
 msgid "domain too long in %s"
 msgstr "domena za długa w %s"
 
-#: src/jid.c:215
+#: src/jid.c:218
 #, c-format
 msgid "resource too long in %s"
 msgstr "zasób za długi w %s"
 
-#: src/jid.c:225 src/jid.c:232
+#: src/jid.c:228 src/jid.c:235
 #, c-format
 msgid "bad node: %s"
 msgstr "zła nazwa użytkownika: %s"
 
-#: src/jid.c:238
+#: src/jid.c:241
 #, c-format
 msgid "bad domain: %s"
 msgstr "zła 'domena': %s"
@@ -503,7 +503,6 @@ msgid "\"Only for friends\" mode"
 msgstr "Tryb \"Tylko dla przyjaciół\""
 
 #: src/message.c:65
-#, fuzzy
 msgid "\"Invisible\" mode"
 msgstr "Niewidzialność"
 
@@ -558,14 +557,12 @@ msgid "friends only: off"
 msgstr "Tylko dla przyjaciół: wyłączony"
 
 #: src/message.c:352
-#, fuzzy
 msgid "invisible: on"
-msgstr "(niewidzialny)"
+msgstr "niewidzialność: włączona"
 
 #: src/message.c:354
-#, fuzzy
 msgid "invisible: off"
-msgstr "(niewidzialny)"
+msgstr "niewidzialność: wyłączona"
 
 #: src/message.c:383
 #, c-format
@@ -656,11 +653,13 @@ msgstr ""
 "Obecne ustawienia:"
 
 #: src/message.c:574
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s\n"
 "  status: %s%s%s"
-msgstr "status: %s%s%s"
+msgstr ""
+"%s\n"
+"  status: %s%s%s"
 
 #: src/message.c:579
 #, c-format
@@ -1075,7 +1074,7 @@ msgstr "Zmieniono hasło użytkownika '%s'"
 
 #: src/register.c:467 src/register.c:571
 msgid "User still in use, try later."
-msgstr ""
+msgstr "Użytkownik aktywny, spróbuj później."
 
 #: src/register.c:512
 #, c-format
@@ -1288,8 +1287,8 @@ msgstr "Serwer zamknął połączenie %s"
 
 #: src/sessions.c:460
 #, c-format
-msgid "Login failed for %s"
-msgstr "Nieudane logowanie dla %s"
+msgid "Login failed for %s ,[GGnumber: %i]"
+msgstr "Nieudane logowanie dla %s, [numer GG: %i]"
 
 #: src/sessions.c:462
 msgid "Unauthorized"
@@ -1297,8 +1296,8 @@ msgstr "Nieupoważniony"
 
 #: src/sessions.c:470
 #, c-format
-msgid "Login succeed for %s"
-msgstr "Udane logowanie dla %s"
+msgid "Login succeed for %s ,[GGnumber: %i]"
+msgstr "Udane logowanie dla %s, [numer GG: %i]"
 
 #: src/sessions.c:531
 #, c-format
@@ -1364,9 +1363,9 @@ msgid "Bad JID: '%s'"
 msgstr "Zły JID: '%s'"
 
 #: src/sessions.c:787
-#, fuzzy, c-format
+#, c-format
 msgid "User deleted: '%s'"
-msgstr "Adres IP użytkownika: %s\n"
+msgstr "Usunięty użytkownik: %s"
 
 #: src/sessions.c:817
 #, c-format
@@ -1391,9 +1390,9 @@ msgid "Creating new session"
 msgstr "Tworzenie nowej sesji"
 
 #: src/sessions.c:861
-#, fuzzy, c-format
+#, c-format
 msgid "Changing gg status to %i (%s)"
-msgstr "Zmiana statusu gg na %i"
+msgstr "Zmiana statusu gg na %i (%s)"
 
 #: src/sessions.c:864
 #, c-format
@@ -1745,26 +1744,3 @@ msgstr "%sStatus: %i"
 #, c-format
 msgid "%sLast update: %s"
 msgstr "%sOstatnia aktualizacja: %s"
-
-#~ msgid ""
-#~ "\"Invisible\" mode. As an argument you should pass 'on', 'off' or a "
-#~ "status message to be shown when invisible."
-#~ msgstr ""
-#~ "\"Niewidzialność\". Jako argument podaj 'on', 'off' albo status jaki ma "
-#~ "być pokazywany użytkownikom GG w czasie niewidzialności."
-
-#~ msgid ""
-#~ "Status message to show to GG users when not available. Use 'off' to use "
-#~ "the one set with the command described above."
-#~ msgstr ""
-#~ "Status pokazywany użytkownikom GG podczas niedostępności. Użyj 'off' aby "
-#~ "używać status ustawiony poleceniem 'status'."
-
-#~ msgid "invisible: %s status: %s%s%s"
-#~ msgstr "niewidoczność: %s status: %s%s%s"
-
-#~ msgid "offline status: %s%s%s"
-#~ msgstr "status offline: %s%s%s"
-
-#~ msgid "Setting gg status to %i (%s)"
-#~ msgstr "Zmiana statusu gg na %i (%s)"
