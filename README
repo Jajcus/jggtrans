@@ -18,10 +18,9 @@ You can start it from root account, giving "-u" and maybe "-g" options
 --- it will switch to given uid/gid then.
 
 Look for more information and report any bugs or feature requests at
-JabberStudio:
-http://www.jabberstudio.org/projects/jabber-gg-transport/project/view.php
+the project's site: http://jggtrans.jajcus.net/
 
-There is also a mailing list (Polish): jggtrans@lists.bnet.pl
-To subscribe send a message to: jggtrans-subscribe@lists.bnet.pl
+There is also a mailing list (Polish): jggtrans@lists.jajcus.net
+To subscribe send a message to: jggtrans-subscribe@lists.jajcus.net
 
 # vi: tw=72 fo=tcql1 
