@@ -30,6 +30,7 @@
 #include <ctype.h>
 #include <time.h>
 #include <locale.h>
+#include <time.h>
 
 #ifdef HAVE_LANGINFO_CODESET
 #  include <langinfo.h>
@@ -175,7 +176,18 @@ static GSourceFuncs signal_source_funcs={
 
 void log_handler_file(FILE *f,const gchar *log_domain, GLogLevelFlags log_level,
 			const gchar *message){
+struct tm localTime;
+time_t now = time(0);
 
+	localtime_r(&now, &localTime);
+	fprintf(f,"%04d-%02d-%02d %02d:%02d:%02d ",
+		localTime.tm_year + 1900,
+		localTime.tm_mon + 1,
+		localTime.tm_mday,
+		localTime.tm_hour,
+		localTime.tm_min,
+		localTime.tm_sec
+		);
 	if (log_domain && log_domain[0]) fprintf(f,"%s: ",log_domain);
 	switch(log_level){
 		case G_LOG_LEVEL_ERROR:
@@ -188,14 +200,11 @@ void log_handler_file(FILE *f,const gchar *log_domain, GLogLevelFlags log_level,
 			fprintf(f,_("Warning: %s\n"),message);
 			break;
 		case G_LOG_LEVEL_MESSAGE:
-			if (debug_level<-1) break;
 		case G_LOG_LEVEL_INFO:
-			if (debug_level<0) break;
 			fprintf(f,"%s\n",message);
 			break;
 		case G_LOG_LEVEL_DEBUG:
-			if (debug_level>0)
-				fprintf(f,_("Debug: %s\n"),message);
+			fprintf(f,_("Debug: %s\n"),message);
 			break;
 		default:
 			fprintf(f,_("Unknown: %s\n"),message);
@@ -217,16 +226,13 @@ void log_handler_syslog(const gchar *log_domain, GLogLevelFlags log_level,
 			syslog(LOG_WARNING,_("Warning: %s"),message);
 			break;
 		case G_LOG_LEVEL_MESSAGE:
-			if (debug_level<-1) break;
 			syslog(LOG_NOTICE,"%s",message);
 			break;
 		case G_LOG_LEVEL_INFO:
-			if (debug_level<0) break;
 			syslog(LOG_NOTICE,"%s",message);
 			break;
 		case G_LOG_LEVEL_DEBUG:
-			if (debug_level>0)
-				syslog(LOG_DEBUG,_("Debug: %s\n"),message);
+			syslog(LOG_DEBUG,_("Debug: %s\n"),message);
 			break;
 		default:
 			syslog(LOG_NOTICE,_("Unknown: %s\n"),message);
@@ -263,10 +269,23 @@ char *lc_ctype,*lc_messages,*td_codeset,*ret;
 
 void log_handler(const gchar *log_domain, GLogLevelFlags log_level,
 			const gchar *message, gpointer user_data){
-
 #ifdef ENABLE_NLS
 char *lc_ctype,*lc_messages,*td_codeset;
+#endif
 
+	switch(log_level){
+		case G_LOG_LEVEL_MESSAGE:
+			if (debug_level<-1) return;
+			break;
+		case G_LOG_LEVEL_INFO:
+			if (debug_level<0) return;
+			break;
+		case G_LOG_LEVEL_DEBUG:
+			if (debug_level<=0) return;
+			break;
+	}
+
+#ifdef ENABLE_NLS
 	td_codeset=g_strdup(bind_textdomain_codeset(PACKAGE,NULL));
 	lc_ctype=g_strdup(setlocale(LC_CTYPE,NULL));
 	lc_messages=g_strdup(setlocale(LC_MESSAGES,NULL));
@@ -279,6 +298,7 @@ char *lc_ctype,*lc_messages,*td_codeset;
 #endif
 
 	log_level&=G_LOG_LEVEL_MASK;
+
 	if (foreground) log_handler_file(stderr,log_domain,log_level,message);
 	if (log_file) log_handler_file(log_file,log_domain,log_level,message);
 	if (use_syslog) log_handler_syslog(log_domain,log_level,message);
