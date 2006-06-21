@@ -965,8 +965,7 @@ int num_resources=0;
 		session_send_status(s);
 	}
 
-	if (s->connected) session_send_status(s);
-	else return session_try_login(s);
+	if (!s->ggs) return session_try_login(s);
 
 	return 0;
 }
