@@ -163,13 +163,13 @@
  <!--
  <servers>
         <hub tls="no"/>
+        <server tls="no">217.17.45.143</server>
+        <server tls="no">217.17.45.144</server>
+        <server tls="no">217.17.45.145</server>
+        <server tls="no">217.17.45.146</server>
+        <server tls="no">217.17.45.147</server>
         <server tls="no">217.17.41.92</server>
-        <server tls="no">217.17.41.85</server>
-        <server tls="no">217.17.41.83</server>
-        <server tls="no">217.17.41.88</server>
-        <server tls="no">217.17.41.84</server>
-        <server tls="no">217.17.41.86</server>
-        <server tls="no">217.17.41.87</server>
+        <server tls="no">217.17.41.93</server>
  </servers>
 -->
 
