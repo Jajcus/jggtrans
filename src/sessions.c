@@ -191,7 +191,7 @@ GgServer *server;
 		gg_servers=g_list_append(gg_servers, server);
 
 		server=g_new(GgServer, 1);
-		inet_aton("217.17.41.85", &server->addr);
+		inet_aton("217.17.45.143", &server->addr);
 		server->port=8074;
 		server->tls=0;
 		gg_servers=g_list_append(gg_servers, server);
@@ -427,9 +427,9 @@ time_t timestamp;
 	user_load_locale(s->user);
 	debug(L_("Checking error conditions..."));
 	if (condition&(G_IO_ERR|G_IO_NVAL)){
-		if (condition&G_IO_ERR) g_warning(N_("Error on connection for %s"),s->jid);
+		if (condition&G_IO_ERR) g_warning(N_("Error on connection for %s ,[GGnumber: %i]"),s->jid,s->ggs->uin);
 		if (condition&G_IO_HUP){
-			g_warning(N_("Hangup on connection for %s"),s->jid);
+			g_warning(N_("Hangup on connection for %s ,[GGnumber: %i]"),s->jid,s->ggs->uin);
 			s->current_server=g_list_next(s->current_server);
 			if(!s->connected && s->current_server!=NULL){
 				session_try_login(s);
@@ -445,14 +445,14 @@ time_t timestamp;
 	debug(L_("watching fd (gg_debug_level=%i)..."),gg_debug_level);
 	event=gg_watch_fd(s->ggs);
 	if (!event){
-		g_warning(N_("Connection broken. Session of %s"),s->jid);
+		g_warning(N_("Connection broken. Session of %s ,[GGnumber: %i]"),s->jid,s->ggs->uin);
 		session_broken(s);
 		return FALSE;
 	}
 
 	switch(event->type){
 		case GG_EVENT_DISCONNECT:
-			g_warning(N_("Server closed connection of %s"),s->jid);
+			g_warning(N_("Server closed connection of %s, [GGnumber: %i]"),s->jid,s->ggs->uin);
 			session_broken(s);
 			gg_event_free(event);
 			return FALSE;
