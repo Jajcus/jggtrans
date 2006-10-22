@@ -491,8 +491,6 @@ GString *usernamestr;
 	xmlnode_insert_tag(query,"last");
 	xmlnode_insert_tag(query,"nick");
 	xmlnode_insert_tag(query,"city");
-	xmlnode_insert_tag(query,"born");
-	xmlnode_insert_tag(query,"gender");
 
 	instr=xmlnode_insert_tag(query,"instructions");
 	xmlnode_insert_cdata(instr,register_instructions,-1);
@@ -658,12 +656,6 @@ Request *r;
 
 	node=xmlnode_get_tag(q,"city");
 	if (node) city=xmlnode_get_data(node);
-
-	node=xmlnode_get_tag(q,"gender");
-	if (node) sex=xmlnode_get_data(node);
-
-	node=xmlnode_get_tag(q,"born");
-	if (node) born=xmlnode_get_data(node);
 
 	if (!first && !last && !nick && !city && !born && !sex){
 			if (!uin && !password){
