@@ -452,8 +452,10 @@ void jabber_iq_get_register(Stream *s,const char *from,const char *to,const char
 xmlnode node;
 xmlnode iq;
 xmlnode query;
+xmlnode username;
 xmlnode instr;
 User *user;
+GString *usernamestr;
 
 	node=xmlnode_get_firstchild(q);
 	if (node){
@@ -477,7 +479,7 @@ User *user;
 	xmlnode_put_attrib(query,"xmlns","jabber:iq:register");
 
 	/* needed to register existing user */
-	xmlnode_insert_tag(query,"username");
+	username = xmlnode_insert_tag(query,"username");
 	xmlnode_insert_tag(query,"password");
 
 	/* needed to register new user - not supported until DataGathering gets
@@ -497,8 +499,14 @@ User *user;
 
 	if (user==NULL)
 		register_form(query,user);
-	else
-		register_change_form(query,user);
+        else {
+                usernamestr=g_string_new("");
+                g_string_printf(usernamestr,"%d",user->uin);
+                xmlnode_insert_cdata(username,usernamestr->str,-1);
+                g_string_free(usernamestr,TRUE);
+                xmlnode_insert_tag(query,"registered");
+                register_change_form(query,user);
+        }
 
 	stream_write(s,iq);
 	xmlnode_free(iq);
