@@ -97,7 +97,7 @@ int o=0;
 int i;
 
 	if (str==NULL) return NULL;
-	if (buf_len<(strlen(str)+1)){
+	if (buf_len<(strlen(str)*2+1)){
 		buf_len=strlen(str)*2+1; /* this should always be enough */
 		buf=(char *)g_realloc(buf,buf_len);
 		assert(buf!=NULL);
