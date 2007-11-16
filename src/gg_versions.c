@@ -50,9 +50,13 @@ char *gg_version[]={
 	"7.0 (build 1)",			/* 0x25 */
 	"7.0 (build 20)",			/* 0x26 */
 	"7.0 (build 22)",			/* 0x27 */
-	NULL,NULL,NULL,NULL,			/* 0x28 - 0x31 */
-	NULL,NULL,NULL,NULL,			/* 0x32 - 0x35 */
-	NULL,NULL,NULL,NULL,			/* 0x36 - 0x39 */
-	NULL,NULL,NULL,NULL,			/* 0x3a - 0x3d */
-	NULL,NULL				/* 0x3e - 0x3f */
+	"7.5.0 (build 2201)",			/* 0x28 */
+	"7.6 (build 1688)",			/* 0x29 */
+	"7.7 (build 3315)",			/* 0x2a */
+	NULL,					/* 0x2b */
+	NULL,NULL,NULL,NULL,			/* 0x2c - 0x2f */
+	NULL,NULL,NULL,NULL,			/* 0x30 - 0x33 */
+	NULL,NULL,NULL,NULL,			/* 0x34 - 0x37 */
+	NULL,NULL,NULL,NULL,			/* 0x38 - 0x3b */
+	NULL,NULL,NULL,NULL,			/* 0x3a - 0x3f */
 };
