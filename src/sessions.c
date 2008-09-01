@@ -484,7 +484,7 @@ time_t timestamp;
 			}
 			s->connected=1;
 			session_send_status(s);
-			if (s->user->contacts) session_send_notify(s);
+			session_send_notify(s);
 			presence_send(s->s,NULL,s->user->jid,s->user->invisible?-1:1,NULL,s->gg_status_descr,0);
 
 			if (s->timeout_func) g_source_remove(s->timeout_func);
