@@ -439,6 +439,7 @@ char *data;
 	g_assert(njid!=NULL);
 	g_hash_table_insert(users_jid,(gpointer)njid,(gpointer)u);
 	u->confirmed=1;
+	u->subscribe=subscribe;
 	return u;
 }
 
