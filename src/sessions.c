@@ -733,7 +733,9 @@ GgServer *serv;
 	g_warning(N_("Trying to log in on server %u"),
 			g_list_position(gg_servers, s->current_server));
 
+	if (s->ping_timeout_func) g_source_remove(s->ping_timeout_func);
 	if (s->timeout_func) g_source_remove(s->timeout_func);
+	if (s->ping_timer) g_timer_destroy(s->ping_timer);
 	if (s->ggs) {
 		gg_free_session(s->ggs);
 		s->ggs=NULL;
