@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jabber-gg-transport 2.0.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-05 15:08+0200\n"
+"POT-Creation-Date: 2010-04-05 21:39+0200\n"
 "PO-Revision-Date: 2004-03-10 13:15+0200\n"
 "Last-Translator: Jacek Konieczny <jajcus@pld.org.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -523,9 +523,9 @@ msgid "Remove a user from, or view the ignore list"
 msgstr "Usunięcie użytkownika z listy ignorowanych lub pokazanie tej listy"
 
 #: src/message.c:70
-msgid "Status message to show to GG users. Use 'off' to use Jabber status."
+msgid "Status message to show to GG users. Use 'st off' to use Jabber status."
 msgstr ""
-"Komunikat statusu pokazywany użytkownikom GG. Użyj 'off' aby pokazywany był "
+"Komunikat statusu pokazywany użytkownikom GG. Użyj 'st off' aby pokazywany był "
 "status z Jabbera."
 
 #: src/message.c:178
@@ -755,87 +755,79 @@ msgstr "Anonimowa wiadomość? %s"
 msgid "%s not logged in. While processing %s"
 msgstr "%s nie jest zalogowany. Podczas przetwarzania %s"
 
-#: src/message.c:677 src/presence.c:217 src/search.c:199 src/search.c:244
+#: src/message.c:677 src/presence.c:216 src/search.c:199 src/search.c:244
 #: src/search.c:295
 msgid "Not logged in"
 msgstr "Nie zalogowany"
 
-#: src/presence.c:216
+#: src/presence.c:215
 #, c-format
 msgid "presence: No such session: %s"
 msgstr "obecność: Nie ma takiej sesji: %s"
 
-#: src/presence.c:236
+#: src/presence.c:235
 msgid "Presence subscribe request sent to me"
 msgstr "Otrzymałem prośbę zapisania na moją obecność"
 
-#: src/presence.c:251 src/presence.c:290 src/presence.c:366
+#: src/presence.c:250 src/presence.c:289 src/presence.c:365
 #, c-format
 msgid "Presence subscription from unknown user (%s)"
 msgstr "Prośba zapisania na obecność od nieznanego użytkownika (%s)"
 
-#: src/presence.c:256 src/presence.c:302 src/presence.c:340 src/presence.c:378
+#: src/presence.c:255 src/presence.c:301 src/presence.c:339 src/presence.c:377
 #, c-format
 msgid "Bad 'to': %s"
 msgstr "Zły 'do': %s"
 
-#: src/presence.c:260
+#: src/presence.c:259
 #, c-format
 msgid "Subscribing %s to %s..."
 msgstr "Zapisuję %s na %s..."
 
-#: src/presence.c:264
+#: src/presence.c:263
 msgid "Subscription failed"
 msgstr "Zapisywanie nie powiodło się"
 
-#: src/presence.c:272
+#: src/presence.c:271
 msgid "Subscribed."
 msgstr "Zapisany."
 
-#: src/presence.c:298
+#: src/presence.c:297
 msgid "Presence 'subscribed' sent to me"
 msgstr "Otrzymano potwierdzenie subskrypcji obecności"
 
-#: src/presence.c:306
+#: src/presence.c:305
 #, c-format
 msgid "%s accepted %s's subscription..."
 msgstr "%s zaakceptował subskrypcję %s..."
 
-#: src/presence.c:329
+#: src/presence.c:328
 #, c-format
 msgid "Presence 'unsubscribed' from unknown user (%s)"
 msgstr ""
 "Otrzymano odwołanie subskrypcji obecności od nieznanego użytkownika (%s)"
 
-#: src/presence.c:336
+#: src/presence.c:335
 msgid "Presence 'unsubscribed' sent to me"
 msgstr "Otrzymano odwołanie subskrypcji obecności"
 
-#: src/presence.c:344
+#: src/presence.c:343
 #, c-format
 msgid "%s denied/canceled %s's subscription..."
 msgstr "%s odmówił lub odwołał subskrypcję %s"
 
-#: src/presence.c:371
+#: src/presence.c:370
 msgid "Presence unsubscribe request sent to me"
 msgstr "Otrzymałem prośbę wypisania zapisu na obecność"
 
-#: src/presence.c:382
+#: src/presence.c:381
 #, c-format
 msgid "Unsubscribing %s from %s..."
 msgstr "Wypisuję %s z %s..."
 
-#: src/presence.c:396
+#: src/presence.c:395
 msgid "Unsubscribed."
 msgstr "Wypisany."
-
-#: src/presence.c:435 src/presence.c:472 src/register.c:530 src/search.c:388
-msgid "Not Found"
-msgstr "Nie Znaleziono"
-
-#: src/presence.c:443
-msgid "Not registered"
-msgstr "Nie zarejestrowany"
 
 #: src/presence.c:500 src/presence.c:521
 #, c-format
@@ -1091,6 +1083,10 @@ msgstr "Wyrejestrowanie '%s' nie powiodło się"
 msgid "Tried to unregister '%s' who was never registered"
 msgstr "Próba wyrejestrowania '%s' który nie był zarejestrowany"
 
+#: src/register.c:530 src/search.c:388
+msgid "Not Found"
+msgstr "Nie Znaleziono"
+
 #: src/register.c:559
 #, c-format
 msgid "User '%s' unregistered"
@@ -1264,14 +1260,14 @@ msgid "Checking error conditions..."
 msgstr "Sprawdzanie warunków błedów..."
 
 #: src/sessions.c:430
-#, fuzzy, c-format
+#, c-format
 msgid "Error on connection for %s ,[GGnumber: %i]"
-msgstr "Błąd połączenia dla %s"
+msgstr "Błąd połączenia dla %s, [numer GG: %i]"
 
 #: src/sessions.c:432
-#, fuzzy, c-format
+#, c-format
 msgid "Hangup on connection for %s ,[GGnumber: %i]"
-msgstr "Rozłączenie połączenia dla %s"
+msgstr "Rozłączenie połączenia dla %s, [numer GG: %i]"
 
 #: src/sessions.c:439
 #, c-format
@@ -1284,14 +1280,14 @@ msgid "watching fd (gg_debug_level=%i)..."
 msgstr "obserwowanie fd (gg_debug_level=%i)..."
 
 #: src/sessions.c:448
-#, fuzzy, c-format
+#, c-format
 msgid "Connection broken. Session of %s ,[GGnumber: %i]"
-msgstr "Zerwane połączenie. Sesja %s"
+msgstr "Zerwane połączenie. Sesja %s, [numer GG: %i]"
 
 #: src/sessions.c:455
-#, fuzzy, c-format
+#, c-format
 msgid "Server closed connection of %s, [GGnumber: %i]"
-msgstr "Serwer zamknął połączenie %s"
+msgstr "Serwer zamknął połączenie %s, [numer GG: %i]"
 
 #: src/sessions.c:460
 #, c-format
@@ -1326,215 +1322,215 @@ msgstr "Wiadomość Systemowa GG #%i"
 msgid "Ignoring the message."
 msgstr "Ignoruję wiadomość."
 
-#: src/sessions.c:579
+#: src/sessions.c:580
 #, c-format
 msgid "Pong! ping time: %fs"
 msgstr "Pong! czas pingu: %fs"
 
-#: src/sessions.c:600
+#: src/sessions.c:601
 #, c-format
 msgid "Wrong gg userlist type: %i"
 msgstr "Zły typ listy użytkowników GG: %i"
 
-#: src/sessions.c:603
+#: src/sessions.c:604
 #, c-format
 msgid "Unknown GG event: %i"
 msgstr "Nieznane zdarzenie GG: %i"
 
-#: src/sessions.c:610
+#: src/sessions.c:611
 msgid "io handler done..."
 msgstr "io handler kończy..."
 
-#: src/sessions.c:619
+#: src/sessions.c:620
 #, c-format
 msgid "Deleting session for '%s'"
 msgstr "Usuwanie sesji dla '%s'"
 
-#: src/sessions.c:733
+#: src/sessions.c:736
 #, c-format
 msgid "Trying to log in on server %u"
 msgstr "Próba logowania na serwerze %u"
 
-#: src/sessions.c:759
+#: src/sessions.c:765
 #, c-format
 msgid "Turning TLS %s"
 msgstr "TLS: %s"
 
-#: src/sessions.c:779
+#: src/sessions.c:785
 #, c-format
 msgid "Creating session for '%s'"
 msgstr "Tworzenie sesji dla '%s'"
 
-#: src/sessions.c:782 src/sessions.c:822 src/users.c:490
+#: src/sessions.c:788 src/sessions.c:828 src/users.c:490
 #, c-format
 msgid "Bad JID: '%s'"
 msgstr "Zły JID: '%s'"
 
-#: src/sessions.c:789
+#: src/sessions.c:795
 #, c-format
 msgid "User deleted: '%s'"
 msgstr "Usunięty użytkownik: %s"
 
-#: src/sessions.c:819
+#: src/sessions.c:825
 #, c-format
 msgid "Looking up session for '%s'"
 msgstr "Szukanie sesji dla '%s'"
 
-#: src/sessions.c:826
+#: src/sessions.c:832
 #, c-format
 msgid "Using '%s' as key"
 msgstr "Używam '%s' jako klucza"
 
-#: src/sessions.c:830
+#: src/sessions.c:836
 msgid "Session not found"
 msgstr "Sesja nie znaleziona"
 
-#: src/sessions.c:835
+#: src/sessions.c:841
 msgid "User loaded, processing his subscriptions."
 msgstr "Użytkownik załadowany, przetwarzanie jego listy kontaktów."
 
-#: src/sessions.c:851
+#: src/sessions.c:857
 msgid "Creating new session"
 msgstr "Tworzenie nowej sesji"
 
-#: src/sessions.c:863
+#: src/sessions.c:869
 #, c-format
 msgid "Changing gg status to %i (%s)"
 msgstr "Zmiana statusu gg na %i (%s)"
 
-#: src/sessions.c:866
+#: src/sessions.c:872
 #, c-format
 msgid "Changing gg status to %i"
 msgstr "Zmiana statusu gg na %i"
 
-#: src/sessions.c:876
+#: src/sessions.c:882
 #, c-format
 msgid "Removing resource %s of %s"
 msgstr "Usuwanie zasobu %s dla %s"
 
-#: src/sessions.c:904
+#: src/sessions.c:910
 #, c-format
 msgid "Delayed removal of resource %s of %s"
 msgstr "Odroczone usuwanie zasobu %s dla %s"
 
-#: src/sessions.c:939
+#: src/sessions.c:945
 #, c-format
 msgid "Unknown resource %s of %s"
 msgstr "Nieznany zasób %s dla %s"
 
-#: src/sessions.c:946
+#: src/sessions.c:952
 #, c-format
 msgid "Delaying removal of resource %s of %s"
 msgstr "Odraczam usunięcie zasobu %s dla %s"
 
-#: src/sessions.c:957
+#: src/sessions.c:963
 #, c-format
 msgid "New resource %s of %s"
 msgstr "Nowy zasób %s dla %s"
 
-#: src/sessions.c:1085
+#: src/sessions.c:1091
 #, c-format
 msgid "%sSession: %p"
 msgstr "%sSesja: %p"
 
-#: src/sessions.c:1087
+#: src/sessions.c:1093
 #, c-format
 msgid "%sUser:"
 msgstr "%sUżytkownik:"
 
-#: src/sessions.c:1089
+#: src/sessions.c:1095
 #, c-format
 msgid "%sResources:"
 msgstr "%sZasoby:"
 
-#: src/sessions.c:1093
+#: src/sessions.c:1099
 #, c-format
 msgid "%sResource: %p%s"
 msgstr "%sZasób: %p%s"
 
-#: src/sessions.c:1093
+#: src/sessions.c:1099
 msgid " (current)"
 msgstr " (obecny)"
 
-#: src/sessions.c:1096
+#: src/sessions.c:1102
 #, c-format
 msgid "%sPriority: %i"
 msgstr "%sPriorytet: %i"
 
-#: src/sessions.c:1097
+#: src/sessions.c:1103
 #, c-format
 msgid "%sAvailable: %i"
 msgstr "%sDostępność: %i"
 
-#: src/sessions.c:1099
+#: src/sessions.c:1105
 #, c-format
 msgid "%sShow: %s"
 msgstr "%sPokazywane: %s"
 
-#: src/sessions.c:1101
+#: src/sessions.c:1107
 #, c-format
 msgid "%sStatus: %s"
 msgstr "%sStatus: %s"
 
-#: src/sessions.c:1103
+#: src/sessions.c:1109
 #, c-format
 msgid "%sGG session: %p"
 msgstr "%sSesja GG: %p"
 
-#: src/sessions.c:1104
+#: src/sessions.c:1110
 #, c-format
 msgid "%sGSource: %p"
 msgstr "%sGSource: %p"
 
-#: src/sessions.c:1105
+#: src/sessions.c:1111
 #, c-format
 msgid "%sStream: %p"
 msgstr "%sStrumień: %p"
 
-#: src/sessions.c:1106
+#: src/sessions.c:1112
 #, c-format
 msgid "%sConnected: %i"
 msgstr "%sPołączony: %i"
 
-#: src/sessions.c:1107
+#: src/sessions.c:1113
 #, c-format
 msgid "%sRequest id: %s"
 msgstr "%sId żądania: %s"
 
-#: src/sessions.c:1108
+#: src/sessions.c:1114
 #, c-format
 msgid "%sRequest query: %s"
 msgstr "%sTreść żądania: %s"
 
-#: src/sessions.c:1109
+#: src/sessions.c:1115
 #, c-format
 msgid "%sWaiting for ping: %i"
 msgstr "%sOczekiwanie na ping: %i"
 
-#: src/sessions.c:1133
+#: src/sessions.c:1139
 msgid " with TLS"
 msgstr " z szyfrowaniem TLS"
 
-#: src/sessions.c:1137
+#: src/sessions.c:1143
 #, c-format
 msgid "%s (Connected via hub to %s:%i%s)"
 msgstr "%s (Połączony przez hub do %s:%i%s)"
 
-#: src/sessions.c:1144
+#: src/sessions.c:1150
 #, c-format
 msgid "%s (Connecting via hub%s)"
 msgstr "%s (Łączenie przez hub%s)"
 
-#: src/sessions.c:1150
+#: src/sessions.c:1156
 #, c-format
 msgid "%s (%s to %s:%u%s)"
 msgstr "%s (%s do %s:%u%s)"
 
-#: src/sessions.c:1152 src/sessions.c:1160
+#: src/sessions.c:1158 src/sessions.c:1166
 msgid "Connected"
 msgstr "Połączony"
 
-#: src/sessions.c:1152 src/sessions.c:1160
+#: src/sessions.c:1158 src/sessions.c:1166
 msgid "Connecting"
 msgstr "Łączenie"
 
@@ -1752,3 +1748,6 @@ msgstr "%sStatus: %i"
 #, c-format
 msgid "%sLast update: %s"
 msgstr "%sOstatnia aktualizacja: %s"
+
+#~ msgid "Not registered"
+#~ msgstr "Nie zarejestrowany"
