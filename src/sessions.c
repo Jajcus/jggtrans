@@ -753,6 +753,8 @@ GgServer *serv;
 	login_params.protocol_version=GG_DEFAULT_PROTOCOL_VERSION;
 	login_params.status=GG_STATUS_INVISIBLE;
 	login_params.encoding = GG_ENCODING_UTF8;
+	if(s->user->status)
+		login_params.status_descr=s->user->status;
 
 	serv=(GgServer*)s->current_server->data;
 	if(serv->port!=1){
