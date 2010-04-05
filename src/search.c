@@ -100,6 +100,12 @@ const char *val;
 			case GG_STATUS_BUSY:
 				form_add_result_value(item,"status",_("Away"));
 				break;
+			case GG_STATUS_FFC:
+				form_add_result_value(item,"status",_("Free for chat"));
+				break;
+			case GG_STATUS_DND:
+				form_add_result_value(item,"status",_("Do not disturb"));
+				break;
 			default:
 				form_add_result_value(item,"status",_("Unavailable"));
 				break;
