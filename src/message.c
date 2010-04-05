@@ -67,7 +67,7 @@ MsgCommand msg_commands[]={
 	{"ignore_unknown","iu",N_("Ignore messages from unknown users"),message_ignore_unknown,0},
 	{"ignore","ig",N_("Add a user to, or view the ignore list"),message_ignore,0},
 	{"unignore","ui",N_("Remove a user from, or view the ignore list"),message_unignore,0},
-	{"status","st",N_("Status message to show to GG users. Use 'off' to use Jabber status."),message_status,0},
+	{"status","st",N_("Status message to show to GG users. Use 'st off' to use Jabber status."),message_status,0},
 	{NULL,NULL,NULL,0},
 };
 
