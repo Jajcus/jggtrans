@@ -16,10 +16,11 @@ AM_GNU_GETTEXT([external])
 CFLAGS="$CFLAGS -Wall"
 
 AM_PATH_GLIB_2_0([2.0.0],[],AC_MSG_ERROR("You need glib >= 2.0.0 to compile this."))
-PKG_CHECK_MODULES([JK_LIBIDN], [libidn >= 0.3.0])
+PKG_CHECK_MODULES([LIBIDN], [libidn >= 0.3.0])
+PKG_CHECK_MODULES([LIBGADU], [libgadu >= 1.9.0])
 
-AC_SUBST(JK_LIBIDN_LIBS)
-AC_SUBST(JK_LIBIDN_CFLAGS)
+AC_SUBST(LIBIDN_LIBS)
+AC_SUBST(LIBIDN_CFLAGS)
 
 AC_ARG_ENABLE([debug],AC_HELP_STRING([--disable-debug],[Disable debugging code]))
 
@@ -58,7 +59,7 @@ AC_CHECK_FUNCS([isascii],[],AC_MSG_ERROR("Some functions needed are missing"))
 AC_CHECK_FUNCS([select],[],AC_MSG_ERROR("Some functions needed are missing"))
 AC_CHECK_FUNCS([memset strchr],[],AC_MSG_ERROR("Some functions needed are missing"))
 
-AC_CONFIG_SUBDIRS([libxode libgadu])
+AC_CONFIG_SUBDIRS([libxode])
 
 MKINSTALLDIRS="${MKINSTALLDIRS} -m 755"
 XGETTEXT="${XGETTEXT} --keyword=L_"

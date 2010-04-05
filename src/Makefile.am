@@ -59,10 +59,10 @@ encodingtest_SOURCES = \
 encodingtest_CFLAGS=-DENCODINGTEST
 encodingtest_LDADD=$(GLIB_LIBS)
 
-INCLUDES=$(GLIB_CFLAGS) $(LIBGADU_INCLUDES) -I../libgadu/lib $(JK_LIBIDN_CFLAGS) -I$(top_srcdir)/libxode/include
+INCLUDES=$(GLIB_CFLAGS) $(LIBGADU_INCLUDES) -I../libgadu/lib $(LIBIDN_CFLAGS) -I$(top_srcdir)/libxode/include
 
 jggtrans_CFLAGS=-DVERSION="\"$(VERSION)\"" -DSYSCONFDIR="\"$(sysconfdir)\"" -DLOCALEDIR="\"$(localedir)\""
-jggtrans_LDADD=$(INTLLIBS) $(GLIB_LIBS) ../libgadu/lib/libgadu.la $(LIBGADU_LIBS) $(LIBGADU_LDFLAGS) $(JK_LIBIDN_LIBS) $(top_builddir)/libxode/src/libxode.la
+jggtrans_LDADD=$(INTLLIBS) $(GLIB_LIBS) $(LIBGADU_LIBS) $(LIBGADU_LDFLAGS) $(LIBIDN_LIBS) $(top_builddir)/libxode/src/libxode.la
 
 tags: 
 	ctags -R . ../libxode/

@@ -1,5 +1,5 @@
 
-SUBDIRS = libxode libgadu src po
+SUBDIRS = libxode src po
 
 .PHONY: cosmetics ChangeLog
 
