@@ -189,15 +189,14 @@ xmlnode n;
 		xmlnode_insert_cdata(n,string_from_gg(status),-1);
 	}
 	if (timestamp){
-		struct tm *t;
-		char str[21];
-		time_t ts=(time_t)timestamp;
-
-		t=localtime(&ts);
-		strftime(str,20,"%Y%m%dT%T",t);
+		struct tm *tm;
+		char buf[101];
 		n=xmlnode_insert_tag(pres,"x");
 		xmlnode_put_attrib(n,"xmlns","jabber:x:delay");
-		xmlnode_put_attrib(n,"stamp",str);
+		tm=gmtime(&timestamp);
+		strftime(buf,100,"%Y%m%dT%H:%M:%S",tm);
+		xmlnode_put_attrib(n,"stamp",buf);
+		xmlnode_insert_cdata(n,"Presence update time",-1);
 	}
 	stream_write(stream,pres);
 	xmlnode_free(pres);
