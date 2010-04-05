@@ -426,13 +426,14 @@ GTime timestamp;
 				if (r) presence_send(stream,NULL,s->user->jid,s->user->invisible?-1:r->available,
 							r->show,r->status,0);
 			}
+			return 0;
 		}
-		else presence_send(stream,to,from,0,NULL,"Not logged in",0);
-		return 0;
+		else presence_send_unsubscribed(stream,NULL,from);
+		return -1;
 	}
 
 	if (!jid_is_my(to)){
-		presence_send_error(stream,to,from,404,_("Not Found"));
+ 		presence_send_unsubscribed(stream,to,from);
 		return -1;
 	}
 
@@ -440,14 +441,13 @@ GTime timestamp;
 	else u=user_get_by_jid(from);
 
 	if (!u){
-		presence_send_error(stream,to,from,407,_("Not registered"));
 		presence_send_unsubscribed(stream,to,from);
 		return -1;
 	}
 
 	uin=jid_get_uin(to);
 
-	c=user_get_contact(u,uin,TRUE);
+	c=user_get_contact(u,uin,FALSE);
 	if (!c) {
 	       	return -1;
 	}
@@ -469,7 +469,8 @@ GTime timestamp;
 		}
 	}
 	if (!status){
-		presence_send_error(stream,to,from,404,_("Not Found"));
+		// user not found on userlist?
+		presence_send_unsubscribed(stream,to,from);
 		return -1;
 	}
 	if (status==-1) return 0; /* Not known yet */
