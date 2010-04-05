@@ -272,7 +272,7 @@ int i;
 			g_free(body);
 			body=t;
 			tag=xmlnode_insert_tag(item,"group");
-			xmlnode_insert_cdata(n,to_utf8(cinfo[5]),-1);
+			xmlnode_insert_cdata(n,string_from_gg(cinfo[5]),-1);
 		}
 		if (cinfo[7] && cinfo[7][0]){
 			t=g_strdup_printf("%sE-mail: %s\n",body,cinfo[7]);
@@ -284,12 +284,12 @@ int i;
 		xmlnode_put_attrib(item,"jid",jid);
 		g_free(jid);
 		if (name==NULL) name=g_strdup_printf("%u",uin);
-		xmlnode_put_attrib(item,"name",to_utf8(name));
+		xmlnode_put_attrib(item,"name",string_from_gg(name));
 		g_free(name);
 		g_strfreev(cinfo);
 	}
 	g_strfreev(results);
-	xmlnode_insert_cdata(n,to_utf8(body),-1);
+	xmlnode_insert_cdata(n,string_from_gg(body),-1);
 
 	stream_write(s->s,msg);
 	xmlnode_free(msg);
@@ -376,13 +376,13 @@ char *m;
 	g_free(user->status);
 	if (args) {
 		if (!g_strcasecmp(args,"off")) user->status=NULL;
-		else user->status=g_strndup(from_utf8(args),GG_STATUS_DESCR_MAXSIZE);
+		else user->status=g_strndup(string_to_gg(args),GG_STATUS_DESCR_MAXSIZE);
 	}
 	else user->status=NULL;
 
 	m=g_strdup_printf(_("status: %s%s%s"),
 			(user->status?"`":""),
-			(user->status?to_utf8(user->status):_("not set")),
+			(user->status?string_from_gg(user->status):_("not set")),
 			(user->status?"'":""));
 	message_send(stream,to,from,1,m,0);
 	g_free(m);
@@ -573,7 +573,7 @@ GList *it;
 	g_free(msg); msg=t;
 	t=g_strdup_printf(_("%s\n  status: %s%s%s"),msg,
 			(user->status?"`":""),
-			(user->status?to_utf8(user->status):_("not set")),
+			(user->status?string_from_gg(user->status):_("not set")),
 			(user->status?"'":""));
 	g_free(msg); msg=t;
 	t=g_strdup_printf(_("%s\n  friends only: %s"),msg,user->friends_only?_("on"):_("off"));
@@ -680,7 +680,7 @@ User *u;
 
 	if (subject)
 		body=g_strdup_printf("Subject: %s\n%s",subject,body);
-	session_send_message(s,jid_get_uin(to),chat,from_utf8(body));
+	session_send_message(s,jid_get_uin(to),chat,string_to_gg(body));
 	if (subject)
 		g_free(body);
 

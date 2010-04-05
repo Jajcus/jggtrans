@@ -22,6 +22,11 @@
 
 char *to_utf8(const char *str);
 char *from_utf8(const char *str);
+char *fix_utf8_string(const char *str, int to_gg);
+
+#define string_to_gg(x) fix_utf8_string((x), TRUE)
+#define string_from_gg(x) fix_utf8_string((x), FALSE)
+
 int encoding_init();
 void encoding_done();
 

@@ -186,7 +186,7 @@ xmlnode n;
 	}
 	if (status){
 		n=xmlnode_insert_tag(pres,"status");
-		xmlnode_insert_cdata(n,to_utf8(status),-1);
+		xmlnode_insert_cdata(n,string_from_gg(status),-1);
 	}
 	if (timestamp){
 		struct tm *t;
@@ -220,7 +220,7 @@ User *u;
 		return -1;
 	}
 	resource=jid_get_resource(from);
-	r=session_set_status(s,resource,available,show,from_utf8(status),priority);
+	r=session_set_status(s,resource,available,show,string_to_gg(status),priority);
 	return 0;
 }
 

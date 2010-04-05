@@ -547,7 +547,7 @@ time_t timestamp;
 				str=g_strdup_printf(_("GG System message #%i"),
 							event->event.msg.msgclass);
 				message_send_subject(s->s,jid,s->user->jid,str,
-						to_utf8(event->event.msg.message),timestamp);
+						string_from_gg(event->event.msg.message),timestamp);
 				g_free(str);
 				jid=jid_my_registered();
 				break;
@@ -569,7 +569,8 @@ time_t timestamp;
 			}
 			else timestamp=0;
 			message_send(s->s,jid,s->user->jid,chat,
-					to_utf8(event->event.msg.message),timestamp);
+				string_from_gg(event->event.msg.message),
+								timestamp);
 			g_free(jid);
 			break;
 		case GG_EVENT_PONG:
@@ -744,11 +745,12 @@ GgServer *serv;
 
 	memset(&login_params,0,sizeof(login_params));
 	login_params.uin=s->user->uin;
-	login_params.password=from_utf8(s->user->password);
+	login_params.password=string_to_gg(s->user->password);
 	login_params.async=1;
 	login_params.last_sysmsg=s->user->last_sys_msg;
 	login_params.protocol_version=GG_DEFAULT_PROTOCOL_VERSION;
 	login_params.status=GG_STATUS_INVISIBLE;
+	login_params.encoding = GG_ENCODING_UTF8;
 
 	serv=(GgServer*)s->current_server->data;
 	if(serv->port!=1){

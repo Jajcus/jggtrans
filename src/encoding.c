@@ -30,7 +30,7 @@ static int buf_len;
 int encoding_init(){
 
 	buf_len=16;
-	buf=g_new(char,buf_len);
+	buf = g_new(unsigned char,buf_len);
 	return 0;
 }
 
@@ -48,7 +48,7 @@ unsigned u;
 	if (str==NULL) return NULL;
 	if (buf_len<(3*strlen(str)+1)){
 		buf_len=3*strlen(str)+1; /* this should always be enough */
-		buf=(char *)g_realloc(buf,buf_len);
+		buf=(unsigned char *)g_realloc(buf,buf_len);
 		assert(buf!=NULL);
 	}
 	for(i=0;str[i];i++){
@@ -90,6 +90,68 @@ unsigned u;
 	return (char *)buf;
 }
 
+char *fix_utf8_string(const char *str, int to_gg){
+int o=0;
+int i, j, seq_len;
+unsigned char c;
+
+	if (str==NULL) return NULL;
+	if (buf_len<(3*strlen(str)+1)){
+		buf_len=3*strlen(str)+1; /* this should always be enough */
+		buf=(unsigned char *)g_realloc(buf,buf_len);
+		assert(buf!=NULL);
+	}
+	for(i=0;str[i];i++){
+		c=(unsigned char)str[i];
+		if (to_gg) {
+			if (c=='\n'){
+				/* Unix->Windows EOLs */
+				buf[o++]='\r';
+				buf[o++]='\n';
+				continue;
+			}
+		}
+		else {
+			if (c=='\r'){
+				/* Windows->Unix EOLs */
+				continue;
+			}
+		}
+		if (c=='\t' || c=='\n'){
+			buf[o++]=c;
+			continue;
+		}
+		if (c < 0x20) goto invalid;
+		if (c < 0x80){
+			buf[o++]=c;
+			continue;
+		}
+
+		if ( (c & 0xe0) == 0xc0 ) seq_len = 2;
+		else if ( (c & 0xf0) == 0xe0) seq_len = 3;
+		else if ( (c & 0xf8) == 0xf0) seq_len = 4;
+		else if ( (c & 0xfc) == 0xf8) seq_len = 5;
+		else if ( (c & 0xfe) == 0xfc) seq_len = 6;
+		else goto invalid;
+		buf[o] = c;
+		for(j = 1; j < seq_len; j++) {
+			c = str[i+j];
+			if ( (c & 0xc0) != 0x80 ) goto invalid;
+			buf[o + j]=c;
+		}
+		o += seq_len;
+		i += seq_len - 1;
+		continue;
+
+invalid:	/* user Unicode replacement charecter for invalid sequence */
+		buf[o++]='\xef';
+		buf[o++]='\xbf';
+		buf[o++]='\xbd';
+	}
+	buf[o]=0;
+	return (char *)buf;
+}
+
 char *from_utf8(const char *str){
 unsigned char b;
 unsigned u;
@@ -99,7 +161,7 @@ int i;
 	if (str==NULL) return NULL;
 	if (buf_len<(strlen(str)*2+1)){
 		buf_len=strlen(str)*2+1; /* this should always be enough */
-		buf=(char *)g_realloc(buf,buf_len);
+		buf=(unsigned char *)g_realloc(buf,buf_len);
 		assert(buf!=NULL);
 	}
 	for(i=0;str[i];i++){
@@ -179,7 +241,7 @@ int i;
 			buf[o++]='?';
 	}
 	buf[o]=0;
-	return buf;
+	return (char *)buf;
 }
 
 #ifdef ENCODINGTEST
@@ -194,6 +256,8 @@ char buf[1024],*p;
 		if (p==NULL || buf[0]=='\n') break;
 		printf("To UTF8: %s",to_utf8(buf));
 		printf("From UTF8: %s",from_utf8(buf));
+		printf("To GG: %s", string_to_gg(buf));
+		printf("From GG: %s",string_from_gg(buf));
 	}
 	encoding_done();
 	return 0;
