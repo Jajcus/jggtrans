@@ -674,7 +674,9 @@ char *status_descr;
 
 	if (!r) {
 		if (send_presence) presence_send(s->s,NULL,s->user->jid,FALSE,NULL,s->gg_status_descr,0);
-		s->gg_status=status_jabber_to_gg(0,NULL,s->gg_status_descr);
+		status=status_jabber_to_gg(0,NULL,s->gg_status_descr);
+		if (s->user->friends_only) status|=GG_STATUS_FRIENDS_MASK;
+		s->gg_status=status;
 		return -1;
 	}
 	status_descr=s->user->status?s->user->status:r->status;
