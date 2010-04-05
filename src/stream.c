@@ -224,7 +224,9 @@ gsize br;
 	s->read_buf[br]=0;
 	debug("IN: %s",s->read_buf);
 	if(xstream_eat(s->xs,s->read_buf,br) > XSTREAM_NODE){
-		g_error(L_("Error reading from stream"));
+		g_warning(L_("Error reading from stream"));
+		s->read_watch=0;
+		s->xs->f(XSTREAM_CLOSE,NULL,s);
 		return FALSE;
 	}else{
 		return TRUE;
