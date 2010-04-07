@@ -139,6 +139,11 @@
       a wylogowaniem z GG. Służy to do poprawnej obsługi <presence type="invisible"/> -->
  <disconnect_delay>5</disconnect_delay>
 
+ <!-- Ignoruj wiadomości systemowe. Jeśli which="html", to tylko te w HTMLu -->
+ <!--
+ <ignore_system_messages which="html" />
+ -->
+
  <!-- Katalog z danymi użytkowników. -->
  <!-- Proszę uważać na uprawnienie - hasła użytkowników (do GG) będą tam przechowywane -->
  <spool>/var/lib/jabber/spool/gg.localhost/</spool>

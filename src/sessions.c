@@ -41,6 +41,11 @@ static int pong_timeout=30;
 static int disconnect_delay=2;
 static int ping_interval=10;
 static int reconnect=0;
+static enum {
+	ISM_IGNORE_NONE = 0,
+        ISM_IGNORE_ALL,
+	ISM_IGNORE_HTML
+		} ignore_system_messages;
 static GList *gg_servers=NULL;
 GHashTable *sessions_jid;
 
@@ -149,6 +154,19 @@ GgServer *server;
 	i=config_load_int("reconnect",0);
 	if (i>0) reconnect=i;
 
+	tag = xmlnode_get_tag(config, "ignore_system_messages");
+	if (!tag) {
+		ignore_system_messages = ISM_IGNORE_NONE;
+	}
+	else {
+		r=xmlnode_get_attrib(tag, "which");
+		if (r && !g_strcasecmp(r,"html")) {
+			ignore_system_messages = ISM_IGNORE_HTML;
+		}
+		else {
+			ignore_system_messages = ISM_IGNORE_ALL;
+		}
+	}
 
 	parent=xmlnode_get_tag(config,"servers");
 	if (parent && xmlnode_has_children(parent)){
@@ -542,12 +560,16 @@ time_t timestamp;
 			
 			if (event->event.msg.sender==0){
 				if (!user_sys_msg_received(s->user,event->event.msg.msgclass)) break;
+				if (ignore_system_messages == ISM_IGNORE_ALL) break;
+				if (ignore_system_messages == ISM_IGNORE_HTML
+					&& strstr((const char *)event->event.msg.message, "<HTML>")) break;
 				jid=jid_my_registered();
 				timestamp=event->event.msg.time;
 				str=g_strdup_printf(_("GG System message #%i"),
 							event->event.msg.msgclass);
-				message_send_subject(s->s,jid,s->user->jid,str,
-						string_from_gg(event->event.msg.message),timestamp);
+				message_send_subject(s->s,jid, s->user->jid, str,
+						string_from_gg((const char *)event->event.msg.message),
+												timestamp);
 				g_free(str);
 				jid=jid_my_registered();
 				break;
@@ -569,7 +591,7 @@ time_t timestamp;
 			}
 			else timestamp=0;
 			message_send(s->s,jid,s->user->jid,chat,
-				string_from_gg(event->event.msg.message),
+				string_from_gg((const char *)event->event.msg.message),
 								timestamp);
 			g_free(jid);
 			break;
@@ -1072,7 +1094,8 @@ char *mp;
 		mp=session_split_message(&m);
 		if (mp){
 			gg_messages_out++;
-			gg_send_message(s->ggs,chat?GG_CLASS_CHAT:GG_CLASS_MSG,uin,mp);
+			gg_send_message(s->ggs,chat?GG_CLASS_CHAT:GG_CLASS_MSG,uin,
+								(const unsigned char *)mp);
 			g_free(mp);
 		}
 	}
