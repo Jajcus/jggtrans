@@ -1,7 +1,7 @@
 
 		     GaduGadu Transport for Jabber
 		    ===============================
-	    (c) 2002-2006 Jacek Konieczny [jajcus(a)jajcus,net]
+	    (c) 2002-2010 Jacek Konieczny [jajcus(a)jajcus,net]
 
 Jest to zewnêtrzny komponent dla serwera Jabber (http://www.jabber.org)
 realizuj±cy bramkê do serwisu GaduGadu.

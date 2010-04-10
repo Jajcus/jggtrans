@@ -1,7 +1,7 @@
 /* $Id: jabber.c,v 1.24 2004/04/13 17:44:07 jajcus Exp $ */
 
 /*
- *  (C) Copyright 2002-2006 Jacek Konieczny [jajcus(a)jajcus,net]
+ *  (C) Copyright 2002-2010 Jacek Konieczny [jajcus(a)jajcus,net]
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License Version 2 as

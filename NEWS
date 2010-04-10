@@ -1,3 +1,25 @@
+Version 2.2.4
+-------------
+
+Notable changes from 2.2.3:
+
+* Compiles with newest libgadu (1.9.0-rc3). libgadu is not provided with
+  jggtrans sources any more.
+
+* New libgadu brings GG10 features: longer descriptions, support for
+  'long GG numbers', UTF-8 statuses and messages.
+
+* A new configuration option: <ignore_system_messages />
+
+* A few changes have been merged from the Xiaoka jggtrans fork.
+
+Version 2.2.3
+-------------
+
+Version 2.2.3 was never released by me, but some, probably modified,
+snapshot has been released as 2.2.3 by someone else. That is why
+I will skip this one.
+
 Version 2.2.2
 -------------
 
