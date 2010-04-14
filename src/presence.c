@@ -427,8 +427,14 @@ GTime timestamp;
 			}
 			return 0;
 		}
-		else presence_send_unsubscribed(stream,NULL,from);
-		return -1;
+		else if (user_get_by_jid(from)) {
+			presence_send(stream, to, from, 0,
+				       		NULL, "Not logged in", 0);
+		}
+		else {
+			presence_send_unsubscribed(stream, NULL, from);
+		}
+		return 0;
 	}
 
 	if (!jid_is_my(to)){
@@ -446,7 +452,9 @@ GTime timestamp;
 
 	uin=jid_get_uin(to);
 
-	c=user_get_contact(u,uin,FALSE);
+	/* create the contact: if we got 'prope' the user has it on his 
+	 * contact list, do not change that */
+	c = user_get_contact(u, uin, TRUE);
 	if (!c) {
 	       	return -1;
 	}
