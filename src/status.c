@@ -49,6 +49,7 @@ int status_jabber_to_gg(int available,const char *show,const char *status){
 int status_gg_to_jabber(int ggstatus,char **show,char **status){
 int available;
 
+	ggstatus &= ~GG_STATUS_DESCR_MASK;
 	switch(ggstatus){
 		case GG_STATUS_NOT_AVAIL:
 		case GG_STATUS_NOT_AVAIL_DESCR:
