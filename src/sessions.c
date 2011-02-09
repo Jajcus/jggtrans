@@ -583,8 +583,9 @@ time_t timestamp;
 				       	break;
 				}
 				jid=jid_build_full(event->event.msg.sender);
-				if ((event->event.msg.msgclass&GG_CLASS_CHAT)!=0) chat=1;
-				else chat=0;
+				/*if ((event->event.msg.msgclass&GG_CLASS_CHAT)!=0) chat=1;
+				else chat=0;*/
+				chat = 1;
 			}
 			if ((event->event.msg.msgclass&GG_CLASS_QUEUED)!=0){
 				timestamp=event->event.msg.time;
