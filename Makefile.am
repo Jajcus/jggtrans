@@ -12,17 +12,16 @@ EXTRA_DIST = config.rpath mkinstalldirs jggtrans.xml jggtrans.xml.Pl \
 	m4/stdint_h.m4 m4/uintmax_t.m4 m4/ulonglong.m4 m4/wchar_t.m4 m4/wint_t.m4 m4/xsize.m4
 
 ChangeLog: 
-	test -f .svn/entries && make cl-stamp || :
+	test -d .git && make cl-stamp || :
 	
-cl-stamp: .svn/entries
-	TZ=UTC svn log -v --xml \
-		| aux/svn2log.py -p '/(branches/[^/]+|trunk)' -x ChangeLog -u aux/users -F
+cl-stamp: .git
+	git log > ChangeLog
 	touch cl-stamp
 
 cosmetics:
 	./aux/cosmetics.sh
 
 dist-hook:
-	if grep '+svn' configure.ac ; then echo "Remove SVN version flag first!"; exit 1; else : ; fi
+	if grep '+git' configure.ac ; then echo "Remove SVN version flag first!"; exit 1; else : ; fi
 
 ACLOCAL_AMFLAGS = -I m4
