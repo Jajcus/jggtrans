@@ -774,6 +774,7 @@ GgServer *serv;
 	login_params.async=1;
 	login_params.last_sysmsg=s->user->last_sys_msg;
 	login_params.protocol_version=GG_DEFAULT_PROTOCOL_VERSION;
+	login_params.protocol_features = GG_FEATURE_DND_FFC;
 	login_params.status=GG_STATUS_INVISIBLE;
 	login_params.encoding = GG_ENCODING_UTF8;
 	if(s->user->status)
