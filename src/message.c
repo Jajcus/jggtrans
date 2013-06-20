@@ -208,7 +208,7 @@ int i;
 	xmlnode_put_attrib(msg,"to",s->user->jid);
 	n=xmlnode_insert_tag(msg,"body");
 	roster=xmlnode_insert_tag(msg,"x");
-	xmlnode_put_attrib(roster,"xmlns","jabber:x:roster");
+	xmlnode_put_attrib(roster,"xmlns","http://jabber.org/protocol/rosterx");
 
 	body=g_strdup("");
 	results=g_strsplit(e->event.userlist.reply,"\r\n",0);
@@ -281,6 +281,7 @@ int i;
 		}
 
 		jid=jid_build(uin);
+		xmlnode_put_attrib(item,"action", "add");
 		xmlnode_put_attrib(item,"jid",jid);
 		g_free(jid);
 		if (name==NULL) name=g_strdup_printf("%u",uin);
