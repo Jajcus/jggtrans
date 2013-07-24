@@ -209,7 +209,49 @@ GgServer *server;
 		gg_servers=g_list_append(gg_servers, server);
 
 		server=g_new(GgServer, 1);
-		inet_aton("217.17.45.143", &server->addr);
+		inet_aton("91.214.237.54", &server->addr);
+		server->port=8074;
+		server->tls=0;
+		gg_servers=g_list_append(gg_servers, server);
+
+		server=g_new(GgServer, 1);
+		inet_aton("91.214.237.58", &server->addr);
+		server->port=8074;
+		server->tls=0;
+		gg_servers=g_list_append(gg_servers, server);
+
+		server=g_new(GgServer, 1);
+		inet_aton("91.214.237.62", &server->addr);
+		server->port=8074;
+		server->tls=0;
+		gg_servers=g_list_append(gg_servers, server);
+
+		server=g_new(GgServer, 1);
+		inet_aton("91.214.237.73", &server->addr);
+		server->port=8074;
+		server->tls=0;
+		gg_servers=g_list_append(gg_servers, server);
+
+		server=g_new(GgServer, 1);
+		inet_aton("91.214.237.75", &server->addr);
+		server->port=8074;
+		server->tls=0;
+		gg_servers=g_list_append(gg_servers, server);
+
+		server=g_new(GgServer, 1);
+		inet_aton("91.214.237.77", &server->addr);
+		server->port=8074;
+		server->tls=0;
+		gg_servers=g_list_append(gg_servers, server);
+
+		server=g_new(GgServer, 1);
+		inet_aton("91.214.237.79", &server->addr);
+		server->port=8074;
+		server->tls=0;
+		gg_servers=g_list_append(gg_servers, server);
+
+		server=g_new(GgServer, 1);
+		inet_aton("91.214.237.84", &server->addr);
 		server->port=8074;
 		server->tls=0;
 		gg_servers=g_list_append(gg_servers, server);
