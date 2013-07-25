@@ -327,7 +327,7 @@ int fd;
 			fclose(pidfile);
 		}
 		debug(L_("Daemon born, pid %i."),pid);
-		exit(0);
+		_exit(0);
 	}
 
 	for (fd=0; fd < OPEN_MAX; fd++)
