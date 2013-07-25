@@ -1,7 +1,8 @@
 AC_INIT([libxode],[1.2-jggtrans],[])
+AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([src/xmlnode.c])
 AM_INIT_AUTOMAKE
-AM_CONFIG_HEADER(include/config.h)
+AC_CONFIG_HEADERS([include/config.h])
 
 AC_DISABLE_SHARED
 AC_ENABLE_STATIC

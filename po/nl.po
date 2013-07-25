@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: jajcus@jajcus.net\n"
-"POT-Creation-Date: 2013-07-25 09:56+0200\n"
+"POT-Creation-Date: 2013-07-25 18:07+0200\n"
 "PO-Revision-Date: 03/04/04 13:02\n"
 "Last-Translator: Sander Devrieze <s.devrieze@pandora.be>\n"
 "Language-Team: Nederlands\n"
@@ -77,13 +77,13 @@ msgid "No UIN given in 'to': %s"
 msgstr "Geen UIN opgegeven in 'aan': %s"
 
 #: src/iq.c:194 src/iq.c:277 src/iq.c:282 src/iq.c:291 src/iq.c:298
-#: src/message.c:661 src/message.c:671
+#: src/message.c:660 src/message.c:670
 msgid "Bad Request"
 msgstr "Onjuist verzoek"
 
 #: src/iq.c:228 src/iq.c:233 src/iq.c:238 src/presence.c:591
-#: src/presence.c:598 src/register.c:463 src/register.c:624 src/register.c:669
-#: src/register.c:679
+#: src/presence.c:598 src/register.c:463 src/register.c:623 src/register.c:668
+#: src/register.c:678
 msgid "Not Acceptable"
 msgstr "Niet aanvaardbaar"
 
@@ -143,7 +143,7 @@ msgstr "Fout-iq ontvangen: %s"
 msgid "unexpected <iq/> (not connected yet)"
 msgstr "onverwachte <iq/> (nog niet verbonden)"
 
-#: src/iq.c:365 src/message.c:639 src/presence.c:567
+#: src/iq.c:365 src/message.c:638 src/presence.c:567
 msgid "Not allowed"
 msgstr "Niet toegestaan"
 
@@ -174,48 +174,48 @@ msgstr "Stream-fout: %s"
 msgid "Unsupported tag: %s"
 msgstr "Niet ondersteunde tag: %s"
 
-#: src/jabber.c:133
+#: src/jabber.c:129
 msgid "Stream Error"
 msgstr "Streamfout"
 
-#: src/jabber.c:141
+#: src/jabber.c:137
 #, c-format
 msgid "Unknown node type: %i"
 msgstr "Onbekend nodetype: %i"
 
-#: src/jabber.c:222
+#: src/jabber.c:218
 msgid "No <service/> found in config file"
 msgstr "Geen <service/>-tag gevonden in configuratiebestand"
 
-#: src/jabber.c:226
+#: src/jabber.c:222
 msgid "<service/> without \"jid\" in config file"
 msgstr "<service/> zonder \"jid\" in configuratiebestand"
 
-#: src/jabber.c:233
+#: src/jabber.c:229
 msgid "Jabberd server not found in config file"
 msgstr "Geen Jabberserver gevonden in configuratiebestand"
 
-#: src/jabber.c:237
+#: src/jabber.c:233
 msgid "Connect port not found in config file"
 msgstr "Poort niet gevonden in configuratiebestand"
 
-#: src/jabber.c:242
+#: src/jabber.c:238
 msgid "Connect secret not found in config file"
 msgstr "\"Server secret\" niet gevonden in configuratiebestand"
 
-#: src/jabber.c:246
+#: src/jabber.c:242
 msgid "Registration instructions not not found in config file"
 msgstr "Registratie-instructies niet gevonden in configuratiebestand"
 
-#: src/jabber.c:250
+#: src/jabber.c:246
 msgid "Search instructions not found in config file"
 msgstr "Zoekinstructies niet gevonden in configuratiebestand"
 
-#: src/jabber.c:254
+#: src/jabber.c:250
 msgid "Gateway instructions not found in config file"
 msgstr "Gateway-instructies niet gevonden in configuratiebestand"
 
-#: src/jabber.c:258
+#: src/jabber.c:254
 msgid "Gateway prompt not found in config file"
 msgstr "Gateway prompt niet gevonden in configuratiebestand"
 
@@ -272,42 +272,42 @@ msgstr "Ongeldige 'aan': %s"
 msgid "bad domain: %s"
 msgstr "Ongeldige 'ontvanger' in: %s"
 
-#: src/main.c:194
+#: src/main.c:193
 #, c-format
 msgid "Fatal error: %s\n"
 msgstr "Fatale fout: %s\n"
 
-#: src/main.c:197
+#: src/main.c:196
 #, c-format
 msgid "Error: %s\n"
 msgstr "Fout: %s\n"
 
-#: src/main.c:200
+#: src/main.c:199
 #, c-format
 msgid "Warning: %s\n"
 msgstr "Waarschuwing: %s\n"
 
-#: src/main.c:207 src/main.c:235
+#: src/main.c:206 src/main.c:234
 #, c-format
 msgid "Debug: %s\n"
 msgstr "Debug: %s\n"
 
-#: src/main.c:210 src/main.c:238
+#: src/main.c:209 src/main.c:237
 #, c-format
 msgid "Unknown: %s\n"
 msgstr "Onbekend: %s\n"
 
-#: src/main.c:220
+#: src/main.c:219
 #, c-format
 msgid "Fatal error: %s"
 msgstr "Fatale fout: %s"
 
-#: src/main.c:223
+#: src/main.c:222
 #, c-format
 msgid "Error: %s"
 msgstr "Fout: %s"
 
-#: src/main.c:226
+#: src/main.c:225
 #, c-format
 msgid "Warning: %s"
 msgstr "Waarschuwing: %s"
@@ -413,90 +413,90 @@ msgstr "Fout tijdens het verwerken van commandoregel opties"
 msgid "Unexpected argument: %s\n"
 msgstr "Onverwacht argument: %s\n"
 
-#: src/main.c:478
+#: src/main.c:474
 msgid "Couldn't load config!"
 msgstr "Kon configuratie niet laden!"
 
-#: src/main.c:483
+#: src/main.c:479
 #, c-format
 msgid "%s doesn't look like jggtrans config file."
 msgstr "%s lijkt niet op een configuratiebestand van jggtrans."
 
-#: src/main.c:499
+#: src/main.c:495
 msgid "Multiple syslog configs specified. Using only one."
 msgstr "Meerdere syslog configs opgegeven. Er word slechts één gebruikt."
 
-#: src/main.c:510
+#: src/main.c:506
 #, c-format
 msgid "Unknown syslog facility: %s"
 msgstr "Onbekende syslog-faciliteit: %s"
 
-#: src/main.c:513
+#: src/main.c:509
 msgid "Multiple log files specified. Using only one."
 msgstr "Meerdere logbestanden opgegeven. Er word slechts één gebruikt."
 
-#: src/main.c:520
+#: src/main.c:516
 #, c-format
 msgid "Ignoring unknown log type: %s"
 msgstr "Bezig met negeren van onbekend logtype: %s"
 
-#: src/main.c:538
+#: src/main.c:534
 msgid "jggtrans already running"
 msgstr "jggtrans is reeds opgestart"
 
-#: src/main.c:540
+#: src/main.c:536
 msgid "Stale pid file. Removing."
 msgstr "Stale pid file. Bezig met verwijderen."
 
-#: src/main.c:544
+#: src/main.c:540
 msgid "Invalid pid file."
 msgstr "Ongeldig pid-bestand."
 
-#: src/main.c:548
+#: src/main.c:544
 #, c-format
 msgid "Couldn't open pidfile %s"
 msgstr "Kon pid-bestand %s niet openen"
 
-#: src/main.c:555
+#: src/main.c:551
 #, c-format
 msgid "Couldn't find group %s"
 msgstr "Kon groep %s niet vinden"
 
-#: src/main.c:560
+#: src/main.c:556
 #, c-format
 msgid "Couldn't find user %s"
 msgstr "Kon gebruiker %s niet vinden"
 
-#: src/main.c:563
+#: src/main.c:559
 #, c-format
 msgid "Couldn't change group: %s"
 msgstr "Kon groep niet veranderen: %s"
 
-#: src/main.c:564
+#: src/main.c:560
 #, c-format
 msgid "Couldn't init groups: %s"
 msgstr "Kon groepen niet initialiseren: %s"
 
-#: src/main.c:565
+#: src/main.c:561
 #, c-format
 msgid "Couldn't change user: %s"
 msgstr "Kon gebruiker niet veranderen: %s"
 
-#: src/main.c:567
+#: src/main.c:563
 msgid "Refusing to run with uid=0"
 msgstr "Bezig met weigeren om te draaien met uid=0"
 
-#: src/main.c:586
+#: src/main.c:582
 #, c-format
 msgid "Couldn't open log file '%s': %s"
 msgstr "Kon logbestand '%s' niet openen: %s"
 
-#: src/main.c:636
+#: src/main.c:632
 #, c-format
 msgid "Restarting in %i seconds.\n"
 msgstr "Herstarten binnen %i seconden. \n"
 
-#: src/main.c:659
+#: src/main.c:655
 msgid "Exiting normally.\n"
 msgstr "Bezig met beëindigen.\n"
 
@@ -549,86 +549,86 @@ msgstr "Roster leeg."
 msgid "Roster received."
 msgstr "Roster ontvangen."
 
-#: src/message.c:315 src/message.c:347 src/message.c:434
+#: src/message.c:314 src/message.c:346 src/message.c:433
 msgid "No change."
 msgstr "Geen aanpassingen."
 
-#: src/message.c:321
+#: src/message.c:320
 msgid "friends only: on"
 msgstr "enkel vrienden: aan"
 
-#: src/message.c:323
+#: src/message.c:322
 msgid "friends only: off"
 msgstr "enkel vrienden: uit"
 
-#: src/message.c:353
+#: src/message.c:352
 msgid "invisible: on"
 msgstr "onzichtbaar: aan"
 
-#: src/message.c:355
+#: src/message.c:354
 msgid "invisible: off"
 msgstr "onzichtbaar: uit"
 
-#: src/message.c:384
+#: src/message.c:383
 #, fuzzy, c-format
 msgid "status: %s%s%s"
 msgstr "%sStatus: %s"
 
-#: src/message.c:386 src/message.c:577
+#: src/message.c:385 src/message.c:576
 msgid "not set"
 msgstr ""
 
-#: src/message.c:412
+#: src/message.c:411
 #, c-format
 msgid "Locale set to: %s"
 msgstr "Localisatie ingesteld op: %s"
 
-#: src/message.c:412 src/message.c:586
+#: src/message.c:411 src/message.c:585
 msgid "_default_"
 msgstr "_standaard_"
 
-#: src/message.c:440
+#: src/message.c:439
 #, fuzzy
 msgid "ignore unknown: on"
 msgstr "- onbekend -"
 
-#: src/message.c:442
+#: src/message.c:441
 #, fuzzy
 msgid "ignore unknown: off"
 msgstr "- onbekend -"
 
-#: src/message.c:469
+#: src/message.c:468
 msgid ""
 "\n"
 "Messages from the following GG numbers will be ignored:"
 msgstr ""
 
-#: src/message.c:473
+#: src/message.c:472
 #, c-format
 msgid ""
 "%s\n"
 "  %li"
 msgstr ""
 
-#: src/message.c:484
+#: src/message.c:483
 #, c-format
 msgid ""
 "\n"
 "Messages from GG number %li will be ignored."
 msgstr ""
 
-#: src/message.c:520
+#: src/message.c:519
 #, c-format
 msgid ""
 "\n"
 "Messages from GG number %li will NOT be ignored."
 msgstr ""
 
-#: src/message.c:543
+#: src/message.c:542
 msgid "I don't know you. Register first."
 msgstr "Ik ken u niet. Registreer eerst."
 
-#: src/message.c:564
+#: src/message.c:563
 msgid ""
 "\n"
 "Available commands and abbreviations:"
@@ -636,11 +636,11 @@ msgstr ""
 "\n"
 "Beschikbare commando's en afkortingen:"
 
-#: src/message.c:570
+#: src/message.c:569
 msgid " EXPERIMENTAL!"
 msgstr " EXPERIMENTEEL!"
 
-#: src/message.c:573
+#: src/message.c:572
 #, c-format
 msgid ""
 "%s\n"
@@ -651,14 +651,14 @@ msgstr ""
 "\n"
 "Huidige instellingen:"
 
-#: src/message.c:575
+#: src/message.c:574
 #, fuzzy, c-format
 msgid ""
 "%s\n"
 "  status: %s%s%s"
 msgstr "%sStatus: %s"
 
-#: src/message.c:580
+#: src/message.c:579
 #, c-format
 msgid ""
 "%s\n"
@@ -667,15 +667,15 @@ msgstr ""
 "%s\n"
 "  enkel vrienden: %s"
 
-#: src/message.c:580 src/message.c:582 src/message.c:584
+#: src/message.c:579 src/message.c:581 src/message.c:583
 msgid "on"
 msgstr "aan"
 
-#: src/message.c:580 src/message.c:582 src/message.c:584
+#: src/message.c:579 src/message.c:581 src/message.c:583
 msgid "off"
 msgstr "uit"
 
-#: src/message.c:582
+#: src/message.c:581
 #, c-format
 msgid ""
 "%s\n"
@@ -684,7 +684,7 @@ msgstr ""
 "%s\n"
 "  onzichtbaar: %s"
 
-#: src/message.c:584
+#: src/message.c:583
 #, fuzzy, c-format
 msgid ""
 "%s\n"
@@ -693,7 +693,7 @@ msgstr ""
 "%s\n"
 "  enkel vrienden: %s"
 
-#: src/message.c:586
+#: src/message.c:585
 #, c-format
 msgid ""
 "%s\n"
@@ -702,14 +702,14 @@ msgstr ""
 "%s\n"
 "  localisatie %s"
 
-#: src/message.c:593
+#: src/message.c:592
 #, c-format
 msgid ""
 "%s\n"
 "  number of ignored users: %i"
 msgstr ""
 
-#: src/message.c:595
+#: src/message.c:594
 #, c-format
 msgid ""
 "%s\n"
@@ -720,38 +720,38 @@ msgstr ""
 "\n"
 "Geregistreerd als: %u"
 
-#: src/message.c:650
+#: src/message.c:649
 #, c-format
 msgid "Error message received: %s"
 msgstr "Foutmelding ontvangen: %s"
 
-#: src/message.c:654
+#: src/message.c:653
 msgid "Unsupported message type"
 msgstr "Niet ondersteund berichttype"
 
-#: src/message.c:655 src/register.c:293 src/register.c:406 src/register.c:413
-#: src/register.c:428 src/register.c:523 src/register.c:550 src/register.c:632
-#: src/register.c:639
+#: src/message.c:654 src/register.c:293 src/register.c:406 src/register.c:413
+#: src/register.c:428 src/register.c:523 src/register.c:550 src/register.c:631
+#: src/register.c:638
 msgid "Internal Server Error"
 msgstr "Interne serverfout"
 
-#: src/message.c:660
+#: src/message.c:659
 #, c-format
 msgid "Bad 'to' in: %s"
 msgstr "Ongeldige 'ontvanger' in: %s"
 
-#: src/message.c:670
+#: src/message.c:669
 #, c-format
 msgid "Anonymous message? %s"
 msgstr "Anoniem bericht? %s"
 
-#: src/message.c:677
+#: src/message.c:676
 #, c-format
 msgid "%s not logged in. While processing %s"
 msgstr "%s is niet aangemeld. Tijdens uitvoeren van %s"
 
-#: src/message.c:678 src/presence.c:216 src/search.c:199 src/search.c:244
-#: src/search.c:295
+#: src/message.c:677 src/presence.c:216 src/search.c:199 src/search.c:243
+#: src/search.c:294
 msgid "Not logged in"
 msgstr "Niet aangemeld"
 
@@ -1040,12 +1040,12 @@ msgstr "Geen wachtwoordveld aanwezig"
 msgid "No password value defined"
 msgstr "Geen wachtwoordwaarde gedefiniëerd"
 
-#: src/register.c:405 src/register.c:631
+#: src/register.c:405 src/register.c:630
 #, c-format
 msgid "Couldn't create user %s"
 msgstr "Kon gebruiker %s niet aanmaken"
 
-#: src/register.c:412 src/register.c:638
+#: src/register.c:412 src/register.c:637
 #, c-format
 msgid "Couldn't create session for %s"
 msgstr "Kon geen sessie aanmaken voor %s"
@@ -1064,7 +1064,7 @@ msgstr "Kon de gebruiker niet vinden."
 msgid "Password changed for user '%s'"
 msgstr "Wachtwoord van gebruiker '%s' is gewijzigd"
 
-#: src/register.c:469 src/register.c:577
+#: src/register.c:469 src/register.c:576
 msgid "User still in use, try later."
 msgstr ""
 
@@ -1085,7 +1085,7 @@ msgstr ""
 "Probeerde de registratie van '%s' ongedaan te maken maar die was nooit "
 "geregistreerd"
 
-#: src/register.c:530 src/search.c:388
+#: src/register.c:530 src/search.c:387
 msgid "Not Found"
 msgstr "Niet gevonden"
 
@@ -1094,46 +1094,46 @@ msgstr "Niet gevonden"
 msgid "User '%s' unregistered"
 msgstr "Registratie van gebruiker '%s' is ongedaan gemaakt"
 
-#: src/register.c:583 src/register.c:662
+#: src/register.c:582 src/register.c:661
 #, c-format
 msgid "Set query for jabber:iq:register empty: %s"
 msgstr "Stel vraag in voor jabber:iq:register empty: %s"
 
-#: src/register.c:592
+#: src/register.c:591
 msgid "Form returned with no type defined"
 msgstr "Formulier teruggestuurd zonder een type te definiëren"
 
-#: src/register.c:601
+#: src/register.c:600
 msgid "Cancelled"
 msgstr "Geannulleerd"
 
-#: src/register.c:603
+#: src/register.c:602
 msgid "Bad form type"
 msgstr "Ongeldig formuliertype"
 
-#: src/register.c:609
+#: src/register.c:608
 #, c-format
 msgid "<remove/> in jabber:iq:register set: %s"
 msgstr "<remove/> in jabber:iq:register set: %s"
 
-#: src/register.c:623
+#: src/register.c:622
 #, c-format
 msgid "User '%s' doesn't exist and not enough info to add him"
 msgstr ""
 "Gebruiker '%s' bestaat niet en er is niet genoeg informatie opgegeven om hem "
 "toe te voegen"
 
-#: src/register.c:667
+#: src/register.c:666
 msgid "Nothing to change"
 msgstr "Niets om te veranderen"
 
-#: src/register.c:677
+#: src/register.c:676
 msgid "Not registered, and no password given for public directory change."
 msgstr ""
 "Niet geregistreerd en geen wachtwoord opgegeven voor publieke directory "
 "verandering."
 
-#: src/register.c:713 src/sessions.c:416
+#: src/register.c:712 src/sessions.c:458
 msgid "Remote Server Error"
 msgstr "Serverfout"
 
@@ -1199,343 +1199,343 @@ msgstr ""
 msgid "Unavailable"
 msgstr "Langdurig afwezig"
 
-#: src/search.c:460
+#: src/search.c:459
 msgid "GG user\n"
 msgstr "GG-gebruiker\n"
 
-#: src/search.c:464
+#: src/search.c:463
 #, c-format
 msgid "Client version: %s (prot.0x%02X)\n"
 msgstr "Cliëntversie: %s (prot.0x%02X)\n"
 
-#: src/search.c:471
+#: src/search.c:470
 #, c-format
 msgid "User IP: %s\n"
 msgstr "IP van gebruiker: %s\n"
 
-#: src/search.c:474
+#: src/search.c:473
 #, c-format
 msgid "User port: %u\n"
 msgstr "Gebruikerspoort: %u\n"
 
-#: src/sessions.c:228
+#: src/sessions.c:270
 #, c-format
 msgid "Using proxy: http://%s:%i"
 msgstr "Gebruik maken van proxy: http://%s:%i"
 
-#: src/sessions.c:254
+#: src/sessions.c:296
 #, c-format
 msgid "%u sessions in hash table"
 msgstr "%u sessies in hash-tabel"
 
-#: src/sessions.c:282
+#: src/sessions.c:324
 #, c-format
 msgid "Sheduling reconnect in %u seconds"
 msgstr "Geprogrammeerde reconnect in %u seconden"
 
-#: src/sessions.c:293
+#: src/sessions.c:335
 #, c-format
 msgid "Timeout for server %u"
 msgstr "Timeout voor server %u"
 
-#: src/sessions.c:302
+#: src/sessions.c:344
 #, c-format
 msgid "Session timeout for %s"
 msgstr "Sessie Wachttijd verstreken voor %s"
 
-#: src/sessions.c:305
+#: src/sessions.c:347
 msgid "Remote Server Timeout"
 msgstr "Server Timeout"
 
-#: src/sessions.c:348
+#: src/sessions.c:390
 #, c-format
 msgid "%s got notification from unknown contact %i, ignoring.."
 msgstr ""
 
-#: src/sessions.c:352
+#: src/sessions.c:394
 #, c-format
 msgid ""
 "%s got notification from contact %i whose presence was not requested, "
 "ignoring.."
 msgstr ""
 
-#: src/sessions.c:446
+#: src/sessions.c:488
 msgid "Checking error conditions..."
 msgstr "Bezig met controleren van foutcondities..."
 
-#: src/sessions.c:448
+#: src/sessions.c:490
 #, fuzzy, c-format
 msgid "Error on connection for %s ,[GGnumber: %i]"
 msgstr "Fout in verbinding voor %s"
 
-#: src/sessions.c:450
+#: src/sessions.c:492
 #, fuzzy, c-format
 msgid "Hangup on connection for %s ,[GGnumber: %i]"
 msgstr "Ophanging in verbinding voor %s"
 
-#: src/sessions.c:457
+#: src/sessions.c:499
 #, c-format
 msgid "Invalid channel on connection for %s"
 msgstr "Ongeldig kanaal in verbinding voor %s"
 
-#: src/sessions.c:463
+#: src/sessions.c:505
 #, c-format
 msgid "watching fd (gg_debug_level=%i)..."
 msgstr "watching fd (gg_debug_level=%i)..."
 
-#: src/sessions.c:466
+#: src/sessions.c:508
 #, fuzzy, c-format
 msgid "Connection broken. Session of %s ,[GGnumber: %i]"
 msgstr "Verbinding verbroken: Sessie van %s"
 
-#: src/sessions.c:473
+#: src/sessions.c:515
 #, fuzzy, c-format
 msgid "Server closed connection of %s, [GGnumber: %i]"
 msgstr "Server heeft verbinding van %s verbroken"
 
-#: src/sessions.c:478
+#: src/sessions.c:520
 #, fuzzy, c-format
 msgid "Login failed for %s ,[GGnumber: %i]"
 msgstr "Aanmelden mislukt voor %s"
 
-#: src/sessions.c:480
+#: src/sessions.c:522
 msgid "Unauthorized"
 msgstr "Authorisatie ongedaan gemaakt"
 
-#: src/sessions.c:488
+#: src/sessions.c:530
 #, fuzzy, c-format
 msgid "Login succeed for %s ,[GGnumber: %i]"
 msgstr "Aanmelden gelukt voor %s"
 
-#: src/sessions.c:549
+#: src/sessions.c:591
 #, fuzzy, c-format
 msgid "Dropped conference message: sender: %i class: %i time: %lu"
 msgstr "Bericht: afzender: %i klasse: %i tijd: %lu"
 
-#: src/sessions.c:556
+#: src/sessions.c:598
 #, c-format
 msgid "Message: sender: %i class: %i time: %lu"
 msgstr "Bericht: afzender: %i klasse: %i tijd: %lu"
 
-#: src/sessions.c:568
+#: src/sessions.c:610
 #, c-format
 msgid "GG System message #%i"
 msgstr "GG Systemmelding #%i"
 
-#: src/sessions.c:582
+#: src/sessions.c:624
 msgid "Ignoring the message."
 msgstr ""
 
-#: src/sessions.c:603
+#: src/sessions.c:645
 #, c-format
 msgid "Pong! ping time: %fs"
 msgstr "Pong! ping tijd: %fs"
 
-#: src/sessions.c:624
+#: src/sessions.c:666
 #, c-format
 msgid "Wrong gg userlist type: %i"
 msgstr "Verkeerd gg gebruikerslijsttype: %i"
 
-#: src/sessions.c:627
+#: src/sessions.c:669
 #, c-format
 msgid "Unknown GG event: %i"
 msgstr "Onbekende GG-gebeurtenis: %i"
 
-#: src/sessions.c:634
+#: src/sessions.c:676
 msgid "io handler done..."
 msgstr "io handler klaar..."
 
-#: src/sessions.c:643
+#: src/sessions.c:685
 #, c-format
 msgid "Deleting session for '%s'"
 msgstr "Bezig met verwijderen van sessie voor '%s'"
 
-#: src/sessions.c:759
+#: src/sessions.c:801
 #, c-format
 msgid "Trying to log in on server %u"
 msgstr "Bezig met proberen aanmelden op server: %u"
 
 # Volgens mij wordt de %s vervangen door 'aan' of 'uit'.
-#: src/sessions.c:789
+#: src/sessions.c:831
 #, c-format
 msgid "Turning TLS %s"
 msgstr "Zet TLS %s"
 
-#: src/sessions.c:809
+#: src/sessions.c:851
 #, c-format
 msgid "Creating session for '%s'"
 msgstr "Bezig met creëren van sessie voor '%s'"
 
-#: src/sessions.c:812 src/sessions.c:852 src/users.c:490
+#: src/sessions.c:854 src/sessions.c:894 src/users.c:490
 #, fuzzy, c-format
 msgid "Bad JID: '%s'"
 msgstr "Ongeldige 'aan': %s"
 
-#: src/sessions.c:819
+#: src/sessions.c:861
 #, fuzzy, c-format
 msgid "User deleted: '%s'"
 msgstr "IP van gebruiker: %s\n"
 
-#: src/sessions.c:849
+#: src/sessions.c:891
 #, c-format
 msgid "Looking up session for '%s'"
 msgstr "Sessie voor '%s' aan het opzoeken"
 
-#: src/sessions.c:856
+#: src/sessions.c:898
 #, c-format
 msgid "Using '%s' as key"
 msgstr "Gebruik makend van '%s' als sleutel"
 
-#: src/sessions.c:860
+#: src/sessions.c:902
 msgid "Session not found"
 msgstr "Sessie niet gevonden"
 
-#: src/sessions.c:865
+#: src/sessions.c:907
 msgid "User loaded, processing his subscriptions."
 msgstr ""
 
-#: src/sessions.c:881
+#: src/sessions.c:923
 msgid "Creating new session"
 msgstr "Bezig met aanmaken van nieuw sessie"
 
-#: src/sessions.c:893
+#: src/sessions.c:935
 #, fuzzy, c-format
 msgid "Changing gg status to %i (%s)"
 msgstr "Wijzigen van gg-status in %i"
 
-#: src/sessions.c:896
+#: src/sessions.c:938
 #, c-format
 msgid "Changing gg status to %i"
 msgstr "Wijzigen van gg-status in %i"
 
-#: src/sessions.c:906
+#: src/sessions.c:948
 #, c-format
 msgid "Removing resource %s of %s"
 msgstr "Bezig met verwijderen van bron %s van %s"
 
-#: src/sessions.c:934
+#: src/sessions.c:976
 #, c-format
 msgid "Delayed removal of resource %s of %s"
 msgstr "Uitgestelde verwijdering van bron %s van %s"
 
-#: src/sessions.c:969
+#: src/sessions.c:1011
 #, c-format
 msgid "Unknown resource %s of %s"
 msgstr "Onbekende bron %s van %s"
 
-#: src/sessions.c:976
+#: src/sessions.c:1018
 #, c-format
 msgid "Delaying removal of resource %s of %s"
 msgstr "Bezig met uitstellen van verwijdering van bron %s van %s"
 
-#: src/sessions.c:987
+#: src/sessions.c:1029
 #, c-format
 msgid "New resource %s of %s"
 msgstr "Nieuwe bron %s van %s"
 
-#: src/sessions.c:1116
+#: src/sessions.c:1158
 #, c-format
 msgid "%sSession: %p"
 msgstr "%sSessie: %p"
 
-#: src/sessions.c:1118
+#: src/sessions.c:1160
 #, c-format
 msgid "%sUser:"
 msgstr "%s Gebruiker:"
 
-#: src/sessions.c:1120
+#: src/sessions.c:1162
 #, c-format
 msgid "%sResources:"
 msgstr "%sBronnen:"
 
-#: src/sessions.c:1124
+#: src/sessions.c:1166
 #, c-format
 msgid "%sResource: %p%s"
 msgstr "%sBron: %p%s"
 
-#: src/sessions.c:1124
+#: src/sessions.c:1166
 msgid " (current)"
 msgstr " (huidig)"
 
-#: src/sessions.c:1127
+#: src/sessions.c:1169
 #, c-format
 msgid "%sPriority: %i"
 msgstr "%sPrioriteit: %i"
 
-#: src/sessions.c:1128
+#: src/sessions.c:1170
 #, c-format
 msgid "%sAvailable: %i"
 msgstr "%sBeschikbaar: %i"
 
-#: src/sessions.c:1130
+#: src/sessions.c:1172
 #, c-format
 msgid "%sShow: %s"
 msgstr "%sTonen: %s"
 
-#: src/sessions.c:1132
+#: src/sessions.c:1174
 #, c-format
 msgid "%sStatus: %s"
 msgstr "%sStatus: %s"
 
-#: src/sessions.c:1134
+#: src/sessions.c:1176
 #, c-format
 msgid "%sGG session: %p"
 msgstr "%sGG-sessie: %p"
 
-#: src/sessions.c:1135
+#: src/sessions.c:1177
 #, fuzzy, c-format
 msgid "%sGSource: %p"
 msgstr "%sBron: %p%s"
 
-#: src/sessions.c:1136
+#: src/sessions.c:1178
 #, c-format
 msgid "%sStream: %p"
 msgstr "%sStream: %p"
 
-#: src/sessions.c:1137
+#: src/sessions.c:1179
 #, c-format
 msgid "%sConnected: %i"
 msgstr "%sVerbonden: %i"
 
-#: src/sessions.c:1138
+#: src/sessions.c:1180
 #, c-format
 msgid "%sRequest id: %s"
 msgstr "%sVerzoek id: %s"
 
-#: src/sessions.c:1139
+#: src/sessions.c:1181
 #, c-format
 msgid "%sRequest query: %s"
 msgstr "%sAanvraag verzoeken: %s"
 
-#: src/sessions.c:1140
+#: src/sessions.c:1182
 #, c-format
 msgid "%sWaiting for ping: %i"
 msgstr "%sBezig met wachten op ping: %i"
 
-#: src/sessions.c:1164
+#: src/sessions.c:1206
 msgid " with TLS"
 msgstr " met TLS"
 
-#: src/sessions.c:1168
+#: src/sessions.c:1210
 #, c-format
 msgid "%s (Connected via hub to %s:%i%s)"
 msgstr "%s (Verbonden met %s via hub:%i%s)"
 
-#: src/sessions.c:1175
+#: src/sessions.c:1217
 #, c-format
 msgid "%s (Connecting via hub%s)"
 msgstr "%s (Bezig met verbinden via hub%s)"
 
-#: src/sessions.c:1181
+#: src/sessions.c:1223
 #, c-format
 msgid "%s (%s to %s:%u%s)"
 msgstr "%s (%s naar %s:%u%s)"
 
-#: src/sessions.c:1183 src/sessions.c:1191
+#: src/sessions.c:1225 src/sessions.c:1233
 msgid "Connected"
 msgstr "Verbonden"
 
-#: src/sessions.c:1183 src/sessions.c:1191
+#: src/sessions.c:1225 src/sessions.c:1233
 msgid "Connecting"
 msgstr "Bezig met verbinden"
 

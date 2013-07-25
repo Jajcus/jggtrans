@@ -4,7 +4,7 @@ AC_INIT([jggtrans], [2.2.4], [jajcus@jajcus.net])
 AC_CONFIG_SRCDIR([src/ggtrans.h])
 AM_INIT_AUTOMAKE
 AM_GNU_GETTEXT_VERSION([0.18.1])
-AM_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
 AC_PROG_CC
