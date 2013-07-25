@@ -6,7 +6,7 @@ set -x
 
 libtoolize --force || exit $?
 rm -f po/ChangeLog
-autopoint --force || exit $?
+gettextize --copy --force --no-changelog
 touch po/Makefile.in m4/Makefile
 aclocal -I m4 || exit $?
 autoheader || exit $?

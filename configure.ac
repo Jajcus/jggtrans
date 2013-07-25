@@ -3,7 +3,7 @@ AC_INIT([jggtrans], [2.2.4], [jajcus@jajcus.net])
 
 AC_CONFIG_SRCDIR([src/ggtrans.h])
 AM_INIT_AUTOMAKE
-AM_GNU_GETTEXT_VERSION(0.14.1)
+AM_GNU_GETTEXT_VERSION([0.18.1])
 AM_CONFIG_HEADER([config.h])
 
 # Checks for programs.
@@ -12,6 +12,7 @@ AC_C_BIGENDIAN
 AC_PROG_MAKE_SET
 AM_PROG_LIBTOOL
 AM_GNU_GETTEXT([external])
+AM_PROG_CC_C_O
 
 CFLAGS="$CFLAGS -Wall"
 
