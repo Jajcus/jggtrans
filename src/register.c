@@ -568,7 +568,6 @@ uin_t uin;
 User *user;
 Session *session=NULL;
 gg_pubdir50_t change;
-Request *r;
 
 	username=password=first=last=nick=city=sex=born=NULL;
 
@@ -700,7 +699,7 @@ Request *r;
 	}
 
 	if (session->connected){
-		r=add_request(RT_CHANGE,from,to,id,NULL,change,s);
+		add_request(RT_CHANGE,from,to,id,NULL,change,s);
 		gg_pubdir50_free(change);
 	}
 	else{

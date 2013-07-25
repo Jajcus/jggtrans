@@ -217,7 +217,7 @@ int i;
 		char *t,*jid;
 		char *name=NULL;
 		int j,uin;
-		xmlnode item,tag;
+		xmlnode item;
 
 		cinfo=g_strsplit(results[i],";",0);
 		for(j=0;cinfo[j];j++);
@@ -271,7 +271,6 @@ int i;
 			t=g_strdup_printf("%sGroup: %s\n",body,cinfo[5]);
 			g_free(body);
 			body=t;
-			tag=xmlnode_insert_tag(item,"group");
 			xmlnode_insert_cdata(n,string_from_gg(cinfo[5]),-1);
 		}
 		if (cinfo[7] && cinfo[7][0]){

@@ -235,7 +235,6 @@ xmlnode form,field,value;
 char *val;
 gg_pubdir50_t search;
 Session *sess;
-Request *r;
 
 	form=xmlnode_get_tag(q,"x?xmlns=jabber:x:data");
 
@@ -276,7 +275,7 @@ Request *r;
 
 	gg_pubdir50_add(search, GG_PUBDIR50_START, "0");
 
-	r=add_request(RT_SEARCH,from,to,id,q,search,s);
+	add_request(RT_SEARCH,from,to,id,q,search,s);
 	gg_pubdir50_free(search);
 }
 

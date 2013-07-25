@@ -206,7 +206,6 @@ xmlnode n;
 int presence(struct stream_s *stream,const char *from,const char *to,
 		int available,const char *show,const char *status,int priority){
 Session *s;
-int r;
 const char *resource;
 User *u;
 
@@ -219,7 +218,7 @@ User *u;
 		return -1;
 	}
 	resource=jid_get_resource(from);
-	r=session_set_status(s,resource,available,show,string_to_gg(status),priority);
+	session_set_status(s,resource,available,show,string_to_gg(status),priority);
 	return 0;
 }
 

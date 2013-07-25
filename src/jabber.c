@@ -106,15 +106,11 @@ char *name;
 
 void jabber_event_cb(int type,xmlnode x,void *arg){
 Stream *s;
-char *str;
 char *data;
 
 	if (stop_it || !stream) return;
 
 	s=(Stream *)arg;
-	if (x){
-		str=xmlnode2str(x);
-	}
 	switch(type){
 		case XSTREAM_ROOT:
 			jabber_node(s,x);
