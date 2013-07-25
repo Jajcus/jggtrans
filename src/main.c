@@ -60,7 +60,6 @@ static int debug_level=0;
 static FILE *log_file=NULL;
 static gboolean use_syslog=FALSE;
 static char *pid_filename=NULL;
-static GAllocator* list_allocator;
 
 GList *admins=NULL;
 time_t start_time=0;
@@ -458,10 +457,6 @@ int i;
 	if (optind==argc-1) config_file=g_strdup(argv[optind]);
 	else config_file=g_strdup_printf("%s/%s",SYSCONFDIR,"jggtrans.xml");
 
-	/* own allocator will be usefull for mem-leak tracing */
-	list_allocator=g_allocator_new("la",128);
-	g_list_push_allocator(list_allocator);
-
 	lh=g_log_set_handler(NULL,G_LOG_FLAG_FATAL | G_LOG_LEVEL_ERROR
 				| G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING
 				| G_LOG_LEVEL_MESSAGE | G_LOG_LEVEL_INFO
@@ -660,9 +655,6 @@ int i;
 	g_message("%s", L_("Exiting normally.\n"));
 
 	g_log_remove_handler(NULL,lh);
-
-	g_list_pop_allocator();
-	g_allocator_free(list_allocator);
 
 	if (log_file!=NULL){
 		fclose(log_file);
