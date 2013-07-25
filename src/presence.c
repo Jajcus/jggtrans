@@ -190,10 +190,11 @@ xmlnode n;
 	}
 	if (timestamp){
 		struct tm *tm;
+		time_t ttime = timestamp;
 		char buf[101];
 		n=xmlnode_insert_tag(pres,"x");
 		xmlnode_put_attrib(n,"xmlns","jabber:x:delay");
-		tm=gmtime(&timestamp);
+		tm=gmtime(&ttime);
 		strftime(buf,100,"%Y%m%dT%H:%M:%S",tm);
 		xmlnode_put_attrib(n,"stamp",buf);
 		xmlnode_insert_cdata(n,"Presence update time",-1);
