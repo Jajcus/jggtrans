@@ -443,7 +443,7 @@ GIOCondition condition=s->g_pollfd.revents;
 time_t timestamp;
 
 	user_load_locale(s->user);
-	debug(L_("Checking error conditions..."));
+	debug("%s", L_("Checking error conditions..."));
 	if (condition&(G_IO_ERR|G_IO_NVAL)){
 		if (condition&G_IO_ERR) g_warning(N_("Error on connection for %s ,[GGnumber: %i]"),s->jid,s->ggs->uin);
 		if (condition&G_IO_HUP){
@@ -579,7 +579,7 @@ time_t timestamp;
 						event->event.msg.sender,0);
 				if ((!c && s->user->ignore_unknown) 
 						|| (c && c->ignored)) {
-					debug(L_("Ignoring the message."));
+					debug("%s", L_("Ignoring the message."));
 				       	break;
 				}
 				jid=jid_build_full(event->event.msg.sender);
@@ -631,7 +631,7 @@ time_t timestamp;
 	session_setup_g_source(s);
 
 	gg_event_free(event);
-	debug(L_("io handler done..."));
+	debug("%s", L_("io handler done..."));
 
 	return FALSE;
 }
@@ -857,12 +857,12 @@ GList *it;
 	s=(Session *)g_hash_table_lookup(sessions_jid,(gpointer)njid);
 	g_free(njid);
 	if (s) return s;
-	debug(L_("Session not found"));
+	debug("%s", L_("Session not found"));
 	if (!stream) return NULL;
 	u=user_get_by_jid(jid);
 	if (!u) return NULL;
 
-	debug(L_("User loaded, processing his subscriptions."));
+	debug("%s", L_("User loaded, processing his subscriptions."));
 	for(it=u->contacts;it;it=it->next){
 		Contact *c;
 		char *c_jid;
@@ -878,7 +878,7 @@ GList *it;
 			g_free(c_jid);
 		}
 	}
-	debug(L_("Creating new session"));
+	debug("%s", L_("Creating new session"));
 	return session_create(u,jid,NULL,NULL,stream,delay_login);
 }
 

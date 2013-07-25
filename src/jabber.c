@@ -64,7 +64,7 @@ void jabber_handshake(Stream *s,xmlnode x){
 		return;
 	}
 
-	g_message(L_("handshake OK"));
+	g_message("%s", L_("handshake OK"));
 	jabber_state=JS_CONNECTED;
 	users_probe_all();
 }
@@ -219,43 +219,43 @@ xmlnode node;
 	stream_add_destroy_handler(jabber_stream_destroyed);
 	node=xmlnode_get_tag(config,"service");
 	if (!node)
-		g_error(L_("No <service/> found in config file"));
+		g_error("%s", L_("No <service/> found in config file"));
 
 	my_name=xmlnode_get_attrib(node,"jid");
 	if (!my_name)
-		g_error(L_("<service/> without \"jid\" in config file"));
+		g_error("%s", L_("<service/> without \"jid\" in config file"));
 
 	node=xmlnode_get_tag(config, "bare_domain");
 	if (node) bare_domain=1;
 
 	server=config_load_string("connect/ip");
 	if (!server)
-		g_error(L_("Jabberd server not found in config file"));
+		g_error("%s", L_("Jabberd server not found in config file"));
 
 	port=config_load_int("connect/port",0);
 	if (port<=0)
-		g_error(L_("Connect port not found in config file"));
+		g_error("%s", L_("Connect port not found in config file"));
 
 	node=xmlnode_get_tag(config,"connect/secret");
 	if (node) secret=xmlnode_get_data(node);
 	if (!node || !secret)
-		g_error(L_("Connect secret not found in config file"));
+		g_error("%s", L_("Connect secret not found in config file"));
 
 	register_instructions=config_load_formatted_string("register/instructions");
 	if (!register_instructions)
-		g_error(L_("Registration instructions not not found in config file"));
+		g_error("%s", L_("Registration instructions not not found in config file"));
 
 	search_instructions=config_load_formatted_string("search/instructions");
 	if (!search_instructions)
-		g_error(L_("Search instructions not found in config file"));
+		g_error("%s", L_("Search instructions not found in config file"));
 
 	gateway_desc=config_load_formatted_string("gateway/desc");
 	if (!gateway_desc)
-		g_error(L_("Gateway instructions not found in config file"));
+		g_error("%s", L_("Gateway instructions not found in config file"));
 
 	gateway_prompt=config_load_formatted_string("gateway/prompt");
 	if (!gateway_prompt)
-		g_error(L_("Gateway prompt not found in config file"));
+		g_error("%s", L_("Gateway prompt not found in config file"));
 
 	jabber_state=JS_NONE;
 	return 0;

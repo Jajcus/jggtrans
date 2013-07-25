@@ -318,7 +318,7 @@ pid_t pid;
 pid_t sid;
 int fd;
 
-	debug(L_("Daemonizing..."));
+	debug("%s", L_("Daemonizing..."));
 	pid=fork();
 	if (pid==-1) g_error(L_("Failed to fork(): %s"),g_strerror(errno));
 	if (pid){
@@ -348,7 +348,7 @@ int fd;
 	sid=setsid();
 	if (sid==-1) abort();
 	foreground=FALSE;
-	debug(L_("I am a daemon, I think."));
+	debug("%s", L_("I am a daemon, I think."));
 	return;
 }
 
@@ -475,7 +475,7 @@ int i;
 
 	config=xmlnode_file(config_file);
 	if (!config){
-		g_error(L_("Couldn't load config!"));
+		g_error("%s", L_("Couldn't load config!"));
 		return 1;
 	}
 	str=xmlnode_get_name(config);
@@ -535,13 +535,13 @@ int i;
 			fclose(pidfile);
 			if (r==1 && pid>0){
 				r=kill(pid,0);
-				if (!r || (r && errno!=ESRCH)) g_error(L_("jggtrans already running"));
+				if (!r || (r && errno!=ESRCH)) g_error("%s", L_("jggtrans already running"));
 				if (r){
 					g_warning(N_("Stale pid file. Removing."));
 					unlink(pid_filename);
 				}
 			}
-			else if (r!=EOF) g_error(L_("Invalid pid file."));
+			else if (r!=EOF) g_error("%s", L_("Invalid pid file."));
 		}
 		if (pid_filename) pidfile=fopen(pid_filename,"w");
 		if (pidfile==NULL)
@@ -564,7 +564,7 @@ int i;
 		if (initgroups(user,newgid)) g_error(L_("Couldn't init groups: %s"),g_strerror(errno));
 		if (setuid(pwd->pw_uid)) g_error(L_("Couldn't change user: %s"),g_strerror(errno));
 	}
-	else if (uid==0 && !restarting) g_error(L_("Refusing to run with uid=0"));
+	else if (uid==0 && !restarting) g_error("%s", L_("Refusing to run with uid=0"));
 
 	main_loop=g_main_new(0);
 
@@ -656,7 +656,7 @@ int i;
 		}
 	}
 
-	g_message(L_("Exiting normally.\n"));
+	g_message("%s", L_("Exiting normally.\n"));
 
 	g_log_remove_handler(NULL,lh);
 

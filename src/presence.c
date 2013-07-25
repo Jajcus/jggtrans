@@ -232,7 +232,7 @@ Contact *c;
 
 	u=user_get_by_jid(from);
 	if (jid_is_me(to)){
-		debug(L_("Presence subscribe request sent to me"));
+		debug("%s", L_("Presence subscribe request sent to me"));
 		if (!u) {
 			presence_send_unsubscribed(stream,to,from);
 			return 0;
@@ -268,7 +268,7 @@ Contact *c;
 	user_save(u);
 
 	if (s) session_update_contact(s,c);	
-	debug(L_("Subscribed."));
+	debug("%s", L_("Subscribed."));
 	presence_send_subscribed(stream,to,from);
 	bare=jid_normalized(from,FALSE);
 	if (c->subscribe!=SUB_FROM && c->subscribe!=SUB_BOTH) {
@@ -294,7 +294,7 @@ uin_t uin;
 		if (u->subscribe==SUB_NONE) u->subscribe=SUB_FROM;
 		else if (u->subscribe==SUB_UNDEFINED || u->subscribe==SUB_TO) u->subscribe=SUB_BOTH;
 		user_save(u);
-		debug(L_("Presence 'subscribed' sent to me"));
+		debug("%s", L_("Presence 'subscribed' sent to me"));
 		return 0;
 	}
 	if (!jid_has_uin(to) || !jid_is_my(to)){
@@ -332,7 +332,7 @@ uin_t uin;
 		if (u->subscribe==SUB_FROM) u->subscribe=SUB_NONE;
 		else if (u->subscribe==SUB_BOTH || u->subscribe==SUB_UNDEFINED) u->subscribe=SUB_TO;
 		user_save(u);
-		debug(L_("Presence 'unsubscribed' sent to me"));
+		debug("%s", L_("Presence 'unsubscribed' sent to me"));
 		return 0;
 	}
 	if (!jid_has_uin(to) || !jid_is_my(to)){
@@ -367,7 +367,7 @@ uin_t uin;
 		return -1;
 	}
 	if (jid_is_me(to)){
-		debug(L_("Presence unsubscribe request sent to me"));
+		debug("%s", L_("Presence unsubscribe request sent to me"));
 		if (u->subscribe==SUB_TO || u->subscribe==SUB_UNDEFINED) u->subscribe=SUB_NONE;
 		else if (u->subscribe==SUB_BOTH) u->subscribe=SUB_FROM;
 		user_save(u);
@@ -392,7 +392,7 @@ uin_t uin;
 
 	if (s) session_update_contact(s,c);
 	
-	debug(L_("Unsubscribed."));
+	debug("%s", L_("Unsubscribed."));
 	presence_send_unsubscribed(stream,to,from);
 	if (!GG_S_NA(c->status) && c->status!=-1){
 		char *ujid;

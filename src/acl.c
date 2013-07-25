@@ -83,7 +83,7 @@ int result=0;
 	if (from){
 		jid=jid_normalized(from,0);
 		if (jid==NULL){
-			debug(L_("Not Allowed - bad 'from'"));
+			debug("%s", L_("Not Allowed - bad 'from'"));
 			return 0;
 		}
 	}
@@ -102,7 +102,7 @@ int result=0;
 	if (it==NULL) result=1;
 	xmlnode_free(x);
 	g_free(jid);
-	if (result) debug(L_("Allowed"));
-	else debug(L_("Denied"));
+	if (result) debug("%s", L_("Allowed"));
+	else debug("%s", L_("Denied"));
 	return result;
 }

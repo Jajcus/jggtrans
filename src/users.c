@@ -67,7 +67,7 @@ int r;
 
 	spool_dir=config_load_string("spool");
 	if (!spool_dir)
-		g_error(L_("No <spool/> defined in config file"));
+		g_error("%s", L_("No <spool/> defined in config file"));
 
 	r=chdir(spool_dir);
 	if (r) g_error(L_("Couldn't enter %s: %s"),spool_dir,g_strerror(errno));
@@ -499,17 +499,17 @@ char *p,*njid;
 	}
 
 	if (uin<1){
-		g_warning(L_("Bad UIN"));
+		g_warning("%s", L_("Bad UIN"));
 		g_free(njid);
 		return NULL;
 	}
 	if (!password){
-		g_warning(L_("Password not given"));
+		g_warning("%s", L_("Password not given"));
 		g_free(njid);
 		return NULL;
 	}
 	if (!jid){
-		g_warning(L_("JID not given"));
+		g_warning("%s", L_("JID not given"));
 		g_free(njid);
 		return NULL;
 	}

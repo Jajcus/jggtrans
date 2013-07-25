@@ -166,9 +166,9 @@ Stream *s;
 	s->err_watch=0;
 	s->xs->f(XSTREAM_CLOSE,NULL,s);
 	if (!s->connected)
-		g_critical(L_("Couldn't connect to jabber server"));
+		g_critical("%s", L_("Couldn't connect to jabber server"));
 	else
-		g_critical(L_("Connection to jabber server broken"));
+		g_critical("%s", L_("Connection to jabber server broken"));
 	do_restart=TRUE;
 	return FALSE;
 }
@@ -202,7 +202,7 @@ gsize br;
 	s=(Stream *)data;
 	g_assert(s);
 
-	if (!s->connected) g_error(L_("Unconnected stream"));
+	if (!s->connected) g_error("%s", L_("Unconnected stream"));
 
 	if (!s->read_buf){
 		s->read_buf=g_new(char,1025);
@@ -224,7 +224,7 @@ gsize br;
 	s->read_buf[br]=0;
 	debug("IN: %s",s->read_buf);
 	if(xstream_eat(s->xs,s->read_buf,br) > XSTREAM_NODE){
-		g_warning(L_("Error reading from stream"));
+		g_warning("%s", L_("Error reading from stream"));
 		s->read_watch=0;
 		s->xs->f(XSTREAM_CLOSE,NULL,s);
 		return FALSE;

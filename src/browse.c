@@ -48,7 +48,7 @@ char *jid;
 
 	jid=jid_normalized(from,0);
 	if (jid==NULL){
-		debug(L_("Bad 'from' address"));
+		debug("%s", L_("Bad 'from' address"));
 		return;
 	}
 	if (g_list_find_custom(admins,jid,(GCompareFunc)strcmp)==NULL){
@@ -77,7 +77,7 @@ int i;
 
 	jid=jid_normalized(from,0);
 	if (jid==NULL){
-		debug(L_("Bad 'from' address"));
+		debug("%s", L_("Bad 'from' address"));
 		return;
 	}
 	resource=strchr(to,'/');
