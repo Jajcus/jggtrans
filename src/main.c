@@ -281,6 +281,7 @@ char *lc_ctype,*lc_messages,*td_codeset;
 			if (debug_level<0) return;
 			break;
 		case G_LOG_LEVEL_DEBUG:
+		default:
 			if (debug_level<=0) return;
 			break;
 	}
