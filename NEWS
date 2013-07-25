@@ -1,3 +1,21 @@
+Version 2.2.5
+-------------
+
+Notable changes from 2.2.4:
+
+* Running without "-f" works again, with current libgadu.
+
+* New GG server addresses included in the sample config file and 
+  in the hard-coded defaults.
+
+* Code updated for current GLib and automake/autoconf/gettext
+
+* printf format string usage problems, reported by gcc
+  '-Wformat-security', fixed
+
+* 'get roster' command updated to use current protocol (XEP-0144)
+
+
 Version 2.2.4
 -------------
 
