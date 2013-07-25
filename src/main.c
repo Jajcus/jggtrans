@@ -566,6 +566,12 @@ int i;
 	}
 	else if (uid==0 && !restarting) g_error("%s", L_("Refusing to run with uid=0"));
 
+	if (!fg && !restarting) daemonize(pidfile);
+	else if (pidfile!=NULL){
+		fprintf(pidfile,"%i",getpid());
+		fclose(pidfile);
+	}
+
 	main_loop=g_main_new(0);
 
 	if (jabber_init()) return 1;
@@ -574,12 +580,6 @@ int i;
 	if (encoding_init()) return 1;
 	if (requests_init()) return 1;
 	if (acl_init()) return 1;
-
-	if (!fg && !restarting) daemonize(pidfile);
-	else if (pidfile!=NULL){
-		fprintf(pidfile,"%i",getpid());
-		fclose(pidfile);
-	}
 
 	if (log_filename){
 		log_file=fopen(log_filename,"a");
