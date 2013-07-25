@@ -51,10 +51,10 @@ int i,j,sp;
 		switch(t){
 			case NTYPE_TAG:
 				name=xmlnode_get_name(child);
-				if (!g_strcasecmp(name,"p")){
+				if (!g_ascii_strcasecmp(name,"p")){
 					if (out[0]) add=g_strdup("\n");
 				}
-				else if (!g_strcasecmp(name,"br"))
+				else if (!g_ascii_strcasecmp(name,"br"))
 					add=g_strdup("\n");
 				else g_warning("Unknown formatting '%s' in '%s'",
 						xmlnode2str(child),xmlnode2str(node));

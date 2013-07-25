@@ -307,8 +307,8 @@ gboolean on;
 		user=session->user;
 	else
 		user=user_get_by_jid(from);
-	if (args && g_strcasecmp(args,"on")==0) on=TRUE;
-	else if (args && g_strcasecmp(args,"off")==0) on=FALSE;
+	if (args && g_ascii_strcasecmp(args,"on")==0) on=TRUE;
+	else if (args && g_ascii_strcasecmp(args,"off")==0) on=FALSE;
 	else on=!user->friends_only;
 
 	if (user->friends_only==on){
@@ -339,8 +339,8 @@ gboolean on;
 		user=session->user;
 	else
 		user=user_get_by_jid(from);
-	if (args && g_strcasecmp(args,"on")==0) on=TRUE;
-	else if (args && g_strcasecmp(args,"off")==0) on=FALSE;
+	if (args && g_ascii_strcasecmp(args,"on")==0) on=TRUE;
+	else if (args && g_ascii_strcasecmp(args,"off")==0) on=FALSE;
 	else on=!user->invisible;
 
 	if (user->invisible==on){
@@ -376,7 +376,7 @@ char *m;
 
 	g_free(user->status);
 	if (args) {
-		if (!g_strcasecmp(args,"off")) user->status=NULL;
+		if (!g_ascii_strcasecmp(args,"off")) user->status=NULL;
 		else user->status=g_strndup(string_to_gg(args),GG_STATUS_DESCR_MAXSIZE);
 	}
 	else user->status=NULL;
@@ -426,8 +426,8 @@ gboolean on;
 		user=session->user;
 	else
 		user=user_get_by_jid(from);
-	if (args && g_strcasecmp(args,"on")==0) on=TRUE;
-	else if (args && g_strcasecmp(args,"off")==0) on=FALSE;
+	if (args && g_ascii_strcasecmp(args,"on")==0) on=TRUE;
+	else if (args && g_ascii_strcasecmp(args,"off")==0) on=FALSE;
 	else on=!user->ignore_unknown;
 
 	if (user->ignore_unknown==on){

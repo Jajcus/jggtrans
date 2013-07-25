@@ -160,7 +160,7 @@ GgServer *server;
 	}
 	else {
 		r=xmlnode_get_attrib(tag, "which");
-		if (r && !g_strcasecmp(r,"html")) {
+		if (r && !g_ascii_strcasecmp(r,"html")) {
 			ignore_system_messages = ISM_IGNORE_HTML;
 		}
 		else {
@@ -194,7 +194,7 @@ GgServer *server;
 			else continue;
 
 			r=xmlnode_get_attrib(tag, "tls");
-			if (r && !g_strcasecmp(r,"no"))
+			if (r && !g_ascii_strcasecmp(r,"no"))
 				server->tls=0;
 			else
 				server->tls=1;
