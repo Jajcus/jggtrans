@@ -1,7 +1,7 @@
 
                      GaduGadu Transport for Jabber
                     ===============================
-            (c) 2002-2010 Jacek Konieczny [jajcus(a)jajcus,net]
+            (c) 2002-2013 Jacek Konieczny [jajcus(a)jajcus,net]
 
 This is external component for Jabber (http://www.jabber.org) server
 providing gateway to GaduGadu instant messaging services. GaduGadu is
@@ -18,7 +18,7 @@ You can start it from root account, giving "-u" and maybe "-g" options
 --- it will switch to given uid/gid then.
 
 Look for more information and report any bugs or feature requests at
-the project's site: http://jggtrans.jajcus.net/
+the project's GitHub page: https://github.com/Jajcus/jggtrans/
 
 There is also a mailing list (Polish): jggtrans@lists.jajcus.net
 To subscribe send a message to: jggtrans-subscribe@lists.jajcus.net
