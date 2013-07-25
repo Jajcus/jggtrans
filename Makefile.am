@@ -17,6 +17,6 @@ cosmetics:
 	./aux/cosmetics.sh
 
 dist-hook:
-	if grep '+git' configure.ac ; then echo "Remove SVN version flag first!"; exit 1; else : ; fi
+	if grep '+git' configure.ac ; then echo "Remove GIT version flag first!"; exit 1; else : ; fi
 
 ACLOCAL_AMFLAGS = -I m4
