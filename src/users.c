@@ -67,10 +67,10 @@ int r;
 
 	spool_dir=config_load_string("spool");
 	if (!spool_dir)
-		g_error("%s", L_("No <spool/> defined in config file"));
+		error_exit("%s", L_("No <spool/> defined in config file"));
 
 	r=chdir(spool_dir);
-	if (r) g_error(L_("Couldn't enter %s: %s"),spool_dir,g_strerror(errno));
+	if (r) error_exit(L_("Couldn't enter %s: %s"),spool_dir,g_strerror(errno));
 
 	users_jid=g_hash_table_new(g_str_hash,g_str_equal);
 	if (!users_jid) return -1;

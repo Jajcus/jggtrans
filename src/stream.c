@@ -75,7 +75,7 @@ int fd;
 	s=g_new0(Stream,1);
 	fd=socket(PF_INET,SOCK_STREAM,0);
 	if (!fd){
-		g_error(L_("socket: %s"),g_strerror(errno));
+		error_exit(L_("socket: %s"),g_strerror(errno));
 		g_free(s);
 		return NULL;
 	}
@@ -119,7 +119,7 @@ int fd;
 	}
 	else{
 		if (r<0){
-			g_error(L_("connect: %s"),g_strerror(errno));
+			error_exit(L_("connect: %s"),g_strerror(errno));
 			g_free(s);
 			return NULL;
 		}
@@ -202,7 +202,7 @@ gsize br;
 	s=(Stream *)data;
 	g_assert(s);
 
-	if (!s->connected) g_error("%s", L_("Unconnected stream"));
+	if (!s->connected) error_exit("%s", L_("Unconnected stream"));
 
 	if (!s->read_buf){
 		s->read_buf=g_new(char,1025);

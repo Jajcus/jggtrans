@@ -48,6 +48,7 @@ const char *local_translate(const char *str);
 #  define L_(String) String
 #endif
 
+#define error_exit(...) {g_critical(__VA_ARGS__); exit(1);}
 
 extern GMainLoop *main_loop;
 extern gboolean do_restart;

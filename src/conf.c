@@ -78,10 +78,10 @@ int i,j,sp;
 				add[j]=0;
 				break;
 			case NTYPE_ATTRIB:
-				g_error("Unexpected attribute");
+				error_exit("Unexpected attribute");
 				break;
 			default:
-				g_error("Unknown node type: %i",t);
+				error_exit("Unknown node type: %i",t);
 				break;
 		}
 		if (add){

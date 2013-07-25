@@ -46,7 +46,7 @@ struct acl_s *acl_e;
 		if (!str) continue;
 		if (!strcmp(str,"allow")) allow=1;
 		else if (!strcmp(str,"deny")) allow=0;
-		else g_error(L_("Invalid tag <%s/> in config section <acl/>"),str);
+		else error_exit(L_("Invalid tag <%s/> in config section <acl/>"),str);
 		what=xmlnode_get_attrib(node,"what");
 		if (!what || what[0]=='\000' || !strcmp(what,"*")) what=NULL;
 		who=xmlnode_get_attrib(node,"who");

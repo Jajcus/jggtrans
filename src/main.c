@@ -320,7 +320,7 @@ int fd;
 
 	debug("%s", L_("Daemonizing..."));
 	pid=fork();
-	if (pid==-1) g_error(L_("Failed to fork(): %s"),g_strerror(errno));
+	if (pid==-1) error_exit(L_("Failed to fork(): %s"),g_strerror(errno));
 	if (pid){
 		if (pidfile){
 			fprintf(pidfile,"%u",pid);
@@ -428,11 +428,11 @@ int i;
 				fg=TRUE;
 				break;
 			case 'u':
-				if (uid!=0) g_error(_("Cannot change user."));
+				if (uid!=0) error_exit(_("Cannot change user."));
 				user=optarg;
 				break;
 			case 'g':
-				if (uid!=0) g_error(_("Cannot change group."));
+				if (uid!=0) error_exit(_("Cannot change group."));
 				group=optarg;
 				break;
 			case '?':
@@ -443,7 +443,7 @@ int i;
 				usage(argv[0]);
 				return 1;
 			default:
-				g_error(_("Error while processing command line options"));
+				error_exit(_("Error while processing command line options"));
 				break;
 		}
 	}
@@ -475,12 +475,12 @@ int i;
 
 	config=xmlnode_file(config_file);
 	if (!config){
-		g_error("%s", L_("Couldn't load config!"));
+		error_exit("%s", L_("Couldn't load config!"));
 		return 1;
 	}
 	str=xmlnode_get_name(config);
 	if (!str || strcmp(str,"jggtrans")){
-		g_error(L_("%s doesn't look like jggtrans config file."),config_file);
+		error_exit(L_("%s doesn't look like jggtrans config file."),config_file);
 		return 1;
 	}
 	g_free(config_file);
@@ -507,7 +507,7 @@ int i;
 			for(log_facility=0;facilitynames[log_facility].name;log_facility++)
 				if (!strcmp(facilitynames[log_facility].name,str)) break;
 			if (!facilitynames[log_facility].name)
-				 g_error(L_("Unknown syslog facility: %s"),str);
+				 error_exit(L_("Unknown syslog facility: %s"),str);
 		}
 		else if (!strcmp(log_type,"file")){
 			if (log_filename) g_warning(N_("Multiple log files specified. Using only one."));
@@ -535,36 +535,36 @@ int i;
 			fclose(pidfile);
 			if (r==1 && pid>0){
 				r=kill(pid,0);
-				if (!r || (r && errno!=ESRCH)) g_error("%s", L_("jggtrans already running"));
+				if (!r || (r && errno!=ESRCH)) error_exit("%s", L_("jggtrans already running"));
 				if (r){
 					g_warning(N_("Stale pid file. Removing."));
 					unlink(pid_filename);
 				}
 			}
-			else if (r!=EOF) g_error("%s", L_("Invalid pid file."));
+			else if (r!=EOF) error_exit("%s", L_("Invalid pid file."));
 		}
 		if (pid_filename) pidfile=fopen(pid_filename,"w");
 		if (pidfile==NULL)
-			g_error(L_("Couldn't open pidfile %s"),pid_filename);
+			error_exit(L_("Couldn't open pidfile %s"),pid_filename);
 	}
 	else
 		pidfile=NULL;
 
 	if (group){
 		grp=getgrnam(group);
-		if (!grp) g_error(L_("Couldn't find group %s"),group);
+		if (!grp) error_exit(L_("Couldn't find group %s"),group);
 		newgid=grp->gr_gid;
 	}
 	if (user){
 		pwd=getpwnam(user);
-		if (!pwd) g_error(L_("Couldn't find user %s"),user);
+		if (!pwd) error_exit(L_("Couldn't find user %s"),user);
 		if (newgid<=0) newgid=pwd->pw_gid;
 		if (pidfile) fchown(fileno(pidfile),pwd->pw_uid,newgid);
-		if (setgid(newgid)) g_error(L_("Couldn't change group: %s"),g_strerror(errno));
-		if (initgroups(user,newgid)) g_error(L_("Couldn't init groups: %s"),g_strerror(errno));
-		if (setuid(pwd->pw_uid)) g_error(L_("Couldn't change user: %s"),g_strerror(errno));
+		if (setgid(newgid)) error_exit(L_("Couldn't change group: %s"),g_strerror(errno));
+		if (initgroups(user,newgid)) error_exit(L_("Couldn't init groups: %s"),g_strerror(errno));
+		if (setuid(pwd->pw_uid)) error_exit(L_("Couldn't change user: %s"),g_strerror(errno));
 	}
-	else if (uid==0 && !restarting) g_error("%s", L_("Refusing to run with uid=0"));
+	else if (uid==0 && !restarting) error_exit("%s", L_("Refusing to run with uid=0"));
 
 	if (!fg && !restarting) daemonize(pidfile);
 	else if (pidfile!=NULL){
