@@ -1058,31 +1058,32 @@ int num_resources=0;
 }
 
 static int compute_notify_type(Contact *c){
-int notify_type=0;
 
 	if (c->blocked) return GG_USER_BLOCKED;
 
 	/* do not rely on c->subscribe only, but rather use presence stanzas received,
 	 * so directed presece and privacy rules may work */
-	if (c->got_online) notify_type|=GG_USER_NORMAL-GG_USER_OFFLINE;
-	if (c->got_probe || c->subscribe==SUB_TO || c->subscribe==SUB_BOTH) notify_type|=GG_USER_OFFLINE;
-
-	return notify_type;
+	if (c->got_online) {
+		return GG_USER_NORMAL;
+	}
+	else if (c->got_probe || c->subscribe==SUB_TO
+					|| c->subscribe==SUB_BOTH) {
+		return GG_USER_OFFLINE;
+	}
+	else {
+		return GG_USER_BLOCKED;
+	}
 }
 
 int session_update_contact(Session *s,Contact *c){
 int new_notify_type=0;
-int del,add;
 
 	if (!s->connected) return 0;
 
 	new_notify_type=compute_notify_type(c);
 
-	del=c->gg_notify_type&(~new_notify_type);
-	add=new_notify_type&(~c->gg_notify_type);
-	
-	if (del) gg_remove_notify_ex(s->ggs,c->uin,del);
-	if (add) gg_add_notify_ex(s->ggs,c->uin,add);
+	if (c->gg_notify_type) gg_remove_notify_ex(s->ggs, c->uin, c->gg_notify_type);
+	if (new_notify_type) gg_add_notify_ex(s->ggs, c->uin, new_notify_type);
 
 	c->gg_notify_type=new_notify_type;
 	
