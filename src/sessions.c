@@ -35,6 +35,8 @@
 #include "encoding.h"
 #include "debug.h"
 
+// define to make debugging easier by allowing only one user to connect to gg
+//#define SINGLE_JID "jajcus@jajcus.net"
 
 static int conn_timeout=30;
 static int pong_timeout=30;
@@ -798,6 +800,17 @@ static int session_try_login(Session *s){
 struct gg_login_params login_params;
 GgServer *serv;
 
+#ifdef SINGLE_JID
+	if (strncmp(s->jid, SINGLE_JID, strlen(SINGLE_JID))) {
+		g_debug(N_("Skipping user %s: not %s"),
+						s->jid, SINGLE_JID);
+		return FALSE;
+	} else {
+		g_debug(N_("Processing user %s: matches %s"),
+						s->jid, SINGLE_JID);
+	}
+#endif
+
 	g_warning(N_("Trying to log in on server %u"),
 			g_list_position(gg_servers, s->current_server));
 
@@ -1094,6 +1107,7 @@ int i;
 		userlist[i]=c->uin;
 		c->gg_notify_type=compute_notify_type(c);
 		types[i]=c->gg_notify_type;
+		g_debug("Contact: %i, type: %i", c->uin, c->gg_notify_type);
 		i++;	
 	}
 
