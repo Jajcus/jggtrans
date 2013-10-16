@@ -941,7 +941,7 @@ int session_send_status(Session *s){
 int r;
 
 	g_assert(s!=NULL);
-	if (s->ggs==NULL) return -1;
+	if (!s->connected || s->ggs==NULL) return -1;
 	r=session_make_status(s, s->connected);
 	if (r==0) return 0;
 	if (s->gg_status_descr!=NULL){
