@@ -1,3 +1,13 @@
+Version 2.2.6
+
+-------------
+
+One important change since 2.2.5:
+
+* issue #30 fixed – GG servers would not talk with jggtrans 2.2.5 and
+  older, as they are now more picky about data they receive. This
+  release fixes this incompatibility.
+
 Version 2.2.5
 -------------
 

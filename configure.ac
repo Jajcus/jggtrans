@@ -1,9 +1,9 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT([jggtrans], [2.2.5], [jajcus@jajcus.net])
+AC_INIT([jggtrans], [2.2.6], [jajcus@jajcus.net])
 
 AC_CONFIG_SRCDIR([src/ggtrans.h])
 AM_INIT_AUTOMAKE
-AM_GNU_GETTEXT_VERSION([0.18.1])
+AM_GNU_GETTEXT_VERSION([0.18.3])
 AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
